@@ -16,6 +16,7 @@ interface CardItemProps {
   githubUrl?: string;
   readTime?: number | null;
   isBlog?: boolean;
+  image_url?: string | null;
 }
 
 const CardItem = ({
@@ -30,6 +31,7 @@ const CardItem = ({
   githubUrl,
   readTime,
   isBlog = false,
+  image_url,
 }: CardItemProps) => {
   // Marquee logic
   const titleRef = useRef<HTMLSpanElement>(null);
@@ -47,6 +49,11 @@ const CardItem = ({
 
   return (
     <SpotlightCard className="h-full flex flex-col p-6 gap-4">
+      {image_url && (
+        <div className="mb-4 rounded-lg overflow-hidden">
+          <img src={image_url} alt={title} className="w-full h-48 object-cover" />
+        </div>
+      )}
       {/* Top section: Title */}
       <div className="flex items-start justify-between gap-2">
         <span

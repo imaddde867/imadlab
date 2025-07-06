@@ -16,6 +16,7 @@ interface Post {
   tags: string[] | null;
   published_date: string;
   read_time: number | null;
+  image_url: string | null;
 }
 
 const BlogPost = () => {
@@ -28,7 +29,7 @@ const BlogPost = () => {
       
       const { data, error } = await supabase
         .from('posts')
-        .select('*')
+        .select('*, image_url')
         .eq('slug', slug)
         .maybeSingle();
       
