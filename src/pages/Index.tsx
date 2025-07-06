@@ -11,30 +11,32 @@ const Index = () => {
       <Hero />
       <Projects />
       <TechStack />
-      <Marquee
-        words={[
-          "Data Engineering",
-          "AI Innovation",
-          "Machine Learning",
-          "LLM Fine-tuning",
-          "AWS Cloud",
-          "Real-time Analytics",
-          "Recommendation Systems",
-          "MLOps",
-          "Computer Vision",
-          "Predictive Analytics",
-          "ETL Pipelines",
-          "Microservices",
-          "Production-grade AI",
-          "Scalable Solutions",
-          "Business Intelligence",
-          "Deep Learning",
-          "Data Architecture",
-          "Streaming Analytics",
-          "Cloud-native",
-        ]}
-        speed="normal"
-      />
+      <div className="my-24">
+        <Marquee
+          words={[
+            "Data Engineering",
+            "AI Innovation",
+            "Machine Learning",
+            "LLM Fine-tuning",
+            "AWS Cloud",
+            "Real-time Analytics",
+            "Recommendation Systems",
+            "MLOps",
+            "Computer Vision",
+            "Predictive Analytics",
+            "ETL Pipelines",
+            "Microservices",
+            "Production-grade AI",
+            "Scalable Solutions",
+            "Business Intelligence",
+            "Deep Learning",
+            "Data Architecture",
+            "Streaming Analytics",
+            "Cloud-native",
+          ]}
+          speed="normal"
+        />
+      </div>
       <BlogFeed />
       <Contact />
     </div>
