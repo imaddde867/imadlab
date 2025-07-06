@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 
 const blogPosts = [
 	{
@@ -47,87 +48,53 @@ const BlogFeed = () => {
 
 			<div className="max-w-7xl mx-auto">
 				{/* Section header */}
-				<div className="mb-20 ml-8 lg:ml-16">
-					<h2 className="text-5xl md:text-7xl font-black mb-4">
-						Latest
-						<br />
-						<span className="ml-8 text-white/60">Insights</span>
-					</h2>
-					<div className="w-24 h-1 bg-white/40 ml-8"></div>
+				<div className="mb-20 ml-8 lg:ml-16 flex items-center justify-between">
+					<div>
+						<h2 className="text-5xl md:text-7xl font-black mb-4">
+							Latest
+							<br />
+							<span className="ml-8 text-white/60">Insights</span>
+						</h2>
+						<div className="w-24 h-1 bg-white/40 ml-8"></div>
+					</div>
+					<a
+						href="/blog"
+						className="text-white/70 hover:text-white text-base font-medium transition-colors duration-200 mr-4 mt-4 md:mt-0 md:mr-8 ml-12 md:ml-0"
+					>
+						View all posts
+					</a>
 				</div>
 
 				{/* 4-column grid layout for blogs, matching Latest Projects */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 					{blogPosts.map((post, index) => (
-						<Link
-							key={index}
-							to={`/blog/${post.title.toLowerCase().replace(/ /g, '-')}`}
-							className="group"
-							onMouseEnter={() => setHoveredPost(index)}
-							onMouseLeave={() => setHoveredPost(null)}
-						>
-							<article
-								className={`
-                  relative p-8 bg-white/[0.02] border border-white/10 rounded-2xl
-                  transition-all duration-500 cursor-pointer flex flex-col h-full
-                  ${hoveredPost === index
-										? 'bg-white/[0.05] border-white/30 -translate-y-2'
-										: 'hover:bg-white/[0.03] hover:border-white/20'
-									}
-                `}
-							>
-								{/* Glow effect */}
-								<div
-									className={`
-                    absolute inset-0 rounded-2xl transition-opacity duration-500
-                    ${hoveredPost === index
-										? 'bg-gradient-to-br from-white/[0.08] via-transparent to-white/[0.04] opacity-100'
-										: 'opacity-0'
-									}
-                  `}
-								/>
-								<div className="relative z-10 flex flex-col h-full">
-									{/* Category and date */}
-									<div className="flex items-center justify-between mb-4 text-sm">
-										<span className="px-3 py-1 bg-white/10 rounded-full border border-white/20 font-medium">
-											{post.category}
-										</span>
-										<span className="text-white/50">{post.date}</span>
-									</div>
-									{/* Title */}
-									<h3 className="text-xl lg:text-2xl font-bold mb-4 leading-tight">
-										{post.title}
-									</h3>
-									{/* Excerpt */}
-									<p className="text-white/70 text-base leading-relaxed mb-6 flex-1">
-										{post.excerpt}
-									</p>
-									{/* Footer */}
-									<div className="flex items-center justify-between mt-auto">
-										<span className="text-white/50 text-sm">{post.readTime}</span>
-										<Link
-											to={`/blog/${post.title.toLowerCase().replace(/ /g, '-')}`}
-											className="inline-flex items-center gap-2 text-sm font-semibold text-white/90 hover:text-white transition-colors group"
-										>
-											<span>Read More</span>
-											<ArrowUp className="w-4 h-4 rotate-45 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-										</Link>
-									</div>
+						<Card key={index} className="relative bg-white/[0.02] border-white/10 hover:bg-white/[0.05] hover:border-white/30 transition-all duration-300 group">
+							<CardHeader>
+								<CardTitle className="flex items-start justify-between text-white">
+									<span className="text-xl font-bold">{post.title}</span>
+									<Link to={`/blog/${post.title.toLowerCase().replace(/ /g, '-')}`}
+										className="text-white/60 hover:text-white hover:bg-transparent text-sm font-medium px-2 py-1 rounded"
+									>
+										Read More
+									</Link>
+								</CardTitle>
+							</CardHeader>
+							<CardContent className="pb-12">
+								<div className="flex flex-wrap gap-2 mb-4">
+									<span className="px-2 py-1 text-xs bg-white/10 rounded-full text-white font-medium">
+										{post.category}
+									</span>
+									<span className="text-white/50 text-xs ml-auto">{post.date}</span>
 								</div>
-							</article>
-						</Link>
+								<p className="text-white/80 mb-4 leading-relaxed">
+									{post.excerpt}
+								</p>
+								<div className="flex items-center justify-between mt-auto">
+									<span className="text-white/50 text-sm">{post.readTime}</span>
+								</div>
+							</CardContent>
+						</Card>
 					))}
-				</div>
-				{/* View all link aligned right like projects */}
-				<div className="flex justify-end mt-16 mr-4 md:mr-8">
-					<Link
-						to="/blog"
-						className="inline-flex items-center gap-3 px-6 py-3 border border-white/20 rounded-full text-sm font-semibold transition-all duration-300 hover:bg-white/5 hover:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/40"
-						tabIndex={0}
-					>
-						<span>View All Posts</span>
-						<ArrowUp className="w-4 h-4 rotate-45" />
-					</Link>
 				</div>
 			</div>
 		</section>
