@@ -49,7 +49,7 @@ const BlogPost = () => {
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Post Not Found</h1>
           <p className="text-white/60 mb-8">The post you're looking for doesn't exist.</p>
-          <Link to="/blog">
+          <Link to="/blogs">
             <Button className="bg-white/10 hover:bg-white/20">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Blog
@@ -63,7 +63,7 @@ const BlogPost = () => {
   return (
     <div className="min-h-screen bg-black text-white py-24 px-4">
       <div className="max-w-4xl mx-auto">
-        <Link to="/blog" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
+        <Link to="/blogs" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Blog
         </Link>
