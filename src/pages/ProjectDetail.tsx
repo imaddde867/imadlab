@@ -109,18 +109,18 @@ const ProjectDetail = () => {
         )}
 
         {project.repo_url && (
-          <div className="mt-8 flex justify-center">
-            <a
-              href={project.repo_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white">
-                View on GitHub <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
-              </Button>
-            </a>
-          </div>
-        )}
+        <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50">
+          <a
+            href={project.repo_url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white shadow-lg">
+              View on GitHub <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
+            </Button>
+          </a>
+        </div>
+      )}
       </div>
     </div>
   );
