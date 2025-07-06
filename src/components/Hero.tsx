@@ -29,12 +29,6 @@ const Hero = () => {
           >
             Projects
           </Link>
-          <Link 
-            to="/blog" 
-            className="text-white/70 hover:text-white transition-colors font-medium"
-          >
-            Blog
-          </Link>
         </div>
       </nav>
 
@@ -78,8 +72,7 @@ const Hero = () => {
 
           <div className="ml-8 lg:ml-24 space-y-6">
             <p className="text-lg md:text-xl text-white/70 max-w-2xl leading-relaxed">
-              Crafting intelligent systems that transform raw data into actionable insights. 
-              Specializing in scalable architectures and cutting-edge AI solutions.
+              I'm a passionate data engineer and AI innovator, dedicated to building intelligent systems that transform raw data into actionable insights. I specialize in scalable architectures and cutting-edge AI solutions.
             </p>
 
             <button 
