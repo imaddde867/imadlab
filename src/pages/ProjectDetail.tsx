@@ -96,10 +96,8 @@ const ProjectDetail = () => {
           )}
 
           {project.full_description && (
-            <div>
-              <ReactMarkdown>
-                {project.full_description}
-              </ReactMarkdown>
+            <div className="prose prose-invert prose-lg max-w-none mb-8">
+              <ReactMarkdown>{project.full_description}</ReactMarkdown>
             </div>
           )}
 
