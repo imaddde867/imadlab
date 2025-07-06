@@ -5,7 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: '/imadlab/', // Set base for GitHub Pages deployment
+  base: '/', // Set base to root for custom domain deployment
   server: {
     host: "::",
     port: 8080,
