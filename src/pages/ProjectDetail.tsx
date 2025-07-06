@@ -96,8 +96,8 @@ const ProjectDetail = () => {
           )}
 
           {project.full_description && (
-            <div className="prose prose-invert prose-lg max-w-none">
-              <ReactMarkdown className="text-white/90 leading-relaxed whitespace-pre-wrap">
+            <div>
+              <ReactMarkdown>
                 {project.full_description}
               </ReactMarkdown>
             </div>
