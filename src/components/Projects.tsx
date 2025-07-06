@@ -43,29 +43,40 @@ const Projects = () => {
 		<section id="projects" className="py-24 px-4 relative overflow-hidden">
 			{/* Modern background inspired by Hero */}
 			<div className="absolute inset-0 -z-10 pointer-events-none">
-				{/* Animated background glow */}
-				<div className="absolute inset-0 opacity-20 animate-subtle-flicker" style={{background: 'radial-gradient(600px circle at 50% 30%, rgba(255,255,255,0.06), transparent 40%)'}} />
-				{/* Background dots */}
+				{/* Animated background glow (stronger) */}
+				<div 
+					className="absolute inset-0 opacity-70 animate-subtle-flicker"
+					style={{
+						background: 'radial-gradient(800px circle at 50% 30%, rgba(255,255,255,0.18), transparent 50%)'
+					}}
+				/>
+				{/* Background dots (larger, more opaque) */}
 				{[...Array(50)].map((_, i) => (
 					<div
 						key={i}
-						className="absolute bg-white/10 rounded-full animate-dot-move"
-						style={{
-							width: `${Math.random() * 3 + 1}px`,
-							height: `${Math.random() * 3 + 1}px`,
-							left: `${Math.random() * 100}%`,
-							top: `${Math.random() * 100}%`,
-							opacity: `${Math.random() * 0.3 + 0.1}`,
-							animationDelay: `${Math.random() * 10}s`,
-						}}
+						className="absolute bg-white/40 rounded-full animate-dot-move"
+						style={
+							{
+								width: `${Math.random() * 8 + 4}px`,
+								height: `${Math.random() * 8 + 4}px`,
+								left: `${Math.random() * 100}%`,
+								top: `${Math.random() * 100}%`,
+								opacity: `${Math.random() * 0.7 + 0.3}`,
+								animationDelay: `${Math.random() * 10}s`,
+								// @ts-ignore: Custom property for Tailwind
+								'--tw-translate-x': `${(Math.random() - 0.5) * 200}px`,
+								// @ts-ignore: Custom property for Tailwind
+								'--tw-translate-y': `${(Math.random() - 0.5) * 200}px`,
+							} as any
+						}
 					/>
 				))}
-				{/* Asymmetrical grid lines */}
-				<div className="absolute inset-0 opacity-10">
-					<div className="absolute top-1/3 left-0 w-full h-px bg-white"></div>
-					<div className="absolute top-2/3 left-0 w-2/3 h-px bg-white"></div>
-					<div className="absolute left-1/4 top-0 w-px h-full bg-white"></div>
-					<div className="absolute right-1/3 top-0 w-px h-2/3 bg-white"></div>
+				{/* Asymmetrical grid lines (thicker, more visible) */}
+				<div className="absolute inset-0 opacity-40">
+					<div className="absolute top-1/3 left-0 w-full h-1 bg-white"></div>
+					<div className="absolute top-2/3 left-0 w-2/3 h-1 bg-white"></div>
+					<div className="absolute left-1/4 top-0 w-1 h-full bg-white"></div>
+					<div className="absolute right-1/3 top-0 w-1 h-2/3 bg-white"></div>
 				</div>
 			</div>
 
