@@ -33,7 +33,7 @@ const Marquee: React.FC<MarqueeProps> = ({ words, speed = 'normal' }) => {
   }, [words, speed]);
 
   return (
-    <div className="relative w-full overflow-hidden py-4">
+    <div className="relative w-full overflow-hidden py-[200px] bg-white">
       <style>{`
         @keyframes marquee {
           0% { transform: translateX(0%); }
