@@ -5,7 +5,7 @@ const NotFound = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
       {/* MetaBalls background */}
-      <div className="absolute inset-0 pointer-events-auto z-0">
+      <div className="absolute inset-0 pointer-events-auto z-0 opacity-90">
         <MetaBalls
           color="#ffffff"
           cursorBallColor="#ffffff"
@@ -20,10 +20,10 @@ const NotFound = () => {
         />
       </div>
       <div className="text-center animate-fade-in relative z-10">
-        <h1 className="text-6xl md:text-8xl font-extrabold mb-4 tracking-tight">
+        <h1 className="text-6xl md:text-8xl font-extrabold mb-4 tracking-tight drop-shadow-2xl">
           404 – Page Not Found
         </h1>
-        <p className="text-xl md:text-2xl text-white/80 mb-8">
+        <p className="text-xl md:text-2xl text-white/80 mb-8 drop-shadow-xl">
           Looks like you’ve wandered into the void.
         </p>
         <Link
