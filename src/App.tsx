@@ -9,7 +9,7 @@ import HomeBackground from '@/components/HomeBackground';
 
 const Index = React.lazy(() => import("./pages/Index"));
 const Projects = React.lazy(() => import("./pages/Projects"));
-const Blog = React.lazy(() => import("./pages/Blog"));
+const Blogs = React.lazy(() => import("./pages/Blog"));
 const BlogPost = React.lazy(() => import("./pages/BlogPost"));
 const ProjectDetail = React.lazy(() => import("./pages/ProjectDetail"));
 
@@ -47,7 +47,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/projects" element={<Projects />} />
-              <Route path="/blogs" element={<Blog />} />
+              <Route path="/blogs" element={<Blogs />} />
               <Route path="/blogs/:slug" element={<BlogPost />} />
               <Route path="/projects/:id" element={<ProjectDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
