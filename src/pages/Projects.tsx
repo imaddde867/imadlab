@@ -164,7 +164,7 @@ const Projects = () => {
                   <CardTitle className="flex items-start justify-between text-white">
                     <span className="text-xl font-bold">{project.title}</span>
                     <Link to={`/projects/${project.id}`}>
-                      <Button variant="ghost" size="sm" className="text-white/60 hover:text-white">
+                      <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-transparent">
                         View Project
                       </Button>
                     </Link>
