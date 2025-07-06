@@ -29,7 +29,7 @@
         var l = window.location;
         var pathname = l.pathname;
         if (pathname !== '/' && !pathname.match(/^\/404\.html/)) {
-          var redirectUrl = l.protocol + '//' + l.host + '/?redirect=' + encodeURIComponent(pathname + l.search + l.hash);
+          var redirectUrl = l.protocol + '//' + l.host + pathname + l.search + l.hash;
           window.location.replace(redirectUrl);
         }
       })();
