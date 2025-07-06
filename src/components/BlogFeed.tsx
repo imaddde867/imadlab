@@ -57,7 +57,7 @@ const BlogFeed = () => {
 						<div className="w-24 h-1 bg-white/40 ml-8"></div>
 					</div>
 					<a
-						href="/blog"
+						href="/blogs"
 						className="text-white/70 hover:text-white text-base font-medium transition-colors duration-200 mr-4 mt-4 md:mt-0 md:mr-8 ml-12 md:ml-0"
 						target="_blank"
 						rel="noopener noreferrer"
@@ -75,7 +75,7 @@ const BlogFeed = () => {
 							tags={[post.category]}
 							date={post.date}
 							excerpt={post.excerpt}
-							linkTo={`/blog/${post.title.toLowerCase().replace(/ /g, '-')}`}
+							linkTo={`/blogs/${post.title.toLowerCase().replace(/ /g, '-')}`}
 							linkLabel="Read More"
 							readTime={post.readTime}
 							isBlog={true}
