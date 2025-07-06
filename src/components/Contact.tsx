@@ -1,8 +1,52 @@
 import { useState } from 'react';
 import { ArrowUp } from 'lucide-react';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const Contact = () => {
-  const [hoveredSocial, setHoveredSocial] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const formSchema = z.object({
+    name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+    email: z.string().email({ message: "Invalid email address." }),
+    message: z.string().min(10, { message: "Message must be at least 10 characters." }),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      message: "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const response = await fetch("https://formspree.io/f/manjzpvz", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (response.ok) {
+        toast({ title: "Message sent successfully!" });
+        form.reset();
+      } else {
+        toast({ title: "Failed to send message.", variant: "destructive" });
+      }
+    } catch (error) {
+      toast({ title: "An error occurred.", variant: "destructive" });
+    }
+  }
 
   const socialLinks = [
     { name: 'GitHub', href: 'https://github.com/imaddde867', icon: '⚡' },
@@ -34,63 +78,77 @@ const Contact = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20">
           {/* Contact form */}
           <div className="lg:col-span-7 lg:col-start-1 relative z-10">
-            <form action="https://formspree.io/f/manjzpvz" method="POST" className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label htmlFor="name" className="block text-sm font-medium text-white/70">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
                     name="name"
-                    
-                    placeholder="Your name"
-                    className="w-full px-4 py-4 bg-white/[0.03] border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] transition-all duration-300 relative z-10"
-                    required
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="block text-sm font-medium text-white/70">Full Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Your name"
+                            className="w-full px-4 py-4 bg-white/[0.03] border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] transition-all duration-300 relative z-10"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                
-                <div className="space-y-2">
-                  <label htmlFor="email" className="block text-sm font-medium text-white/70">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    
-                    placeholder="your.email@example.com"
-                    className="w-full px-4 py-4 bg-white/[0.03] border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] transition-all duration-300 relative z-10"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="message" className="block text-sm font-medium text-white/70">
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
                   
-                  placeholder="Tell me about your project or just say hello..."
-                  rows={6}
-                  className="w-full px-4 py-4 bg-white/[0.03] border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] transition-all duration-300 resize-none relative z-10"
-                  required
-                />
-              </div>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="block text-sm font-medium text-white/70">Email Address</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="your.email@example.com"
+                            className="w-full px-4 py-4 bg-white/[0.03] border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] transition-all duration-300 relative z-10"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-              <button
-                type="submit"
-                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/10 border border-white/30 rounded-full text-lg font-semibold transition-all duration-300 hover:bg-white/20 hover:border-white/50 hover:scale-105"
-              >
-                <span>Send Message</span>
-                <ArrowUp className="w-5 h-5 rotate-45 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                <div className="absolute inset-0 rounded-full bg-white/10 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
-              </button>
-            </form>
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="block text-sm font-medium text-white/70">Message</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Tell me about your project or just say hello..."
+                          rows={6}
+                          className="w-full px-4 py-4 bg-white/[0.03] border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] transition-all duration-300 resize-none relative z-10"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="submit"
+                  className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/10 border border-white/30 rounded-full text-lg font-semibold transition-all duration-300 hover:bg-white/20 hover:border-white/50 hover:scale-105"
+                  disabled={form.formState.isSubmitting}
+                >
+                  <span>{form.formState.isSubmitting ? "Sending..." : "Send Message"}</span>
+                  <ArrowUp className="w-5 h-5 rotate-45 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  <div className="absolute inset-0 rounded-full bg-white/10 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                </Button>
+              </form>
+            </Form>
           </div>
 
           {/* Social links and quote */}
@@ -140,7 +198,7 @@ const Contact = () => {
         {/* Footer */}
         <footer className="mt-24 pt-12 border-t border-white/10 text-center">
           <p className="text-white/50 text-sm">
-            © 2024 Imad. Crafted with precision and passion.
+            © 2025 Imad Eddine. Crafted with precision and passion 🤍.
           </p>
         </footer>
       </div>
