@@ -162,18 +162,7 @@ const Contact = () => {
                     key={social.name}
                     href={social.href}
                     className="group relative p-4 bg-white/[0.02] border border-white/10 rounded-xl transition-all duration-300 hover:bg-white/[0.05] hover:border-white/30 hover:scale-105"
-                    onMouseEnter={() => setHoveredSocial(social.name)}
-                    onMouseLeave={() => setHoveredSocial(null)}
                   >
-                    <div 
-                      className={`
-                        absolute inset-0 rounded-xl transition-opacity duration-300
-                        ${hoveredSocial === social.name 
-                          ? 'bg-gradient-to-br from-white/[0.1] to-transparent opacity-100' 
-                          : 'opacity-0'
-                        }
-                      `}
-                    />
                     <div className="relative z-10 text-center">
                       <div className="text-2xl mb-2">{social.icon}</div>
                       <div className="text-sm font-medium">{social.name}</div>
