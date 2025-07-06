@@ -25,5 +25,13 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // If not a hash route, redirect to index.html with hash
+      if (!location.hash) {
+        var path = location.pathname.replace(/\/$/, '');
+        var hash = '#' + path;
+        location.replace('/' + hash);
+      }
+    </script>
   </body>
 </html>
