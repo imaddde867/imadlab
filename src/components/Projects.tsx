@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Github } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 
 interface Project {
@@ -100,18 +98,18 @@ const Projects = () => {
 				{/* 4-column grid layout for projects, matching /projects page */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 					{projects.map((project, index) => (
-						<Card key={project.id} className="relative bg-white/[0.02] border-white/10 hover:bg-white/[0.05] hover:border-white/30 transition-all duration-300 group">
-							<CardHeader>
-								<CardTitle className="flex items-start justify-between text-white">
+						<div key={project.id} className="relative bg-white/[0.02] border-white/10 hover:bg-white/[0.05] hover:border-white/30 transition-all duration-300 group">
+							<div className="p-4">
+								<div className="flex items-start justify-between text-white">
 									<span className="text-xl font-bold">{project.title}</span>
 									<Link to={`/projects/${project.id}`}>
 										<Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-transparent">
 											View Project
 										</Button>
 									</Link>
-								</CardTitle>
-							</CardHeader>
-							<CardContent className="pb-12">
+								</div>
+							</div>
+							<div className="pb-12">
 								{project.description && (
 									<p className="text-white/80 mb-4 leading-relaxed">
 										{project.description}
@@ -124,7 +122,7 @@ const Projects = () => {
 										))}
 									</div>
 								)}
-							</CardContent>
+							</div>
 							{project.link && (
 								<div className="absolute bottom-4 right-4">
 									<a
@@ -133,11 +131,11 @@ const Projects = () => {
 										rel="noopener noreferrer"
 										className="text-white/60 hover:text-white transition-colors"
 									>
-										<Github className="w-6 h-6" />
+										{/* <Github className="w-6 h-6" /> */}
 									</a>
 								</div>
 							)}
-						</Card>
+						</div>
 					))}
 				</div>
 			</div>

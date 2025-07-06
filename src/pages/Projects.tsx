@@ -4,11 +4,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ExternalLink, Plus, X, Github, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Plus, X, ArrowLeft } from 'lucide-react';
 
 interface Project {
   id: string;
