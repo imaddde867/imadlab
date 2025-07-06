@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ReactMarkdown from 'react-markdown';
 
 interface Project {
   id: string;
@@ -96,9 +97,9 @@ const ProjectDetail = () => {
 
           {project.full_description && (
             <div className="prose prose-invert prose-lg max-w-none">
-              <p className="text-white/90 leading-relaxed whitespace-pre-wrap">
+              <ReactMarkdown className="text-white/90 leading-relaxed whitespace-pre-wrap">
                 {project.full_description}
-              </p>
+              </ReactMarkdown>
             </div>
           )}
 
