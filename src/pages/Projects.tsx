@@ -188,6 +188,7 @@ const Projects = () => {
                 linkTo={`/projects/${project.id}`}
                 linkLabel="View Project"
                 githubUrl={project.repo_url || undefined}
+                image_url={project.image_url || undefined}
               />
             ))}
           </div>
