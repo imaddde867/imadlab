@@ -27,18 +27,12 @@ const App = () => (
       <BrowserRouter>
         <HomeBackground />
         <Suspense fallback={
-          <div style={{
-            minHeight: '100vh',
-            background: '#0a0a0a',
-            color: '#fff',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '1.5rem',
-            letterSpacing: '0.05em',
-            transition: 'background 0.3s'
-          }}>
-            Loading...
+          <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
+            <div className="relative w-24 h-24 mb-4">
+              <div className="absolute inset-0 rounded-full border-4 border-t-4 border-white/20 border-t-white animate-spin"></div>
+              <div className="absolute inset-4 rounded-full border-4 border-t-4 border-white/40 border-t-white animate-spin-reverse" style={{ animationDuration: '1.5s' }}></div>
+            </div>
+            <div className="text-xl font-medium tracking-wider">Loading...</div>
           </div>
         }>
           <ClickSpark
