@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Post {
   id: string;
@@ -108,9 +110,9 @@ const BlogPost = () => {
 
           {post.body && (
             <div className="prose prose-invert prose-lg max-w-none">
-              <div className="text-white/90 leading-relaxed whitespace-pre-wrap">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {post.body}
-              </div>
+              </ReactMarkdown>
             </div>
           )}
         </article>
