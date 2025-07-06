@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Plus, X, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
+import CardItem from '@/components/ui/CardItem';
 
 interface Post {
   id: string;
@@ -188,38 +189,16 @@ const Blog = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts?.map((post) => (
-              <Card key={post.id} className="bg-white/[0.02] border-white/10 hover:bg-white/[0.05] hover:border-white/30 transition-all duration-300 group">
-                <CardHeader>
-                  <div className="flex items-center gap-2 text-sm text-white/60 mb-2">
-                    <Calendar className="w-4 h-4" />
-                    {new Date(post.published_date).toLocaleDateString()}
-                  </div>
-                  <CardTitle className="text-2xl font-bold group-hover:text-white/90">
-                    <Link to={`/blog/${post.slug}`} className="hover:underline">
-                      {post.title}
-                    </Link>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {post.excerpt && (
-                    <p className="text-white/80 mb-4 leading-relaxed">
-                      {post.excerpt}
-                    </p>
-                  )}
-                  {post.tags && post.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {post.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 text-xs bg-white/10 rounded-full text-white/80"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <CardItem
+                key={post.id}
+                title={post.title}
+                tags={post.tags || []}
+                date={new Date(post.published_date).toLocaleDateString()}
+                excerpt={post.excerpt || ''}
+                linkTo={`/blog/${post.slug}`}
+                linkLabel="Read More"
+                isBlog={true}
+              />
             ))}
           </div>
         )}
