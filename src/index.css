@@ -104,28 +104,4 @@ All colors MUST be HSL.
   }
 }
 
-/* Custom scrollbar for Webkit browsers (Chrome, Safari) */
-::-webkit-scrollbar {
-  width: 8px; /* Thin scrollbar */
-}
 
-::-webkit-scrollbar-track {
-  background: transparent; /* Transparent track */
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #1a1a1a; /* Dark grey/black thumb */
-  border-radius: 10px; /* Rounded corners */
-  border: 2px solid transparent; /* Border to make it thinner */
-  background-clip: content-box; /* Ensures border doesn't affect thumb size */
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: #333; /* Slightly lighter on hover */
-}
-
-/* Custom scrollbar for Firefox */
-html {
-  scrollbar-width: thin; /* Thin scrollbar */
-  scrollbar-color: #1a1a1a transparent; /* Thumb color and track color */
-}
