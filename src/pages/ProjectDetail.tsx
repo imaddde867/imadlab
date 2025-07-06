@@ -63,59 +63,64 @@ const ProjectDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white py-24 px-4">
-      <div className="max-w-4xl mx-auto">
-        <Link to="/projects" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Projects
-        </Link>
-
-        <article>
-          <header className="mb-12 text-center">
+    <div className="min-h-screen bg-black text-white">
+      {/* Hero Section */}
+      <div className="relative w-full h-96 md:h-[500px] overflow-hidden">
+        {project.image_url && (
+          <img
+            src={project.image_url}
+            alt={project.title}
+            className="w-full h-full object-cover opacity-50"
+            loading="lazy"
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
+        <div className="absolute inset-0 flex items-end pb-16 px-4 md:px-8 max-w-4xl mx-auto">
+          <div className="w-full">
+            <Link to="/projects" className="inline-flex items-center text-white/60 hover:text-white mb-4 transition-colors">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Projects
+            </Link>
             <h1 className="text-4xl md:text-5xl font-black mb-4 leading-tight">
               {project.title}
             </h1>
-
             {project.tech_tags && project.tech_tags.length > 0 && (
-              <div className="flex flex-wrap justify-center gap-2 mb-8">
+              <div className="flex flex-wrap gap-2">
                 {project.tech_tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="px-4 py-1 text-sm bg-white/10 rounded-full text-white/80 border border-white/20"
+                    className="px-3 py-1 text-sm bg-white/10 rounded-full text-white/80"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
             )}
-          </header>
+          </div>
+        </div>
+      </div>
 
-          {project.image_url && (
-            <div className="mb-8">
-              <img src={project.image_url} alt={project.title} className="w-full h-auto object-cover rounded-lg" loading="lazy" />
-            </div>
-          )}
+      {/* Content Section */}
+      <div className="max-w-4xl mx-auto py-12 px-4 md:px-8">
+        {project.full_description && (
+          <div className="prose prose-invert prose-lg max-w-none mb-8">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.full_description}</ReactMarkdown>
+          </div>
+        )}
 
-          {project.full_description && (
-            <div className="prose prose-invert prose-lg max-w-none mb-8">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.full_description}</ReactMarkdown>
-            </div>
-          )}
-
-          {project.repo_url && (
-            <div className="mt-8 flex justify-center">
-              <a
-                href={project.repo_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white">
-                  View on GitHub <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
-                </Button>
-              </a>
-            </div>
-          )}
-        </article>
+        {project.repo_url && (
+          <div className="mt-8 flex justify-center">
+            <a
+              href={project.repo_url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white">
+                View on GitHub <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
+              </Button>
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );
