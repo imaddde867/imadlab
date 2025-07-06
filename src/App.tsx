@@ -11,7 +11,6 @@ const Projects = React.lazy(() => import("./pages/Projects"));
 const Blog = React.lazy(() => import("./pages/Blog"));
 const BlogPost = React.lazy(() => import("./pages/BlogPost"));
 const ProjectDetail = React.lazy(() => import("./pages/ProjectDetail"));
-const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -36,7 +35,7 @@ const App = () => (
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/projects/:id" element={<ProjectDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
+              
             </Routes>
           </ClickSpark>
         </Suspense>
