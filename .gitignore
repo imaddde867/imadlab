@@ -7,18 +7,53 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Dependency directories
+node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+out/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+.vscode/
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.sublime-project
+*.sublime-workspace
+.history/
+
+# Test and coverage reports
+coverage/
+.nyc_output/
+.cache/
+
+# IDE specific files
+*.iml
+.project
+.classpath
+.c9/
+*.komodoproject
+
+# OS generated files
+.localized
+.Trashes
+Thumbs.db
+
+# Supabase specific files
+supabase/config.toml
+supabase/db/
+supabase/migrations/
+!supabase/migrations/.gitkeep
+supabase/.temp/
