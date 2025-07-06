@@ -116,7 +116,7 @@ const ProjectDetail = () => {
             rel="noopener noreferrer"
           >
             <Button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white shadow-lg">
-              View on GitHub <ArrowLeft className="w-4 h-4 ml-2 -rotate-45" />
+              View on GitHub <ArrowLeft className="w-4 h-4 ml-2 rotate-135" />
             </Button>
           </a>
         </div>
