@@ -99,8 +99,9 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground;
+  body, #root {
+    @apply bg-black text-white;
+    transition: background 0.3s;
   }
 }
 
