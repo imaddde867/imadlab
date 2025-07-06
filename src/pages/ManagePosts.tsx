@@ -57,7 +57,12 @@ const ManagePosts = () => {
         .order('published_date', { ascending: false });
       
       if (error) throw error;
-      return data as Post[];
+      // Ensure all required fields exist for Post type
+      return (data as any[]).map((item) => ({
+        ...item,
+        read_time: item.read_time ?? 0,
+        image_url: item.image_url ?? null,
+      })) as Post[];
     }
   });
 
@@ -206,6 +211,14 @@ const ManagePosts = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-white/60">Loading posts...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black text-white py-12 px-4">
       <div className="max-w-6xl mx-auto">
@@ -283,29 +296,23 @@ const ManagePosts = () => {
           </div>
         )}
 
-        {isLoading ? (
-          <div className="text-center py-12">
-            <div className="text-white/60">Loading posts...</div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts?.map((post) => (
-              <div key={post.id} className="bg-white/[0.02] border border-white/10 rounded-lg p-4 flex flex-col">
-                <h3 className="text-xl font-bold mb-2">{post.title}</h3>
-                <p className="text-white/70 text-sm mb-2">Slug: {post.slug}</p>
-                <p className="text-white/70 text-sm mb-4">Published: {new Date(post.published_date).toLocaleDateString()}</p>
-                <div className="flex gap-2 mt-auto">
-                  <Button onClick={() => handleEditClick(post)} className="bg-blue-600 hover:bg-blue-700 text-white flex-1">
-                    <Edit className="w-4 h-4 mr-2" /> Edit
-                  </Button>
-                  <Button onClick={() => handleDeleteClick(post.id)} className="bg-red-600 hover:bg-red-700 text-white flex-1">
-                    <Trash2 className="w-4 h-4 mr-2" /> Delete
-                  </Button>
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {posts?.map((post) => (
+            <div key={post.id} className="bg-white/[0.02] border border-white/10 rounded-lg p-4 flex flex-col">
+              <h3 className="text-xl font-bold mb-2">{post.title}</h3>
+              <p className="text-white/70 text-sm mb-2">Slug: {post.slug}</p>
+              <p className="text-white/70 text-sm mb-4">Published: {new Date(post.published_date).toLocaleDateString()}</p>
+              <div className="flex gap-2 mt-auto">
+                <Button onClick={() => handleEditClick(post)} className="bg-blue-600 hover:bg-blue-700 text-white flex-1">
+                  <Edit className="w-4 h-4 mr-2" /> Edit
+                </Button>
+                <Button onClick={() => handleDeleteClick(post.id)} className="bg-red-600 hover:bg-red-700 text-white flex-1">
+                  <Trash2 className="w-4 h-4 mr-2" /> Delete
+                </Button>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
 
         {posts && posts.length === 0 && !showForm && (
           <div className="text-center py-12">
