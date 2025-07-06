@@ -20,7 +20,7 @@ const MouseTrail: React.FC = () => {
           { opacity: 0, transform: 'scale(0)' },
         ],
         {
-          duration: 800, // Fade out and shrink over 800ms
+          duration: 1500, // Fade out and shrink over 1500ms (longer duration)
           easing: 'ease-out',
           fill: 'forwards',
         }
@@ -42,9 +42,9 @@ const MouseTrail: React.FC = () => {
         {`
           .mouse-trail-dot {
             position: absolute;
-            width: 6px; /* Small dot size */
-            height: 6px;
-            background-color: rgba(255, 255, 255, 0.7); /* White, semi-transparent */
+            width: 3px; /* Smaller dot size */
+            height: 3px;
+            background-color: rgba(255, 255, 255, 0.3); /* More transparent */
             border-radius: 50%;
             transform: translate(-50%, -50%); /* Center the dot on the cursor */
           }
