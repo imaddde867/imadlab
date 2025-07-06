@@ -30,10 +30,10 @@ const Hero = () => {
             Projects
           </Link>
           <Link 
-            to="/blog" 
+            to="/blogs" 
             className="text-white/70 hover:text-white transition-colors font-medium"
           >
-            Blog
+            Blogs
           </Link>
         </div>
       </nav>

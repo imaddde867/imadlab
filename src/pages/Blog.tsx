@@ -21,7 +21,7 @@ interface Post {
   created_at: string;
 }
 
-const Blog = () => {
+const Blogs = () => {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -216,4 +216,4 @@ const Blog = () => {
   );
 };
 
-export default Blog;
+export default Blogs;

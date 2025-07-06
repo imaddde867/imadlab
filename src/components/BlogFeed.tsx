@@ -1,40 +1,32 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
-const blogPosts = [
-	{
-		title: 'Building Scalable Data Pipelines with Apache Kafka',
-		date: '2024-12-15',
-		category: 'Data Engineering',
-		excerpt: 'Deep dive into creating fault-tolerant, high-throughput data streaming architectures...',
-		readTime: '8 min read'
-	},
-	{
-		title: 'The Future of AI in Maritime Intelligence',
-		date: '2024-11-28',
-		category: 'AI/ML',
-		excerpt: 'How computer vision and predictive analytics are revolutionizing shipping logistics...',
-		readTime: '6 min read'
-	},
-	{
-		title: 'Zero-Downtime Database Migrations at Scale',
-		date: '2024-11-10',
-		category: 'Infrastructure',
-		excerpt: 'Strategies for migrating petabyte-scale databases without service interruption...',
-		readTime: '10 min read'
-	},
-	{
-		title: 'Optimizing ML Model Inference for Real-Time Applications',
-		date: '2024-10-22',
-		category: 'AI/ML',
-		excerpt: 'Techniques for reducing latency and improving throughput in production ML systems...',
-		readTime: '7 min read'
-	}
-];
+interface Post {
+  id: string;
+  title: string;
+  slug: string;
+  body: string | null;
+  excerpt: string | null;
+  tags: string[] | null;
+  published_date: string;
+  created_at: string;
+}
 
 const BlogFeed = () => {
-	const [hoveredPost, setHoveredPost] = useState<number | null>(null);
+  const { data: posts, isLoading } = useQuery({
+    queryKey: ['posts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('published_date', { ascending: false });
+      
+      if (error) throw error;
+      return data as Post[];
+    }
+  });
 
 	return (
 		<section className="py-24 px-4 relative">
@@ -67,21 +59,26 @@ const BlogFeed = () => {
 				</div>
 
 				{/* 4-column grid layout for blogs, matching Latest Projects */}
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-					{blogPosts.map((post, index) => (
-						<CardItem
-							key={index}
-							title={post.title}
-							tags={[post.category]}
-							date={post.date}
-							excerpt={post.excerpt}
-							linkTo={`/blogs/${post.title.toLowerCase().replace(/ /g, '-')}`}
-							linkLabel="Read More"
-							readTime={post.readTime}
-							isBlog={true}
-						/>
-					))}
-				</div>
+				{isLoading ? (
+					<div className="text-center py-12">
+						<div className="text-white/60">Loading posts...</div>
+					</div>
+				) : (
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+						{posts?.slice(0, 4).map((post) => (
+							<CardItem
+								key={post.id}
+								title={post.title}
+								tags={post.tags || []}
+								date={new Date(post.published_date).toLocaleDateString()}
+								excerpt={post.excerpt || ''}
+								linkTo={`/blogs/${post.slug}`}
+								linkLabel="Read More"
+								isBlog={true}
+							/>
+						))}
+					</div>
+				)}
 			</div>
 		</section>
 	);
