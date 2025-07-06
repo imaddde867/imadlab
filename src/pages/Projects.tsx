@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ExternalLink, Plus, X, Github, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
+import CardItem from '@/components/ui/CardItem';
 
 interface Project {
   id: string;
@@ -179,49 +180,15 @@ const Projects = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects?.map((project) => (
-              <Card key={project.id} className="relative bg-white/[0.02] border-white/10 hover:bg-white/[0.05] hover:border-white/30 transition-all duration-300 group">
-                <CardHeader>
-                  <CardTitle className="flex items-start justify-between text-white">
-                    <span className="text-xl font-bold">{project.title}</span>
-                    <Link to={`/projects/${project.id}`}>
-                      <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-transparent">
-                        View Project
-                      </Button>
-                    </Link>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pb-12">
-                  {project.description && (
-                    <p className="text-white/80 mb-4 leading-relaxed">
-                      {project.description}
-                    </p>
-                  )}
-                  {project.tech_tags && project.tech_tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {project.tech_tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 text-xs bg-white/10 rounded-full text-white/80"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-                {project.repo_url && (
-                  <div className="absolute bottom-4 right-4">
-                    <a
-                      href={project.repo_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-white/60 hover:text-white transition-colors"
-                    >
-                      <Github className="w-6 h-6" />
-                    </a>
-                  </div>
-                )}
-              </Card>
+              <CardItem
+                key={project.id}
+                title={project.title}
+                tags={project.tech_tags || []}
+                description={project.description || ''}
+                linkTo={`/projects/${project.id}`}
+                linkLabel="View Project"
+                githubUrl={project.repo_url || undefined}
+              />
             ))}
           </div>
         )}
