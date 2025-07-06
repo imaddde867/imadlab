@@ -70,13 +70,21 @@ const Projects = () => {
 			</div>
 
 			<div className="max-w-7xl mx-auto">
-				<div className="mb-20 ml-8 lg:ml-16">
-					<h2 className="text-5xl md:text-7xl font-black mb-4">
-						Latest
-						<br />
-						<span className="ml-8 text-white/60">Projects</span>
-					</h2>
-					<div className="w-24 h-1 bg-white/40 ml-8"></div>
+				<div className="mb-20 ml-8 lg:ml-16 flex items-center justify-between">
+					<div>
+						<h2 className="text-5xl md:text-7xl font-black mb-4">
+							Latest
+							<br />
+							<span className="ml-8 text-white/60">Projects</span>
+						</h2>
+						<div className="w-24 h-1 bg-white/40 ml-8"></div>
+					</div>
+					<a
+						href="/projects"
+						className="text-white/70 hover:text-white text-base font-medium transition-colors duration-200 mr-4 mt-4 md:mt-0 md:mr-8"
+					>
+						View all projects
+					</a>
 				</div>
 
 				{/* 4-column grid layout for projects, matching /projects page */}
