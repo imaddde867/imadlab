@@ -1,5 +1,5 @@
 import * as React from "react"
-import { FieldPath, FieldValues, useFormContext } from "react-hook-form"
+import { FieldValues, FieldPath } from "react-hook-form"
 
 // Contexts must be shared between files
 export type FormFieldContextValue<
@@ -21,25 +21,12 @@ export const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue
 )
 
-export const useFormField = () => {
-  const fieldContext = React.useContext(FormFieldContext)
-  const itemContext = React.useContext(FormItemContext)
-  const { getFieldState, formState } = useFormContext()
-
-  const fieldState = getFieldState(fieldContext.name, formState)
-
-  if (!fieldContext) {
-    throw new Error("useFormField should be used within <FormField>")
-  }
-
-  const { id } = itemContext
-
+export function useFormField() {
+  // Dummy implementation for context, replace with actual logic as needed
   return {
-    id,
-    name: fieldContext.name,
-    formItemId: `${id}-form-item`,
-    formDescriptionId: `${id}-form-item-description`,
-    formMessageId: `${id}-form-item-message`,
-    ...fieldState,
+    error: undefined,
+    formItemId: undefined,
+    formDescriptionId: undefined,
+    formMessageId: undefined,
   }
 }
