@@ -70,18 +70,18 @@ const ProjectDetail = () => {
           <img
             src={project.image_url}
             alt={project.title}
-            className="w-full h-full object-cover fixed top-0 left-0 opacity-50"
+            className="w-full h-full object-cover opacity-50"
             loading="lazy"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
         <div className="absolute inset-0 flex items-end pb-16 px-4 md:px-8 max-w-4xl mx-auto">
           <div className="w-full">
             <Link to="/projects" className="inline-flex items-center text-white/60 hover:text-white mb-4 transition-colors">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Projects
             </Link>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-tight text-shadow-lg">
+            <h1 className="text-4xl md:text-5xl font-black mb-4 leading-tight">
               {project.title}
             </h1>
             {project.tech_tags && project.tech_tags.length > 0 && (
@@ -89,7 +89,7 @@ const ProjectDetail = () => {
                 {project.tech_tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1 text-sm bg-white/10 rounded-full text-white/80 hover:bg-white/20 transition-colors"
+                    className="px-3 py-1 text-sm bg-white/10 rounded-full text-white/80"
                   >
                     {tag}
                   </span>
@@ -101,9 +101,9 @@ const ProjectDetail = () => {
       </div>
 
       {/* Content Section */}
-      <div className="max-w-4xl mx-auto py-12 px-4 md:px-8 relative z-10 bg-black rounded-lg shadow-lg -mt-16 md:-mt-24 p-8">
+      <div className="max-w-4xl mx-auto py-12 px-4 md:px-8">
         {project.full_description && (
-          <div className="prose prose-invert prose-lg max-w-none mb-8 text-white/90 leading-relaxed">
+          <div className="prose prose-invert prose-lg max-w-none mb-8">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.full_description}</ReactMarkdown>
           </div>
         )}
