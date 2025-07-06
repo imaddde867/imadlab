@@ -1,132 +1,112 @@
-# imadlab: My Digital Canvas & Data Engineering Portfolio
+# imadlab: Imad Labidi’s Data Engineering & AI Portfolio
 
-Welcome to **imadlab**, my personal website and blog, meticulously crafted to showcase my journey and expertise as a Data Engineer and AI/ML Professional. This platform is a dynamic space where I share my projects, insights, and experiences in transforming raw data into actionable intelligence.
+[![Build Status](https://img.shields.io/github/actions/workflow/status/imaddde867/imadlab/deploy.yml?branch=main)](https://github.com/imaddde867/imadlab/actions)
+[![MIT License](https://img.shields.io/github/license/imaddde867/imadlab)](LICENSE)
+
+**Website:** [imadlab.me](https://imadlab.me)  
+**Author:** Imad Labidi — Data Engineer, AI/ML Professional, Student
+
+---
+
+Welcome to **imadlab**, the digital portfolio and blog of Imad Labidi. This site showcases my journey, projects, and expertise in data engineering, artificial intelligence, and machine learning. Here, you’ll find technical articles, project case studies, and resources for data science and software development.
+
+## 🚀 Quick Links
+- [Live Site](https://imadlab.me)
+- [Projects](https://imadlab.me/projects)
+- [Blog](https://imadlab.me/blogs)
+- [Contact](https://imadlab.me#contact)
+- [GitHub Repo](https://github.com/imaddde867/imadlab)
 
 ## ✨ Features
+- **Modern Frontend:** React + Vite for a fast, dynamic UI
+- **Beautiful UI:** Tailwind CSS & [shadcn/ui](https://ui.shadcn.com/) for accessible, consistent design
+- **Backend:** Supabase for database, authentication, and API
+- **Content:** Projects, blog, and contact sections
+- **Admin Portal:** Secure, real-time content management
+- **SEO & LLM Optimized:** Rich meta tags, Schema.org, and sitemap for discoverability on Google, ChatGPT, Grok, and more
+- **Performance:** Optimized for speed and accessibility
 
--   **Cutting-Edge Frontend**: Built with [React](https://react.dev/) for a dynamic user interface, powered by [Vite](https://vitejs.dev/) for lightning-fast development and builds.
--   **Sleek & Modern Design**: Styled with [Tailwind CSS](https://tailwindcss.com/) for highly customizable and responsive designs, ensuring a seamless experience across all devices.
--   **Modular UI Components**: Leverages [shadcn/ui](https://ui.shadcn.com/) for beautiful, accessible, and reusable UI components, accelerating development and maintaining design consistency.
--   **Robust Backend Integration**: Seamlessly connected with [Supabase](https://supabase.com/) for a powerful, open-source backend that handles database management, authentication, and more.
--   **Comprehensive Content Sections**: Dedicated sections for:
-    -   **Projects**: A detailed portfolio showcasing my data engineering and AI/ML projects, complete with descriptions, tech stacks, and links to repositories.
-    -   **Blog**: A space for sharing articles, tutorials, and thoughts on data science, machine learning, and software development.
-    -   **Contact**: An interactive form to connect with me for collaborations or inquiries.
--   **Optimized for Performance**: Engineered for speed and efficiency, providing a smooth browsing experience.
+## 🖼️ Showcase
+<!-- Optionally add screenshots or GIFs here -->
 
-## 🚀 Getting Started
+## 🧠 SEO & LLM Optimization
+- Rich meta tags (Open Graph, Twitter, robots, canonical, geo)
+- Schema.org JSON-LD for Person, WebSite, Blog, and Article
+- Sitemap.xml and robots.txt for search engine crawling
+- Entity-rich content and clear structure for LLMs
 
-Follow these steps to set up and run the project locally.
+## 📦 Tech Stack
+- **Frontend:** React, Vite, Tailwind CSS, shadcn/ui
+- **Backend:** Supabase (Postgres, Auth, Storage)
+- **Deployment:** GitHub Actions, GitHub Pages
+
+## 🛠️ Getting Started
 
 ### Prerequisites
-
-Before you begin, ensure you have the following installed:
-
--   [Node.js](https://nodejs.org/en/) (v18 or higher recommended)
--   [npm](https://www.npmjs.com/) (Node Package Manager)
--   [Supabase CLI](https://supabase.com/docs/guides/cli/getting-started)
+- Node.js v18+
+- npm
+- Supabase CLI
 
 ### Installation
-
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/imaddde867/imadlab.git
-    cd imadlab
-    ```
-
-2.  **Install dependencies**:
-    ```bash
-    npm install
-    ```
+```bash
+git clone https://github.com/imaddde867/imadlab.git
+cd imadlab
+npm install
+```
 
 ### Supabase Setup
-
-This project relies on Supabase for its backend.
-
-1.  **Initialize Supabase locally**:
-    ```bash
-    supabase init
-    ```
-
-2.  **Link to your Supabase project**:
-    ```bash
-    supabase link --project-ref your-project-ref
-    ```
-    (Replace `your-project-ref` with your actual Supabase project reference, found in your Supabase dashboard settings.)
-
-3.  **Apply database migrations**:
-    ```bash
-    supabase db push
-    ```
-    This will apply the necessary table schemas (for `posts` and `projects`) to your Supabase project.
-
-4.  **Generate TypeScript types for Supabase**:
-    ```bash
-    supabase gen types typescript --project-id "your-project-id" --schema public > src/integrations/supabase/types.ts
-    ```
-    (Replace `your-project-id` with your actual Supabase project ID, found in your Supabase dashboard settings.)
+```bash
+supabase init
+supabase link --project-ref your-project-ref
+supabase db push
+supabase gen types typescript --project-id "your-project-id" --schema public > src/integrations/supabase/types.ts
+```
 
 ### Development
-
-Start the local development server:
-
 ```bash
 npm run dev
 ```
-
-Visit [http://localhost:8080](http://localhost:8080) in your browser. The application will automatically reload as you make changes.
+Visit [http://localhost:8080](http://localhost:8080)
 
 ### Build
-
-To build the project for production:
-
 ```bash
 npm run build
 ```
 
-The optimized production build will be generated in the `dist/` directory.
-
 ### Lint
-
-To lint the codebase and ensure code quality:
-
 ```bash
 npm run lint
 ```
 
 ## 🌐 Deployment
-
-This project can be easily deployed to various static hosting services. For continuous deployment, you can configure GitHub Actions (as seen in `.github/workflows/deploy.yml`) to automatically deploy your site on every push to the `main` branch.
+- Static hosting (GitHub Pages, Vercel, Netlify, etc.)
+- GitHub Actions for CI/CD (see `.github/workflows/deploy.yml`)
 
 ## 📂 Project Structure
-
 ```
-.
+.  
 ├── public/                 # Static assets
 ├── src/                    # Main source code
-│   ├── components/         # Reusable UI and page-specific components
+│   ├── components/         # UI and page components
 │   ├── hooks/              # Custom React hooks
-│   ├── integrations/       # Third-party service integrations (e.g., Supabase)
-│   │   └── supabase/
-│   │       ├── client.ts   # Supabase client initialization
-│   │       └── types.ts    # Auto-generated Supabase TypeScript types
-│   ├── lib/                # Utility functions
-│   ├── pages/              # Top-level page components (e.g., Index, Projects, Blog)
-│   ├── App.tsx             # Main application component and routing
-│   ├── main.tsx            # Entry point for React application
-│   └── index.css           # Global styles and TailwindCSS imports
-├── supabase/               # Supabase CLI configuration and database migrations
-│   ├── config.toml         # Supabase project configuration
-│   └── migrations/         # SQL migration files for database schema
+│   ├── integrations/       # Third-party integrations (Supabase)
+│   ├── lib/                # Utilities
+│   ├── pages/              # Page components
+│   ├── App.tsx             # Main app/routing
+│   ├── main.tsx            # React entry point
+│   └── index.css           # Global styles
+├── supabase/               # Supabase config and migrations
 ├── .github/                # GitHub Actions workflows
-│   └── workflows/
-│       └── deploy.yml      # Workflow for continuous deployment
-├── package.json            # Project dependencies and scripts
-├── tailwind.config.ts      # Tailwind CSS configuration
-├── vite.config.ts          # Vite build tool configuration
-└── README.md               # Project README (this file)
+├── package.json            # Dependencies and scripts
+├── tailwind.config.ts      # Tailwind config
+├── vite.config.ts          # Vite config
+└── README.md               # This file
 ```
 
-## 📜 License
+## 🤝 Contact
+- [LinkedIn](https://www.linkedin.com/in/imadlab/)
+- [GitHub](https://github.com/imaddde867)
+- Email: [contact@imadlab.me](mailto:contact@imadlab.me)
 
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
+## 📜 License
+MIT — see [LICENSE](LICENSE)
