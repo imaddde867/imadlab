@@ -2,7 +2,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Calendar } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface Post {
@@ -13,6 +13,7 @@ interface Post {
   excerpt: string | null;
   tags: string[] | null;
   published_date: string;
+  read_time: number | null;
 }
 
 const BlogPost = () => {
@@ -70,13 +71,21 @@ const BlogPost = () => {
 
         <article>
           <header className="mb-12">
-            <div className="flex items-center gap-2 text-sm text-white/60 mb-4">
-              <Calendar className="w-4 h-4" />
-              {new Date(post.published_date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
+            <div className="flex items-center gap-4 text-sm text-white/60 mb-4">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                {new Date(post.published_date).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </div>
+              {post.read_time && (
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  {post.read_time} min read
+                </div>
+              )}
             </div>
             
             <h1 className="text-4xl md:text-5xl font-black mb-6 leading-tight">

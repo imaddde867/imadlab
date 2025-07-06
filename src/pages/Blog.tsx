@@ -19,6 +19,7 @@ interface Post {
   tags: string[] | null;
   published_date: string;
   created_at: string;
+  read_time: number | null;
 }
 
 const Blogs = () => {
@@ -96,13 +97,21 @@ const Blogs = () => {
       .map(tag => tag.trim())
       .filter(tag => tag.length > 0);
 
+    const calculateReadTime = (text: string | null) => {
+      if (!text) return 0;
+      const wordsPerMinute = 200;
+      const words = text.split(/\s+/).filter(word => word.length > 0).length;
+      return Math.ceil(words / wordsPerMinute);
+    };
+
     addPostMutation.mutate({
       title: formData.title,
       slug: formData.slug,
       body: formData.body || null,
       excerpt: formData.excerpt || null,
       tags: tagsArray.length > 0 ? tagsArray : null,
-      published_date: new Date().toISOString()
+      published_date: new Date().toISOString(),
+      read_time: calculateReadTime(formData.body)
     });
   };
 
@@ -132,7 +141,7 @@ const Blogs = () => {
         {showForm && (
           <Card className="mb-8 bg-white/[0.02] border-white/10">
             <CardHeader>
-              <CardTitle>Add New Post</CardTitle>
+              <CardTitle className="text-white">Add New Post</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
