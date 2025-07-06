@@ -207,6 +207,7 @@ const Blogs = () => {
                 linkTo={`/blogs/${post.slug}`}
                 linkLabel="Read More"
                 isBlog={true}
+                readTime={post.read_time || undefined}
               />
             ))}
           </div>
