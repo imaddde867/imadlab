@@ -71,17 +71,17 @@ const ProjectDetail = () => {
         </Link>
 
         <article>
-          <header className="mb-12">
-            <h1 className="text-4xl md:text-5xl font-black mb-6 leading-tight">
+          <header className="mb-12 text-center">
+            <h1 className="text-4xl md:text-5xl font-black mb-4 leading-tight">
               {project.title}
             </h1>
 
             {project.tech_tags && project.tech_tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap justify-center gap-2 mb-8">
                 {project.tech_tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1 text-sm bg-white/10 rounded-full text-white/80"
+                    className="px-4 py-1 text-sm bg-white/10 rounded-full text-white/80 border border-white/20"
                   >
                     {tag}
                   </span>
@@ -103,14 +103,15 @@ const ProjectDetail = () => {
           )}
 
           {project.repo_url && (
-            <div className="mt-8">
+            <div className="mt-8 flex justify-center">
               <a
                 href={project.repo_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center text-white/60 hover:text-white transition-colors"
               >
-                View on GitHub <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
+                <Button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white">
+                  View on GitHub <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
+                </Button>
               </a>
             </div>
           )}
