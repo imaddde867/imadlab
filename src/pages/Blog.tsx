@@ -20,6 +20,7 @@ interface Post {
   published_date: string;
   created_at: string;
   read_time: number | null;
+  image_url: string | null;
 }
 
 const Blogs = () => {
@@ -40,7 +41,7 @@ const Blogs = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select('*')
+        .select('*, image_url')
         .order('published_date', { ascending: false });
       
       if (error) throw error;
@@ -111,7 +112,8 @@ const Blogs = () => {
       excerpt: formData.excerpt || null,
       tags: tagsArray.length > 0 ? tagsArray : null,
       published_date: new Date().toISOString(),
-      read_time: calculateReadTime(formData.body)
+      read_time: calculateReadTime(formData.body),
+      image_url: formData.image_url || null
     });
   };
 
@@ -174,6 +176,12 @@ const Blogs = () => {
                   rows={8}
                 />
                 <Input
+                  placeholder="Image URL"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({...formData, image_url: e.target.value})}
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                />
+                <Input
                   placeholder="Tags (comma separated)"
                   value={formData.tags}
                   onChange={(e) => setFormData({...formData, tags: e.target.value})}
@@ -208,6 +216,7 @@ const Blogs = () => {
                 linkLabel="Read More"
                 isBlog={true}
                 readTime={post.read_time || undefined}
+                image_url={post.image_url || undefined}
               />
             ))}
           </div>

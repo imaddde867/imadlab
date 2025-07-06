@@ -13,6 +13,7 @@ interface Post {
   published_date: string;
   created_at: string;
   read_time: number | null;
+  image_url: string | null;
 }
 
 const BlogFeed = () => {
@@ -21,7 +22,7 @@ const BlogFeed = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select('*')
+        .select('*, image_url')
         .order('published_date', { ascending: false });
       
       if (error) throw error;
@@ -75,6 +76,7 @@ const BlogFeed = () => {
 								linkLabel="Read More"
 								readTime={post.read_time || undefined}
 								isBlog={true}
+								image_url={post.image_url || undefined}
 							/>
 						))}
 					</div>
