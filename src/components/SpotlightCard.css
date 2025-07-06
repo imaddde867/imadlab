@@ -1,13 +1,13 @@
 .card-spotlight {
   position: relative;
   border-radius: 1.5rem;
-  border: 1px solid #222;
-  background-color: #111;
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Brighter, more visible border */
+  background-color: rgba(255, 255, 255, 0.05); /* More transparent, glass-like background */
   padding: 2rem;
   overflow: hidden;
   --mouse-x: 50%;
   --mouse-y: 50%;
-  --spotlight-color: rgba(255, 255, 255, 0.05);
+  --spotlight-color: rgba(255, 255, 255, 0.15); /* Brighter spotlight effect */
 }
 
 .card-spotlight::before {
@@ -25,5 +25,5 @@
 
 .card-spotlight:hover::before,
 .card-spotlight:focus-within::before {
-  opacity: 0.6;
+  opacity: 0.8; /* Slightly more opaque on hover for brighter effect */
 }
