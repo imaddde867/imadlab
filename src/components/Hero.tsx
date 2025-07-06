@@ -40,7 +40,7 @@ const Hero = () => {
 
       {/* Animated background glow */}
       <div 
-        className="absolute inset-0 opacity-20"
+        className="absolute inset-0 opacity-20 animate-subtle-flicker"
         style={{
           background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255,255,255,0.06), transparent 40%)`
         }}
