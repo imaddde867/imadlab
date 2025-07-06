@@ -46,7 +46,7 @@ const ManageProjects = () => {
     checkUser();
   }, [navigate, toast]);
 
-  const { data: projects, isLoading } = useQuery({
+  const { data: projects, isLoading, isFetching } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -254,7 +254,7 @@ const ManageProjects = () => {
           </div>
         )}
 
-        {isLoading ? (
+        {(isLoading || isFetching) ? (
           <div className="text-center py-12">
             <div className="text-white/60">Loading projects...</div>
           </div>
