@@ -2,25 +2,7 @@ import { useState } from 'react';
 import { ArrowUp } from 'lucide-react';
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
   const [hoveredSocial, setHoveredSocial] = useState<string | null>(null);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Form submission logic will be added when Supabase is connected
-  };
 
   const socialLinks = [
     { name: 'GitHub', href: 'https://github.com/imaddde867', icon: '⚡' },
@@ -52,7 +34,7 @@ const Contact = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20">
           {/* Contact form */}
           <div className="lg:col-span-7 lg:col-start-1 relative z-10">
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label htmlFor="name" className="block text-sm font-medium text-white/70">
@@ -62,8 +44,7 @@ const Contact = () => {
                     type="text"
                     id="name"
                     name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
+                    
                     placeholder="Your name"
                     className="w-full px-4 py-4 bg-white/[0.03] border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] transition-all duration-300 relative z-10"
                     required
@@ -78,8 +59,7 @@ const Contact = () => {
                     type="email"
                     id="email"
                     name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
+                    
                     placeholder="your.email@example.com"
                     className="w-full px-4 py-4 bg-white/[0.03] border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] transition-all duration-300 relative z-10"
                     required
@@ -94,8 +74,7 @@ const Contact = () => {
                 <textarea
                   id="message"
                   name="message"
-                  value={formData.message}
-                  onChange={handleInputChange}
+                  
                   placeholder="Tell me about your project or just say hello..."
                   rows={6}
                   className="w-full px-4 py-4 bg-white/[0.03] border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] transition-all duration-300 resize-none relative z-10"
