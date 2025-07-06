@@ -49,8 +49,11 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          full_description: string | null
           id: string
+          image_url: string | null
           repo_url: string | null
+          short_description: string | null
           tech_tags: string[] | null
           title: string
           updated_at: string
@@ -58,8 +61,11 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          full_description?: string | null
           id?: string
+          image_url?: string | null
           repo_url?: string | null
+          short_description?: string | null
           tech_tags?: string[] | null
           title: string
           updated_at?: string
@@ -67,8 +73,11 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          full_description?: string | null
           id?: string
+          image_url?: string | null
           repo_url?: string | null
+          short_description?: string | null
           tech_tags?: string[] | null
           title?: string
           updated_at?: string

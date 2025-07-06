@@ -7,9 +7,7 @@ import { Button } from '@/components/ui/button';
 interface Project {
   id: string;
   title: string;
-  short_description: string | null;
-  full_description: string | null;
-  image_url: string | null;
+  description: string | null;
   tech_tags: string[] | null;
   repo_url: string | null;
   created_at: string;
@@ -74,12 +72,6 @@ const ProjectDetail = () => {
               {project.title}
             </h1>
 
-            {project.short_description && (
-              <p className="text-white/80 mb-4 leading-relaxed">
-                {project.short_description}
-              </p>
-            )}
-
             {project.tech_tags && project.tech_tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {project.tech_tags.map((tag, index) => (
@@ -94,16 +86,10 @@ const ProjectDetail = () => {
             )}
           </header>
 
-          {project.image_url && (
-            <div className="mb-8">
-              <img src={project.image_url} alt={project.title} className="w-full h-auto object-cover rounded-lg" />
-            </div>
-          )}
-
-          {project.full_description && (
+          {project.description && (
             <div className="prose prose-invert prose-lg max-w-none">
               <p className="text-white/90 leading-relaxed whitespace-pre-wrap">
-                {project.full_description}
+                {project.description}
               </p>
             </div>
           )}
