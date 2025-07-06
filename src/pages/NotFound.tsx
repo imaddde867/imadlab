@@ -4,7 +4,6 @@ const NotFound = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white">
       <div className="text-center animate-fade-in">
-      <div className="text-center">
         <h1 className="text-6xl md:text-8xl font-extrabold mb-4 tracking-tight">
           404 – Page Not Found
         </h1>
