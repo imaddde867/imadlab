@@ -12,7 +12,9 @@ import { Link } from 'react-router-dom';
 interface Project {
   id: string;
   title: string;
-  description: string | null;
+  short_description: string | null;
+  full_description: string | null;
+  image_url: string | null;
   tech_tags: string[] | null;
   repo_url: string | null;
   created_at: string;
@@ -22,7 +24,9 @@ const Projects = () => {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
-    description: '',
+    short_description: '',
+    full_description: '',
+    image_url: '',
     tech_tags: '',
     repo_url: ''
   });
@@ -60,7 +64,7 @@ const Projects = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       setShowForm(false);
-      setFormData({ title: '', description: '', tech_tags: '', repo_url: '' });
+      setFormData({ title: '', short_description: '', full_description: '', image_url: '', tech_tags: '', repo_url: '' });
       toast({ title: 'Project added successfully!' });
     },
     onError: (error) => {
@@ -79,7 +83,9 @@ const Projects = () => {
 
     addProjectMutation.mutate({
       title: formData.title,
-      description: formData.description || null,
+      short_description: formData.short_description || null,
+      full_description: formData.full_description || null,
+      image_url: formData.image_url || null,
       tech_tags: techTagsArray.length > 0 ? techTagsArray : null,
       repo_url: formData.repo_url || null
     });
@@ -122,11 +128,24 @@ const Projects = () => {
                   required
                 />
                 <Textarea
-                  placeholder="Description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  placeholder="Short Description (appears on project card)"
+                  value={formData.short_description}
+                  onChange={(e) => setFormData({...formData, short_description: e.target.value})}
                   className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                  rows={3}
+                  rows={2}
+                />
+                <Textarea
+                  placeholder="Full Description (appears on project detail page)"
+                  value={formData.full_description}
+                  onChange={(e) => setFormData({...formData, full_description: e.target.value})}
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                  rows={5}
+                />
+                <Input
+                  placeholder="Image URL"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({...formData, image_url: e.target.value})}
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                 />
                 <Input
                   placeholder="Tech Tags (comma separated)"
@@ -171,9 +190,9 @@ const Projects = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {project.description && (
+                  {project.short_description && (
                     <p className="text-white/80 mb-4 leading-relaxed">
-                      {project.description}
+                      {project.short_description}
                     </p>
                   )}
                   {project.tech_tags && project.tech_tags.length > 0 && (
