@@ -91,12 +91,18 @@ export default {
 				'fade-in': {
 					from: { opacity: '0' },
 					to: { opacity: '1' }
+				},
+				'subtle-flicker': {
+					'0%': { opacity: '0.1' },
+					'50%': { opacity: '0.05' },
+					'100%': { opacity: '0.1' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'fade-in': 'fade-in 1s ease-out forwards'
+				'fade-in': 'fade-in 1s ease-out forwards',
+				'subtle-flicker': 'subtle-flicker 10s infinite alternate'
 			}
 		}
 	},
