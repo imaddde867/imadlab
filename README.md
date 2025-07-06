@@ -1,6 +1,6 @@
 # imadlab
 
-A modern web application built with React, TypeScript, Vite, Tailwind CSS, and shadcn/ui.
+This is my personal website and blog, imadlab. Built with modern web technologies, it serves as a space to share my projects, thoughts, and experiences.
 
 ## Features
 - ⚡️ Fast development with Vite
