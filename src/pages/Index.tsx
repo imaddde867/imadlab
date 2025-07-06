@@ -3,6 +3,7 @@ import Projects from '@/components/Projects';
 import TechStack from '@/components/TechStack';
 import Marquee from '@/components/Marquee';
 
+import BlogFeed from '@/components/BlogFeed';
 import Contact from '@/components/Contact';
 import HomeBackground from '@/components/HomeBackground';
 
@@ -40,6 +41,7 @@ const Index = () => {
         />
       </div>
       
+      <BlogFeed />
       <Contact />
     </div>
   );
