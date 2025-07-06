@@ -35,7 +35,10 @@ const Marquee: React.FC<MarqueeProps> = ({ words, speed = 'normal' }) => {
       <div className="flex whitespace-nowrap animate-marquee">
         {/* Duplicate content to create seamless loop */}
         {[...words, ...words].map((word, index) => (
-          <span key={index} className="text-4xl md:text-5xl lg:text-6xl font-bold text-white/10 mx-8 uppercase tracking-wider">
+          <span
+            key={index}
+            className="text-6xl md:text-7xl lg:text-8xl font-thin text-white/80 mx-12 uppercase tracking-widest"
+          >
             {word}
           </span>
         ))}
