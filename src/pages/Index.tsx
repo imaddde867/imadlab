@@ -1,8 +1,7 @@
-
 import Hero from '@/components/Hero';
-import Marquee from '@/components/Marquee';
 import Projects from '@/components/Projects';
 import TechStack from '@/components/TechStack';
+import Marquee from '@/components/Marquee';
 import BlogFeed from '@/components/BlogFeed';
 import Contact from '@/components/Contact';
 
@@ -10,6 +9,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <Hero />
+      <Projects />
+      <TechStack />
       <Marquee
         words={[
           "Data Engineering",
@@ -34,8 +35,6 @@ const Index = () => {
         ]}
         speed="normal"
       />
-      <Projects />
-      <TechStack />
       <BlogFeed />
       <Contact />
     </div>
