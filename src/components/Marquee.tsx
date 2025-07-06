@@ -7,7 +7,7 @@ interface MarqueeProps {
 
 const speedToDuration: Record<string, string> = {
   slow: '60s',
-  normal: '40s',
+  normal: '30s',
   fast: '20s',
 };
 
