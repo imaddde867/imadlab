@@ -92,7 +92,7 @@ const Projects = () => {
 					</div>
 					<a
 						href="/projects"
-						className="text-white/70 hover:text-white text-base font-medium transition-colors duration-200 mr-4 mt-4 md:mt-0 md:mr-8"
+						className="text-white/70 hover:text-white text-base font-medium transition-colors duration-200 mr-4 mt-4 md:mt-0 md:mr-8 ml-12 md:ml-0"
 					>
 						View all projects
 					</a>
