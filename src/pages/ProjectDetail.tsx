@@ -8,6 +8,8 @@ interface Project {
   id: string;
   title: string;
   description: string | null;
+  full_description: string | null;
+  image_url: string | null;
   tech_tags: string[] | null;
   repo_url: string | null;
   created_at: string;
@@ -23,7 +25,7 @@ const ProjectDetail = () => {
       
       const { data, error } = await supabase
         .from('projects')
-        .select('*')
+        .select('*, full_description, image_url')
         .eq('id', id)
         .maybeSingle();
       
@@ -86,10 +88,16 @@ const ProjectDetail = () => {
             )}
           </header>
 
-          {project.description && (
+          {project.image_url && (
+            <div className="mb-8">
+              <img src={project.image_url} alt={project.title} className="w-full h-auto object-cover rounded-lg" />
+            </div>
+          )}
+
+          {project.full_description && (
             <div className="prose prose-invert prose-lg max-w-none">
               <p className="text-white/90 leading-relaxed whitespace-pre-wrap">
-                {project.description}
+                {project.full_description}
               </p>
             </div>
           )}
