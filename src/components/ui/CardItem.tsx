@@ -54,9 +54,9 @@ const CardItem = ({
           <img src={image_url} alt={title} className="w-full h-48 object-cover" />
         </div>
       )}
-      <div className="flex-1 flex flex-col p-6 gap-4 mt-4">
+      <div className="flex-1 flex flex-col gap-4 mt-4">
         {/* Top section: Title */}
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start justify-between gap-2 px-6 pt-6">
           <span
             className="text-xl font-bold text-white leading-tight flex-1 min-w-0 overflow-hidden relative group"
             style={{ display: 'block' }}
@@ -96,7 +96,7 @@ const CardItem = ({
         </div>
         {/* Tags and date */}
         {(tags?.length || date) && (
-          <div className="flex flex-wrap items-center gap-2 min-h-[1.5rem]">
+          <div className="flex flex-wrap items-center gap-2 min-h-[1.5rem] px-6">
             {tags && tags.map((tag, i) => (
               <span key={i} className="px-2 py-1 text-xs bg-white/10 rounded-full text-white font-medium">
                 {isBlog ? `#${tag}` : tag}
@@ -107,13 +107,13 @@ const CardItem = ({
         )}
         {/* Description/excerpt */}
         {(description || excerpt) && (
-          <p className="text-white/80 leading-relaxed mb-0">
+          <p className="text-white/80 leading-relaxed mb-0 px-6">
             {description || excerpt}
           </p>
         )}
         {/* Bottom section: read time, github, and action button all right-aligned */}
         {(readTime || githubUrl || linkTo || link) && (
-          <div className="flex items-center justify-end mt-auto pt-2 gap-2">
+          <div className="flex items-center justify-end mt-auto pt-2 gap-2 px-6 pb-6">
             {readTime && (
               <span className="text-white/50 text-sm mr-auto">{readTime} min read</span>
             )}
