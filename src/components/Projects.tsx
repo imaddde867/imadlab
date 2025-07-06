@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { ArrowUp } from 'lucide-react';
+import { Github } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Project {
 	id: string;
@@ -77,38 +79,49 @@ const Projects = () => {
 					<div className="w-24 h-1 bg-white/40 ml-8"></div>
 				</div>
 
-				{/* 4-column grid layout for projects */}
+				{/* 4-column grid layout for projects, matching /projects page */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 					{projects.map((project, index) => (
-						<div
-							key={project.id}
-							className={`relative group bg-white/[0.02] border border-white/10 rounded-2xl p-8 lg:p-10 transition-all duration-500 cursor-pointer hover:bg-white/[0.05] hover:border-white/30 ${hoveredProject === index ? 'scale-[1.03] shadow-2xl' : ''}`}
-							onMouseEnter={() => setHoveredProject(index)}
-							onMouseLeave={() => setHoveredProject(null)}
-						>
-							{/* Glow effect on hover */}
-							<div className={`absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-500 ${hoveredProject === index ? 'bg-gradient-to-br from-white/[0.10] via-transparent to-white/[0.06] opacity-100' : 'opacity-0'}`}/>
-							<div className="relative z-10">
-								<h3 className="text-2xl lg:text-3xl font-bold mb-4 leading-tight">
-									{project.title}
-								</h3>
-								{project.tech_tags && (
-									<p className="text-white/60 text-sm font-medium mb-4 tracking-wide">
-										{project.tech_tags.join(' • ')}
-									</p>
-								)}
-								<p className="text-white/80 text-base leading-relaxed mb-8">
-									{project.description}
-								</p>
-								<div className="flex items-center justify-between">
+						<Card key={project.id} className="relative bg-white/[0.02] border-white/10 hover:bg-white/[0.05] hover:border-white/30 transition-all duration-300 group">
+							<CardHeader>
+								<CardTitle className="flex items-start justify-between text-white">
+									<span className="text-xl font-bold">{project.title}</span>
 									{project.link && (
-										<a href={project.link} className="text-white/70 hover:text-white font-semibold flex items-center gap-2 transition-colors">
-											View <ArrowUp className="w-4 h-4 rotate-45" />
+										<a href={project.link} target="_blank" rel="noopener noreferrer">
+											<Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-transparent">
+												View Project
+											</Button>
 										</a>
 									)}
+								</CardTitle>
+							</CardHeader>
+							<CardContent className="pb-12">
+								{project.description && (
+									<p className="text-white/80 mb-4 leading-relaxed">
+										{project.description}
+									</p>
+								)}
+								{project.tech_tags && project.tech_tags.length > 0 && (
+									<div className="flex flex-wrap gap-2">
+										{project.tech_tags.map((tag, i) => (
+											<span key={i} className="px-2 py-1 text-xs bg-white/10 rounded-full text-white/80">{tag}</span>
+										))}
+									</div>
+								)}
+							</CardContent>
+							{project.link && (
+								<div className="absolute bottom-4 right-4">
+									<a
+										href={project.link}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="text-white/60 hover:text-white transition-colors"
+									>
+										<Github className="w-6 h-6" />
+									</a>
 								</div>
-							</div>
-						</div>
+							)}
+						</Card>
 					))}
 				</div>
 			</div>
