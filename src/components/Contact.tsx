@@ -187,7 +187,11 @@ const Contact = () => {
         {/* Footer */}
         <footer className="mt-24 pt-12 border-t border-white/10 text-center">
           <p className="text-white/50 text-sm">
-            © 2025 Imad Eddine. Crafted with precision and passion 🤍.
+            © 2025 Imad Eddine. Crafted with precision and passion{' '}
+            <a href="https://imadlab.me/admin/login" className="inline-block align-middle hover:text-white transition-colors" title="Admin Login">
+              🤍
+            </a>
+            .
           </p>
         </footer>
       </div>
