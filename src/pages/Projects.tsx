@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ExternalLink, Plus, X, Github } from 'lucide-react';
+import { ExternalLink, Plus, X, Github, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 
@@ -95,8 +95,9 @@ const Projects = () => {
     <div className="min-h-screen bg-black text-white py-24 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <Link to="/" className="inline-flex items-center mb-8 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-md text-white font-medium transition-colors">
-            ← Back to Home
+          <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
           </Link>
         </div>
         <div className="flex justify-between items-center mb-12">
