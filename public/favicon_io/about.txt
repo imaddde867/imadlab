@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: Cascadia Code
+- Font Author: undefined
+- Font Source: https://fonts.gstatic.com/s/cascadiacode/v4/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuUMOaDPb9pHaHCA.ttf
+- Font License: undefined)
