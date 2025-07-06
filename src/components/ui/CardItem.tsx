@@ -48,100 +48,102 @@ const CardItem = ({
   }, [title]);
 
   return (
-    <SpotlightCard className="h-full flex flex-col p-6 gap-4">
+    <SpotlightCard className="h-full flex flex-col rounded-lg overflow-hidden">
       {image_url && (
-        <div className="mb-4 rounded-lg overflow-hidden">
+        <div>
           <img src={image_url} alt={title} className="w-full h-48 object-cover" />
         </div>
       )}
-      {/* Top section: Title */}
-      <div className="flex items-start justify-between gap-2">
-        <span
-          className="text-xl font-bold text-white leading-tight flex-1 min-w-0 overflow-hidden relative group"
-          style={{ display: 'block' }}
-          ref={containerRef}
-        >
+      <div className="flex-1 flex flex-col p-6 gap-4 mt-4">
+        {/* Top section: Title */}
+        <div className="flex items-start justify-between gap-2">
           <span
-            ref={titleRef}
-            className={
-              'block whitespace-nowrap transition-transform duration-700 ease-in-out' +
-              (shouldMarquee && isHovered ? ' marquee-animate' : ' truncate')
-            }
-            style={
-              shouldMarquee && isHovered
-                ? {
-                    transform: `translateX(-${
-                      titleRef.current && containerRef.current
-                        ? titleRef.current.scrollWidth - containerRef.current.offsetWidth
-                        : 0
-                    }px)`,
-                    transition: `transform ${
-                      titleRef.current && containerRef.current
-                        ? Math.max(
-                            1.5,
-                            (titleRef.current.scrollWidth - containerRef.current.offsetWidth) / 60
-                          )
-                        : 1.5
-                    }s linear`,
-                  }
-                : { transform: 'translateX(0)', transition: 'transform 0.5s' }
-            }
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            className="text-xl font-bold text-white leading-tight flex-1 min-w-0 overflow-hidden relative group"
+            style={{ display: 'block' }}
+            ref={containerRef}
           >
-            {title}
-          </span>
-        </span>
-      </div>
-      {/* Tags and date */}
-      {(tags?.length || date) && (
-        <div className="flex flex-wrap items-center gap-2 min-h-[1.5rem]">
-          {tags && tags.map((tag, i) => (
-            <span key={i} className="px-2 py-1 text-xs bg-white/10 rounded-full text-white font-medium">
-              {isBlog ? `#${tag}` : tag}
-            </span>
-          ))}
-          {date && <span className="text-white/50 text-xs ml-auto">{date}</span>}
-        </div>
-      )}
-      {/* Description/excerpt */}
-      {(description || excerpt) && (
-        <p className="text-white/80 leading-relaxed mb-0">
-          {description || excerpt}
-        </p>
-      )}
-      {/* Bottom section: read time, github, and action button all right-aligned */}
-      {(readTime || githubUrl || linkTo || link) && (
-        <div className="flex items-center justify-end mt-auto pt-2 gap-2">
-          {readTime && (
-            <span className="text-white/50 text-sm mr-auto">{readTime} min read</span>
-          )}
-          {githubUrl && (
-            <a
-              href={githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/60 hover:text-white transition-colors"
+            <span
+              ref={titleRef}
+              className={
+                'block whitespace-nowrap transition-transform duration-700 ease-in-out' +
+                (shouldMarquee && isHovered ? ' marquee-animate' : ' truncate')
+              }
+              style={
+                shouldMarquee && isHovered
+                  ? {
+                      transform: `translateX(-${
+                        titleRef.current && containerRef.current
+                          ? titleRef.current.scrollWidth - containerRef.current.offsetWidth
+                          : 0
+                      }px)`,
+                      transition: `transform ${
+                        titleRef.current && containerRef.current
+                          ? Math.max(
+                              1.5,
+                              (titleRef.current.scrollWidth - containerRef.current.offsetWidth) / 60
+                            )
+                          : 1.5
+                      }s linear`,
+                    }
+                  : { transform: 'translateX(0)', transition: 'transform 0.5s' }
+              }
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
             >
-              <Github className="w-6 h-6" />
-            </a>
-          )}
-          {linkTo && (
-            <Link to={linkTo} className="shrink-0">
-              <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-transparent">
-                {linkLabel}
-              </Button>
-            </Link>
-          )}
-          {link && !linkTo && (
-            <a href={link} target="_blank" rel="noopener noreferrer" className="shrink-0">
-              <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-transparent">
-                {linkLabel}
-              </Button>
-            </a>
-          )}
+              {title}
+            </span>
+          </span>
         </div>
-      )}
+        {/* Tags and date */}
+        {(tags?.length || date) && (
+          <div className="flex flex-wrap items-center gap-2 min-h-[1.5rem]">
+            {tags && tags.map((tag, i) => (
+              <span key={i} className="px-2 py-1 text-xs bg-white/10 rounded-full text-white font-medium">
+                {isBlog ? `#${tag}` : tag}
+              </span>
+            ))}
+            {date && <span className="text-white/50 text-xs ml-auto">{date}</span>}
+          </div>
+        )}
+        {/* Description/excerpt */}
+        {(description || excerpt) && (
+          <p className="text-white/80 leading-relaxed mb-0">
+            {description || excerpt}
+          </p>
+        )}
+        {/* Bottom section: read time, github, and action button all right-aligned */}
+        {(readTime || githubUrl || linkTo || link) && (
+          <div className="flex items-center justify-end mt-auto pt-2 gap-2">
+            {readTime && (
+              <span className="text-white/50 text-sm mr-auto">{readTime} min read</span>
+            )}
+            {githubUrl && (
+              <a
+                href={githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/60 hover:text-white transition-colors"
+              >
+                <Github className="w-6 h-6" />
+              </a>
+            )}
+            {linkTo && (
+              <Link to={linkTo} className="shrink-0">
+                <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-transparent">
+                  {linkLabel}
+                </Button>
+              </Link>
+            )}
+            {link && !linkTo && (
+              <a href={link} target="_blank" rel="noopener noreferrer" className="shrink-0">
+                <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-transparent">
+                  {linkLabel}
+                </Button>
+              </a>
+            )}
+          </div>
+        )}
+      </div>
     </SpotlightCard>
   );
 };
