@@ -14,7 +14,7 @@ interface CardItemProps {
   linkLabel?: string;
   linkTo?: string;
   githubUrl?: string;
-  readTime?: string;
+  readTime?: number | null;
   isBlog?: boolean;
 }
 
@@ -107,7 +107,7 @@ const CardItem = ({
       {(readTime || githubUrl || linkTo || link) && (
         <div className="flex items-center justify-end mt-auto pt-2 gap-2">
           {readTime && (
-            <span className="text-white/50 text-sm mr-auto">{readTime}</span>
+            <span className="text-white/50 text-sm mr-auto">{readTime} min read</span>
           )}
           {githubUrl && (
             <a

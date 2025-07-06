@@ -12,6 +12,7 @@ interface Post {
   tags: string[] | null;
   published_date: string;
   created_at: string;
+  read_time: number | null;
 }
 
 const BlogFeed = () => {
@@ -48,14 +49,12 @@ const BlogFeed = () => {
 						</h2>
 						<div className="w-24 h-1 bg-white/40 ml-8"></div>
 					</div>
-					<a
-						href="/blogs"
-						className="text-white/70 hover:text-white text-base font-medium transition-colors duration-200 mr-4 mt-4 md:mt-0 md:mr-8 ml-12 md:ml-0"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						View all posts
-					</a>
+					<Link
+  to="/blogs"
+  className="text-white/70 hover:text-white text-base font-medium transition-colors duration-200 mr-4 mt-4 md:mt-0 md:mr-8 ml-12 md:ml-0"
+>
+  View all posts
+</Link>
 				</div>
 
 				{/* 4-column grid layout for blogs, matching Latest Projects */}
@@ -74,6 +73,7 @@ const BlogFeed = () => {
 								excerpt={post.excerpt || ''}
 								linkTo={`/blogs/${post.slug}`}
 								linkLabel="Read More"
+								readTime={post.read_time || undefined}
 								isBlog={true}
 							/>
 						))}
