@@ -100,9 +100,44 @@ All colors MUST be HSL.
   }
 
   body, #root {
-    @apply bg-black text-white;
+    @apply bg-black text-white antialiased;
     transition: background 0.3s;
+  }
+
+  /* Custom text selection styling */
+  ::selection {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+
+  /* Custom scrollbar for Webkit browsers */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
   }
 }
 
+@layer components {
+  .text-shadow-lg {
+    text-shadow: 0 4px 6px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+}
 
+@layer utilities {
+  .transition-all-ease {
+    transition: all 0.3s ease-in-out;
+  }
+}

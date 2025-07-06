@@ -100,6 +100,10 @@ export default {
 				'dot-move': {
 					'0%': { transform: 'translate(0, 0)' },
 					'100%': { transform: 'translate(var(--tw-translate-x), var(--tw-translate-y))' }
+				},
+				'spin-slow': {
+					from: { transform: 'rotate(0deg)' },
+					to: { transform: 'rotate(360deg)' }
 				}
 			},
 			animation: {
@@ -107,7 +111,8 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 1s ease-out forwards',
 				'subtle-flicker': 'subtle-flicker 3s infinite alternate',
-				'dot-move': 'dot-move 10s infinite alternate ease-in-out'
+				'dot-move': 'dot-move 10s infinite alternate ease-in-out',
+				'spin-slow': 'spin 8s linear infinite'
 			}
 		}
 	},
