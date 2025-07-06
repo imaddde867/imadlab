@@ -190,7 +190,7 @@ const Projects = () => {
                     </Link>
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pb-12">
                   {project.description && (
                     <p className="text-white/80 mb-4 leading-relaxed">
                       {project.description}
@@ -210,7 +210,7 @@ const Projects = () => {
                   )}
                 </CardContent>
                 {project.repo_url && (
-                  <div className="absolute bottom-6 right-6">
+                  <div className="absolute bottom-4 right-4">
                     <a
                       href={project.repo_url}
                       target="_blank"
