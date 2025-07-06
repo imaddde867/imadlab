@@ -46,6 +46,24 @@ const Hero = () => {
         }}
       />
       
+      {/* Background dots */}
+      {[...Array(50)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute bg-white/10 rounded-full animate-dot-move"
+          style={{
+            width: `${Math.random() * 3 + 1}px`,
+            height: `${Math.random() * 3 + 1}px`,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            opacity: `${Math.random() * 0.3 + 0.1}`,
+            animationDelay: `${Math.random() * 10}s`,
+            '--tw-translate-x': `${(Math.random() - 0.5) * 200}px`,
+            '--tw-translate-y': `${(Math.random() - 0.5) * 200}px`,
+          }}
+        />
+      ))}
+
       {/* Asymmetrical grid lines */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-1/3 left-0 w-full h-px bg-white"></div>
