@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -116,7 +116,7 @@ const ProjectDetail = () => {
             rel="noopener noreferrer"
           >
             <Button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white shadow-lg">
-              View on GitHub <ArrowLeft className="w-4 h-4 ml-2 rotate-135" />
+              View on GitHub <ArrowUpRight className="w-4 h-4 ml-2" />
             </Button>
           </a>
         </div>
