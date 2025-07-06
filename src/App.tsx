@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React, { Suspense } from "react";
 import ClickSpark from "@/components/ClickSpark";
+import MouseTrail from "@/components/MouseTrail";
 
 const Index = React.lazy(() => import("./pages/Index"));
 const Projects = React.lazy(() => import("./pages/Projects"));
@@ -22,6 +23,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Suspense fallback={<div>Loading...</div>}>
+          <MouseTrail />
           <ClickSpark
             sparkColor="#fff"
             sparkSize={10}
