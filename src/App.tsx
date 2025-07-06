@@ -12,6 +12,10 @@ const Projects = React.lazy(() => import("./pages/Projects"));
 const Blogs = React.lazy(() => import("./pages/Blog"));
 const BlogPost = React.lazy(() => import("./pages/BlogPost"));
 const ProjectDetail = React.lazy(() => import("./pages/ProjectDetail"));
+const AdminLogin = React.lazy(() => import("./pages/AdminLogin"));
+const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
+const ManagePosts = React.lazy(() => import("./pages/ManagePosts"));
+const ManageProjects = React.lazy(() => import("./pages/ManageProjects"));
 
 const queryClient = new QueryClient();
 
@@ -50,6 +54,10 @@ const App = () => (
               <Route path="/blogs" element={<Blogs />} />
               <Route path="/blogs/:slug" element={<BlogPost />} />
               <Route path="/projects/:id" element={<ProjectDetail />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/posts" element={<ManagePosts />} />
+              <Route path="/admin/projects" element={<ManageProjects />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             </Routes>
           </ClickSpark>

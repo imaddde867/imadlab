@@ -48,9 +48,9 @@ const CardItem = ({
   }, [title]);
 
   return (
-    <SpotlightCard className="h-full flex flex-col rounded-lg overflow-hidden">
+    <SpotlightCard className="h-full flex flex-col overflow-hidden">
       {image_url && (
-        <div className="w-full aspect-[3/1] overflow-hidden rounded-t-lg">
+        <div className="w-full aspect-[3/1] overflow-hidden">
           <img src={image_url} alt={title} className="w-full h-full object-cover block" />
         </div>
       )}
