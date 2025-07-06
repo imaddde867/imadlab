@@ -3,6 +3,7 @@ import { Github } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Link } from 'react-router-dom';
 
 interface Project {
 	id: string;
@@ -63,11 +64,9 @@ const Projects = () => {
 								top: `${Math.random() * 100}%`,
 								opacity: `${Math.random() * 0.7 + 0.3}`,
 								animationDelay: `${Math.random() * 10}s`,
-								// @ts-ignore: Custom property for Tailwind
 								'--tw-translate-x': `${(Math.random() - 0.5) * 200}px`,
-								// @ts-ignore: Custom property for Tailwind
 								'--tw-translate-y': `${(Math.random() - 0.5) * 200}px`,
-							} as any
+							} as React.CSSProperties & { '--tw-translate-x'?: string; '--tw-translate-y'?: string; }
 						}
 					/>
 				))}
@@ -105,13 +104,11 @@ const Projects = () => {
 							<CardHeader>
 								<CardTitle className="flex items-start justify-between text-white">
 									<span className="text-xl font-bold">{project.title}</span>
-									{project.link && (
-										<a href={project.link} target="_blank" rel="noopener noreferrer">
-											<Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-transparent">
-												View Project
-											</Button>
-										</a>
-									)}
+									<Link to={`/projects/${project.id}`}>
+										<Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-transparent">
+											View Project
+										</Button>
+									</Link>
 								</CardTitle>
 							</CardHeader>
 							<CardContent className="pb-12">
