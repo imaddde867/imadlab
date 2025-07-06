@@ -195,7 +195,7 @@ const Blog = () => {
                 tags={post.tags || []}
                 date={new Date(post.published_date).toLocaleDateString()}
                 excerpt={post.excerpt || ''}
-                linkTo={`/blog/${post.slug}`}
+                linkTo={`/blogs/${post.slug}`}
                 linkLabel="Read More"
                 isBlog={true}
               />
