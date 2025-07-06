@@ -10,6 +10,7 @@ interface Project {
 	description: string | null;
 	repo_url: string | null;
 	featured?: boolean;
+	image_url: string | null;
 }
 
 const Projects = () => {
@@ -19,7 +20,7 @@ const Projects = () => {
 		const fetchProjects = async () => {
 			const { data, error } = await supabase
 				.from('projects')
-				.select('*')
+				.select('*, image_url')
 				.order('created_at', { ascending: false })
 				.limit(4);
 			if (!error && data) {
@@ -97,6 +98,7 @@ const Projects = () => {
 							linkTo={`/projects/${project.id}`}
 							linkLabel="View Project"
 							githubUrl={project.repo_url || undefined}
+							image_url={project.image_url || undefined}
 						/>
 					))}
 				</div>
