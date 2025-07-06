@@ -22,7 +22,7 @@ const Projects = () => {
 				.from('projects')
 				.select('*, image_url')
 				.order('created_at', { ascending: false })
-				.limit(4);
+				.limit(3);
 			if (!error && data) {
 				setProjects(data as Project[]);
 			}
