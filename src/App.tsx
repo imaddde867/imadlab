@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React, { Suspense } from "react";
 import ClickSpark from "@/components/ClickSpark";
 
@@ -20,7 +20,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <HashRouter>
+      <BrowserRouter>
         <Suspense fallback={<div>Loading...</div>}>
           <ClickSpark
             sparkColor="#fff"
@@ -40,7 +40,7 @@ const App = () => (
             </Routes>
           </ClickSpark>
         </Suspense>
-      </HashRouter>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
