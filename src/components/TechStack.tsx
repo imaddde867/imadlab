@@ -1,28 +1,28 @@
 import { useState, useEffect } from 'react';
 
 const techStack = [
-  { name: 'Python', icon: '🐍' },
-  { name: 'JavaScript', icon: '🟨' },
-  { name: 'SQL', icon: '🗃️' },
-  { name: 'Apache Airflow', icon: '🌊' },
-  { name: 'Kafka', icon: '📡' },
-  { name: 'AWS', icon: '☁️' },
-  { name: 'PostgreSQL', icon: '🐘' },
-  { name: 'MongoDB', icon: '🍃' },
-  { name: 'Data Lakes', icon: '🏞️' },
-  { name: 'Data Warehouses', icon: '🏭' },
-  { name: 'TensorFlow', icon: '🤖' },
-  { name: 'Scikit-learn', icon: '📈' },
-  { name: 'PyTorch', icon: '🔥' },
-  { name: 'Docker', icon: '🐳' },
-  { name: 'Git', icon: '🌳' },
-  { name: 'CI/CD', icon: '🔄' },
-  { name: 'FastAPI', icon: '🚀' },
-  { name: 'Flask', icon: '🍶' },
-  { name: 'MATLAB', icon: '📊' },
-  { name: 'Deno', icon: '🦕' },
-  { name: 'Hono', icon: '🌐' },
-  { name: 'Svelte', icon: '🧡' },
+  { name: 'Python', icon: '🐍', url: 'https://www.python.org/' },
+  { name: 'JavaScript', icon: '🟨', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript' },
+  { name: 'SQL', icon: '🗃️', url: 'https://en.wikipedia.org/wiki/SQL' },
+  { name: 'Apache Airflow', icon: '🌊', url: 'https://airflow.apache.org/' },
+  { name: 'Kafka', icon: '📡', url: 'https://kafka.apache.org/' },
+  { name: 'AWS', icon: '☁️', url: 'https://aws.amazon.com/' },
+  { name: 'PostgreSQL', icon: '🐘', url: 'https://www.postgresql.org/' },
+  { name: 'MongoDB', icon: '🍃', url: 'https://www.mongodb.com/' },
+  { name: 'Data Lakes', icon: '🏞️', url: 'https://en.wikipedia.org/wiki/Data_lake' },
+  { name: 'Data Warehouses', icon: '🏭', url: 'https://en.wikipedia.org/wiki/Data_warehouse' },
+  { name: 'TensorFlow', icon: '🤖', url: 'https://www.tensorflow.org/' },
+  { name: 'Scikit-learn', icon: '📈', url: 'https://scikit-learn.org/' },
+  { name: 'PyTorch', icon: '🔥', url: 'https://pytorch.org/' },
+  { name: 'Docker', icon: '🐳', url: 'https://www.docker.com/' },
+  { name: 'Git', icon: '🌳', url: 'https://git-scm.com/' },
+  { name: 'CI/CD', icon: '🔄', url: 'https://en.wikipedia.org/wiki/CI/CD' },
+  { name: 'FastAPI', icon: '🚀', url: 'https://fastapi.tiangolo.com/' },
+  { name: 'Flask', icon: '🍶', url: 'https://flask.palletsprojects.com/' },
+  { name: 'MATLAB', icon: '📊', url: 'https://www.mathworks.com/products/matlab.html' },
+  { name: 'Deno', icon: '🦕', url: 'https://deno.com/' },
+  { name: 'Hono', icon: '🌐', url: 'https://hono.dev/' },
+  { name: 'Svelte', icon: '🧡', url: 'https://svelte.dev/' },
 ];
 
 const TechStack = () => {
@@ -62,8 +62,11 @@ const TechStack = () => {
         </div>
         <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
           {techStack.map((tech, index) => (
-            <div
+            <a
               key={tech.name}
+              href={tech.url}
+              target="_blank"
+              rel="noopener noreferrer"
               data-tech={tech.name}
               className={`
                 group relative transition-all duration-500 transform cursor-pointer
@@ -84,7 +87,7 @@ const TechStack = () => {
                 {/* Glow effect on hover */}
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/[0.1] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>
