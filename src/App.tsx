@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React, { Suspense } from "react";
 import ClickSpark from "@/components/ClickSpark";
+import HomeBackground from '@/components/HomeBackground';
 
 const Index = React.lazy(() => import("./pages/Index"));
 const Projects = React.lazy(() => import("./pages/Projects"));
@@ -20,7 +21,22 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Suspense fallback={<div>Loading...</div>}>
+        <HomeBackground />
+        <Suspense fallback={
+          <div style={{
+            minHeight: '100vh',
+            background: '#0a0a0a',
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.5rem',
+            letterSpacing: '0.05em',
+            transition: 'background 0.3s'
+          }}>
+            Loading...
+          </div>
+        }>
           <ClickSpark
             sparkColor="#fff"
             sparkSize={10}
@@ -35,7 +51,6 @@ const App = () => (
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/projects/:id" element={<ProjectDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              
             </Routes>
           </ClickSpark>
         </Suspense>
