@@ -34,7 +34,7 @@ const Contact = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20">
           {/* Contact form */}
           <div className="lg:col-span-7 lg:col-start-1 relative z-10">
-            <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" className="space-y-8">
+            <form action="https://formspree.io/f/manjzpvz" method="POST" className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label htmlFor="name" className="block text-sm font-medium text-white/70">
