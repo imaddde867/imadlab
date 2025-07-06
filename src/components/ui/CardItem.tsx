@@ -1,7 +1,7 @@
-import { Card, CardHeader, CardContent, CardTitle } from './card';
 import { Link } from 'react-router-dom';
 import { Button } from './button';
 import { Github } from 'lucide-react';
+import SpotlightCard from '../SpotlightCard';
 
 interface CardItemProps {
   title: string;
@@ -31,9 +31,9 @@ const CardItem = ({
   isBlog = false,
 }: CardItemProps) => {
   return (
-    <Card className="relative bg-white/[0.02] border-white/10 hover:bg-white/[0.05] hover:border-white/30 transition-all duration-300 group">
-      <CardHeader>
-        <CardTitle className="flex items-start justify-between text-white">
+    <SpotlightCard className="h-full flex flex-col justify-between p-6">
+      <div>
+        <div className="flex items-start justify-between text-white mb-4">
           <span className="text-xl font-bold">{title}</span>
           {linkTo && (
             <Link to={linkTo}>
@@ -49,9 +49,7 @@ const CardItem = ({
               </Button>
             </a>
           )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pb-12">
+        </div>
         <div className="flex flex-wrap gap-2 mb-4">
           {tags && tags.map((tag, i) => (
             <span key={i} className="px-2 py-1 text-xs bg-white/10 rounded-full text-white font-medium">
@@ -65,25 +63,23 @@ const CardItem = ({
             {description || excerpt}
           </p>
         )}
+      </div>
+      <div className="flex items-center justify-between mt-auto">
         {readTime && (
-          <div className="flex items-center justify-between mt-auto">
-            <span className="text-white/50 text-sm">{readTime}</span>
-          </div>
+          <span className="text-white/50 text-sm">{readTime}</span>
         )}
-      </CardContent>
-      {githubUrl && (
-        <div className="absolute bottom-4 right-4">
+        {githubUrl && (
           <a
             href={githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white/60 hover:text-white transition-colors"
+            className="text-white/60 hover:text-white transition-colors ml-auto"
           >
             <Github className="w-6 h-6" />
           </a>
-        </div>
-      )}
-    </Card>
+        )}
+      </div>
+    </SpotlightCard>
   );
 };
 
