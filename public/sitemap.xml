@@ -13,9 +13,32 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://imadlab.me/blog</loc>
+    <loc>https://imadlab.me/blogs</loc>
     <lastmod>2025-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <!-- Dynamic Blog Posts -->
+  <!-- 
+    To include dynamic blog posts, you would typically fetch them from your database (e.g., Supabase 'posts' table)
+    and generate <url> entries for each post. For example:
+    <url>
+      <loc>https://imadlab.me/blogs/your-post-slug</loc>
+      <lastmod>YYYY-MM-DD</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.7</priority>
+    </url>
+  -->
+
+  <!-- Dynamic Projects -->
+  <!-- 
+    To include dynamic projects, you would typically fetch them from your database (e.g., Supabase 'projects' table)
+    and generate <url> entries for each project. For example:
+    <url>
+      <loc>https://imadlab.me/projects/your-project-id</loc>
+      <lastmod>YYYY-MM-DD</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.7</priority>
+    </url>
+  -->
 </urlset>

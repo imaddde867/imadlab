@@ -92,7 +92,7 @@ const ProjectDetail = () => {
 
           {project.image_url && (
             <div className="mb-8">
-              <img src={project.image_url} alt={project.title} className="w-full h-auto object-cover rounded-lg" />
+              <img src={project.image_url} alt={project.title} className="w-full h-auto object-cover rounded-lg" loading="lazy" />
             </div>
           )}
 
