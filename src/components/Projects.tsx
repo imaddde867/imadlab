@@ -1,20 +1,19 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import CardItem from '@/components/ui/CardItem';
 
 interface Project {
 	id: string;
 	title: string;
 	tech_tags: string[] | null;
 	description: string | null;
-	link: string | null;
+	repo_url: string | null;
 	featured?: boolean;
 }
 
 const Projects = () => {
 	const [projects, setProjects] = useState<Project[]>([]);
-	const [hoveredProject, setHoveredProject] = useState<number | null>(null);
 
 	useEffect(() => {
 		const fetchProjects = async () => {
@@ -24,15 +23,7 @@ const Projects = () => {
 				.order('created_at', { ascending: false })
 				.limit(4);
 			if (!error && data) {
-				setProjects(
-					data.map((p) => ({
-						id: p.id,
-						title: p.title,
-						tech_tags: p.tech_tags,
-						description: p.description,
-						link: p.repo_url,
-					}))
-				);
+				setProjects(data as Project[]);
 			}
 		};
 		fetchProjects();
@@ -97,45 +88,16 @@ const Projects = () => {
 
 				{/* 4-column grid layout for projects, matching /projects page */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-					{projects.map((project, index) => (
-						<div key={project.id} className="relative bg-white/[0.02] border-white/10 hover:bg-white/[0.05] hover:border-white/30 transition-all duration-300 group">
-							<div className="p-4">
-								<div className="flex items-start justify-between text-white">
-									<span className="text-xl font-bold">{project.title}</span>
-									<Link to={`/projects/${project.id}`}>
-										<Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-transparent">
-											View Project
-										</Button>
-									</Link>
-								</div>
-							</div>
-							<div className="pb-12">
-								{project.description && (
-									<p className="text-white/80 mb-4 leading-relaxed">
-										{project.description}
-									</p>
-								)}
-								{project.tech_tags && project.tech_tags.length > 0 && (
-									<div className="flex flex-wrap gap-2">
-										{project.tech_tags.map((tag, i) => (
-											<span key={i} className="px-2 py-1 text-xs bg-white/10 rounded-full text-white/80">{tag}</span>
-										))}
-									</div>
-								)}
-							</div>
-							{project.link && (
-								<div className="absolute bottom-4 right-4">
-									<a
-										href={project.link}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="text-white/60 hover:text-white transition-colors"
-									>
-										{/* <Github className="w-6 h-6" /> */}
-									</a>
-								</div>
-							)}
-						</div>
+					{projects.map((project) => (
+						<CardItem
+							key={project.id}
+							title={project.title}
+							tags={project.tech_tags || []}
+							description={project.description || ''}
+							linkTo={`/projects/${project.id}`}
+							linkLabel="View Project"
+							githubUrl={project.repo_url || undefined}
+						/>
 					))}
 				</div>
 			</div>
