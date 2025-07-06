@@ -107,7 +107,7 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-black text-white py-24 px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -186,7 +186,7 @@ const Blog = () => {
             <div className="text-white/60">Loading posts...</div>
           </div>
         ) : (
-          <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts?.map((post) => (
               <Card key={post.id} className="bg-white/[0.02] border-white/10 hover:bg-white/[0.05] hover:border-white/30 transition-all duration-300 group">
                 <CardHeader>
