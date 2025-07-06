@@ -190,7 +190,7 @@ const Projects = () => {
                   )}
                 </CardContent>
                 {project.repo_url && (
-                  <div className="absolute bottom-4 right-4">
+                  <div className="absolute bottom-6 right-6">
                     <a
                       href={project.repo_url}
                       target="_blank"
