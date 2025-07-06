@@ -82,6 +82,34 @@ const BlogPost = () => {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Blog
             </Link>
+            {/* Schema.org JSON-LD for BlogPosting */}
+            <script type="application/ld+json" dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "BlogPosting",
+                "headline": post.title,
+                "description": post.excerpt || (post.body ? post.body.substring(0, 160) + '...' : ''),
+                "image": post.image_url,
+                "datePublished": post.published_date,
+                "author": {
+                  "@type": "Person",
+                  "name": "Imad Eddine"
+                },
+                "publisher": {
+                  "@type": "Organization",
+                  "name": "ImadLab",
+                  "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://imad.dev/android-chrome-192x192.png"
+                  }
+                },
+                "mainEntityOfPage": {
+                  "@type": "WebPage",
+                  "@id": `https://imad.dev/blogs/${post.slug}`
+                },
+                "articleBody": post.body
+              })
+            }} />
             <h1 className="text-4xl md:text-5xl font-black mb-4 leading-tight">
               {post.title}
             </h1>
