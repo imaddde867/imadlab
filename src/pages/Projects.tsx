@@ -116,7 +116,7 @@ const Projects = () => {
         {showForm && (
           <Card className="mb-8 bg-white/[0.02] border-white/10">
             <CardHeader>
-              <CardTitle>Add New Project</CardTitle>
+              <CardTitle className="text-white">Add New Project</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
