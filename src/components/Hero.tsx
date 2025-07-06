@@ -29,6 +29,12 @@ const Hero = () => {
           >
             Projects
           </Link>
+          <Link 
+            to="/blog" 
+            className="text-white/70 hover:text-white transition-colors font-medium"
+          >
+            Blog
+          </Link>
         </div>
       </nav>
 
