@@ -1,3 +1,4 @@
+import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from './button';
 import { Github } from 'lucide-react';
@@ -30,6 +31,20 @@ const CardItem = ({
   readTime,
   isBlog = false,
 }: CardItemProps) => {
+  // Marquee logic
+  const titleRef = useRef<HTMLSpanElement>(null);
+  const containerRef = useRef<HTMLSpanElement>(null);
+  const [shouldMarquee, setShouldMarquee] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    if (titleRef.current && containerRef.current) {
+      const titleWidth = titleRef.current.scrollWidth;
+      const containerWidth = containerRef.current.offsetWidth;
+      setShouldMarquee(titleWidth > containerWidth);
+    }
+  }, [title]);
+
   return (
     <SpotlightCard className="h-full flex flex-col p-6 gap-4">
       {/* Top section: Title */}
@@ -37,13 +52,35 @@ const CardItem = ({
         <span
           className="text-xl font-bold text-white leading-tight flex-1 min-w-0 overflow-hidden relative group"
           style={{ display: 'block' }}
+          ref={containerRef}
         >
           <span
-            className="block whitespace-nowrap truncate transition-transform duration-700 ease-in-out group-hover:translate-x-[calc(-100%_+_100%_/_var(--title-scale,1))] group-hover:delay-200"
-            style={{
-              willChange: 'transform',
-              // The translate-x is set to scroll the text left on hover, but only if it's overflowing
-            }}
+            ref={titleRef}
+            className={
+              'block whitespace-nowrap transition-transform duration-700 ease-in-out' +
+              (shouldMarquee && isHovered ? ' marquee-animate' : ' truncate')
+            }
+            style={
+              shouldMarquee && isHovered
+                ? {
+                    transform: `translateX(-${
+                      titleRef.current && containerRef.current
+                        ? titleRef.current.scrollWidth - containerRef.current.offsetWidth
+                        : 0
+                    }px)`,
+                    transition: `transform ${
+                      titleRef.current && containerRef.current
+                        ? Math.max(
+                            1.5,
+                            (titleRef.current.scrollWidth - containerRef.current.offsetWidth) / 60
+                          )
+                        : 1.5
+                    }s linear`,
+                  }
+                : { transform: 'translateX(0)', transition: 'transform 0.5s' }
+            }
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
           >
             {title}
           </span>
