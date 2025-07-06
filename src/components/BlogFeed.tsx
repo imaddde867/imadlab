@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { ArrowUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import CardItem from '@/components/ui/CardItem';
 
 const blogPosts = [
