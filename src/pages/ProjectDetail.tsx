@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Project {
   id: string;
@@ -97,7 +98,7 @@ const ProjectDetail = () => {
 
           {project.full_description && (
             <div className="prose prose-invert prose-lg max-w-none mb-8">
-              <ReactMarkdown>{project.full_description}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.full_description}</ReactMarkdown>
             </div>
           )}
 
