@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ExternalLink, Plus, X } from 'lucide-react';
+import { ExternalLink, Plus, X, Github } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 
@@ -159,20 +159,10 @@ const Projects = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects?.map((project) => (
-              <Card key={project.id} className="bg-white/[0.02] border-white/10 hover:bg-white/[0.05] hover:border-white/30 transition-all duration-300 group">
+              <Card key={project.id} className="relative bg-white/[0.02] border-white/10 hover:bg-white/[0.05] hover:border-white/30 transition-all duration-300 group">
                 <CardHeader>
                   <CardTitle className="flex items-start justify-between text-white">
                     <span className="text-xl font-bold">{project.title}</span>
-                    {project.repo_url && (
-                      <a
-                        href={project.repo_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-white/60 hover:text-white transition-colors"
-                      >
-                        <ExternalLink className="w-5 h-5" />
-                      </a>
-                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -194,6 +184,18 @@ const Projects = () => {
                     </div>
                   )}
                 </CardContent>
+                {project.repo_url && (
+                  <div className="absolute bottom-4 right-4">
+                    <a
+                      href={project.repo_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-white/60 hover:text-white transition-colors"
+                    >
+                      <Github className="w-6 h-6" />
+                    </a>
+                  </div>
+                )}
               </Card>
             ))}
           </div>
