@@ -32,6 +32,7 @@ const ManagePosts = () => {
     tags: '',
     image_url: ''
   });
+  const [authChecked, setAuthChecked] = useState(false);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -44,6 +45,7 @@ const ManagePosts = () => {
         navigate('/admin/login');
         toast({ title: 'Unauthorized', description: 'Please log in to access this page.', variant: 'destructive' });
       }
+      setAuthChecked(true);
     };
     checkUser();
   }, [navigate, toast]);
@@ -210,6 +212,14 @@ const ManagePosts = () => {
       addPostMutation.mutate(postData);
     }
   };
+
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-white/60 text-xl">Checking authentication...</div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
