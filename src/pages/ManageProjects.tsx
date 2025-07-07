@@ -30,6 +30,7 @@ const ManageProjects = () => {
     tech_tags: '',
     repo_url: ''
   });
+  const [authChecked, setAuthChecked] = useState(false);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -42,6 +43,7 @@ const ManageProjects = () => {
         navigate('/admin/login');
         toast({ title: 'Unauthorized', description: 'Please log in to access this page.', variant: 'destructive' });
       }
+      setAuthChecked(true);
     };
     checkUser();
   }, [navigate, toast]);
@@ -177,6 +179,14 @@ const ManageProjects = () => {
       addProjectMutation.mutate(projectData);
     }
   };
+
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-white/60 text-xl">Checking authentication...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white py-12 px-4">
