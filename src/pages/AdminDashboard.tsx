@@ -21,7 +21,7 @@ const AdminDashboard = () => {
     };
     checkUser();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session?.user) {
         navigate('/admin/login');
         toast({ title: 'Logged out', description: 'Your session has ended.', variant: 'destructive' });
@@ -31,7 +31,7 @@ const AdminDashboard = () => {
     });
 
     return () => {
-      authListener.unsubscribe();
+      subscription.unsubscribe();
     };
   }, [navigate, toast]);
 
