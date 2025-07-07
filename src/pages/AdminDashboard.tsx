@@ -45,8 +45,12 @@ const AdminDashboard = () => {
     }
   };
 
-  if (!user) {
-    return null; // Or a loading spinner
+  if (user === null) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-white/60 text-xl">Checking authentication...</div>
+      </div>
+    );
   }
 
   return (

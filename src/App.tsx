@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React, { Suspense } from "react";
 import ClickSpark from "@/components/ClickSpark";
 import HomeBackground from '@/components/HomeBackground';
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const Index = React.lazy(() => import("./pages/Index"));
 const Projects = React.lazy(() => import("./pages/Projects"));
@@ -26,36 +27,38 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <HomeBackground />
-        <Suspense fallback={
-          <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
-            <div className="relative w-24 h-24 mb-4">
-              <div className="absolute inset-0 rounded-full border-4 border-t-4 border-white/20 border-t-white animate-spin"></div>
-              <div className="absolute inset-4 rounded-full border-4 border-t-4 border-white/40 border-t-white animate-spin-reverse" style={{ animationDuration: '1.5s' }}></div>
+        <ErrorBoundary>
+          <Suspense fallback={
+            <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
+              <div className="relative w-24 h-24 mb-4">
+                <div className="absolute inset-0 rounded-full border-4 border-t-4 border-white/20 border-t-white animate-spin"></div>
+                <div className="absolute inset-4 rounded-full border-4 border-t-4 border-white/40 border-t-white animate-spin-reverse" style={{ animationDuration: '1.5s' }}></div>
+              </div>
+              <div className="text-xl font-medium tracking-wider">Loading...</div>
             </div>
-            <div className="text-xl font-medium tracking-wider">Loading...</div>
-          </div>
-        }>
-          <ClickSpark
-            sparkColor="#fff"
-            sparkSize={10}
-            sparkRadius={15}
-            sparkCount={8}
-            duration={400}
-          >
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/blogs" element={<Blogs />} />
-              <Route path="/blogs/:slug" element={<BlogPost />} />
-              <Route path="/projects/:id" element={<ProjectDetail />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/posts" element={<ManagePosts />} />
-              <Route path="/admin/projects" element={<ManageProjects />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            </Routes>
-          </ClickSpark>
-        </Suspense>
+          }>
+            <ClickSpark
+              sparkColor="#fff"
+              sparkSize={10}
+              sparkRadius={15}
+              sparkCount={8}
+              duration={400}
+            >
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/blogs" element={<Blogs />} />
+                <Route path="/blogs/:slug" element={<BlogPost />} />
+                <Route path="/projects/:id" element={<ProjectDetail />} />
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/posts" element={<ManagePosts />} />
+                <Route path="/admin/projects" element={<ManageProjects />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              </Routes>
+            </ClickSpark>
+          </Suspense>
+        </ErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
