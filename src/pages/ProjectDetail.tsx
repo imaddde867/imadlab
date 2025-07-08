@@ -102,12 +102,13 @@ const ProjectDetail = () => {
           <pre
             ref={codeRef}
             className={
-              `rounded-xl overflow-x-auto p-4 text-sm font-mono bg-[#18181b] border border-white/10 text-white/90 max-w-none transition-shadow group-hover:shadow-2xl` +
+              `overflow-x-auto p-4 text-sm font-mono bg-transparent border-0 text-white/90 max-w-none` +
               (className ? ` ${className}` : '')
             }
             style={{
-              background: '#18181b',
-              border: '1px solid rgba(255,255,255,0.08)',
+              background: 'black',
+              border: 'none',
+              boxShadow: 'none',
             }}
           >
             <code {...props}>{children}</code>
