@@ -61,7 +61,7 @@ const NewsletterPopup: React.FC = () => {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
+        <DialogContent className="bg-transparent border-none shadow-none p-0 flex items-center justify-center">
           <div className="bg-black/95 border border-white/10 shadow-2xl rounded-2xl max-w-md p-8 text-white relative mx-auto w-full">
             <button
               onClick={() => setIsOpen(false)}
