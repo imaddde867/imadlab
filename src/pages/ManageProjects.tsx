@@ -275,6 +275,11 @@ const ManageProjects = () => {
                 <h3 className="text-xl font-bold mb-2">{project.title}</h3>
                 <p className="text-white/70 text-sm mb-4">Description: {project.description}</p>
                 <div className="flex gap-2 mt-auto">
+                  <Button asChild className="bg-green-600 hover:bg-green-700 text-white flex-1">
+                    <Link to={`/projects/${project.id}`} target="_blank" rel="noopener noreferrer">
+                      Open
+                    </Link>
+                  </Button>
                   <Button onClick={() => handleEditClick(project)} className="bg-blue-600 hover:bg-blue-700 text-white flex-1">
                     <Edit className="w-4 h-4 mr-2" /> Edit
                   </Button>

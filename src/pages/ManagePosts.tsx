@@ -313,6 +313,11 @@ const ManagePosts = () => {
               <p className="text-white/70 text-sm mb-2">Slug: {post.slug}</p>
               <p className="text-white/70 text-sm mb-4">Published: {new Date(post.published_date).toLocaleDateString()}</p>
               <div className="flex gap-2 mt-auto">
+                <Button asChild className="bg-green-600 hover:bg-green-700 text-white flex-1">
+                  <Link to={`/blog/${post.slug}`} target="_blank" rel="noopener noreferrer">
+                    Open
+                  </Link>
+                </Button>
                 <Button onClick={() => handleEditClick(post)} className="bg-blue-600 hover:bg-blue-700 text-white flex-1">
                   <Edit className="w-4 h-4 mr-2" /> Edit
                 </Button>
