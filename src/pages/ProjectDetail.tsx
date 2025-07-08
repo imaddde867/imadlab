@@ -144,6 +144,19 @@ const ProjectDetail = () => {
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
+        <div className="absolute top-6 right-8 z-20">
+          {project.repo_url && (
+            <a
+              href={project.repo_url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white shadow-lg">
+                View on GitHub <ArrowUpRight className="w-4 h-4 ml-2" />
+              </Button>
+            </a>
+          )}
+        </div>
         <div className="absolute inset-0 flex items-end pb-16 px-4 md:px-8 max-w-4xl mx-auto">
           <div className="w-full">
             <Link to="/projects" className="inline-flex items-center text-white/60 hover:text-white mb-4 transition-colors">
@@ -153,6 +166,18 @@ const ProjectDetail = () => {
             <h1 className="text-4xl md:text-5xl font-black mb-4 leading-tight">
               {project.title}
             </h1>
+            {project.tech_tags && project.tech_tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2 mb-6">
+                {project.tech_tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 text-sm bg-white/10 rounded-full text-white/80"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -169,31 +194,6 @@ const ProjectDetail = () => {
               >
                 {project.full_description}
               </ReactMarkdown>
-            </div>
-          )}
-          {project.tech_tags && project.tech_tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-4">
-              {project.tech_tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 text-sm bg-white/10 rounded-full text-white/80"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-          {project.repo_url && (
-            <div className="mt-8">
-              <a
-                href={project.repo_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white shadow-lg">
-                  View on GitHub <ArrowUpRight className="w-4 h-4 ml-2" />
-                </Button>
-              </a>
             </div>
           )}
         </div>
