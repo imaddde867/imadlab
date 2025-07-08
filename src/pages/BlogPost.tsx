@@ -1,4 +1,3 @@
-
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,6 +5,7 @@ import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 interface Post {
   id: string;
@@ -149,7 +149,28 @@ const BlogPost = () => {
       <div className="max-w-4xl mx-auto py-12 px-4 md:px-8">
         {post.body && (
           <div className="prose prose-invert prose-lg max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                img: ({ node, ...props }) => (
+                  <img
+                    {...props}
+                    style={{
+                      display: 'block',
+                      marginLeft: 'auto',
+                      marginRight: 'auto',
+                      maxWidth: '100%',
+                      marginTop: '2rem',
+                      marginBottom: '2rem',
+                      borderRadius: '0.75rem',
+                      boxShadow: '0 4px 32px 0 rgba(0,0,0,0.15)'
+                    }}
+                    alt={props.alt || ''}
+                  />
+                )
+              }}
+            >
               {post.body}
             </ReactMarkdown>
           </div>
