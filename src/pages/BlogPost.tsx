@@ -50,7 +50,7 @@ const BlogPost = () => {
           maxWidth: '100%',
           height: 'auto',
         }}
-        className="my-8 rounded-xl shadow-lg border border-white/10"
+        className="my-8 rounded-xl shadow-lg"
         alt={props.alt || ''}
       />
     ),
