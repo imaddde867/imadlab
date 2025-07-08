@@ -33,20 +33,12 @@ const NewsletterPopup: React.FC = () => {
       .insert([{ email }]);
 
     if (error) {
-      if (error.code === '23505') { // Unique constraint violation
-        toast({
-          title: "Already Subscribed",
-          description: "This email is already on our list!",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to subscribe. Please try again.",
-          variant: "destructive",
-        });
-      }
-      console.error('Error subscribing:', error.message);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to subscribe. Please try again.",
+        variant: "destructive",
+      });
+      console.error('Error subscribing:', error);
     } else {
       toast({
         title: "Success!",
