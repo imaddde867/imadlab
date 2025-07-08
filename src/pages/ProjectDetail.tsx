@@ -167,7 +167,7 @@ const ProjectDetail = () => {
               {project.title}
             </h1>
             {project.tech_tags && project.tech_tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2 mb-6">
+              <div className="flex flex-wrap gap-2 mt-2 mb-0"> {/* Remove extra space below tags */}
                 {project.tech_tags.map((tag, index) => (
                   <span
                     key={index}
@@ -186,7 +186,7 @@ const ProjectDetail = () => {
       <div className="max-w-4xl mx-auto py-12 px-4 md:px-8">
         <div className="bg-white/5 rounded-2xl shadow-xl border border-white/10 p-8 md:p-12">
           {project.full_description && (
-            <div className="prose prose-invert prose-lg max-w-none mb-8">
+            <div className="prose prose-invert prose-lg max-w-none mb-8 mt-0"> {/* Remove space above description */}
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
