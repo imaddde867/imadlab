@@ -185,7 +185,7 @@ const BlogPost = () => {
               {post.title}
             </h1>
             {post.tags && post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2 mb-6">
+              <div className="flex flex-wrap gap-2 mt-2 mb-0"> {/* Remove extra space below tags */}
                 {post.tags.map((tag, index) => (
                   <span
                     key={index}
@@ -220,7 +220,7 @@ const BlogPost = () => {
       <div className="max-w-4xl mx-auto py-12 px-4 md:px-8">
         <div className="bg-white/5 rounded-2xl shadow-xl border border-white/10 p-8 md:p-12">
           {post.body && (
-            <div className="prose prose-invert prose-lg max-w-none mb-8">
+            <div className="prose prose-invert prose-lg max-w-none mb-8 mt-0"> {/* Remove space above description */}
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
