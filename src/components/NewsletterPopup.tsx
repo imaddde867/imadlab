@@ -61,38 +61,40 @@ const NewsletterPopup: React.FC = () => {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="bg-black/95 border border-white/10 shadow-2xl rounded-2xl max-w-md p-8 text-white relative">
-          <DialogClose asChild>
+        <DialogContent>
+          <div className="bg-black/95 border border-white/10 shadow-2xl rounded-2xl max-w-md p-8 text-white relative mx-auto w-full">
             <button
-              className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-white/30"
+              onClick={() => setIsOpen(false)}
+              className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-white/30 z-10"
               aria-label="Close"
+              type="button"
             >
               <X className="w-5 h-5" />
             </button>
-          </DialogClose>
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-white mb-1">Stay Updated!</DialogTitle>
-            <DialogDescription className="text-white/60 mb-4">
-              Subscribe to my newsletter to get email updates on new projects and blog posts.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
-            <Input
-              type="email"
-              placeholder="Your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="bg-zinc-900/80 border border-white/10 text-white placeholder:text-white/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-white/30 focus:border-white/30 transition-all"
-            />
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg py-3 transition-colors border border-white/10 shadow"
-            >
-              {isSubmitting ? 'Subscribing...' : 'Subscribe'}
-            </Button>
-          </form>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white mb-1">Stay Updated!</DialogTitle>
+              <DialogDescription className="text-white/60 mb-4">
+                Subscribe to my newsletter to get email updates on new projects and blog posts.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
+              <Input
+                type="email"
+                placeholder="Your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="bg-zinc-900/80 border border-white/10 text-white placeholder:text-white/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-white/30 focus:border-white/30 transition-all"
+              />
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg py-3 transition-colors border border-white/10 shadow"
+              >
+                {isSubmitting ? 'Subscribing...' : 'Subscribe'}
+              </Button>
+            </form>
+          </div>
         </DialogContent>
       </Dialog>
       <Toaster />
