@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 interface Project {
   id: string;
@@ -104,7 +105,27 @@ const ProjectDetail = () => {
       <div className="max-w-4xl mx-auto py-12 px-4 md:px-8">
         {project.full_description && (
           <div className="prose prose-invert prose-lg max-w-none mb-8">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.full_description}</ReactMarkdown>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                img: ({ node, ...props }) => (
+                  <img
+                    {...props}
+                    style={{
+                      display: 'block',
+                      marginLeft: 'auto',
+                      marginRight: 'auto',
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
+                    className="my-8 rounded-xl shadow-lg"
+                  />
+                ),
+              }}
+            >
+              {project.full_description}
+            </ReactMarkdown>
           </div>
         )}
 
