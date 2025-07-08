@@ -153,49 +153,50 @@ const ProjectDetail = () => {
             <h1 className="text-4xl md:text-5xl font-black mb-4 leading-tight">
               {project.title}
             </h1>
-            {project.tech_tags && project.tech_tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {project.tech_tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 text-sm bg-white/10 rounded-full text-white/80"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </div>
 
       {/* Content Section */}
       <div className="max-w-4xl mx-auto py-12 px-4 md:px-8">
-        {project.full_description && (
-          <div className="prose prose-invert prose-lg max-w-none mb-8">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeRaw]}
-              components={MarkdownComponents}
-            >
-              {project.full_description}
-            </ReactMarkdown>
-          </div>
-        )}
-
-        {project.repo_url && (
-        <div className="fixed top-4 right-4 md:top-8 md:right-8 z-50">
-          <a
-            href={project.repo_url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white shadow-lg">
-              View on GitHub <ArrowUpRight className="w-4 h-4 ml-2" />
-            </Button>
-          </a>
+        <div className="bg-white/5 rounded-2xl shadow-xl border border-white/10 p-8 md:p-12">
+          {project.full_description && (
+            <div className="prose prose-invert prose-lg max-w-none mb-8">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={MarkdownComponents}
+              >
+                {project.full_description}
+              </ReactMarkdown>
+            </div>
+          )}
+          {project.tech_tags && project.tech_tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {project.tech_tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 text-sm bg-white/10 rounded-full text-white/80"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+          {project.repo_url && (
+            <div className="mt-8">
+              <a
+                href={project.repo_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white shadow-lg">
+                  View on GitHub <ArrowUpRight className="w-4 h-4 ml-2" />
+                </Button>
+              </a>
+            </div>
+          )}
         </div>
-      )}
       </div>
     </div>
   );

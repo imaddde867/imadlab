@@ -196,18 +196,6 @@ const BlogPost = () => {
                   {post.read_time} min read
                 </div>
               )}
-              {post.tags && post.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {post.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 text-xs bg-white/10 rounded-full text-white/80"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -215,17 +203,31 @@ const BlogPost = () => {
 
       {/* Content Section */}
       <div className="max-w-4xl mx-auto py-12 px-4 md:px-8">
-        {post.body && (
-          <div className="prose prose-invert prose-lg max-w-none">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeRaw]}
-              components={MarkdownComponents}
-            >
-              {post.body}
-            </ReactMarkdown>
-          </div>
-        )}
+        <div className="bg-white/5 rounded-2xl shadow-xl border border-white/10 p-8 md:p-12">
+          {post.body && (
+            <div className="prose prose-invert prose-lg max-w-none mb-8">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={MarkdownComponents}
+              >
+                {post.body}
+              </ReactMarkdown>
+            </div>
+          )}
+          {post.tags && post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {post.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 text-sm bg-white/10 rounded-full text-white/80"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
