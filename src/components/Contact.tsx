@@ -38,7 +38,11 @@ const Contact = () => {
           "Accept": "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          name: values.name,
+          email: values.email,
+          message: values.message
+        }),
       });
 
       if (response.ok) {
