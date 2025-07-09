@@ -56,10 +56,17 @@ const SpotifyNowPlaying: React.FC = () => {
 
   if (!data || !data.isPlaying) {
     return (
-      <div className="flex items-center p-4 bg-white/5 rounded-lg shadow-lg text-white/80">
-        <Music className="w-5 h-5 mr-3" />
-        <span>Not listening to anything on Spotify right now.<br className="hidden md:block" />
-        <span className="text-white/40 text-xs block mt-1">Check back later to see what I&apos;m vibing to!</span></span>
+      <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg shadow-lg text-white/80">
+        <span className="flex items-center justify-center w-10 h-10 mr-2">
+          <Music className="w-7 h-7 text-green-400/80" />
+        </span>
+        <span>
+          <span className="font-semibold text-white">Not playing music</span>
+          <br className="hidden md:block" />
+          <span className="text-white/40 text-xs block mt-1">
+            My spotify seems quiet right now. Maybe I&apos;m coding, sleeping or just taking a break?
+          </span>
+        </span>
       </div>
     );
   }
