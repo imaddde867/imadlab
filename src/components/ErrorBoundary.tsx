@@ -6,7 +6,7 @@ interface ErrorBoundaryProps {
 
 interface ErrorBoundaryState {
   hasError: boolean;
-  error: any;
+  error: unknown;
 }
 
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
@@ -15,11 +15,11 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error: any) {
+  static getDerivedStateFromError(error: unknown) {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: any, errorInfo: any) {
+  componentDidCatch(error: unknown, errorInfo: React.ErrorInfo) {
     // You can log error info here
     // console.error(error, errorInfo);
   }
@@ -29,7 +29,11 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       return (
         <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
           <h1 className="text-3xl font-bold mb-4">Something went wrong.</h1>
-          <pre className="text-red-400 mb-2">{this.state.error?.message || String(this.state.error)}</pre>
+          <pre className="text-red-400 mb-2">
+            {typeof this.state.error === 'object' && this.state.error && 'message' in this.state.error
+              ? (this.state.error as { message?: string }).message
+              : String(this.state.error)}
+          </pre>
           <button className="bg-white/10 text-white px-4 py-2 rounded" onClick={() => window.location.reload()}>Reload</button>
         </div>
       );

@@ -3,7 +3,7 @@ import React, { useRef } from 'react';
 import { Check, Copy } from 'lucide-react';
 
 export const MarkdownComponents = {
-  img: ({ node, ...props }: any) => (
+  img: ({ node, ...props }: { node?: unknown } & React.ImgHTMLAttributes<HTMLImageElement>) => (
     <img
       {...props}
       style={{
@@ -17,7 +17,7 @@ export const MarkdownComponents = {
       alt={props.alt || ''}
     />
   ),
-  code: ({ node, inline = false, className, children, ...props }: { node: any; inline?: boolean; className?: string; children: React.ReactNode }) => {
+  Code: ({ node, inline = false, className, children, ...props }: { node?: unknown; inline?: boolean; className?: string; children: React.ReactNode }) => {
     const codeRef = useRef<HTMLPreElement>(null);
     const [copied, setCopied] = React.useState(false);
     const codeString = String(children).replace(/\n$/, '');

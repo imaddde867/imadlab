@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ email: string } | null>(null);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -16,7 +16,7 @@ const AdminDashboard = () => {
         navigate('/admin/login');
         toast({ title: 'Unauthorized', description: 'Please log in to access the admin dashboard.', variant: 'destructive' });
       } else {
-        setUser(user);
+        setUser({ email: user.email });
       }
     };
     checkUser();
@@ -26,7 +26,7 @@ const AdminDashboard = () => {
         navigate('/admin/login');
         toast({ title: 'Logged out', description: 'Your session has ended.', variant: 'destructive' });
       } else {
-        setUser(session.user);
+        setUser(session.user ? { email: session.user.email } : null);
       }
     });
 
@@ -62,7 +62,7 @@ const AdminDashboard = () => {
             Logout
           </Button>
         </div>
-        <p className="text-white/70 mb-8">Welcome, {user.email}!</p>
+        <p className="text-white/70 mb-8">Welcome, {user?.email}!</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Link to="/admin/posts">
