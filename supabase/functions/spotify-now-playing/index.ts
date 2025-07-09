@@ -94,7 +94,7 @@ serve(async (req) => {
     const data = {
       isPlaying: songData.is_playing,
       title: songData.item?.name,
-      artist: songData.item?.artists?.map((a: any) => a.name).join(", "),
+      artist: songData.item?.artists?.map((a: { name: string }) => a.name).join(", "),
       album: songData.item?.album?.name,
       albumImageUrl: songData.item?.album?.images?.[0]?.url,
       songUrl: songData.item?.external_urls?.spotify,

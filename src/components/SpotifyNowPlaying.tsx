@@ -24,8 +24,8 @@ const SpotifyNowPlaying: React.FC = () => {
         }
         const result: SpotifyData = await response.json();
         setData(result);
-      } catch (e: any) {
-        setError(e.message);
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : String(e));
       } finally {
         setLoading(false);
       }

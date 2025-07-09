@@ -60,7 +60,7 @@ const ManagePosts = () => {
       
       if (error) throw error;
       // Ensure all required fields exist for Post type
-      return (data as any[]).map((item) => ({
+      return (data as { read_time?: number; image_url?: string | null }[]).map((item) => ({
         ...item,
         read_time: item.read_time ?? 0,
         image_url: item.image_url ?? null,
