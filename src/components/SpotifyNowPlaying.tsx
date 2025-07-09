@@ -61,10 +61,10 @@ const SpotifyNowPlaying: React.FC = () => {
           <Music className="w-7 h-7 text-green-400/80" />
         </span>
         <span>
-          <span className="font-semibold text-white">Not playing music</span>
+          <span className="font-semibold text-white">Not listening to anything</span>
           <br className="hidden md:block" />
           <span className="text-white/40 text-xs block mt-1">
-            My spotify seems quiet right now. Maybe I&apos;m coding, sleeping or just taking a break?
+            Live Spotify status - check back to see what I'm vibing to
           </span>
         </span>
       </div>
