@@ -1,14 +1,14 @@
-# imadlab: Imad Labidi’s Data Engineering & AI Portfolio
+# imadlab: Imad Eddine El mouss’s Data Engineering & AI Portfolio
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/imaddde867/imadlab/deploy.yml?branch=main)](https://github.com/imaddde867/imadlab/actions)
 [![MIT License](https://img.shields.io/github/license/imaddde867/imadlab)](LICENSE)
 
 **Website:** [imadlab.me](https://imadlab.me)  
-**Author:** Imad Labidi — Data Engineer, AI/ML Professional, Student
+**Author:** Imad Eddine El mouss — Data Engineer, AI/ML Professional, Student
 
 ---
 
-Welcome to **imadlab**, the digital portfolio and blog of Imad Labidi. This site showcases my journey, projects, and expertise in data engineering, artificial intelligence, and machine learning. Here, you’ll find technical articles, project case studies, and resources for data science and software development.
+Welcome to **imadlab**, the digital portfolio and blog of Imad Eddine El mouss. This site showcases my journey, projects, and expertise in data engineering, artificial intelligence, and machine learning. Here, you’ll find technical articles, project case studies, and resources for data science and software development.
 
 ## 🚀 Quick Links
 - [Live Site](https://imadlab.me)
