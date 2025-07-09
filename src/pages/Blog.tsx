@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
 import { ArrowLeft } from 'lucide-react';
+import Seo from '@/components/Seo';
 
 interface Post {
   id: string;
@@ -33,6 +34,10 @@ const Blogs = () => {
 
   return (
     <div className="min-h-screen bg-black text-white py-24 px-4">
+      <Seo
+        title="Blog"
+        description="Read articles and tutorials on data engineering, AI, machine learning, and more. Stay up-to-date with the latest trends and technologies."
+      />
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
