@@ -63,7 +63,8 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, {
       headers: {
-        "Access-Control-Allow-Origin": "https://imadlab.me",
+        "Access-Control-Allow-Origin": req.headers.get("origin") ?? "*",
+        "Vary": "Origin",
         "Access-Control-Allow-Methods": "GET, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
@@ -79,7 +80,8 @@ serve(async (req) => {
         headers: {
           "Content-Type": "application/json",
           "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
-          "Access-Control-Allow-Origin": "https://imadlab.me",
+          "Access-Control-Allow-Origin": req.headers.get("origin") ?? "*",
+          "Vary": "Origin",
           "Access-Control-Allow-Methods": "GET, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type, Authorization",
         },
@@ -102,7 +104,8 @@ serve(async (req) => {
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
-        "Access-Control-Allow-Origin": "https://imadlab.me",
+        "Access-Control-Allow-Origin": req.headers.get("origin") ?? "*",
+        "Vary": "Origin",
         "Access-Control-Allow-Methods": "GET, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
@@ -115,7 +118,8 @@ serve(async (req) => {
       {
         headers: {
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "https://imadlab.me",
+          "Access-Control-Allow-Origin": req.headers.get("origin") ?? "*",
+          "Vary": "Origin",
           "Access-Control-Allow-Methods": "GET, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type, Authorization",
         },
