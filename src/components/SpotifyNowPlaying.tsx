@@ -40,7 +40,8 @@ const SpotifyNowPlaying: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-4 bg-white/5 rounded-lg shadow-lg text-white/80">
-        <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading Spotify data...
+        <Loader2 className="w-5 h-5 animate-spin mr-2" />
+        <span>Checking what I&apos;m listening to on Spotify...</span>
       </div>
     );
   }
@@ -48,7 +49,7 @@ const SpotifyNowPlaying: React.FC = () => {
   if (error) {
     return (
       <div className="flex items-center justify-center p-4 bg-red-900/50 rounded-lg shadow-lg text-red-300">
-        Error loading Spotify data: {error}
+        Could not load Spotify status.
       </div>
     );
   }
@@ -56,35 +57,40 @@ const SpotifyNowPlaying: React.FC = () => {
   if (!data || !data.isPlaying) {
     return (
       <div className="flex items-center p-4 bg-white/5 rounded-lg shadow-lg text-white/80">
-        <Music className="w-5 h-5 mr-3" /> Not currently listening to Spotify.
+        <Music className="w-5 h-5 mr-3" />
+        <span>Not listening to anything on Spotify right now.<br className="hidden md:block" />
+        <span className="text-white/40 text-xs block mt-1">Check back later to see what I&apos;m vibing to!</span></span>
       </div>
     );
   }
 
   return (
-    <a
-      href={data.songUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center p-4 bg-white/5 rounded-lg shadow-lg transition-all duration-300 hover:bg-white/10 group"
-    >
-      {data.albumImageUrl && (
-        <img
-          src={data.albumImageUrl}
-          alt={data.album}
-          className="w-16 h-16 rounded-md mr-4 shadow-md"
-        />
-      )}
-      <div className="flex-1">
-        <p className="text-white font-semibold text-lg group-hover:text-green-400 transition-colors duration-300">
-          {data.title}
-        </p>
-        <p className="text-white/70 text-sm">
-          {data.artist} &bull; {data.album}
-        </p>
-      </div>
-      <Music className="w-6 h-6 text-white/60 ml-4 group-hover:text-green-400 transition-colors duration-300" />
-    </a>
+    <div className="flex flex-col gap-2 p-4 bg-white/5 rounded-lg shadow-lg transition-all duration-300 hover:bg-white/10 group">
+      <span className="text-white/60 text-xs mb-1">Right now I&apos;m listening to</span>
+      <a
+        href={data.songUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-4 group"
+      >
+        {data.albumImageUrl && (
+          <img
+            src={data.albumImageUrl}
+            alt={data.album}
+            className="w-16 h-16 rounded-md shadow-md border border-white/10"
+          />
+        )}
+        <div className="flex-1 min-w-0">
+          <p className="text-white font-semibold text-lg truncate group-hover:text-green-400 transition-colors duration-300">
+            {data.title}
+          </p>
+          <p className="text-white/70 text-sm truncate">
+            {data.artist} &bull; {data.album}
+          </p>
+        </div>
+        <Music className="w-6 h-6 text-green-400 ml-4 animate-pulse" />
+      </a>
+    </div>
   );
 };
 
