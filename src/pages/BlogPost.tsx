@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import React, { useRef } from 'react';
+import Seo from '@/components/Seo';
 
 interface Post {
   id: string;
@@ -135,6 +136,8 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      <Seo title={post.title} description={post.excerpt || ''} />
+
       {/* Hero Section */}
       <div className="relative w-full h-96 md:h-[500px] overflow-hidden">
         {post.image_url && (

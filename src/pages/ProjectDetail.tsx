@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import Seo from '@/components/Seo';
 
 interface Project {
   id: string;
@@ -134,6 +135,8 @@ const ProjectDetail = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      <Seo title={project.title} description={project.description || ''} />
+
       {/* Hero Section */}
       <div className="relative w-full h-96 md:h-[500px] overflow-hidden">
         {project.image_url && (
