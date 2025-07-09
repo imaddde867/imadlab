@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
 import { ArrowLeft } from 'lucide-react';
+import Seo from '@/components/Seo';
 
 interface Project {
   id: string;
@@ -32,6 +33,10 @@ const Projects = () => {
 
   return (
     <div className="min-h-screen bg-black text-white py-24 px-4">
+      <Seo
+        title="Projects"
+        description="Explore a collection of my projects in data engineering, AI, and machine learning. See live demos and browse the source code."
+      />
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">

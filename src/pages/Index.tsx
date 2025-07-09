@@ -2,6 +2,7 @@ import Hero from '@/components/Hero';
 import Projects from '@/components/Projects';
 import TechStack from '@/components/TechStack';
 import Marquee from '@/components/Marquee';
+import Seo from '@/components/Seo';
 
 import BlogFeed from '@/components/BlogFeed';
 import Contact from '@/components/Contact';
@@ -10,6 +11,10 @@ import HomeBackground from '@/components/HomeBackground';
 const Index = () => {
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
+      <Seo
+        title="Home"
+        description="Welcome to the portfolio of Imad Eddine Elmouss, a Data Engineer and AI/ML professional. Explore projects, articles, and insights on data science, machine learning, and software engineering."
+      />
       <HomeBackground />
       <Hero />
       <Projects />
