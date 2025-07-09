@@ -33,12 +33,30 @@ async function getNowPlaying() {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      headers: {
+        "Access-Control-Allow-Origin": "https://imadlab.me",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+      status: 204,
+    });
+  }
+
   try {
     const song = await getNowPlaying();
 
     if (song.status === 204 || song.status > 400) {
       return new Response(JSON.stringify({ isPlaying: false }), {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
+          "Access-Control-Allow-Origin": "https://imadlab.me",
+          "Access-Control-Allow-Methods": "GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        },
         status: 200,
       });
     }
@@ -47,11 +65,11 @@ serve(async (req) => {
 
     const data = {
       isPlaying: songData.is_playing,
-      title: songData.item.name,
-      artist: songData.item.artists.map((a: any) => a.name).join(", "),
-      album: songData.item.album.name,
-      albumImageUrl: songData.item.album.images[0].url,
-      songUrl: songData.item.external_urls.spotify,
+      title: songData.item?.name,
+      artist: songData.item?.artists?.map((a: any) => a.name).join(", "),
+      album: songData.item?.album?.name,
+      albumImageUrl: songData.item?.album?.images?.[0]?.url,
+      songUrl: songData.item?.external_urls?.spotify,
     };
 
     return new Response(JSON.stringify(data), {
@@ -77,21 +95,3 @@ serve(async (req) => {
     });
   }
 });
-
-serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response(null, {
-      headers: {
-        "Access-Control-Allow-Origin": "https://imadlab.me",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      },
-      status: 204,
-    });
-  }
-  // Handle actual requests
-  return await handler(req);
-});
-
-async function handler(req: Request) {
