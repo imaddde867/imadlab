@@ -79,19 +79,20 @@ const ProjectDetail = () => {
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
-        <div className="absolute top-6 right-8 z-20">
-          {project.repo_url && (
+        {/* Sticky GitHub button */}
+        {project.repo_url && (
+          <div className="fixed top-8 right-8 z-40">
             <a
               href={project.repo_url}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white shadow-lg">
+              <Button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white shadow-lg backdrop-blur-md">
                 View on GitHub <ArrowUpRight className="w-4 h-4 ml-2" />
               </Button>
             </a>
-          )}
-        </div>
+          </div>
+        )}
         <div className="absolute inset-0 flex items-end pb-16 px-4 md:px-8 max-w-4xl mx-auto">
           <div className="w-full">
             <Link to="/projects" className="inline-flex items-center text-white/60 hover:text-white mb-4 transition-colors">
