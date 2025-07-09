@@ -18,6 +18,7 @@ const AdminLogin = React.lazy(() => import("./pages/AdminLogin"));
 const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
 const ManagePosts = React.lazy(() => import("./pages/ManagePosts"));
 const ManageProjects = React.lazy(() => import("./pages/ManageProjects"));
+const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -57,6 +58,7 @@ const App = () => (
                   <Route path="/admin/posts" element={<ManagePosts />} />
                   <Route path="/admin/projects" element={<ManageProjects />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </ClickSpark>
             </Suspense>
