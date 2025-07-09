@@ -53,10 +53,17 @@ const NewsletterPopup: React.FC = () => {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="bg-transparent border-none shadow-none p-0 flex items-center justify-center custom-dialog-content">
+        <DialogContent className="bg-transparent border-none shadow-none p-0 flex items-center justify-center">
           <div className="bg-black/95 border border-white/10 shadow-2xl rounded-2xl max-w-md p-8 text-white relative mx-auto w-full">
-            {/* Only one clean close button, styled and positioned top-right, not duplicated */}
-            {/* Remove custom close button, rely on Dialog's default close button */}
+            {/* Single, well-styled close button inside the box */}
+            <button
+              aria-label="Close"
+              onClick={() => setIsOpen(false)}
+              className="absolute top-4 right-4 z-10 rounded-full p-2 hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-white/30 bg-black/80"
+              type="button"
+            >
+              <X className="w-5 h-5" />
+            </button>
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-white mb-1">Stay Updated!</DialogTitle>
               <DialogDescription className="text-white/60 mb-4">
@@ -84,13 +91,6 @@ const NewsletterPopup: React.FC = () => {
         </DialogContent>
       </Dialog>
       <Toaster />
-      <style>{`
-        /* Hide any default close button if present in DialogContent */
-        .custom-dialog-content [data-dialog-close],
-        .custom-dialog-content .dialog-close {
-          display: none !important;
-        }
-      `}</style>
     </>
   );
 };

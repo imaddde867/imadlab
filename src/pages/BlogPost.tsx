@@ -88,65 +88,41 @@ const BlogPost = () => {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Blog
             </Link>
-            {/* Schema.org JSON-LD for BlogPosting */}
-            <script type="application/ld+json" dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "BlogPosting",
-                "headline": post.title,
-                "description": post.excerpt || (post.body ? post.body.substring(0, 160) + '...' : ''),
-                "image": post.image_url,
-                "datePublished": post.published_date,
-                "author": {
-                  "@type": "Person",
-                  "name": "Imad Eddine"
-                },
-                "publisher": {
-                  "@type": "Organization",
-                  "name": "ImadLab",
-                  "logo": {
-                    "@type": "ImageObject",
-                    "url": "https://imad.dev/android-chrome-192x192.png"
-                  }
-                },
-                "mainEntityOfPage": {
-                  "@type": "WebPage",
-                  "@id": `https://imad.dev/blogs/${post.slug}`
-                },
-                "articleBody": post.body
-              })
-            }} />
             <h1 className="text-4xl md:text-5xl font-black mb-4 leading-tight">
               {post.title}
             </h1>
-            {post.tags && post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2 mb-0"> {/* Remove extra space below tags */}
-                {post.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 text-sm bg-white/10 rounded-full text-white/80"
-                  >
-                    #{tag}
-                  </span>
-                ))}
+            {(post.tags?.length || post.published_date || post.read_time) && (
+              <div className="flex flex-wrap items-center gap-2 mt-2 mb-0"> {/* Consistent with ProjectDetail */}
+                {post.tags && post.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {post.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 text-sm bg-white/10 rounded-full text-white/80"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {post.published_date && (
+                  <div className="flex items-center gap-2 text-sm text-white/60">
+                    <Calendar className="w-4 h-4" />
+                    {new Date(post.published_date).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </div>
+                )}
+                {post.read_time && (
+                  <div className="flex items-center gap-2 text-sm text-white/60">
+                    <Clock className="w-4 h-4" />
+                    {post.read_time} min read
+                  </div>
+                )}
               </div>
             )}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-white/60">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                {new Date(post.published_date).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </div>
-              {post.read_time && (
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  {post.read_time} min read
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>
