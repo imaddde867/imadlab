@@ -26,6 +26,8 @@ const Contact = () => {
       email: "",
       message: "",
     },
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -33,6 +35,7 @@ const Contact = () => {
       const response = await fetch("https://formspree.io/f/manjzpvz", {
         method: "POST",
         headers: {
+          "Accept": "application/json",
           "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
@@ -42,7 +45,8 @@ const Contact = () => {
         toast({ title: "Message sent successfully!" });
         form.reset();
       } else {
-        toast({ title: "Failed to send message.", variant: "destructive" });
+        const data = await response.json();
+        toast({ title: data?.error || "Failed to send message.", variant: "destructive" });
       }
     } catch (error) {
       toast({ title: "An error occurred.", variant: "destructive" });
@@ -80,7 +84,7 @@ const Contact = () => {
           {/* Contact form */}
           <div className="lg:col-span-7 lg:col-start-1 relative z-10">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" noValidate>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
@@ -181,7 +185,7 @@ const Contact = () => {
         {/* Footer */}
         <footer className="mt-24 pt-12 border-t border-white/10 text-center">
           <p className="text-white/50 text-sm">
-            © 2025 Imad Eddine. Crafted with precision and passion{' '}
+            © 2025 Imad Eddine. Crafted with care{' '}
             <a href="https://imadlab.me/admin/login" className="inline-block align-middle hover:text-white transition-colors" title="Admin Login">
               🤍
             </a>
