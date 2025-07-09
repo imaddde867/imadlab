@@ -4,6 +4,28 @@ const SPOTIFY_CLIENT_ID = Deno.env.get("SPOTIFY_CLIENT_ID");
 const SPOTIFY_CLIENT_SECRET = Deno.env.get("SPOTIFY_CLIENT_SECRET");
 const SPOTIFY_REFRESH_TOKEN = Deno.env.get("SPOTIFY_REFRESH_TOKEN");
 
+// Validate environment variables
+if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !SPOTIFY_REFRESH_TOKEN) {
+  serve((_req) =>
+    new Response(
+      JSON.stringify({
+        error: "Missing Spotify environment variables. Please check SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, and SPOTIFY_REFRESH_TOKEN.",
+      }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "https://imadlab.me",
+          "Access-Control-Allow-Methods": "GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        },
+        status: 500,
+      }
+    )
+  );
+  // Exit early if env vars are missing
+  throw new Error("Missing Spotify environment variables");
+}
+
 const NOW_PLAYING_ENDPOINT = `https://api.spotify.com/v1/me/player/currently-playing`;
 const TOKEN_ENDPOINT = `https://accounts.spotify.com/api/token`;
 
@@ -20,16 +42,20 @@ async function getAccessToken() {
       refresh_token: SPOTIFY_REFRESH_TOKEN || "",
     }),
   });
+  if (!response.ok) {
+    throw new Error(`Failed to get access token: ${response.status} ${response.statusText}`);
+  }
   return response.json();
 }
 
 async function getNowPlaying() {
   const { access_token } = await getAccessToken();
-  return fetch(NOW_PLAYING_ENDPOINT, {
+  const res = await fetch(NOW_PLAYING_ENDPOINT, {
     headers: {
       Authorization: `Bearer ${access_token}`,
     },
   });
+  return res;
 }
 
 serve(async (req) => {
@@ -84,14 +110,17 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error("Error in Edge Function:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "https://imadlab.me",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      },
-      status: 500,
-    });
+    return new Response(
+      JSON.stringify({ error: error.message || String(error) }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "https://imadlab.me",
+          "Access-Control-Allow-Methods": "GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        },
+        status: 500,
+      }
+    );
   }
 });
