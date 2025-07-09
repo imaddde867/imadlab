@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import SpotifyNowPlaying from '@/components/SpotifyNowPlaying';
 
 const Contact = () => {
   const { toast } = useToast();
@@ -172,15 +173,8 @@ const Contact = () => {
               </div>
             </div>
 
-            {/* Deming quote */}
-            <div className="p-8 bg-white/[0.02] border border-white/10 rounded-2xl">
-              <blockquote className="text-lg font-medium leading-relaxed mb-4">
-                "In God we trust. All others must bring data."
-              </blockquote>
-              <cite className="text-white/60 text-sm font-medium">
-                — W. Edwards Deming
-              </cite>
-            </div>
+            {/* Spotify Now Playing */}
+            <SpotifyNowPlaying />
           </div>
         </div>
 
