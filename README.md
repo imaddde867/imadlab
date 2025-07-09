@@ -17,14 +17,22 @@ Welcome to **imadlab**, the digital portfolio and blog of Imad Labidi. This site
 - [Contact](https://imadlab.me#contact)
 - [GitHub Repo](https://github.com/imaddde867/imadlab)
 
-## ✨ Features
-- **Modern Frontend:** React + Vite for a fast, dynamic UI
-- **Beautiful UI:** Tailwind CSS & [shadcn/ui](https://ui.shadcn.com/) for accessible, consistent design
-- **Backend:** Supabase for database, authentication, and API
-- **Content:** Projects, blog, and contact sections
-- **Admin Portal:** Secure, real-time content management
-- **SEO & LLM Optimized:** Rich meta tags, Schema.org, and sitemap for discoverability on Google, ChatGPT, Grok, and more
-- **Performance:** Optimized for speed and accessibility
+## ✨ Key Features
+- **Dynamic Portfolio:** Showcases data engineering and AI/ML projects with detailed case studies.
+- **Technical Blog:** Features articles on data science, AI, and software development.
+- **Admin Portal:** Secure content management for blog posts and projects.
+- **SEO & LLM Optimization:** Enhanced discoverability and content understanding for search engines and large language models.
+- **Modern UI/UX:** Fast, responsive, and accessible user interface.
+- **Supabase Integration:** Robust backend for data, authentication, and serverless functions.
+
+## 💡 Features
+- **Modern Frontend:** React + Vite for a fast, dynamic UI.
+- **Beautiful UI:** Tailwind CSS & [shadcn/ui](https://ui.shadcn.com/) for accessible, consistent design.
+- **Backend:** Supabase for database, authentication, API, and **Edge Functions** (e.g., for Spotify Now Playing integration).
+- **Content:** Projects, blog, and contact sections.
+- **Admin Portal:** Secure, real-time content management for **blog posts and projects**.
+- **SEO & LLM Optimized:** Rich meta tags, Schema.org, and sitemap for discoverability on Google, ChatGPT, Grok, and more.
+- **Performance:** Optimized for speed and accessibility.
 
 ## 🖼️ Showcase
 <!-- Optionally add screenshots or GIFs here -->
@@ -37,7 +45,7 @@ Welcome to **imadlab**, the digital portfolio and blog of Imad Labidi. This site
 
 ## 📦 Tech Stack
 - **Frontend:** React, Vite, Tailwind CSS, shadcn/ui
-- **Backend:** Supabase (Postgres, Auth, Storage)
+- **Backend:** Supabase (Postgres, Auth, Storage, Edge Functions)
 - **Deployment:** GitHub Actions, GitHub Pages
 
 ## 🛠️ Getting Started
@@ -72,6 +80,7 @@ Visit [http://localhost:8080](http://localhost:8080)
 ```bash
 npm run build
 ```
+This command first generates the `sitemap.xml` for SEO purposes, then builds the React application using Vite, and finally copies `dist/index.html` to `dist/404.html` to ensure proper routing for static site hosting.
 
 ### Lint
 ```bash
@@ -103,7 +112,10 @@ npm run lint
 └── README.md               # This file
 ```
 
-## 🤝 Contact
+## 🤝 Contributing
+Contributions are welcome! If you find a bug or have a feature request, please open an issue or submit a pull request.
+
+## 📞 Contact
 - [LinkedIn](https://www.linkedin.com/in/imadlab/)
 - [GitHub](https://github.com/imaddde867)
 - Email: [contact@imadlab.me](mailto:contact@imadlab.me)
