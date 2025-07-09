@@ -58,14 +58,40 @@ serve(async (req) => {
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
+        "Access-Control-Allow-Origin": "https://imadlab.me",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
       status: 200,
     });
   } catch (error) {
     console.error("Error in Edge Function:", error);
     return new Response(JSON.stringify({ error: error.message }), {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "https://imadlab.me",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
       status: 500,
     });
   }
 });
+
+serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      headers: {
+        "Access-Control-Allow-Origin": "https://imadlab.me",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+      status: 204,
+    });
+  }
+  // Handle actual requests
+  return await handler(req);
+});
+
+async function handler(req: Request) {
