@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -55,6 +55,7 @@ const NewsletterPopup: React.FC = () => {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="bg-transparent border-none shadow-none p-0 flex items-center justify-center">
           <div className="bg-black/95 border border-white/10 shadow-2xl rounded-2xl max-w-md p-8 text-white relative mx-auto w-full">
+            {/* Only one clean close button, styled and positioned top-right, not duplicated */}
             <button
               onClick={() => setIsOpen(false)}
               className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-white/30 z-10"
