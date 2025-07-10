@@ -19,6 +19,7 @@ const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
 const ManagePosts = React.lazy(() => import("./pages/ManagePosts"));
 const ManageProjects = React.lazy(() => import("./pages/ManageProjects"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
+const About = React.lazy(() => import("./pages/About"));
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const App = () => (
                   <Route path="/blogs" element={<Blogs />} />
                   <Route path="/blogs/:slug" element={<BlogPost />} />
                   <Route path="/projects/:id" element={<ProjectDetail />} />
+                  <Route path="/about" element={<About />} />
                   <Route path="/admin/login" element={<AdminLogin />} />
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/admin/posts" element={<ManagePosts />} />
