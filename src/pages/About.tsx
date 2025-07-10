@@ -28,14 +28,6 @@ const About = () => {
           <p className="text-base md:text-lg text-white/70 mb-6">
             This portfolio showcases my projects, blog posts, and experiments in data engineering, machine learning, and software development. Feel free to connect or reach out if you'd like to collaborate or chat about tech, AI, or anything data!
           </p>
-          <div className="mt-8">
-            <a
-              href="mailto:imadeddine.elmouss@gmail.com"
-              className="inline-block bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded transition-colors duration-200 font-medium"
-            >
-              Contact Me
-            </a>
-          </div>
         </div>
       </div>
     </div>
