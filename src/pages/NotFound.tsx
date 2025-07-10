@@ -5,7 +5,7 @@ const NotFound = () => (
     <h1 className="text-6xl font-black mb-6">404</h1>
     <h2 className="text-2xl font-bold mb-4">Page Not Found</h2>
     <p className="text-white/60 mb-8 text-center max-w-md">
-      Sorry, the page you are looking for does not exist or has been moved.
+      How did you even end up here.. lol
     </p>
     <Link
       to="/"

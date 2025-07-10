@@ -35,6 +35,12 @@ const Hero = () => {
           >
             Blogs
           </Link>
+          <Link
+            to="/about"
+            className="text-white/70 hover:text-white transition-colors font-medium"
+          >
+            About
+          </Link>
         </div>
       </nav>
 
