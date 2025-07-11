@@ -56,6 +56,12 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-black text-white py-12 px-4">
       <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+            Back to Home
+          </Link>
+        </div>
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">Admin Dashboard</h1>
           <Button onClick={handleLogout} className="bg-red-600 hover:bg-red-700">
