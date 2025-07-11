@@ -314,7 +314,7 @@ const ManagePosts = () => {
               <p className="text-white/70 text-sm mb-4">Published: {new Date(post.published_date).toLocaleDateString()}</p>
               <div className="flex gap-2 mt-auto">
                 <Button asChild className="bg-green-600 hover:bg-green-700 text-white flex-1">
-                  <Link to={`/blog/${post.slug}`} target="_blank" rel="noopener noreferrer">
+                  <Link to={`/blogs/${post.slug}`} target="_blank" rel="noopener noreferrer">
                     Open
                   </Link>
                 </Button>
