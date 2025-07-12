@@ -39,7 +39,7 @@ export default function DecryptedText({
     sequential = false,
     revealDirection = 'start',
     useOriginalCharsOnly = false,
-    characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+',
+    characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_',
     className = '',
     parentClassName = '',
     encryptedClassName = '',
@@ -47,18 +47,12 @@ export default function DecryptedText({
     delay = 0,
     ...props
 }: DecryptedTextProps) {
-    const [displayText, setDisplayText] = useState<string>(animateOn === 'hover' ? text : '')
+    const [displayText, setDisplayText] = useState<string>(text)
     const [isHovering, setIsHovering] = useState<boolean>(false)
     const [isScrambling, setIsScrambling] = useState<boolean>(false)
     const [revealedIndices, setRevealedIndices] = useState<Set<number>>(new Set())
     const [hasAnimated, setHasAnimated] = useState<boolean>(false)
     const containerRef = useRef<HTMLSpanElement>(null)
-
-    useEffect(() => {
-        if (isHovering) {
-            setDisplayText(text)
-        }
-    }, [isHovering, text])
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -184,26 +178,20 @@ export default function DecryptedText({
     ])
 
     useEffect(() => {
-        if (animateOn !== 'view') return
+        if (animateOn !== 'view' || hasAnimated) return
 
-        const observerCallback = (entries: IntersectionObserverEntry[]) => {
+        const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
-                if (entry.isIntersecting && !hasAnimated) {
+                if (entry.isIntersecting) {
                     setTimeout(() => {
                         setIsHovering(true)
                         setHasAnimated(true)
                     }, delay)
+                    observer.unobserve(entry.target)
                 }
             })
-        }
+        }, { threshold: 0.1 })
 
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1,
-        }
-
-        const observer = new IntersectionObserver(observerCallback, observerOptions)
         const currentRef = containerRef.current
         if (currentRef) {
             observer.observe(currentRef)
@@ -216,21 +204,21 @@ export default function DecryptedText({
         }
     }, [animateOn, hasAnimated, delay])
 
-    const hoverProps =
-        animateOn === 'hover'
+    const hoverProps =        animateOn === 'hover'
             ? {
                 onMouseEnter: () => setIsHovering(true),
                 onMouseLeave: () => setIsHovering(false),
             }
             : {}
 
-    const wrapperStyle = {
-        ...styles.wrapper,
-        visibility: isHovering ? 'visible' : 'hidden' as 'visible' | 'hidden',
-    }
-
     return (
-        <span className={parentClassName} ref={containerRef} style={wrapperStyle} {...hoverProps} {...props}>
+        <span 
+            className={parentClassName} 
+            ref={containerRef} 
+            style={{ ...styles.wrapper, visibility: hasAnimated || animateOn === 'hover' ? 'visible' : 'hidden' }} 
+            {...hoverProps} 
+            {...props}
+        >
             <span style={styles.srOnly}>{displayText}</span>
 
             <span aria-hidden="true">
