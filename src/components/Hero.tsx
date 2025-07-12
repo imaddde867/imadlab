@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import DecryptedText from './DecryptedText';
 
 const Hero = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -80,7 +81,7 @@ const Hero = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 items-center min-h-screen">
         {/* Main content - asymmetrically placed */}
-        <div className="lg:col-span-8 lg:col-start-2 space-y-8 animate-fade-in">
+        <div className="lg:col-span-8 lg:col-start-2 space-y-8">
           <div className="space-y-4">
             <h1 className="text-6xl md:text-8xl lg:text-9xl font-black leading-none tracking-tight">
               Hi, I'm{' '}
@@ -101,10 +102,15 @@ const Hero = () => {
           </div>
 
           <div className="ml-8 lg:ml-24 space-y-6">
-            <p className="text-lg md:text-xl text-white/70 max-w-2xl leading-relaxed">
-              I'm a passionate data engineer and AI innovator, dedicated to building intelligent systems that transform raw data into actionable insights. I specialize in scalable architectures and cutting-edge AI solutions.
-            </p>
-
+            <DecryptedText
+              text="I'm a passionate data engineer and AI innovator, dedicated to building intelligent systems that transform raw data into actionable insights. I specialize in scalable architectures and cutting-edge AI solutions."
+              speed={15}
+              sequential
+              animateOn="view"
+              className="text-lg md:text-xl text-white/70 max-w-2xl leading-relaxed"
+              parentClassName="block"
+              encryptedClassName="text-white/40"
+            />
             <button 
               onClick={scrollToProjects}
               className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/20 rounded-full text-lg font-semibold transition-all duration-300 hover:bg-white/10 hover:border-white/40 hover:scale-105"
