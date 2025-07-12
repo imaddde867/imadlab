@@ -102,23 +102,45 @@ const Hero = () => {
           </div>
 
           <div className="ml-8 lg:ml-24 space-y-6">
-            <DecryptedText
-              text="I'm a passionate data engineer and AI innovator, dedicated to building intelligent systems that transform raw data into actionable insights. I specialize in scalable architectures and cutting-edge AI solutions."
-              speed={15}
-              sequential
-              animateOn="view"
-              className="text-lg md:text-xl text-white/70 max-w-2xl leading-relaxed"
-              parentClassName="block"
-              encryptedClassName="text-white/40"
-            />
+            <div>
+              <DecryptedText
+                text="I'm a passionate data engineer and AI innovator, dedicated to building"
+                speed={15}
+                sequential
+                animateOn="view"
+                className="text-lg md:text-xl text-white/70 max-w-2xl leading-relaxed"
+                parentClassName="block"
+                encryptedClassName="text-white/40"
+              />
+              <DecryptedText
+                text="intelligent systems that transform raw data into actionable insights."
+                speed={15}
+                sequential
+                animateOn="view"
+                delay={500}
+                className="text-lg md:text-xl text-white/70 max-w-2xl leading-relaxed"
+                parentClassName="block"
+                encryptedClassName="text-white/40"
+              />
+              <DecryptedText
+                text="I specialize in scalable architectures and cutting-edge AI solutions."
+                speed={15}
+                sequential
+                animateOn="view"
+                delay={1000}
+                className="text-lg md:text-xl text-white/70 max-w-2xl leading-relaxed"
+                parentClassName="block"
+                encryptedClassName="text-white/40"
+              />
+            </div>
             <button 
-              onClick={scrollToProjects}
-              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/20 rounded-full text-lg font-semibold transition-all duration-300 hover:bg-white/10 hover:border-white/40 hover:scale-105"
-            >
-              <span>See My Work</span>
-              <ArrowDown className="w-5 h-5 transition-transform group-hover:translate-y-1" />
-              <div className="absolute inset-0 rounded-full bg-white/5 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
-            </button>
+                onClick={scrollToProjects}
+                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/20 rounded-full text-lg font-semibold transition-all duration-300 hover:bg-white/10 hover:border-white/40 hover:scale-105"
+              >
+                <span>See My Work</span>
+                <ArrowDown className="w-5 h-5 transition-transform group-hover:translate-y-1" />
+                <div className="absolute inset-0 rounded-full bg-white/5 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+              </button>
           </div>
         </div>
 
