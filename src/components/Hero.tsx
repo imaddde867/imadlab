@@ -2,18 +2,10 @@ import { useState, useEffect } from 'react';
 import { ArrowDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DecryptedText from './DecryptedText';
+import Stars from './Stars';
 
 const Hero = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  
 
   const scrollToProjects = () => {
     document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
@@ -21,6 +13,7 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <Stars />
       {/* Navigation */}
       <nav className="absolute top-8 right-8 z-20">
         <div className="flex gap-6">
@@ -48,29 +41,8 @@ const Hero = () => {
       {/* Animated background glow */}
       <div 
         className="absolute inset-0 opacity-20 animate-subtle-flicker"
-        style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255,255,255,0.06), transparent 40%)`
-        }}
       />
       
-      {/* Background dots */}
-      {[...Array(50)].map((_, i) => (
-        <div
-          key={i}
-          className="absolute bg-white/10 rounded-full animate-dot-move"
-          style={{
-            width: `${Math.random() * 3 + 1}px`,
-            height: `${Math.random() * 3 + 1}px`,
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            opacity: `${Math.random() * 0.3 + 0.1}`,
-            animationDelay: `${Math.random() * 10}s`,
-            '--tw-translate-x': `${(Math.random() - 0.5) * 200}px`,
-            '--tw-translate-y': `${(Math.random() - 0.5) * 200}px`,
-          }}
-        />
-      ))}
-
       {/* Asymmetrical grid lines */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-1/3 left-0 w-full h-px bg-white"></div>
