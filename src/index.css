@@ -141,3 +141,25 @@ All colors MUST be HSL.
     transition: all 0.3s ease-in-out;
   }
 }
+
+@keyframes shooting-star {
+  0% {
+    transform: translateX(0) translateY(0) rotate(45deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-100vw) translateY(100vh) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+@keyframes star-move {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(var(--tw-translate-x), var(--tw-translate-y)); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 0.2; }
+}
