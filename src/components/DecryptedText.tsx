@@ -29,6 +29,7 @@ interface DecryptedTextProps extends React.HTMLAttributes<HTMLSpanElement> {
     parentClassName?: string
     encryptedClassName?: string
     animateOn?: 'view' | 'hover'
+    delay?: number
 }
 
 export default function DecryptedText({
@@ -43,14 +44,21 @@ export default function DecryptedText({
     parentClassName = '',
     encryptedClassName = '',
     animateOn = 'hover',
+    delay = 0,
     ...props
 }: DecryptedTextProps) {
-    const [displayText, setDisplayText] = useState<string>(text)
+    const [displayText, setDisplayText] = useState<string>(animateOn === 'hover' ? text : '')
     const [isHovering, setIsHovering] = useState<boolean>(false)
     const [isScrambling, setIsScrambling] = useState<boolean>(false)
     const [revealedIndices, setRevealedIndices] = useState<Set<number>>(new Set())
     const [hasAnimated, setHasAnimated] = useState<boolean>(false)
     const containerRef = useRef<HTMLSpanElement>(null)
+
+    useEffect(() => {
+        if (isHovering) {
+            setDisplayText(text)
+        }
+    }, [isHovering, text])
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -181,8 +189,10 @@ export default function DecryptedText({
         const observerCallback = (entries: IntersectionObserverEntry[]) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting && !hasAnimated) {
-                    setIsHovering(true)
-                    setHasAnimated(true)
+                    setTimeout(() => {
+                        setIsHovering(true)
+                        setHasAnimated(true)
+                    }, delay)
                 }
             })
         }
@@ -204,7 +214,7 @@ export default function DecryptedText({
                 observer.unobserve(currentRef)
             }
         }
-    }, [animateOn, hasAnimated])
+    }, [animateOn, hasAnimated, delay])
 
     const hoverProps =
         animateOn === 'hover'
@@ -214,8 +224,13 @@ export default function DecryptedText({
             }
             : {}
 
+    const wrapperStyle = {
+        ...styles.wrapper,
+        visibility: isHovering ? 'visible' : 'hidden' as 'visible' | 'hidden',
+    }
+
     return (
-        <span className={parentClassName} ref={containerRef} style={styles.wrapper} {...hoverProps} {...props}>
+        <span className={parentClassName} ref={containerRef} style={wrapperStyle} {...hoverProps} {...props}>
             <span style={styles.srOnly}>{displayText}</span>
 
             <span aria-hidden="true">
