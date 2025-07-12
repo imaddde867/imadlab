@@ -9,7 +9,7 @@ const Stars = () => {
       const newStars = Array.from({ length: 200 }, () => ({
         x: Math.random() * 100,
         y: Math.random() * 100,
-        size: Math.random() * 1.5 + 0.5, // Smaller stars
+        size: Math.random() * 2 + 0.5, // More varied sizes
         delay: Math.random() * 5,
       }));
       setStars(newStars);
@@ -45,11 +45,11 @@ const Stars = () => {
             top: `${star.y}%`,
             width: `${star.size}px`,
             height: `${star.size}px`,
-            opacity: `${Math.random() * 0.7 + 0.3}`,
+            opacity: `${Math.random() * 0.8 + 0.2}`, // More varied base opacity
             animation: `star-move ${Math.random() * 20 + 10}s infinite alternate ease-in-out, star-twinkle ${Math.random() * 5 + 2}s infinite alternate, star-pulse ${Math.random() * 3 + 2}s infinite alternate`,
             animationDelay: `${star.delay}s`,
-            '--tw-translate-x': `${(Math.random() - 0.5) * 50}px`,
-            '--tw-translate-y': `${(Math.random() - 0.5) * 50}px`,
+            '--tw-translate-x': `${(Math.random() - 0.5) * 100}px`,
+            '--tw-translate-y': `${(Math.random() - 0.5) * 100}px`,
           }}
         />
       ))}
