@@ -66,7 +66,14 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Seo title={post.title} description={post.excerpt || ''} />
+      <Seo 
+        title={post.title} 
+        description={post.excerpt || ''} 
+        keywords={post.tags ? post.tags.join(', ') : 'data engineering, machine learning, ai, programming'}
+        type="article"
+        publishedTime={post.published_date}
+        image={post.image_url || undefined}
+      />
 
       {/* Hero Section */}
       <div className="relative w-full h-96 md:h-[500px] overflow-hidden">

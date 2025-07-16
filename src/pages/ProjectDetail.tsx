@@ -65,7 +65,14 @@ const ProjectDetail = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Seo title={project.title} description={project.description || ''} />
+      <Seo 
+        title={project.title} 
+        description={project.description || ''} 
+        keywords={project.tech_tags ? project.tech_tags.join(', ') : 'data engineering, machine learning, ai, programming'}
+        type="article"
+        publishedTime={project.created_at}
+        image={project.image_url || undefined}
+      />
 
       {/* Hero Section */}
       <div className="relative w-full h-96 md:h-[500px] overflow-hidden">

@@ -37,6 +37,8 @@ const Blogs = () => {
       <Seo
         title="Blog"
         description="Read articles and tutorials on data engineering, AI, machine learning, and more. Stay up-to-date with the latest trends and technologies."
+        keywords="data engineering blog, machine learning tutorials, ai articles, python tutorials, tech blog, data science articles, programming tutorials"
+        type="website"
       />
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
