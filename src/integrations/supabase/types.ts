@@ -89,18 +89,110 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          status: string
+          unsubscribe_token: string
+          updated_at: string
         }
         Insert: {
           created_at?: string
           email: string
           id?: string
+          status?: string
+          unsubscribe_token?: string
+          updated_at?: string
         }
         Update: {
           created_at?: string
           email?: string
           id?: string
+          status?: string
+          unsubscribe_token?: string
+          updated_at?: string
         }
         Relationships: []
+      }
+      email_queue: {
+        Row: {
+          id: string
+          content_type: string
+          content_id: string
+          status: string
+          scheduled_at: string
+          sent_at: string | null
+          error_message: string | null
+          retry_count: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          content_type: string
+          content_id: string
+          status?: string
+          scheduled_at?: string
+          sent_at?: string | null
+          error_message?: string | null
+          retry_count?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          content_type?: string
+          content_id?: string
+          status?: string
+          scheduled_at?: string
+          sent_at?: string | null
+          error_message?: string | null
+          retry_count?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      email_analytics: {
+        Row: {
+          id: string
+          email_queue_id: string
+          subscriber_email: string
+          sent_at: string | null
+          delivered_at: string | null
+          opened_at: string | null
+          clicked_at: string | null
+          bounced_at: string | null
+          unsubscribed_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          email_queue_id: string
+          subscriber_email: string
+          sent_at?: string | null
+          delivered_at?: string | null
+          opened_at?: string | null
+          clicked_at?: string | null
+          bounced_at?: string | null
+          unsubscribed_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          email_queue_id?: string
+          subscriber_email?: string
+          sent_at?: string | null
+          delivered_at?: string | null
+          opened_at?: string | null
+          clicked_at?: string | null
+          bounced_at?: string | null
+          unsubscribed_at?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_analytics_email_queue_id_fkey"
+            columns: ["email_queue_id"]
+            isOneToOne: false
+            referencedRelation: "email_queue"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
