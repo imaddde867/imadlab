@@ -1,7 +1,8 @@
 # imadlab: Imad Eddine El mouss's Data Engineering & AI Portfolio
 
+
 <div align="center">
-  <img src="doc/Hero_section.png" alt="imadlab hero section screenshot" width="800" style="max-width:100%;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.10);margin-bottom:12px;" />
+  <img src="https://raw.githubusercontent.com/imaddde867/imadlab/refs/heads/master/doc/Hero_section.png" alt="imadlab hero section screenshot" width="800" style="max-width:100%;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.10);margin-bottom:12px;" />
 </div>
 
 <div align="center">
@@ -29,10 +30,16 @@ Welcome to **imadlab**, a cutting-edge portfolio and technical blog platform des
 
 
 
+
 ## ✨ Features Overview
 
+<img src="https://raw.githubusercontent.com/imaddde867/imadlab/refs/heads/master/doc/lanyard_imadlab.png" alt="imadlab logo" width="100%" style="display:block;max-width:100%;margin:32px 0 32px 0;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.10);" />
 
-<img src="doc/lanyard_imadlab.png" alt="imadlab logo" width="100%" style="display:block;max-width:100%;margin:32px 0 32px 0;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.10);" />
+### 🛠️ Admin Portal Demo
+
+<video src="https://raw.githubusercontent.com/imaddde867/imadlab/master/doc/admin_demo.mov" controls width="800" style="max-width:100%;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,0.12);margin:32px auto;display:block;"></video>
+
+If the video does not play in your markdown viewer, [download and watch the full demo (admin_demo.mov)](https://raw.githubusercontent.com/imaddde867/imadlab/master/doc/admin_demo.mov).
 
 ### 🖥️ Portfolio & Projects
 - **Interactive Project Gallery:** Browse, filter, and explore detailed case studies with live demos, tech tags, and source links.
