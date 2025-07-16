@@ -83,7 +83,7 @@ const EmailDashboard = () => {
 
       // Load email statistics
       const [subscribersResult, analyticsResult] = await Promise.all([
-        supabase.from('newsletter_subscribers').select('status'),
+        supabase.from('newsletter_subscribers').select('status, email'),
         supabase.from('email_analytics').select('*')
       ]);
 
@@ -92,7 +92,8 @@ const EmailDashboard = () => {
         const analytics = analyticsResult.data;
 
         const totalSubscribers = subscribers.length;
-        const activeSubscribers = subscribers.filter(s => s.status === 'active').length;
+        // Count active subscribers, treating null/undefined status as active for backward compatibility
+        const activeSubscribers = subscribers.filter(s => !s.status || s.status === 'active').length;
         const totalEmailsSent = analytics.filter(a => a.sent_at).length;
         const deliveredEmails = analytics.filter(a => a.delivered_at).length;
         const openedEmails = analytics.filter(a => a.opened_at).length;
