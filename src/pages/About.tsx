@@ -30,25 +30,23 @@ const About = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           <div className="md:col-span-2 space-y-8">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                Hey — I’m <span className="text-white/80">Imad Eddine El Mouss</span>.
+            <div className="pb-8">
+              <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white">
+                Hey — I’m <span className="text-white/90">Imad Eddine El Mouss</span>.
               </h1>
-              <p className="text-lg text-white/70">
+              <p className="text-xl text-white/70 leading-relaxed">
                 I'm a <span className="font-semibold text-white">Data Engineering and AI student</span> in Finland, but I see myself as a lifelong learner and problem-solver. I'm passionate about turning data into useful and impactful solutions.
               </p>
             </div>
-            <Separator className="bg-white/20" />
-            <div>
-              <h2 className="text-3xl font-bold mb-4">My Work</h2>
-              <p className="text-lg text-white/70">
+            <div className="py-8">
+              <h2 className="text-4xl font-bold mb-4 text-white">My Work</h2>
+              <p className="text-lg text-white/70 leading-relaxed">
                 I enjoy working at the intersection of data, software, and intelligence. As a Research Assistant at the <a href="https://www.turkuamk.fi/palvelu/autonomisten-ja-alykkaiden-jarjestelmien-laboratorio/" target="_blank" rel="noopener noreferrer" className="font-semibold text-white hover:underline">Autonomous Intelligent Systems (AIS) Lab</a>, I built data pipelines using tools like <span className="font-semibold text-white">Airflow</span>, <span className="font-semibold text-white">InfluxDB</span>, and <span className="font-semibold text-white">PostgreSQL</span>. This experience taught me the value of clean architecture and clear communication in both research and production environments.
               </p>
             </div>
-            <Separator className="bg-white/20" />
-            <div>
-              <h2 className="text-3xl font-bold mb-4">My Philosophy</h2>
-              <p className="text-lg text-white/70">
+            <div className="pt-8">
+              <h2 className="text-4xl font-bold mb-4 text-white">My Philosophy</h2>
+              <p className="text-lg text-white/70 leading-relaxed">
                 My purpose is to build <span className="font-semibold text-white">enduring, transformative technology</span> that leaves a lasting meaningful and practical impact. I aim to craft systems, products, or frameworks that <span className="font-semibold text-white">empower, simplify, and enlighten</span>, solving real human problems with solutions that are not flashy or temporary, but <span className="font-semibold text-white">foundational</span>, serving as a starting point for others long after I'm gone.
               </p>
             </div>
