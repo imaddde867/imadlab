@@ -22,41 +22,51 @@ Welcome to **imadlab**, a cutting-edge portfolio and technical blog platform des
 - [📧 Contact](https://imadlab.me#contact)
 - [⚡ GitHub Repo](https://github.com/imaddde867/imadlab)
 
-## ✨ Core Features
 
-### 🎯 Dynamic Portfolio System
-- **Interactive Project Showcase**: Comprehensive case studies with live demos and detailed technical breakdowns
-- **Smart Tagging System**: Technology-based filtering and categorization
-- **Real-time Updates**: Content managed through secure admin portal
+## ✨ Features Overview
 
-### 📚 Technical Blog Platform
-- **Rich Content Management**: Articles with multimedia support, syntax highlighting, and estimated read times
-- **Advanced Categorization**: Topic-based organization with search functionality
-- **SEO-Optimized**: Structured data and meta optimization for maximum discoverability
+### 🖥️ Portfolio & Projects
+- **Interactive Project Gallery:** Browse, filter, and explore detailed case studies with live demos, tech tags, and source links.
+- **Tech Stack Marquee:** Animated, visually rich display of all technologies used.
+- **Project Detail Pages:** Each project features a dedicated page with full descriptions, tech stack, images, and links.
+- **Smart Tagging:** Filter projects by technology or category.
+- **Real-Time Updates:** Projects and content are updated instantly via the admin portal.
 
-### 🔄 Real-Time integrations
-- **🎵 Spotify Now Playing**: Live music status via Supabase Edge Functions
-- **📧 Newsletter System**: Smart popup subscription with backend storage
-- **📞 Contact Integration**: Reliable messaging through Formspree API
-- **🔔 Live Notifications**: Real-time updates across the platform
+### 📚 Blog & Content Platform
+- **Rich Markdown Support:** Write posts with images, code blocks, math, and more.
+- **Syntax Highlighting:** Beautiful code rendering for technical articles.
+- **Estimated Read Time:** Automatic calculation and display for each post.
+- **Topic Tagging & Search:** Organize and find articles by topic or keyword.
+- **SEO-Optimized:** Meta tags, Open Graph, Twitter Cards, and schema.org for discoverability.
 
-### 🎨 Modern User Experience
-- **Animated Interactions**: Custom click effects, smooth transitions, and engaging micro-animations
-- **Responsive Design**: Optimized for all devices and screen sizes
-- **Performance First**: Fast loading times and efficient resource management
-- **Accessibility Compliant**: WCAG guidelines adherence
+### 🔄 Real-Time Integrations
+- **Spotify Now Playing:** See what Imad is listening to, powered by Supabase Edge Functions.
+- **Newsletter Popup:** Smart, non-intrusive subscription with backend storage.
+- **Contact Form:** Reliable messaging via Formspree API.
+- **Live Notifications:** Real-time toast notifications for user actions and admin events.
+
+### 🎨 User Experience & Design
+- **Animated Interactions:** Custom click sparks, subtle background effects, and micro-animations.
+- **Responsive & Accessible:** Fully mobile-optimized and WCAG-compliant.
+- **Performance-First:** Fast load times, code-splitting, and efficient resource use.
 
 ### 🛡️ Secure Admin Portal
-- **Authentication System**: Secure login with role-based access control
-- **Content Management**: Real-time editing and publishing capabilities
-- **Analytics Dashboard**: Performance metrics and visitor insights
-- **Backup & Recovery**: Automated data protection
+- **Authentication:** Secure login with Supabase Auth (email/password).
+- **Role-Based Access:** Only authorized users can access admin features.
+- **Content Management:** Add, edit, and delete blog posts and projects in real time.
+- **Project & Blog CRUD:** Full create, update, and delete for all content.
+- **Session Management:** Auto-logout and session refresh for security.
+- **Analytics Dashboard:** (Planned) View site metrics and visitor insights.
+- **Backup & Recovery:** (Planned) Automated data protection.
 
-### 🔍 SEO & AI Optimization
-- **Rich Meta Tags**: Open Graph, Twitter Cards, and comprehensive SEO tags
-- **Schema.org Integration**: Structured data for enhanced search visibility
-- **LLM-Friendly**: Optimized content structure for AI model understanding
-- **Sitemap & Robots**: Automated search engine optimization
+
+#### 🛠️ Admin Portal Demo
+
+See the admin experience in action:
+
+<video src="doc/admin_demo.mov" controls width="800" style="max-width:100%;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,0.12)"></video>
+
+If the video does not play in your markdown viewer, [download and watch the full demo (admin_demo.mov)](doc/admin_demo.mov).
 
 ## 🛠️ Technology Stack
 
