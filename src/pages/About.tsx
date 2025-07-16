@@ -32,7 +32,7 @@ const About = () => {
           <div className="md:col-span-2 space-y-8">
             <div className="pb-8">
               <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white">
-                Hey — I’m <span className="text-white/90">Imad Eddine El Mouss</span>.
+                Hey — I’m <span className="text-white/90">Imad Eddine</span>.
               </h1>
               <p className="text-xl text-white/70 leading-relaxed">
                 I'm a <span className="font-semibold text-white">Data Engineering and AI student</span> in Finland, but I see myself as a lifelong learner and problem-solver. I'm passionate about turning data into useful and impactful solutions.
