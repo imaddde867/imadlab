@@ -19,19 +19,19 @@ const Hero = () => {
         <div className="flex gap-6">
           <Link 
             to="/projects" 
-            className="text-white/70 hover:text-white transition-colors font-medium"
+            className="link-enhanced focus-enhanced"
           >
             Projects
           </Link>
           <Link 
             to="/blogs" 
-            className="text-white/70 hover:text-white transition-colors font-medium"
+            className="link-enhanced focus-enhanced"
           >
             Blogs
           </Link>
           <Link
             to="/about"
-            className="text-white/70 hover:text-white transition-colors font-medium"
+            className="link-enhanced focus-enhanced"
           >
             About
           </Link>
@@ -55,7 +55,7 @@ const Hero = () => {
         {/* Main content - asymmetrically placed */}
         <div className="lg:col-span-8 lg:col-start-2 space-y-8">
           <div className="space-y-4">
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black leading-none tracking-tight">
+            <h1 className="text-display text-hierarchy-primary font-black">
               Hi, I'm{' '}
               <span className="relative inline-block">
                 Imad
@@ -64,7 +64,7 @@ const Hero = () => {
               .
             </h1>
             
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white/90 ml-4 lg:ml-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-hierarchy-secondary ml-4 lg:ml-12">
               Data Engineering &{' '}
               <span className="relative">
                 AI Innovator
@@ -74,15 +74,15 @@ const Hero = () => {
           </div>
 
           <div className="ml-8 lg:ml-24 space-y-6">
-            <div>
+            <div className="reading-width">
               <DecryptedText
                 text="I'm a passionate data engineer and AI innovator, dedicated to building"
                 speed={15}
                 sequential
                 animateOn="view"
-                className="text-lg md:text-xl text-white/70 max-w-2xl leading-relaxed"
+                className="text-body-large text-hierarchy-tertiary"
                 parentClassName="block"
-                encryptedClassName="text-white/40"
+                encryptedClassName="text-hierarchy-subtle"
               />
               <DecryptedText
                 text="intelligent systems that transform raw data into actionable insights."
@@ -90,9 +90,9 @@ const Hero = () => {
                 sequential
                 animateOn="view"
                 delay={500}
-                className="text-lg md:text-xl text-white/70 max-w-2xl leading-relaxed"
+                className="text-body-large text-hierarchy-tertiary"
                 parentClassName="block"
-                encryptedClassName="text-white/40"
+                encryptedClassName="text-hierarchy-subtle"
               />
               <DecryptedText
                 text="I specialize in scalable architectures and cutting-edge AI solutions."
@@ -100,14 +100,14 @@ const Hero = () => {
                 sequential
                 animateOn="view"
                 delay={1000}
-                className="text-lg md:text-xl text-white/70 max-w-2xl leading-relaxed"
+                className="text-body-large text-hierarchy-tertiary"
                 parentClassName="block"
-                encryptedClassName="text-white/40"
+                encryptedClassName="text-hierarchy-subtle"
               />
             </div>
             <button 
                 onClick={scrollToProjects}
-                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/20 rounded-full text-lg font-semibold transition-all duration-300 hover:bg-white/10 hover:border-white/40 hover:scale-105"
+                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/20 rounded-full btn-text-primary transition-all duration-300 hover:bg-white/10 hover:border-white/40 hover:scale-105 focus-enhanced"
               >
                 <span>See My Work</span>
                 <ArrowDown className="w-5 h-5 transition-transform group-hover:translate-y-1" />
