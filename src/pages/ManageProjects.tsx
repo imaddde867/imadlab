@@ -232,7 +232,7 @@ const ManageProjects = () => {
           <Card className="bg-white/5 border-white/10">
             <CardContent className="p-4">
               <div className="flex items-center">
-                <Calendar className="w-4 h-4 text-blue-400 mr-2" />
+                <Calendar className="w-4 h-4 text-white mr-2" />
                 <div>
                   <p className="text-sm text-white/60">This Month</p>
                   <p className="text-2xl font-bold text-white">
@@ -462,7 +462,7 @@ const ManageProjects = () => {
                           size="sm" 
                           variant="outline"
                           onClick={() => handleEditClick(project)}
-                          className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
+                          className="border-white/50 text-white hover:bg-white/10"
                         >
                           <Edit className="w-4 h-4" />
                         </Button>

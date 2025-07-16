@@ -71,6 +71,11 @@ const EmailDashboard = () => {
     try {
       setLoading(true);
       
+      // Debug: Check current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      console.log('Current user:', user);
+      console.log('User error:', userError);
+      
       // Load email queue
       const { data: queueData, error: queueError } = await supabase
         .from('email_queue')
@@ -79,7 +84,7 @@ const EmailDashboard = () => {
         .limit(50);
 
       if (queueError) throw queueError;
-      setEmailQueue(queueData || []);
+      setEmailQueue((queueData as EmailQueueItem[]) || []);
 
       // Load email statistics
       const [subscribersResult, analyticsResult] = await Promise.all([
@@ -254,7 +259,7 @@ const EmailDashboard = () => {
           ${project.tech_tags && project.tech_tags.length > 0 ? `
           <div style="margin-bottom: 40px;">
             <div style="color: #ffffff; font-size: 14px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em;">Tech Stack</div>
-            ${project.tech_tags.map(tech => `<span style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 8px 16px; border-radius: 6px; font-size: 11px; font-weight: 500; margin-right: 8px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid #333333;">${tech}</span>`).join('')}
+            ${project.tech_tags.map((tech: string) => `<span style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 8px 16px; border-radius: 6px; font-size: 11px; font-weight: 500; margin-right: 8px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid #333333;">${tech}</span>`).join('')}
           </div>
           ` : ''}
           <div style="height: 1px; background: linear-gradient(90deg, transparent 0%, #333333 50%, transparent 100%); margin: 32px 0;"></div>
@@ -330,7 +335,7 @@ const EmailDashboard = () => {
             <Card className="bg-white/5 border-white/10">
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <Users className="w-4 h-4 text-blue-400 mr-2" />
+                  <Users className="w-4 h-4 text-white mr-2" />
                   <div>
                     <p className="text-sm text-white/60">Total Subscribers</p>
                     <p className="text-2xl font-bold text-white">{emailStats.totalSubscribers}</p>
