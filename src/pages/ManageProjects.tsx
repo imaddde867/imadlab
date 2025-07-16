@@ -4,9 +4,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Edit, Trash2, Eye, Calendar, Code, ExternalLink, FolderOpen } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -194,109 +196,292 @@ const ManageProjects = () => {
         <div className="mb-8">
           <Link to="/admin" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Dashboard
+            Back to Admin Dashboard
           </Link>
         </div>
-        <div className="flex justify-between items-center mb-12">
-          <div>
-            <h1 className="text-5xl md:text-6xl font-black mb-4">Manage Projects</h1>
-            <div className="w-24 h-1 bg-white/40"></div>
-          </div>
+
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold">Projects Management</h1>
           <Button
-            onClick={() => { setShowForm(!showForm); setEditingProject(null); setFormData({ title: '', description: '', full_description: '', image_url: '', tech_tags: '', repo_url: '' }); }}
-            className="bg-white/10 hover:bg-white/20 border border-white/20"
+            onClick={() => { 
+              setShowForm(!showForm); 
+              setEditingProject(null); 
+              setFormData({ title: '', description: '', full_description: '', image_url: '', tech_tags: '', repo_url: '' }); 
+            }}
+            disabled={addProjectMutation.isPending || updateProjectMutation.isPending}
           >
-            {showForm ? 'Cancel' : 'Add New Project'}
+            <Plus className="w-4 h-4 mr-2" />
+            {showForm ? 'Cancel' : 'New Project'}
           </Button>
         </div>
 
-        {showForm && (
-          <div className="mb-8 p-6 bg-white/[0.02] border border-white/10 rounded-lg">
-            <h2 className="text-2xl font-bold mb-4">{editingProject ? 'Edit Project' : 'Add New Project'}</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                placeholder="Project Title"
-                value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
-                className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                required
-              />
-              <Textarea
-                placeholder="Short Description (appears on project card)"
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                rows={2}
-              />
-              <Textarea
-                placeholder="Full Description (appears on project detail page)"
-                value={formData.full_description}
-                onChange={(e) => setFormData({...formData, full_description: e.target.value})}
-                className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                rows={5}
-              />
-              <Input
-                placeholder="Image URL"
-                value={formData.image_url}
-                onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-              />
-              <Input
-                placeholder="Tech Tags (comma separated)"
-                value={formData.tech_tags}
-                onChange={(e) => setFormData({...formData, tech_tags: e.target.value})}
-                className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-              />
-              <Input
-                placeholder="Repository URL"
-                value={formData.repo_url}
-                onChange={(e) => setFormData({...formData, repo_url: e.target.value})}
-                className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-              />
-              <Button 
-                type="submit" 
-                disabled={addProjectMutation.isPending || updateProjectMutation.isPending}
-                className="bg-white text-black hover:bg-white/90"
-              >
-                {editingProject ? (updateProjectMutation.isPending ? 'Updating...' : 'Update Project') : (addProjectMutation.isPending ? 'Adding...' : 'Add Project')}
-              </Button>
-            </form>
-          </div>
-        )}
-
-        {(isLoading || isFetching) ? (
-          <div className="text-center py-12">
-            <div className="text-white/60">Loading projects...</div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects?.map((project) => (
-              <div key={project.id} className="bg-white/[0.02] border border-white/10 rounded-lg p-4 flex flex-col">
-                <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-                <p className="text-white/70 text-sm mb-4">Description: {project.description}</p>
-                <div className="flex gap-2 mt-auto">
-                  <Button asChild className="bg-green-600 hover:bg-green-700 text-white flex-1">
-                    <Link to={`/projects/${project.id}`} target="_blank" rel="noopener noreferrer">
-                      Open
-                    </Link>
-                  </Button>
-                  <Button onClick={() => handleEditClick(project)} className="bg-blue-600 hover:bg-blue-700 text-white flex-1">
-                    <Edit className="w-4 h-4 mr-2" /> Edit
-                  </Button>
-                  <Button onClick={() => handleDeleteClick(project.id)} className="bg-red-600 hover:bg-red-700 text-white flex-1">
-                    <Trash2 className="w-4 h-4 mr-2" /> Delete
-                  </Button>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <Card className="bg-white/5 border-white/10">
+            <CardContent className="p-4">
+              <div className="flex items-center">
+                <FolderOpen className="w-4 h-4 text-green-400 mr-2" />
+                <div>
+                  <p className="text-sm text-white/60">Total Projects</p>
+                  <p className="text-2xl font-bold">{projects?.length || 0}</p>
                 </div>
               </div>
-            ))}
-          </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-white/5 border-white/10">
+            <CardContent className="p-4">
+              <div className="flex items-center">
+                <Calendar className="w-4 h-4 text-blue-400 mr-2" />
+                <div>
+                  <p className="text-sm text-white/60">This Month</p>
+                  <p className="text-2xl font-bold">
+                    {projects?.filter(project => {
+                      const projectDate = new Date(project.created_at);
+                      const now = new Date();
+                      return projectDate.getMonth() === now.getMonth() && projectDate.getFullYear() === now.getFullYear();
+                    }).length || 0}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/5 border-white/10">
+            <CardContent className="p-4">
+              <div className="flex items-center">
+                <Code className="w-4 h-4 text-purple-400 mr-2" />
+                <div>
+                  <p className="text-sm text-white/60">With Repo</p>
+                  <p className="text-2xl font-bold">
+                    {projects?.filter(project => project.repo_url).length || 0}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/5 border-white/10">
+            <CardContent className="p-4">
+              <div className="flex items-center">
+                <ExternalLink className="w-4 h-4 text-orange-400 mr-2" />
+                <div>
+                  <p className="text-sm text-white/60">Tech Tags</p>
+                  <p className="text-2xl font-bold">
+                    {projects ? new Set(projects.flatMap(project => project.tech_tags || [])).size : 0}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {showForm && (
+          <Card className="bg-white/5 border-white/10 mb-8">
+            <CardHeader>
+              <CardTitle>{editingProject ? 'Edit Project' : 'Create New Project'}</CardTitle>
+              <CardDescription>
+                {editingProject ? 'Update your project details' : 'Add a new project to your portfolio'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-white/80">Project Title</label>
+                  <Input
+                    placeholder="Enter project title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-white/80">Short Description</label>
+                  <Textarea
+                    placeholder="Brief description that appears on project cards"
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-white/80">Full Description</label>
+                  <Textarea
+                    placeholder="Detailed description for the project detail page"
+                    value={formData.full_description}
+                    onChange={(e) => setFormData({...formData, full_description: e.target.value})}
+                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                    rows={6}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-white/80">Project Image URL</label>
+                    <Input
+                      placeholder="https://example.com/project-image.jpg"
+                      value={formData.image_url}
+                      onChange={(e) => setFormData({...formData, image_url: e.target.value})}
+                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-white/80">Repository URL</label>
+                    <Input
+                      placeholder="https://github.com/username/project"
+                      value={formData.repo_url}
+                      onChange={(e) => setFormData({...formData, repo_url: e.target.value})}
+                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-white/80">Technologies Used</label>
+                  <Input
+                    placeholder="React, TypeScript, Node.js, PostgreSQL"
+                    value={formData.tech_tags}
+                    onChange={(e) => setFormData({...formData, tech_tags: e.target.value})}
+                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                  />
+                </div>
+
+                <div className="flex gap-4">
+                  <Button 
+                    type="submit" 
+                    disabled={addProjectMutation.isPending || updateProjectMutation.isPending}
+                    className="bg-white text-black hover:bg-white/90"
+                  >
+                    {editingProject 
+                      ? (updateProjectMutation.isPending ? 'Updating...' : 'Update Project')
+                      : (addProjectMutation.isPending ? 'Creating...' : 'Create Project')
+                    }
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    onClick={() => {
+                      setShowForm(false);
+                      setEditingProject(null);
+                      setFormData({ title: '', description: '', full_description: '', image_url: '', tech_tags: '', repo_url: '' });
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
         )}
 
-        {projects && projects.length === 0 && !showForm && (
-          <div className="text-center py-12">
-            <div className="text-white/60 mb-4">No projects yet. Add your first project!</div>
-          </div>
-        )}
+        {/* Projects List */}
+        <Card className="bg-white/5 border-white/10">
+          <CardHeader>
+            <CardTitle>All Projects</CardTitle>
+            <CardDescription>
+              Manage your portfolio projects and showcase your work
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {(isLoading || isFetching) ? (
+              <div className="text-center py-12">
+                <div className="text-white/60">Loading projects...</div>
+              </div>
+            ) : projects && projects.length === 0 ? (
+              <div className="text-center py-12">
+                <FolderOpen className="w-12 h-12 text-white/20 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No projects yet</h3>
+                <p className="text-white/60 mb-4">Create your first project to showcase your work</p>
+                <Button onClick={() => setShowForm(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create First Project
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {projects?.map((project) => (
+                  <div key={project.id} className="p-6 bg-white/5 border border-white/10 rounded-lg">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-xl font-semibold">{project.title}</h3>
+                          {project.tech_tags && project.tech_tags.length > 0 && (
+                            <div className="flex gap-1">
+                              {project.tech_tags.slice(0, 3).map((tech, index) => (
+                                <Badge key={index} variant="secondary" className="text-xs">
+                                  {tech}
+                                </Badge>
+                              ))}
+                              {project.tech_tags.length > 3 && (
+                                <Badge variant="secondary" className="text-xs">
+                                  +{project.tech_tags.length - 3}
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        
+                        <p className="text-white/60 text-sm mb-3 line-clamp-2">
+                          {project.description || 'No description available'}
+                        </p>
+                        
+                        <div className="flex items-center gap-4 text-xs text-white/40">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {new Date(project.created_at).toLocaleDateString()}
+                          </div>
+                          {project.repo_url && (
+                            <div className="flex items-center gap-1">
+                              <Code className="w-3 h-3" />
+                              Repository available
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1">
+                            <ExternalLink className="w-3 h-3" />
+                            /projects/{project.id}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 ml-4">
+                        <Button 
+                          asChild 
+                          size="sm" 
+                          variant="outline"
+                          className="border-green-500/50 text-green-400 hover:bg-green-500/10"
+                        >
+                          <Link to={`/projects/${project.id}`} target="_blank" rel="noopener noreferrer">
+                            <Eye className="w-4 h-4" />
+                          </Link>
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleEditClick(project)}
+                          className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleDeleteClick(project.id)}
+                          className="border-red-500/50 text-red-400 hover:bg-red-500/10"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
