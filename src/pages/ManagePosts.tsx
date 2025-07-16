@@ -320,7 +320,7 @@ const ManagePosts = () => {
           <Card className="bg-white/5 border-white/10">
             <CardContent className="p-4">
               <div className="flex items-center">
-                <Eye className="w-4 h-4 text-blue-400 mr-2" />
+                <Eye className="w-4 h-4 text-white mr-2" />
                 <div>
                   <p className="text-sm text-white/60">Total Posts</p>
                   <p className="text-2xl font-bold">{posts?.length || 0}</p>
@@ -623,7 +623,7 @@ const ManagePosts = () => {
                           size="sm"
                           variant="outline"
                           onClick={() => handleEditClick(post)}
-                          className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
+                          className="border-white/50 text-white hover:bg-white/10"
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
