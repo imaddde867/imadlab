@@ -223,7 +223,7 @@ const ManageProjects = () => {
                 <FolderOpen className="w-4 h-4 text-green-400 mr-2" />
                 <div>
                   <p className="text-sm text-white/60">Total Projects</p>
-                  <p className="text-2xl font-bold">{projects?.length || 0}</p>
+                  <p className="text-2xl font-bold text-white">{projects?.length || 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -235,7 +235,7 @@ const ManageProjects = () => {
                 <Calendar className="w-4 h-4 text-blue-400 mr-2" />
                 <div>
                   <p className="text-sm text-white/60">This Month</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-bold text-white">
                     {projects?.filter(project => {
                       const projectDate = new Date(project.created_at);
                       const now = new Date();
@@ -253,7 +253,7 @@ const ManageProjects = () => {
                 <Code className="w-4 h-4 text-purple-400 mr-2" />
                 <div>
                   <p className="text-sm text-white/60">With Repo</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-bold text-white">
                     {projects?.filter(project => project.repo_url).length || 0}
                   </p>
                 </div>
@@ -267,7 +267,7 @@ const ManageProjects = () => {
                 <ExternalLink className="w-4 h-4 text-orange-400 mr-2" />
                 <div>
                   <p className="text-sm text-white/60">Tech Tags</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-bold text-white">
                     {projects ? new Set(projects.flatMap(project => project.tech_tags || [])).size : 0}
                   </p>
                 </div>
