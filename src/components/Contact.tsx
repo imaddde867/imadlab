@@ -76,10 +76,10 @@ const Contact = () => {
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section header */}
         <div className="mb-20 text-center">
-          <h2 className="text-5xl md:text-7xl font-black mb-8">
+          <h2 className="text-section-title text-hierarchy-primary mb-8">
             Let's Build
             <br />
-            <span className="text-white/60">Something Amazing</span>
+            <span className="text-hierarchy-muted">Something Amazing</span>
           </h2>
           <div className="w-24 h-1 bg-white/40 mx-auto"></div>
         </div>
@@ -95,7 +95,7 @@ const Contact = () => {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="block text-sm font-medium text-white/70">Full Name</FormLabel>
+                        <FormLabel className="block text-body-small text-hierarchy-muted">Full Name</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Your name"
@@ -113,7 +113,7 @@ const Contact = () => {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="block text-sm font-medium text-white/70">Email Address</FormLabel>
+                        <FormLabel className="block text-body-small text-hierarchy-muted">Email Address</FormLabel>
                         <FormControl>
                           <Input
                             type="email"
@@ -133,7 +133,7 @@ const Contact = () => {
                   name="message"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="block text-sm font-medium text-white/70">Message</FormLabel>
+                      <FormLabel className="block text-body-small text-hierarchy-muted">Message</FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="Tell me about your project or just say hello..."
@@ -149,7 +149,7 @@ const Contact = () => {
 
                 <Button
                   type="submit"
-                  className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/10 border border-white/30 rounded-full text-lg font-semibold transition-all duration-300 hover:bg-white/20 hover:border-white/50 hover:scale-105"
+                  className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/10 border border-white/30 rounded-full btn-text-primary transition-all duration-300 hover:bg-white/20 hover:border-white/50 hover:scale-105 focus-enhanced"
                   disabled={form.formState.isSubmitting}
                 >
                   <span>{form.formState.isSubmitting ? "Sending..." : "Send Message"}</span>
@@ -164,17 +164,17 @@ const Contact = () => {
           <div className="lg:col-span-4 lg:col-start-9 space-y-12">
             {/* Social links */}
             <div>
-              <h3 className="text-2xl font-bold mb-8">Connect With Me</h3>
+              <h3 className="text-card-title text-hierarchy-primary mb-8">Connect With Me</h3>
               <div className="grid grid-cols-2 gap-4">
                 {socialLinks.map((social) => (
                   <a
                     key={social.name}
                     href={social.href}
-                    className="group relative p-4 bg-white/[0.02] border border-white/10 rounded-xl transition-all duration-300 hover:bg-white/[0.05] hover:border-white/30 hover:scale-105"
+                    className="group relative p-4 bg-white/[0.02] border border-white/10 rounded-xl transition-all duration-300 hover:bg-white/[0.05] hover:border-white/30 hover:scale-105 focus-enhanced"
                   >
                     <div className="relative z-10 text-center">
                       <div className="text-2xl mb-2">{social.icon}</div>
-                      <div className="text-sm font-medium">{social.name}</div>
+                      <div className="text-body-small text-hierarchy-secondary">{social.name}</div>
                     </div>
                   </a>
                 ))}
@@ -188,9 +188,9 @@ const Contact = () => {
 
         {/* Footer */}
         <footer className="mt-24 pt-12 border-t border-white/10 text-center">
-          <p className="text-white/50 text-sm">
+          <p className="text-body-small text-hierarchy-subtle">
             © 2025 Imad Eddine. Crafted with care{' '}
-            <a href="https://imadlab.me/admin/login" className="inline-block align-middle hover:text-white transition-colors" title="Admin Login">
+            <a href="https://imadlab.me/admin/login" className="inline-block align-middle link-subtle focus-enhanced" title="Admin Login">
               🤍
             </a>
             .
