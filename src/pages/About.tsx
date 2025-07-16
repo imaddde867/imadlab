@@ -67,7 +67,7 @@ const About = () => {
                     <Github className="w-4 h-4 mr-2" />
                     imaddde867
                   </a>
-                  <a href="https://linkedin.com/in/imad-eddine-el-mouss" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-white/80 hover:text-white transition-colors">
+                  <a href="https://www.linkedin.com/in/imad-eddine-el-mouss-986741262/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-white/80 hover:text-white transition-colors">
                     <Linkedin className="w-4 h-4 mr-2" />
                     Imad Eddine El Mouss
                   </a>
