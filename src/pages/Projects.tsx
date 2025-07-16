@@ -36,6 +36,8 @@ const Projects = () => {
       <Seo
         title="Projects"
         description="Explore a collection of my projects in data engineering, AI, and machine learning. See live demos and browse the source code."
+        keywords="data engineering projects, machine learning projects, ai projects, python projects, react projects, open source, github projects, portfolio projects"
+        type="website"
       />
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
