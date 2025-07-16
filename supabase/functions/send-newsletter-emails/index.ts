@@ -30,7 +30,13 @@ serve(async (req) => {
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
     )
 
     const resendApiKey = Deno.env.get('RESEND_API_KEY')
@@ -58,19 +64,45 @@ serve(async (req) => {
       )
     }
 
+    // Get active subscribers - first let's check all subscribers
+    console.log('Checking newsletter_subscribers table...')
+    const { data: allSubscribers, error: allSubError } = await supabaseClient
+      .from('newsletter_subscribers')
+      .select('*')
+
+    console.log('All subscribers:', allSubscribers)
+    console.log('All subscribers error:', allSubError)
+
     // Get active subscribers
     const { data: subscribers, error: subscribersError } = await supabaseClient
       .from('newsletter_subscribers')
-      .select('id, email, unsubscribe_token')
+      .select('id, email, unsubscribe_token, status')
       .eq('status', 'active')
+
+    console.log('Active subscribers:', subscribers)
+    console.log('Subscribers error:', subscribersError)
 
     if (subscribersError) {
       throw new Error(`Failed to fetch subscribers: ${subscribersError.message}`)
     }
 
     if (!subscribers || subscribers.length === 0) {
+      // Let's also try without the status filter to see if there are any subscribers at all
+      const { data: anySubscribers } = await supabaseClient
+        .from('newsletter_subscribers')
+        .select('*')
+      
+      console.log('Any subscribers at all:', anySubscribers)
+      
       return new Response(
-        JSON.stringify({ message: 'No active subscribers found' }),
+        JSON.stringify({ 
+          message: 'No active subscribers found',
+          debug: {
+            allSubscribers: allSubscribers?.length || 0,
+            anySubscribers: anySubscribers?.length || 0,
+            subscribersError: subscribersError?.message
+          }
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -135,26 +167,35 @@ serve(async (req) => {
               : `New Project: ${contentData.title}`
 
             // Send email via Resend
+            console.log(`Sending email to ${subscriber.email} with subject: ${subject}`)
+            
+            const emailPayload = {
+              from: 'imadlab <onboarding@resend.dev>',
+              to: [subscriber.email],
+              subject: subject,
+              html: emailHtml,
+              headers: {
+                'List-Unsubscribe': `<${Deno.env.get('SITE_URL')}/functions/v1/handle-unsubscribe?token=${subscriber.unsubscribe_token}>`,
+              }
+            }
+            
+            console.log('Email payload:', JSON.stringify(emailPayload, null, 2))
+            
             const emailResponse = await fetch('https://api.resend.com/emails', {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${resendApiKey}`,
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({
-                from: 'imadlab <newsletter@imadlab.com>',
-                to: [subscriber.email],
-                subject: subject,
-                html: emailHtml,
-                headers: {
-                  'List-Unsubscribe': `<${Deno.env.get('SITE_URL')}/api/unsubscribe?token=${subscriber.unsubscribe_token}>`,
-                }
-              }),
+              body: JSON.stringify(emailPayload),
             })
 
+            console.log('Resend response status:', emailResponse.status)
+            
             if (!emailResponse.ok) {
               const errorText = await emailResponse.text()
-              throw new Error(`Resend API error: ${errorText}`)
+              console.error('Resend API error:', errorText)
+              throw new Error(`Resend API error (${emailResponse.status}): ${errorText}`)
             }
 
             const emailResult = await emailResponse.json()

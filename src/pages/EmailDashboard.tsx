@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { RefreshCw, Send, Eye, Users, Mail, TrendingUp, Settings, Play } from 'lucide-react';
+import { RefreshCw, Send, Eye, Users, Mail, TrendingUp } from 'lucide-react';
 
 interface EmailQueueItem {
   id: string;
@@ -173,9 +173,9 @@ const EmailDashboard = () => {
         siteUrl: window.location.origin,
         [contentType === 'blog_post' ? 'post' : 'project']: {
           ...content,
-          publishedDate: content.published_date || content.created_at,
-          techTags: content.tech_tags || [],
-          tags: content.tags || []
+          publishedDate: (content as any).published_date || content.created_at,
+          techTags: (content as any).tech_tags || [],
+          tags: (content as any).tags || []
         }
       };
 
