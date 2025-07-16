@@ -31,9 +31,8 @@ Welcome to **imadlab**, a cutting-edge portfolio and technical blog platform des
 
 ## ✨ Features Overview
 
-<div align="center">
-  <img src="doc/lanyard_imadlab.png" alt="imadlab logo" width="180" style="border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.10);margin-bottom:12px;" />
-</div>
+
+<img src="doc/lanyard_imadlab.png" alt="imadlab logo" width="100%" style="display:block;max-width:100%;margin:32px 0 32px 0;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.10);" />
 
 ### 🖥️ Portfolio & Projects
 - **Interactive Project Gallery:** Browse, filter, and explore detailed case studies with live demos, tech tags, and source links.
