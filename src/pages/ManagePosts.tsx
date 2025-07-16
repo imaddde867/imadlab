@@ -323,7 +323,7 @@ const ManagePosts = () => {
                 <Eye className="w-4 h-4 text-white mr-2" />
                 <div>
                   <p className="text-sm text-white/60">Total Posts</p>
-                  <p className="text-2xl font-bold">{posts?.length || 0}</p>
+                  <p className="text-2xl font-bold text-white">{posts?.length || 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -335,7 +335,7 @@ const ManagePosts = () => {
                 <Calendar className="w-4 h-4 text-green-400 mr-2" />
                 <div>
                   <p className="text-sm text-white/60">This Month</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-bold text-white">
                     {posts?.filter((post) => {
                       const postDate = new Date(post.created_at);
                       const now = new Date();
@@ -356,7 +356,7 @@ const ManagePosts = () => {
                 <Clock className="w-4 h-4 text-purple-400 mr-2" />
                 <div>
                   <p className="text-sm text-white/60">Avg Read Time</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-bold text-white">
                     {posts && posts.length > 0
                       ? Math.round(
                           posts.reduce(
@@ -378,7 +378,7 @@ const ManagePosts = () => {
                 <Tag className="w-4 h-4 text-orange-400 mr-2" />
                 <div>
                   <p className="text-sm text-white/60">Total Tags</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-bold text-white">
                     {posts
                       ? new Set(posts.flatMap((post) => post.tags || [])).size
                       : 0}
@@ -392,10 +392,10 @@ const ManagePosts = () => {
         {showForm && (
           <Card className="bg-white/5 border-white/10 mb-8">
             <CardHeader>
-              <CardTitle>
+              <CardTitle className="text-white">
                 {editingPost ? "Edit Post" : "Create New Post"}
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-white/60">
                 {editingPost
                   ? "Update your blog post details"
                   : "Add a new blog post to your collection"}
@@ -510,6 +510,7 @@ const ManagePosts = () => {
                   <Button
                     type="button"
                     variant="outline"
+                    className="text-white border-white/20 hover:bg-white/10"
                     onClick={() => {
                       setShowForm(false);
                       setEditingPost(null);
@@ -534,8 +535,8 @@ const ManagePosts = () => {
         {/* Posts List */}
         <Card className="bg-white/5 border-white/10">
           <CardHeader>
-            <CardTitle>All Posts</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-white">All Posts</CardTitle>
+            <CardDescription className="text-white/60">
               Manage your blog posts and track their performance
             </CardDescription>
           </CardHeader>

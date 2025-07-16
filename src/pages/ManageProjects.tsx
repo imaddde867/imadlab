@@ -279,8 +279,8 @@ const ManageProjects = () => {
         {showForm && (
           <Card className="bg-white/5 border-white/10 mb-8">
             <CardHeader>
-              <CardTitle>{editingProject ? 'Edit Project' : 'Create New Project'}</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-white">{editingProject ? 'Edit Project' : 'Create New Project'}</CardTitle>
+              <CardDescription className="text-white/60">
                 {editingProject ? 'Update your project details' : 'Add a new project to your portfolio'}
               </CardDescription>
             </CardHeader>
@@ -364,6 +364,7 @@ const ManageProjects = () => {
                   <Button 
                     type="button" 
                     variant="outline"
+                    className="text-white border-white/20 hover:bg-white/10"
                     onClick={() => {
                       setShowForm(false);
                       setEditingProject(null);
@@ -381,8 +382,8 @@ const ManageProjects = () => {
         {/* Projects List */}
         <Card className="bg-white/5 border-white/10">
           <CardHeader>
-            <CardTitle>All Projects</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-white">All Projects</CardTitle>
+            <CardDescription className="text-white/60">
               Manage your portfolio projects and showcase your work
             </CardDescription>
           </CardHeader>
