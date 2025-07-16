@@ -3,14 +3,13 @@ import Seo from '@/components/Seo';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Github, Linkedin, Mail } from 'lucide-react';
 import Stars from '@/components/Stars';
-import ClickSpark from '@/components/ClickSpark';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 const About = () => {
   return (
-    <ClickSpark sparkColor="#fff" sparkSize={10} sparkRadius={15} sparkCount={8} duration={400}>
-      <div className="relative min-h-screen bg-black text-white py-24 px-4">
+    <div className="relative min-h-screen bg-black text-white py-24 px-4">
         <Stars />
         <div className="absolute inset-0 opacity-20 animate-subtle-flicker" />
         <div className="absolute inset-0 opacity-10">
@@ -80,7 +79,6 @@ const About = () => {
           </div>
         </div>
       </div>
-    </ClickSpark>
   );
 };
 
