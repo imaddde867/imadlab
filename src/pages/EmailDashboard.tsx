@@ -319,7 +319,7 @@ const EmailDashboard = () => {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">Email Management</h1>
           <div className="flex gap-4">
-            <Button onClick={loadEmailData} variant="outline" disabled={loading}>
+            <Button onClick={loadEmailData} variant="outline" disabled={loading} className="bg-white text-black border-white hover:bg-white/90">
               <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
@@ -415,8 +415,8 @@ const EmailDashboard = () => {
           <TabsContent value="queue" className="space-y-4">
             <Card className="bg-white/5 border-white/10">
               <CardHeader>
-                <CardTitle>Email Queue</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-white">Email Queue</CardTitle>
+                <CardDescription className="text-white/60">
                   Manage pending and processed email notifications
                 </CardDescription>
               </CardHeader>
@@ -464,8 +464,8 @@ const EmailDashboard = () => {
           <TabsContent value="settings" className="space-y-4">
             <Card className="bg-white/5 border-white/10">
               <CardHeader>
-                <CardTitle>Email Settings</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-white">Email Settings</CardTitle>
+                <CardDescription className="text-white/60">
                   Configure email notification preferences and preview templates
                 </CardDescription>
               </CardHeader>
