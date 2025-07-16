@@ -563,7 +563,7 @@ const ManagePosts = () => {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-xl font-semibold">
+                          <h3 className="text-xl font-semibold text-white">
                             {post.title}
                           </h3>
                           {post.tags && post.tags.length > 0 && (
@@ -609,8 +609,7 @@ const ManagePosts = () => {
                         <Button
                           asChild
                           size="sm"
-                          variant="outline"
-                          className="border-green-500/50 text-green-400 hover:bg-green-500/10"
+                          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
                         >
                           <Link
                             to={`/blogs/${post.slug}`}
@@ -622,17 +621,15 @@ const ManagePosts = () => {
                         </Button>
                         <Button
                           size="sm"
-                          variant="outline"
                           onClick={() => handleEditClick(post)}
-                          className="border-white/50 text-white hover:bg-white/10"
+                          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button
                           size="sm"
-                          variant="outline"
                           onClick={() => handleDeleteClick(post.id)}
-                          className="border-red-500/50 text-red-400 hover:bg-red-500/10"
+                          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>

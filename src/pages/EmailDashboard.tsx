@@ -429,7 +429,7 @@ const EmailDashboard = () => {
                       <div key={item.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="outline">
+                            <Badge variant="outline" className="text-white border-white/20">
                               {item.content_type.replace('_', ' ')}
                             </Badge>
                             {getStatusBadge(item.status)}
