@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import React from 'react';
 import Seo from '@/components/Seo';
 import { MarkdownComponents } from '@/components/MarkdownComponents';
 

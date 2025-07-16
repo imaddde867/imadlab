@@ -1,5 +1,3 @@
-import React from 'react';
-
 // Extracted from Hero for global use
 const HomeBackground = () => {
   return (
