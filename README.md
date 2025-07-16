@@ -1,12 +1,17 @@
 # imadlab: Imad Eddine El mouss's Data Engineering & AI Portfolio
 
+<div align="center">
+  <img src="doc/Hero_section.png" alt="imadlab hero section screenshot" width="800" style="max-width:100%;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.10);margin-bottom:12px;" />
+</div>
 
-![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-B73BFE?style=flat-square&logo=vite&logoColor=FFD62E)
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=github-actions&logoColor=white)
+<div align="center">
+  <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black" />
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white" />
+  <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white" />
+  <img src="https://img.shields.io/badge/Vite-B73BFE?style=flat-square&logo=vite&logoColor=FFD62E" />
+  <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=github-actions&logoColor=white" />
+</div>
 
 **Website:** [imadlab.me](https://imadlab.me)  
 **Author:** Imad Eddine El mouss — Data Engineer, AI/ML Professional, Student
@@ -23,7 +28,12 @@ Welcome to **imadlab**, a cutting-edge portfolio and technical blog platform des
 - [⚡ GitHub Repo](https://github.com/imaddde867/imadlab)
 
 
+
 ## ✨ Features Overview
+
+<div align="center">
+  <img src="doc/lanyard_imadlab.png" alt="imadlab logo" width="180" style="border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.10);margin-bottom:12px;" />
+</div>
 
 ### 🖥️ Portfolio & Projects
 - **Interactive Project Gallery:** Browse, filter, and explore detailed case studies with live demos, tech tags, and source links.
@@ -60,13 +70,7 @@ Welcome to **imadlab**, a cutting-edge portfolio and technical blog platform des
 - **Backup & Recovery:** (Planned) Automated data protection.
 
 
-#### 🛠️ Admin Portal Demo
 
-See the admin experience in action:
-
-<video src="doc/admin_demo.mov" controls width="800" style="max-width:100%;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,0.12)"></video>
-
-If the video does not play in your markdown viewer, [download and watch the full demo (admin_demo.mov)](doc/admin_demo.mov).
 
 ## 🛠️ Technology Stack
 
