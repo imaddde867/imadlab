@@ -9,7 +9,7 @@ const SITEMAP_PATH = './public/sitemap.xml';
 const SITE_URL = 'https://imadlab.me';
 
 async function generateSitemap() {
-  console.log('Generating sitemap...');
+  // Generate sitemap from database content
 
   const { data: posts, error: postsError } = await supabase
     .from('posts')
@@ -74,7 +74,7 @@ async function generateSitemap() {
 </urlset>`;
 
   fs.writeFileSync(SITEMAP_PATH, sitemap);
-  console.log(`Sitemap generated successfully at ${SITEMAP_PATH}`);
+  // Sitemap generated successfully
 }
 
 generateSitemap();

@@ -23,6 +23,7 @@ out/
 
 # Editor directories and files
 .vscode/
+.kiro/
 .idea/
 .DS_Store
 *.suo
