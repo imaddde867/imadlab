@@ -409,7 +409,7 @@ const ManageProjects = () => {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-xl font-semibold">{project.title}</h3>
+                          <h3 className="text-xl font-semibold text-white">{project.title}</h3>
                           {project.tech_tags && project.tech_tags.length > 0 && (
                             <div className="flex gap-1">
                               {project.tech_tags.slice(0, 3).map((tech, index) => (
@@ -452,8 +452,7 @@ const ManageProjects = () => {
                         <Button 
                           asChild 
                           size="sm" 
-                          variant="outline"
-                          className="border-green-500/50 text-green-400 hover:bg-green-500/10"
+                          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
                         >
                           <Link to={`/projects/${project.id}`} target="_blank" rel="noopener noreferrer">
                             <Eye className="w-4 h-4" />
@@ -461,17 +460,15 @@ const ManageProjects = () => {
                         </Button>
                         <Button 
                           size="sm" 
-                          variant="outline"
                           onClick={() => handleEditClick(project)}
-                          className="border-white/50 text-white hover:bg-white/10"
+                          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button 
                           size="sm" 
-                          variant="outline"
                           onClick={() => handleDeleteClick(project.id)}
-                          className="border-red-500/50 text-red-400 hover:bg-red-500/10"
+                          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
