@@ -87,13 +87,23 @@ const EmailDashboard = () => {
         supabase.from('email_analytics').select('*')
       ]);
 
+      console.log('Subscribers query result:', subscribersResult);
+      console.log('Subscribers data:', subscribersResult.data);
+      console.log('Subscribers error:', subscribersResult.error);
+
       if (subscribersResult.data && analyticsResult.data) {
         const subscribers = subscribersResult.data;
         const analytics = analyticsResult.data;
 
+        console.log('Subscribers array:', subscribers);
+        console.log('Subscribers length:', subscribers.length);
+
         const totalSubscribers = subscribers.length;
         // Count active subscribers, treating null/undefined status as active for backward compatibility
         const activeSubscribers = subscribers.filter(s => !s.status || s.status === 'active').length;
+        
+        console.log('Total subscribers:', totalSubscribers);
+        console.log('Active subscribers:', activeSubscribers);
         const totalEmailsSent = analytics.filter(a => a.sent_at).length;
         const deliveredEmails = analytics.filter(a => a.delivered_at).length;
         const openedEmails = analytics.filter(a => a.opened_at).length;
@@ -323,7 +333,7 @@ const EmailDashboard = () => {
                   <Users className="w-4 h-4 text-blue-400 mr-2" />
                   <div>
                     <p className="text-sm text-white/60">Total Subscribers</p>
-                    <p className="text-2xl font-bold">{emailStats.totalSubscribers}</p>
+                    <p className="text-2xl font-bold text-white">{emailStats.totalSubscribers}</p>
                   </div>
                 </div>
               </CardContent>
@@ -335,7 +345,7 @@ const EmailDashboard = () => {
                   <Users className="w-4 h-4 text-green-400 mr-2" />
                   <div>
                     <p className="text-sm text-white/60">Active</p>
-                    <p className="text-2xl font-bold">{emailStats.activeSubscribers}</p>
+                    <p className="text-2xl font-bold text-white">{emailStats.activeSubscribers}</p>
                   </div>
                 </div>
               </CardContent>
@@ -347,7 +357,7 @@ const EmailDashboard = () => {
                   <Mail className="w-4 h-4 text-purple-400 mr-2" />
                   <div>
                     <p className="text-sm text-white/60">Emails Sent</p>
-                    <p className="text-2xl font-bold">{emailStats.totalEmailsSent}</p>
+                    <p className="text-2xl font-bold text-white">{emailStats.totalEmailsSent}</p>
                   </div>
                 </div>
               </CardContent>
@@ -359,7 +369,7 @@ const EmailDashboard = () => {
                   <TrendingUp className="w-4 h-4 text-yellow-400 mr-2" />
                   <div>
                     <p className="text-sm text-white/60">Delivery Rate</p>
-                    <p className="text-2xl font-bold">{emailStats.deliveryRate.toFixed(1)}%</p>
+                    <p className="text-2xl font-bold text-white">{emailStats.deliveryRate.toFixed(1)}%</p>
                   </div>
                 </div>
               </CardContent>
@@ -371,7 +381,7 @@ const EmailDashboard = () => {
                   <Eye className="w-4 h-4 text-orange-400 mr-2" />
                   <div>
                     <p className="text-sm text-white/60">Open Rate</p>
-                    <p className="text-2xl font-bold">{emailStats.openRate.toFixed(1)}%</p>
+                    <p className="text-2xl font-bold text-white">{emailStats.openRate.toFixed(1)}%</p>
                   </div>
                 </div>
               </CardContent>
@@ -383,7 +393,7 @@ const EmailDashboard = () => {
                   <TrendingUp className="w-4 h-4 text-red-400 mr-2" />
                   <div>
                     <p className="text-sm text-white/60">Click Rate</p>
-                    <p className="text-2xl font-bold">{emailStats.clickRate.toFixed(1)}%</p>
+                    <p className="text-2xl font-bold text-white">{emailStats.clickRate.toFixed(1)}%</p>
                   </div>
                 </div>
               </CardContent>
@@ -476,7 +486,7 @@ const EmailDashboard = () => {
                         </DialogTrigger>
                         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white">
                           <DialogHeader>
-                            <DialogTitle className="text-black">Blog Post Email Preview</DialogTitle>
+                            <DialogTitle className="text-white">Blog Post Email Preview</DialogTitle>
                             <DialogDescription className="text-gray-600">
                               Preview of how blog post notification emails will appear to subscribers
                             </DialogDescription>
@@ -511,7 +521,7 @@ const EmailDashboard = () => {
                         </DialogTrigger>
                         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white">
                           <DialogHeader>
-                            <DialogTitle className="text-black">Project Email Preview</DialogTitle>
+                            <DialogTitle className="text-white">Project Email Preview</DialogTitle>
                             <DialogDescription className="text-gray-600">
                               Preview of how project notification emails will appear to subscribers
                             </DialogDescription>

@@ -354,7 +354,7 @@ const ManageProjects = () => {
                   <Button 
                     type="submit" 
                     disabled={addProjectMutation.isPending || updateProjectMutation.isPending}
-                    className="bg-white text-black hover:bg-white/90"
+                    className="bg-white/10 text-white hover:bg-white/20"
                   >
                     {editingProject 
                       ? (updateProjectMutation.isPending ? 'Updating...' : 'Update Project')
