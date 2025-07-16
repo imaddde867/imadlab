@@ -19,7 +19,7 @@ const About = () => {
       </div>
       <Seo
         title="About Imad Eddine"
-        description="Learn more about Imad Eddine El Mouss, a Data Engineer, AI/ML professional, and lifelong learner."
+        description="Learn more about Imad Eddine El Mouss, a Data Engineer and AI enthusiast."
       />
       <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-8 py-12">
         <div className="mb-8">
@@ -32,55 +32,37 @@ const About = () => {
           <div className="md:col-span-2 space-y-8">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                Hey — I’m <span className="text-white/80">Imad Eddine</span>.
+                Hey — I’m <span className="text-white/80">Imad Eddine El Mouss</span>.
               </h1>
               <p className="text-lg text-white/70">
-                A curious mind, a builder at heart, and someone who finds meaning in turning data into something useful, human, and impactful.
+                I'm a <span className="font-semibold text-white">Data Engineering and AI student</span> in Finland, but I see myself as a lifelong learner and problem-solver. I'm passionate about turning data into useful and impactful solutions.
               </p>
             </div>
             <Separator className="bg-white/20" />
             <div>
-              <h2 className="text-3xl font-bold mb-4">The Work I Care About</h2>
-              <p className="text-lg text-white/70 mb-4">
-                I study <span className="font-semibold text-white">Data Engineering & Artificial Intelligence</span> in Finland, but more than a student, I see myself as a lifelong learner and problem solver. I love the process of figuring things out — whether it’s designing an ETL pipeline, integrating systems, or learning how machines can understand the world just a little bit better.
-              </p>
+              <h2 className="text-3xl font-bold mb-4">My Work</h2>
               <p className="text-lg text-white/70">
-                I recently worked as a <span className="font-semibold text-white">Research Assistant</span> at the <span className="font-semibold text-white">Autonomous Intelligent Systems (AIS) Lab</span>, where I built data pipelines for sensor platforms, handled integrations with tools like <span className="font-semibold text-white">Airflow, InfluxDB, MinIO, PostgreSQL</span>, and automated processes to help researchers gain better visibility into their data. It was hands-on, complex, and sometimes messy — and I loved every part of it. It taught me the importance of system thinking, clean architecture, and clear communication when working in research and production environments.
+                I enjoy working at the intersection of data, software, and intelligence. As a Research Assistant at the <a href="https://www.turkuamk.fi/palvelu/autonomisten-ja-alykkaiden-jarjestelmien-laboratorio/" target="_blank" rel="noopener noreferrer" className="font-semibold text-white hover:underline">Autonomous Intelligent Systems (AIS) Lab</a>, I built data pipelines using tools like <span className="font-semibold text-white">Airflow</span>, <span className="font-semibold text-white">InfluxDB</span>, and <span className="font-semibold text-white">PostgreSQL</span>. This experience taught me the value of clean architecture and clear communication in both research and production environments.
               </p>
             </div>
             <Separator className="bg-white/20" />
             <div>
-              <h2 className="text-3xl font-bold mb-4">Who I Am, Beyond the Code</h2>
-              <p className="text-lg text-white/70 mb-4">
-                I’m not just here to build — I’m here to understand, to create with purpose, and to leave behind something meaningful. I believe in:
-              </p>
-              <ul className="list-disc list-inside text-lg text-white/70 space-y-2">
-                <li><span className="font-semibold text-white">Simplicity</span>, even in complex systems.</li>
-                <li><span className="font-semibold text-white">Consistency</span>, over raw genius.</li>
-                <li><span className="font-semibold text-white">Kindness and clarity</span>, both in communication and in code.</li>
-              </ul>
-              <p className="text-lg text-white/70 mt-4">
-                Outside of tech, I’m the kind of person who takes long walks by the river, watches people quietly, and thinks about how everything connects. I have big dreams, but I know that real change happens through small, intentional steps — and I try to live by that, every day.
+              <h2 className="text-3xl font-bold mb-4">My Philosophy</h2>
+              <p className="text-lg text-white/70">
+                My purpose is to build <span className="font-semibold text-white">enduring, transformative technology</span> that leaves a lasting meaningful and practical impact. I aim to craft systems, products, or frameworks that <span className="font-semibold text-white">empower, simplify, and enlighten</span>, solving real human problems with solutions that are not flashy or temporary, but <span className="font-semibold text-white">foundational</span>, serving as a starting point for others long after I'm gone.
               </p>
             </div>
           </div>
           <div className="space-y-8">
             <Card className="bg-white/5 border-white/10 text-white">
               <CardHeader>
-                <CardTitle>Say Hi</CardTitle>
+                <CardTitle>Connect</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-white/70">
-                  This site is my little corner of the web — a space to share what I’ve learned, what I’m building, and sometimes what I’m still trying to figure out.
-                </p>
-                <p className="text-white/70">
-                  If something here resonates with you, or if you just want to talk tech, ideas, or life — I’d love to hear from you.
+                  This site is where I share what I'm learning and building. If you'd like to connect, feel free to reach out.
                 </p>
                 <div className="flex flex-col space-y-3">
-                  <a href="mailto:imad.mouss@gmail.com" className="inline-flex items-center text-white/80 hover:text-white transition-colors">
-                    <Mail className="w-4 h-4 mr-2" />
-                    imadlab.me
-                  </a>
                   <a href="https://github.com/imaddde867" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-white/80 hover:text-white transition-colors">
                     <Github className="w-4 h-4 mr-2" />
                     imaddde867
