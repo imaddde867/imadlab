@@ -200,15 +200,28 @@ const EmailDashboard = () => {
   const generateBlogPreview = (data: any) => {
     const post = data.post;
     return `
-      <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; text-align: center; color: white;">
-          <h1 style="margin: 0; font-size: 28px;">imadlab</h1>
-          <p style="margin: 10px 0 0 0;">New Blog Post Published</p>
+      <div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #000000; border: 1px solid #1a1a1a; border-radius: 12px; overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 48px 32px; text-align: center; border-bottom: 1px solid #1a1a1a;">
+          <div style="font-size: 32px; font-weight: 700; color: #ffffff; margin-bottom: 8px; letter-spacing: -0.02em;">imadlab</div>
+          <div style="color: #888888; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em;">New Blog Post</div>
         </div>
-        <div style="padding: 40px;">
-          <h2 style="color: #1a202c; font-size: 24px; margin: 0 0 16px 0;">${post.title}</h2>
-          <p style="color: #4a5568; margin-bottom: 20px;">${post.excerpt || 'Check out this new blog post...'}</p>
-          <a href="#" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 16px 32px; border-radius: 8px;">Read Full Post</a>
+        <div style="padding: 48px 32px;">
+          <h1 style="font-size: 28px; font-weight: 700; color: #ffffff; margin-bottom: 16px; line-height: 1.2; letter-spacing: -0.02em;">${post.title}</h1>
+          <div style="color: #666666; font-size: 13px; font-weight: 500; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.05em;">
+            ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </div>
+          <div style="color: #cccccc; font-size: 16px; line-height: 1.7; margin-bottom: 32px;">
+            ${post.excerpt || 'Dive into the latest insights on data engineering, AI/ML, and cutting-edge web development techniques.'}
+          </div>
+          <div style="height: 1px; background: linear-gradient(90deg, transparent 0%, #333333 50%, transparent 100%); margin: 24px 0;"></div>
+          <a href="#" style="display: inline-block; background-color: #ffffff; color: #000000; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; border: 2px solid #ffffff;">Read Article</a>
+        </div>
+        <div style="background-color: #0a0a0a; padding: 32px; text-align: center; border-top: 1px solid #1a1a1a;">
+          <div style="color: #666666; font-size: 13px; line-height: 1.6; margin-bottom: 16px;">
+            You're receiving this because you subscribed to imadlab updates.<br>
+            Stay ahead with the latest in tech and development.
+          </div>
+          <a href="#" style="color: #888888; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500;">Unsubscribe</a>
         </div>
       </div>
     `;
@@ -217,16 +230,34 @@ const EmailDashboard = () => {
   const generateProjectPreview = (data: any) => {
     const project = data.project;
     return `
-      <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
-        <div style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); padding: 40px; text-align: center; color: white;">
-          <h1 style="margin: 0; font-size: 28px;">imadlab</h1>
-          <p style="margin: 10px 0 0 0;">New Project Showcase</p>
+      <div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #000000; border: 1px solid #1a1a1a; border-radius: 12px; overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 48px 32px; text-align: center; border-bottom: 1px solid #1a1a1a;">
+          <div style="font-size: 32px; font-weight: 700; color: #ffffff; margin-bottom: 8px; letter-spacing: -0.02em;">imadlab</div>
+          <div style="color: #888888; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em;">New Project</div>
         </div>
-        <div style="padding: 40px;">
-          <h2 style="color: #1a202c; font-size: 24px; margin: 0 0 20px 0;">${project.title}</h2>
-          <p style="color: #4a5568; margin-bottom: 30px;">${project.description || 'Check out this new project...'}</p>
-          <a href="#" style="display: inline-block; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; text-decoration: none; padding: 16px 24px; border-radius: 8px; margin-right: 16px;">View Project</a>
-          ${project.repo_url ? '<a href="#" style="display: inline-block; background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); color: white; text-decoration: none; padding: 16px 24px; border-radius: 8px;">View Code</a>' : ''}
+        <div style="padding: 48px 32px;">
+          <h1 style="font-size: 28px; font-weight: 700; color: #ffffff; margin-bottom: 24px; line-height: 1.2; letter-spacing: -0.02em;">${project.title}</h1>
+          <div style="color: #cccccc; font-size: 16px; line-height: 1.7; margin-bottom: 32px;">
+            ${project.description || 'Explore this new project showcasing innovative solutions and modern development practices.'}
+          </div>
+          ${project.tech_tags && project.tech_tags.length > 0 ? `
+          <div style="margin-bottom: 40px;">
+            <div style="color: #ffffff; font-size: 14px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em;">Tech Stack</div>
+            ${project.tech_tags.map(tech => `<span style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 8px 16px; border-radius: 6px; font-size: 11px; font-weight: 500; margin-right: 8px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid #333333;">${tech}</span>`).join('')}
+          </div>
+          ` : ''}
+          <div style="height: 1px; background: linear-gradient(90deg, transparent 0%, #333333 50%, transparent 100%); margin: 32px 0;"></div>
+          <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <a href="#" style="display: inline-block; background-color: #ffffff; color: #000000; text-decoration: none; padding: 16px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; border: 2px solid #ffffff; flex: 1; min-width: 140px; text-align: center;">View Project</a>
+            ${project.repo_url ? '<a href="#" style="display: inline-block; background-color: transparent; color: #ffffff; text-decoration: none; padding: 16px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; border: 2px solid #333333; flex: 1; min-width: 140px; text-align: center;">View Code</a>' : ''}
+          </div>
+        </div>
+        <div style="background-color: #0a0a0a; padding: 32px; text-align: center; border-top: 1px solid #1a1a1a;">
+          <div style="color: #666666; font-size: 13px; line-height: 1.6; margin-bottom: 16px;">
+            You're receiving this because you subscribed to imadlab updates.<br>
+            Discover cutting-edge projects and technical innovations.
+          </div>
+          <a href="#" style="color: #888888; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500;">Unsubscribe</a>
         </div>
       </div>
     `;

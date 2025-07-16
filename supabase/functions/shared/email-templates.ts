@@ -28,8 +28,8 @@ export interface ProjectEmailData {
 
 export function generateBlogPostEmail(data: BlogPostEmailData): string {
   const { post, siteUrl, unsubscribeToken } = data;
-  const postUrl = `${siteUrl}/blog/${post.slug}`;
-  const unsubscribeUrl = `${siteUrl}/api/unsubscribe?token=${unsubscribeToken}`;
+  const postUrl = `${siteUrl}/blogs/${post.slug}`;
+  const unsubscribeUrl = `${siteUrl}/functions/v1/handle-unsubscribe?token=${unsubscribeToken}`;
   
   return `
 <!DOCTYPE html>
@@ -39,146 +39,184 @@ export function generateBlogPostEmail(data: BlogPostEmailData): string {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Blog Post: ${post.title}</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            color: #333333;
-            background-color: #f8fafc;
+            color: #ffffff;
+            background-color: #000000;
+            margin: 0;
+            padding: 20px;
         }
-        .container {
+        .email-container {
             max-width: 600px;
             margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 8px;
+            background-color: #000000;
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 40px 30px;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            padding: 48px 32px;
             text-align: center;
+            border-bottom: 1px solid #1a1a1a;
         }
-        .header h1 {
-            color: #ffffff;
-            margin: 0;
-            font-size: 28px;
+        .logo {
+            font-size: 32px;
             font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
         }
-        .header p {
-            color: #e2e8f0;
-            margin: 10px 0 0 0;
-            font-size: 16px;
+        .header-subtitle {
+            color: #888888;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
         .content {
-            padding: 40px 30px;
+            padding: 48px 32px;
         }
         .post-image {
             width: 100%;
-            height: 200px;
+            height: 240px;
             object-fit: cover;
             border-radius: 8px;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
+            border: 1px solid #1a1a1a;
         }
         .post-title {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
-            color: #1a202c;
-            margin: 0 0 16px 0;
-            line-height: 1.3;
+            color: #ffffff;
+            margin-bottom: 16px;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
         }
         .post-meta {
-            color: #718096;
-            font-size: 14px;
-            margin-bottom: 20px;
+            color: #666666;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         .post-excerpt {
-            color: #4a5568;
+            color: #cccccc;
             font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 30px;
+            line-height: 1.7;
+            margin-bottom: 32px;
         }
         .tags {
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
         .tag {
             display: inline-block;
-            background-color: #edf2f7;
-            color: #4a5568;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
             margin-right: 8px;
             margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid #333333;
         }
         .cta-button {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #ffffff;
+            background-color: #ffffff;
+            color: #000000;
             text-decoration: none;
             padding: 16px 32px;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 16px;
-            text-align: center;
-            transition: transform 0.2s;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s ease;
+            border: 2px solid #ffffff;
         }
         .cta-button:hover {
-            transform: translateY(-2px);
+            background-color: #000000;
+            color: #ffffff;
+            transform: translateY(-1px);
         }
         .footer {
-            background-color: #f7fafc;
-            padding: 30px;
+            background-color: #0a0a0a;
+            padding: 32px;
             text-align: center;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #1a1a1a;
         }
-        .footer p {
-            color: #718096;
-            font-size: 14px;
-            margin: 0 0 10px 0;
+        .footer-text {
+            color: #666666;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 16px;
         }
         .unsubscribe {
-            color: #a0aec0;
+            color: #888888;
             text-decoration: none;
-            font-size: 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 500;
         }
         .unsubscribe:hover {
-            color: #718096;
+            color: #ffffff;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #333333 50%, transparent 100%);
+            margin: 24px 0;
         }
         @media (max-width: 600px) {
-            .container {
-                margin: 0;
-                border-radius: 0;
+            body {
+                padding: 10px;
+            }
+            .email-container {
+                border-radius: 8px;
             }
             .header, .content, .footer {
-                padding: 20px;
+                padding: 24px 20px;
             }
             .post-title {
-                font-size: 20px;
+                font-size: 24px;
             }
             .cta-button {
                 display: block;
                 width: 100%;
-                box-sizing: border-box;
+                text-align: center;
+            }
+        }
+        @media (prefers-color-scheme: light) {
+            body {
+                background-color: #000000;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="email-container">
         <div class="header">
-            <h1>imadlab</h1>
-            <p>New Blog Post Published</p>
+            <div class="logo">imadlab</div>
+            <div class="header-subtitle">New Blog Post</div>
         </div>
         
         <div class="content">
             ${post.imageUrl ? `<img src="${post.imageUrl}" alt="${post.title}" class="post-image">` : ''}
             
-            <h2 class="post-title">${post.title}</h2>
+            <h1 class="post-title">${post.title}</h1>
             
             <div class="post-meta">
-                Published on ${new Date(post.publishedDate).toLocaleDateString('en-US', { 
+                ${new Date(post.publishedDate).toLocaleDateString('en-US', { 
                     year: 'numeric', 
                     month: 'long', 
                     day: 'numeric' 
@@ -186,7 +224,7 @@ export function generateBlogPostEmail(data: BlogPostEmailData): string {
             </div>
             
             <div class="post-excerpt">
-                ${post.excerpt || 'Check out this new blog post with insights on data engineering, AI/ML, and modern web development.'}
+                ${post.excerpt || 'Dive into the latest insights on data engineering, AI/ML, and cutting-edge web development techniques.'}
             </div>
             
             ${post.tags && post.tags.length > 0 ? `
@@ -195,12 +233,16 @@ export function generateBlogPostEmail(data: BlogPostEmailData): string {
             </div>
             ` : ''}
             
-            <a href="${postUrl}" class="cta-button">Read Full Post</a>
+            <div class="divider"></div>
+            
+            <a href="${postUrl}" class="cta-button">Read Article</a>
         </div>
         
         <div class="footer">
-            <p>Thanks for subscribing to imadlab newsletter!</p>
-            <p>You're receiving this because you subscribed to updates about new blog posts and projects.</p>
+            <div class="footer-text">
+                You're receiving this because you subscribed to imadlab updates.<br>
+                Stay ahead with the latest in tech and development.
+            </div>
             <a href="${unsubscribeUrl}" class="unsubscribe">Unsubscribe</a>
         </div>
     </div>
@@ -212,7 +254,7 @@ export function generateBlogPostEmail(data: BlogPostEmailData): string {
 export function generateProjectEmail(data: ProjectEmailData): string {
   const { project, siteUrl, unsubscribeToken } = data;
   const projectUrl = `${siteUrl}/projects/${project.id}`;
-  const unsubscribeUrl = `${siteUrl}/api/unsubscribe?token=${unsubscribeToken}`;
+  const unsubscribeUrl = `${siteUrl}/functions/v1/handle-unsubscribe?token=${unsubscribeToken}`;
   
   return `
 <!DOCTYPE html>
@@ -222,171 +264,216 @@ export function generateProjectEmail(data: ProjectEmailData): string {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Project: ${project.title}</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            color: #333333;
-            background-color: #f8fafc;
+            color: #ffffff;
+            background-color: #000000;
+            margin: 0;
+            padding: 20px;
         }
-        .container {
+        .email-container {
             max-width: 600px;
             margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 8px;
+            background-color: #000000;
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .header {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-            padding: 40px 30px;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            padding: 48px 32px;
             text-align: center;
+            border-bottom: 1px solid #1a1a1a;
         }
-        .header h1 {
-            color: #ffffff;
-            margin: 0;
-            font-size: 28px;
+        .logo {
+            font-size: 32px;
             font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
         }
-        .header p {
-            color: #c6f6d5;
-            margin: 10px 0 0 0;
-            font-size: 16px;
+        .header-subtitle {
+            color: #888888;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
         .content {
-            padding: 40px 30px;
+            padding: 48px 32px;
         }
         .project-image {
             width: 100%;
-            height: 200px;
+            height: 240px;
             object-fit: cover;
             border-radius: 8px;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
+            border: 1px solid #1a1a1a;
         }
         .project-title {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
-            color: #1a202c;
-            margin: 0 0 20px 0;
-            line-height: 1.3;
+            color: #ffffff;
+            margin-bottom: 24px;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
         }
         .project-description {
-            color: #4a5568;
+            color: #cccccc;
             font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 30px;
+            line-height: 1.7;
+            margin-bottom: 32px;
         }
         .tech-stack {
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
-        .tech-stack h3 {
-            color: #2d3748;
-            font-size: 16px;
+        .tech-stack-title {
+            color: #ffffff;
+            font-size: 14px;
             font-weight: 600;
-            margin: 0 0 12px 0;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         .tech-tag {
             display: inline-block;
-            background-color: #e6fffa;
-            color: #234e52;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 11px;
             font-weight: 500;
             margin-right: 8px;
             margin-bottom: 8px;
-            border: 1px solid #b2f5ea;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid #333333;
         }
         .action-buttons {
             display: flex;
             gap: 16px;
             flex-wrap: wrap;
+            margin-top: 32px;
         }
         .cta-button {
             display: inline-block;
-            color: #ffffff;
             text-decoration: none;
             padding: 16px 24px;
             border-radius: 8px;
             font-weight: 600;
             font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             text-align: center;
-            transition: transform 0.2s;
+            transition: all 0.2s ease;
             flex: 1;
             min-width: 140px;
         }
         .cta-primary {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            background-color: #ffffff;
+            color: #000000;
+            border: 2px solid #ffffff;
+        }
+        .cta-primary:hover {
+            background-color: #000000;
+            color: #ffffff;
+            transform: translateY(-1px);
         }
         .cta-secondary {
-            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            background-color: transparent;
+            color: #ffffff;
+            border: 2px solid #333333;
         }
-        .cta-button:hover {
-            transform: translateY(-2px);
+        .cta-secondary:hover {
+            background-color: #333333;
+            border-color: #666666;
+            transform: translateY(-1px);
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #333333 50%, transparent 100%);
+            margin: 32px 0;
         }
         .footer {
-            background-color: #f7fafc;
-            padding: 30px;
+            background-color: #0a0a0a;
+            padding: 32px;
             text-align: center;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #1a1a1a;
         }
-        .footer p {
-            color: #718096;
-            font-size: 14px;
-            margin: 0 0 10px 0;
+        .footer-text {
+            color: #666666;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 16px;
         }
         .unsubscribe {
-            color: #a0aec0;
+            color: #888888;
             text-decoration: none;
-            font-size: 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 500;
         }
         .unsubscribe:hover {
-            color: #718096;
+            color: #ffffff;
         }
         @media (max-width: 600px) {
-            .container {
-                margin: 0;
-                border-radius: 0;
+            body {
+                padding: 10px;
+            }
+            .email-container {
+                border-radius: 8px;
             }
             .header, .content, .footer {
-                padding: 20px;
+                padding: 24px 20px;
             }
             .project-title {
-                font-size: 20px;
+                font-size: 24px;
             }
             .action-buttons {
                 flex-direction: column;
             }
             .cta-button {
                 width: 100%;
-                box-sizing: border-box;
+            }
+        }
+        @media (prefers-color-scheme: light) {
+            body {
+                background-color: #000000;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="email-container">
         <div class="header">
-            <h1>imadlab</h1>
-            <p>New Project Showcase</p>
+            <div class="logo">imadlab</div>
+            <div class="header-subtitle">New Project</div>
         </div>
         
         <div class="content">
             ${project.imageUrl ? `<img src="${project.imageUrl}" alt="${project.title}" class="project-image">` : ''}
             
-            <h2 class="project-title">${project.title}</h2>
+            <h1 class="project-title">${project.title}</h1>
             
             <div class="project-description">
-                ${project.description || 'Check out this new project showcasing modern development practices and innovative solutions.'}
+                ${project.description || 'Explore this new project showcasing innovative solutions and modern development practices.'}
             </div>
             
             ${project.techTags && project.techTags.length > 0 ? `
             <div class="tech-stack">
-                <h3>Technologies Used</h3>
+                <div class="tech-stack-title">Tech Stack</div>
                 ${project.techTags.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
             </div>
             ` : ''}
+            
+            <div class="divider"></div>
             
             <div class="action-buttons">
                 <a href="${projectUrl}" class="cta-button cta-primary">View Project</a>
@@ -395,8 +482,10 @@ export function generateProjectEmail(data: ProjectEmailData): string {
         </div>
         
         <div class="footer">
-            <p>Thanks for subscribing to imadlab newsletter!</p>
-            <p>You're receiving this because you subscribed to updates about new blog posts and projects.</p>
+            <div class="footer-text">
+                You're receiving this because you subscribed to imadlab updates.<br>
+                Discover cutting-edge projects and technical innovations.
+            </div>
             <a href="${unsubscribeUrl}" class="unsubscribe">Unsubscribe</a>
         </div>
     </div>
