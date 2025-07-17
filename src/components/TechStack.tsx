@@ -223,6 +223,19 @@ const TechStack = () => {
       : techStack.filter((tech) => tech.category === selectedCategory);
 
   useEffect(() => {
+    // Detect mobile
+    const isMobile = window.innerWidth < 768;
+    setVisibleTechs(new Set());
+    if (isMobile) {
+      // Staggered reveal for mobile
+      filteredTechStack.forEach((tech, idx) => {
+        setTimeout(() => {
+          setVisibleTechs((prev) => new Set([...prev, tech.name]));
+        }, idx * 80 + 100);
+      });
+      return;
+    }
+    // Desktop: use IntersectionObserver
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -238,10 +251,8 @@ const TechStack = () => {
       },
       { threshold: 0.3 }
     );
-
     const techElements = document.querySelectorAll("[data-tech]");
     techElements.forEach((el) => observer.observe(el));
-
     return () => observer.disconnect();
   }, [filteredTechStack]);
 
