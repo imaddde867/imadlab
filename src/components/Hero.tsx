@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ArrowDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import DecryptedText from './DecryptedText';
 import Stars from './Stars';
 
 const Hero = () => {
@@ -55,7 +54,7 @@ const Hero = () => {
         {/* Main content - asymmetrically placed */}
         <div className="lg:col-span-8 lg:col-start-2 space-y-8">
           <div className="space-y-4">
-            <h1 className="text-display text-hierarchy-primary font-black">
+            <h1 className="text-display text-hierarchy-primary font-black animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s' }}>
               Hi, I'm{' '}
               <span className="relative inline-block">
                 Imad
@@ -64,7 +63,7 @@ const Hero = () => {
               .
             </h1>
             
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-hierarchy-secondary ml-4 lg:ml-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-hierarchy-secondary ml-4 lg:ml-12 animate-fade-in-left opacity-0" style={{ animationDelay: '0.3s' }}>
               Data Engineering &{' '}
               <span className="relative">
                 AI Innovator
@@ -74,40 +73,18 @@ const Hero = () => {
           </div>
 
           <div className="ml-8 lg:ml-24 space-y-6">
-            <div className="reading-width">
-              <DecryptedText
-                text="I'm a passionate data engineer and AI innovator, dedicated to building"
-                speed={15}
-                sequential
-                animateOn="view"
-                className="text-body-large text-hierarchy-tertiary"
-                parentClassName="block"
-                encryptedClassName="text-hierarchy-subtle"
-              />
-              <DecryptedText
-                text="intelligent systems that transform raw data into actionable insights."
-                speed={15}
-                sequential
-                animateOn="view"
-                delay={500}
-                className="text-body-large text-hierarchy-tertiary"
-                parentClassName="block"
-                encryptedClassName="text-hierarchy-subtle"
-              />
-              <DecryptedText
-                text="I specialize in scalable architectures and cutting-edge AI solutions."
-                speed={15}
-                sequential
-                animateOn="view"
-                delay={1000}
-                className="text-body-large text-hierarchy-tertiary"
-                parentClassName="block"
-                encryptedClassName="text-hierarchy-subtle"
-              />
+            <div className="reading-width space-y-4">
+              <p className="text-body-large text-hierarchy-tertiary leading-relaxed animate-fade-in-up opacity-0" style={{ animationDelay: '0.5s' }}>
+                I'm a passionate data engineer and AI innovator, dedicated to building intelligent systems that transform raw data into actionable insights.
+              </p>
+              <p className="text-body-large text-hierarchy-tertiary leading-relaxed animate-fade-in-up opacity-0" style={{ animationDelay: '0.7s' }}>
+                I specialize in scalable architectures and cutting-edge AI solutions that drive business innovation.
+              </p>
             </div>
             <button 
                 onClick={scrollToProjects}
-                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/20 rounded-full btn-text-primary transition-all duration-300 hover:bg-white/10 hover:border-white/40 hover:scale-105 focus-enhanced"
+                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/20 rounded-full btn-text-primary transition-all duration-300 hover:bg-white/10 hover:border-white/40 hover:scale-105 focus-enhanced animate-fade-in-scale opacity-0"
+                style={{ animationDelay: '0.9s' }}
               >
                 <span>See My Work</span>
                 <ArrowDown className="w-5 h-5 transition-transform group-hover:translate-y-1" />
