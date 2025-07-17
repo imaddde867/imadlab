@@ -1,7 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Calendar, Clock, BookOpen } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -25,6 +26,7 @@ interface Post {
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const readingProgress = useReadingProgress();
+  const [showAllTags, setShowAllTags] = useState(false);
 
   const { data: post, isLoading, error } = useQuery({
     queryKey: ['post', slug],
@@ -108,7 +110,8 @@ const BlogPost = () => {
             <div className="flex flex-wrap items-center gap-4 bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-white/10">
               {post.tags && post.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  {post.tags.slice(0, 3).map((tag, index) => (
+                  {/* Show first 3 tags or all tags if expanded */}
+                  {(showAllTags ? post.tags : post.tags.slice(0, 3)).map((tag, index) => (
                     <span
                       key={index}
                       className="px-3 py-1 text-sm bg-white/15 rounded-full text-white/90 font-medium"
@@ -116,10 +119,26 @@ const BlogPost = () => {
                       #{tag}
                     </span>
                   ))}
+                  
+                  {/* Show/hide toggle button if there are more than 3 tags */}
                   {post.tags.length > 3 && (
-                    <span className="px-3 py-1 text-sm bg-white/10 rounded-full text-white/70">
-                      +{post.tags.length - 3}
-                    </span>
+                    <button
+                      onClick={() => setShowAllTags(!showAllTags)}
+                      className="px-3 py-1 text-sm bg-white/10 hover:bg-white/20 rounded-full text-white/70 hover:text-white/90 transition-colors flex items-center gap-1 cursor-pointer"
+                      aria-label={showAllTags ? "Show fewer tags" : "Show all tags"}
+                    >
+                      {showAllTags ? (
+                        <>
+                          <ChevronUp className="w-3 h-3" />
+                          <span>Show less</span>
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-3 h-3" />
+                          <span>+{post.tags.length - 3}</span>
+                        </>
+                      )}
+                    </button>
                   )}
                 </div>
               )}
