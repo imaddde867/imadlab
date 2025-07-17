@@ -363,8 +363,8 @@ const ManageProjects = () => {
                   </Button>
                   <Button 
                     type="button" 
-                    variant="outline"
-                    className="text-white border-white/20 hover:bg-white/10"
+                    variant="ghost"
+                    className="text-white hover:bg-white/10 hover:text-white"
                     onClick={() => {
                       setShowForm(false);
                       setEditingProject(null);
