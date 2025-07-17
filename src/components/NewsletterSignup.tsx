@@ -107,19 +107,21 @@ const NewsletterSignup: React.FC<NewsletterSignupProps> = ({ className = '' }) =
   };
 
   return (
-    <section className={`py-12 px-4 border-t border-white/10 mt-16 ${className}`}>
+    <section className={`py-8 sm:py-12 px-4 sm:px-6 border-t border-white/10 mt-12 sm:mt-16 ${className}`}>
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold mb-2">Stay Updated</h2>
-            <p className="text-white/60">
+        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 items-start lg:items-center">
+          {/* Left content - heading and description */}
+          <div className="w-full lg:w-2/5 mb-6 lg:mb-0">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">Stay Updated</h2>
+            <p className="text-white/60 text-sm sm:text-base max-w-md">
               Get notified when new projects and blog posts are published.
               Never miss out on the latest content.
             </p>
           </div>
           
-          <div className="flex-1">
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+          {/* Right content - form */}
+          <div className="w-full lg:w-3/5">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <div className="flex-1">
                 <Input
                   type="email"
@@ -141,29 +143,32 @@ const NewsletterSignup: React.FC<NewsletterSignupProps> = ({ className = '' }) =
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg py-3 transition-colors border border-white/10 shadow whitespace-nowrap"
+                className="bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg py-3 transition-colors border border-white/10 shadow whitespace-nowrap h-[42px] sm:h-auto w-full sm:w-auto"
               >
                 {isSubmitting ? 'Subscribing...' : 'Subscribe'}
               </Button>
             </form>
             
-            {status === 'success' && (
-              <p className="mt-2 text-green-400 text-sm">
-                Thanks for subscribing! You'll receive updates on new content.
-              </p>
-            )}
-            
-            {status === 'error' && (
-              <p className="mt-2 text-red-400 text-sm">
-                Something went wrong. Please try again.
-              </p>
-            )}
-            
-            {status === 'already-subscribed' && (
-              <p className="mt-2 text-yellow-400 text-sm">
-                This email is already subscribed to the newsletter.
-              </p>
-            )}
+            {/* Status messages */}
+            <div className="min-h-[24px] mt-2">
+              {status === 'success' && (
+                <p className="text-green-400 text-xs sm:text-sm">
+                  Thanks for subscribing! You'll receive updates on new content.
+                </p>
+              )}
+              
+              {status === 'error' && (
+                <p className="text-red-400 text-xs sm:text-sm">
+                  Something went wrong. Please try again.
+                </p>
+              )}
+              
+              {status === 'already-subscribed' && (
+                <p className="text-yellow-400 text-xs sm:text-sm">
+                  This email is already subscribed to the newsletter.
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>
