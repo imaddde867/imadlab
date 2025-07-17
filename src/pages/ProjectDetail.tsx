@@ -1,7 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, ArrowUpRight, Calendar, Code, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Calendar, Code, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -23,6 +24,7 @@ interface Project {
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const [showAllTags, setShowAllTags] = useState(false);
 
   const { data: project, isLoading, error } = useQuery({
     queryKey: ['project', id],
@@ -113,7 +115,8 @@ const ProjectDetail = () => {
             <div className="flex flex-wrap items-center gap-4 bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-white/10">
               {project.tech_tags && project.tech_tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  {project.tech_tags.slice(0, 4).map((tag, index) => (
+                  {/* Show first 4 tags or all tags if expanded */}
+                  {(showAllTags ? project.tech_tags : project.tech_tags.slice(0, 4)).map((tag, index) => (
                     <span
                       key={index}
                       className="px-3 py-1 text-sm bg-white/15 rounded-full text-white/90 font-medium"
@@ -121,10 +124,26 @@ const ProjectDetail = () => {
                       {tag}
                     </span>
                   ))}
+                  
+                  {/* Show/hide toggle button if there are more than 4 tags */}
                   {project.tech_tags.length > 4 && (
-                    <span className="px-3 py-1 text-sm bg-white/10 rounded-full text-white/70">
-                      +{project.tech_tags.length - 4}
-                    </span>
+                    <button
+                      onClick={() => setShowAllTags(!showAllTags)}
+                      className="px-3 py-1 text-sm bg-white/10 hover:bg-white/20 rounded-full text-white/70 hover:text-white/90 transition-colors flex items-center gap-1 cursor-pointer"
+                      aria-label={showAllTags ? "Show fewer tags" : "Show all tags"}
+                    >
+                      {showAllTags ? (
+                        <>
+                          <ChevronUp className="w-3 h-3" />
+                          <span>Show less</span>
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-3 h-3" />
+                          <span>+{project.tech_tags.length - 4}</span>
+                        </>
+                      )}
+                    </button>
                   )}
                 </div>
               )}
