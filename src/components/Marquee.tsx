@@ -40,7 +40,8 @@ const Marquee: React.FC<MarqueeProps> = ({ words, speed = 'normal' }) => {
           100% { transform: translateX(-100%); }
         }
         .animate-marquee {
-          animation: marquee ${duration} linear infinite;
+          animation: marquee ${duration} linear infinite !important;
+          will-change: transform;
         }
       `}</style>
       <div
