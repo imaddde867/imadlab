@@ -235,19 +235,7 @@ const TechStack = () => {
     setHoveredTech(null);
   };
 
-  const getCategoryDotColor = (category: string) => {
-    const colors = {
-      Languages: "bg-blue-500",
-      "Data Engineering": "bg-green-500",
-      "AI/ML": "bg-purple-500",
-      Cloud: "bg-cyan-500",
-      Databases: "bg-orange-500",
-      DevOps: "bg-red-500",
-      Frameworks: "bg-yellow-500",
-      Runtime: "bg-pink-500",
-    };
-    return colors[category as keyof typeof colors] || "bg-white/60";
-  };
+
 
   return (
     <section className="py-20 px-4 relative">
