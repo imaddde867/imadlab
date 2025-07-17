@@ -223,37 +223,9 @@ const TechStack = () => {
       : techStack.filter((tech) => tech.category === selectedCategory);
 
   useEffect(() => {
-    // Detect mobile
-    const isMobile = window.innerWidth < 768;
-    setVisibleTechs(new Set());
-    if (isMobile) {
-      // Staggered reveal for mobile
-      filteredTechStack.forEach((tech, idx) => {
-        setTimeout(() => {
-          setVisibleTechs((prev) => new Set([...prev, tech.name]));
-        }, idx * 80 + 100);
-      });
-      return;
-    }
-    // Desktop: use IntersectionObserver
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const techName = entry.target.getAttribute("data-tech");
-            if (techName) {
-              setTimeout(() => {
-                setVisibleTechs((prev) => new Set([...prev, techName]));
-              }, Math.random() * 300);
-            }
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
-    const techElements = document.querySelectorAll("[data-tech]");
-    techElements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    // When the filtered tech stack changes (category toggled),
+    // immediately show all filtered techs (no animation reset)
+    setVisibleTechs(new Set(filteredTechStack.map((tech) => tech.name)));
   }, [filteredTechStack]);
 
   const handleMouseEnter = (tech: TechItem, event: React.MouseEvent) => {
