@@ -188,45 +188,68 @@ export const MarkdownComponents = {
       );
     }
 
+    // Check if this is a classification report or similar output
+    const isOutputBlock = 
+      codeString.includes('precision') && 
+      codeString.includes('recall') && 
+      codeString.includes('f1-score') && 
+      codeString.includes('support');
+
+    // For classification reports and similar outputs, use a simpler display
+    if (isOutputBlock) {
+      return (
+        <pre
+          className="my-6 p-4 bg-black/30 rounded-lg border border-white/10 overflow-x-auto font-mono text-sm text-white/90"
+          style={{ 
+            fontSize: '14px',
+            lineHeight: '1.5',
+            fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Inconsolata, "Roboto Mono", monospace'
+          }}
+        >
+          <code className="text-white/90" {...props}>
+            {children}
+          </code>
+        </pre>
+      );
+    }
+
+    // For regular code blocks
     return (
-      <div className="relative my-8 group">
-        {/* Code block with copy button */}
-        <div className="relative">
-          {/* Copy button (absolute positioned) */}
-          <button
-            onClick={handleCopy}
-            className="absolute top-3 right-3 flex items-center gap-1 bg-white/10 hover:bg-white/20 text-xs px-2 py-1 rounded-md transition-all duration-200 border border-white/10 text-white/80 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 z-10"
-            title={copied ? 'Copied!' : 'Copy code'}
-            type="button"
-          >
-            {copied ? (
-              <>
-                <Check className="w-3 h-3 text-green-400" />
-                <span>Copied</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3 h-3" />
-                <span>Copy</span>
-              </>
-            )}
-          </button>
-          
-          {/* Code content */}
-          <pre
-            ref={codeRef}
-            className={`overflow-x-auto p-6 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 ${language ? `language-${language}` : ''}`}
-            style={{ 
-              fontSize: '14px',
-              lineHeight: '1.6',
-              fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Inconsolata, "Roboto Mono", monospace'
-            }}
-          >
-            <code className={`text-white/90 font-mono ${language ? `language-${language}` : ''}`} {...props}>
-              {children}
-            </code>
-          </pre>
-        </div>
+      <div className="relative my-6">
+        {/* Copy button (absolute positioned) */}
+        <button
+          onClick={handleCopy}
+          className="absolute top-2 right-2 flex items-center gap-1 bg-white/10 hover:bg-white/20 text-xs px-2 py-1 rounded-md transition-all duration-200 border border-white/10 text-white/80 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 z-10"
+          title={copied ? 'Copied!' : 'Copy code'}
+          type="button"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3 h-3 text-green-400" />
+              <span>Copied</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3 h-3" />
+              <span>Copy</span>
+            </>
+          )}
+        </button>
+        
+        {/* Code content */}
+        <pre
+          ref={codeRef}
+          className={`overflow-x-auto p-4 bg-black/30 rounded-lg border border-white/10 ${language ? `language-${language}` : ''}`}
+          style={{ 
+            fontSize: '14px',
+            lineHeight: '1.6',
+            fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Inconsolata, "Roboto Mono", monospace'
+          }}
+        >
+          <code className={`text-white/90 font-mono ${language ? `language-${language}` : ''}`} {...props}>
+            {children}
+          </code>
+        </pre>
       </div>
     );
   },
