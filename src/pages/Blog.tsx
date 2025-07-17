@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
 import { ArrowLeft } from 'lucide-react';
 import Seo from '@/components/Seo';
+import NewsletterSignup from '@/components/NewsletterSignup';
 
 interface Post {
   id: string;
@@ -83,6 +84,9 @@ const Blogs = () => {
           </div>
         )}
       </div>
+      
+      {/* Newsletter signup component */}
+      <NewsletterSignup className="mt-16" />
     </div>
   );
 };

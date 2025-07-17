@@ -6,6 +6,7 @@ import CardItem from '@/components/ui/CardItem';
 import { ArrowLeft } from 'lucide-react';
 import Seo from '@/components/Seo';
 import { GridSkeleton } from '@/components/ui/LoadingStates';
+import NewsletterSignup from '@/components/NewsletterSignup';
 
 interface Project {
   id: string;
@@ -78,6 +79,8 @@ const Projects = () => {
             <div className="text-white/60 mb-4">No projects yet</div>
           </div>
         )}
+        
+        <NewsletterSignup />
       </div>
     </div>
   );
