@@ -1,1 +1,0 @@
-doc/admin_demo.mov filter=lfs diff=lfs merge=lfs -text
