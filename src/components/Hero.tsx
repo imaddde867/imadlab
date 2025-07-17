@@ -32,7 +32,7 @@ const Hero = () => {
             to="/about"
             className="link-enhanced focus-enhanced"
           >
-            About
+            About Me
           </Link>
         </div>
       </nav>
