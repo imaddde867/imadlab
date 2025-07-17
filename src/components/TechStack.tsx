@@ -83,18 +83,18 @@ const TechStack = () => {
     setHoveredTech(null);
   };
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryDotColor = (category: string) => {
     const colors = {
-      'Languages': 'from-blue-500/20 to-blue-600/20 border-blue-500/30',
-      'Data Engineering': 'from-green-500/20 to-green-600/20 border-green-500/30',
-      'AI/ML': 'from-purple-500/20 to-purple-600/20 border-purple-500/30',
-      'Cloud': 'from-cyan-500/20 to-cyan-600/20 border-cyan-500/30',
-      'Databases': 'from-orange-500/20 to-orange-600/20 border-orange-500/30',
-      'DevOps': 'from-red-500/20 to-red-600/20 border-red-500/30',
-      'Frameworks': 'from-yellow-500/20 to-yellow-600/20 border-yellow-500/30',
-      'Runtime': 'from-pink-500/20 to-pink-600/20 border-pink-500/30',
+      'Languages': 'bg-blue-500',
+      'Data Engineering': 'bg-green-500',
+      'AI/ML': 'bg-purple-500',
+      'Cloud': 'bg-cyan-500',
+      'Databases': 'bg-orange-500',
+      'DevOps': 'bg-red-500',
+      'Frameworks': 'bg-yellow-500',
+      'Runtime': 'bg-pink-500',
     };
-    return colors[category as keyof typeof colors] || 'from-white/10 to-white/5 border-white/20';
+    return colors[category as keyof typeof colors] || 'bg-white/60';
   };
 
   return (
@@ -132,7 +132,7 @@ const TechStack = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 md:gap-6">
           {filteredTechStack.map((tech, index) => {
             const isVisible = visibleTechs.has(tech.name);
-            const colorClasses = getCategoryColor(tech.category);
+            const dotColorClass = getCategoryDotColor(tech.category);
             
             return (
               <div
@@ -155,12 +155,17 @@ const TechStack = () => {
                   rel="noopener noreferrer"
                   className="block w-full h-full"
                 >
-                  <div className={`
-                    relative p-4 rounded-2xl bg-gradient-to-br ${colorClasses}
-                    hover:scale-110 hover:shadow-2xl hover:shadow-white/10
+                  <div className="
+                    relative p-4 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10
+                    hover:scale-110 hover:shadow-2xl hover:shadow-white/10 hover:bg-white/10 hover:border-white/20
                     transition-all duration-300 flex flex-col items-center justify-center
-                    min-h-[120px] group-hover:border-white/50
-                  `}>
+                    min-h-[120px]
+                  ">
+                    {/* Colored category dot - always visible */}
+                    <div className="absolute top-3 right-3">
+                      <div className={`w-3 h-3 rounded-full ${dotColorClass} shadow-lg`}></div>
+                    </div>
+                    
                     {/* Icon with enhanced animation */}
                     <div className="text-3xl md:text-4xl mb-3 group-hover:scale-125 transition-transform duration-300 filter group-hover:drop-shadow-lg">
                       {tech.icon}
@@ -171,18 +176,13 @@ const TechStack = () => {
                       {tech.name}
                     </div>
                     
-                    {/* Category badge */}
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="w-2 h-2 rounded-full bg-white/60"></div>
-                    </div>
-                    
                     {/* External link indicator */}
                     <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                       <ExternalLink className="w-3 h-3 text-white/60" />
                     </div>
                     
                     {/* Enhanced glow effect */}
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                   </div>
                 </a>
               </div>

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
 import { ArrowLeft } from 'lucide-react';
 import Seo from '@/components/Seo';
+import { GridSkeleton } from '@/components/ui/LoadingStates';
 
 interface Project {
   id: string;
@@ -54,9 +55,7 @@ const Projects = () => {
         </div>
 
         {isLoading ? (
-          <div className="text-center py-12">
-            <div className="text-white/60">Loading projects...</div>
-          </div>
+          <GridSkeleton count={6} columns={3} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects?.map((project) => (
