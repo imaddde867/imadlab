@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { GridSkeleton } from '@/components/ui/LoadingStates';
 
 interface Post {
   id: string;
@@ -60,9 +61,7 @@ const BlogFeed = () => {
 
 				{/* 4-column grid layout for blogs, matching Latest Projects */}
 				{isLoading ? (
-					<div className="text-center py-12">
-						<div className="text-white/60">Loading posts...</div>
-					</div>
+					<GridSkeleton count={3} columns={3} />
 				) : (
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 						{posts?.slice(0, 3).map((post) => (
