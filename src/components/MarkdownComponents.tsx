@@ -163,10 +163,12 @@ export const MarkdownComponents = {
     const codeRef = useRef<HTMLPreElement>(null);
     const [copied, setCopied] = useState(false);
     const codeString = String(children).replace(/\n$/, '');
-    const language = className?.replace('language-', '') || 'text';
+    // Extract language from className without displaying it as visible text
+    const language = className?.replace('language-', '') || '';
 
     const handleCopy = async () => {
       try {
+        // Copy the actual code content, not the language identifier
         await navigator.clipboard.writeText(codeString);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -188,21 +190,19 @@ export const MarkdownComponents = {
 
     return (
       <div className="relative my-8 group">
-        {/* Language label */}
-        <div className="flex items-center justify-between bg-white/10 px-4 py-2 rounded-t-xl border-b border-white/10">
-          <span className="text-xs font-medium text-white/70 uppercase tracking-wide">
-            {language}
-          </span>
+        {/* Code block with copy button */}
+        <div className="relative">
+          {/* Copy button (absolute positioned) */}
           <button
             onClick={handleCopy}
-            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-xs px-3 py-1.5 rounded-md transition-all duration-200 border border-white/10 text-white/80 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30"
+            className="absolute top-3 right-3 flex items-center gap-1 bg-white/10 hover:bg-white/20 text-xs px-2 py-1 rounded-md transition-all duration-200 border border-white/10 text-white/80 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 z-10"
             title={copied ? 'Copied!' : 'Copy code'}
             type="button"
           >
             {copied ? (
               <>
                 <Check className="w-3 h-3 text-green-400" />
-                <span>Copied!</span>
+                <span>Copied</span>
               </>
             ) : (
               <>
@@ -211,22 +211,22 @@ export const MarkdownComponents = {
               </>
             )}
           </button>
+          
+          {/* Code content */}
+          <pre
+            ref={codeRef}
+            className={`overflow-x-auto p-6 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 ${language ? `language-${language}` : ''}`}
+            style={{ 
+              fontSize: '14px',
+              lineHeight: '1.6',
+              fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Inconsolata, "Roboto Mono", monospace'
+            }}
+          >
+            <code className={`text-white/90 font-mono ${language ? `language-${language}` : ''}`} {...props}>
+              {children}
+            </code>
+          </pre>
         </div>
-        
-        {/* Code content */}
-        <pre
-          ref={codeRef}
-          className="overflow-x-auto p-6 bg-black/40 backdrop-blur-sm rounded-b-xl border border-white/10 border-t-0"
-          style={{ 
-            fontSize: '14px',
-            lineHeight: '1.6',
-            fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Inconsolata, "Roboto Mono", monospace'
-          }}
-        >
-          <code className="text-white/90 font-mono" {...props}>
-            {children}
-          </code>
-        </pre>
       </div>
     );
   },
