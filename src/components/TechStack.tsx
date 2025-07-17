@@ -1,9 +1,32 @@
 import { useState, useEffect, useRef } from "react";
 import { ExternalLink, Info } from "lucide-react";
 
+// Import tech logos
+import {
+  SiPython,
+  SiJavascript,
+  SiPostgresql,
+  SiMongodb,
+  SiTensorflow,
+  SiPytorch,
+  SiScikitlearn,
+  SiDocker,
+  SiGit,
+  SiApacheairflow,
+  SiApachekafka,
+  SiAmazon,
+  SiFastapi,
+  SiFlask,
+  SiDeno,
+  SiSvelte,
+  SiGithubactions,
+} from "react-icons/si";
+import { TbSql, TbDatabase, TbDatabaseImport, TbMath } from "react-icons/tb";
+import { HiOutlineGlobeAlt } from "react-icons/hi2";
+
 interface TechItem {
   name: string;
-  icon: string;
+  icon: React.ReactNode;
   url: string;
   category: string;
   description: string;
@@ -12,7 +35,7 @@ interface TechItem {
 const techStack: TechItem[] = [
   {
     name: "Python",
-    icon: "🐍",
+    icon: <SiPython className="w-8 h-8 text-[#3776AB]" />,
     url: "https://www.python.org/",
     category: "Languages",
     description:
@@ -20,14 +43,14 @@ const techStack: TechItem[] = [
   },
   {
     name: "JavaScript",
-    icon: "🟨",
+    icon: <SiJavascript className="w-8 h-8 text-[#F7DF1E]" />,
     url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
     category: "Languages",
     description: "Dynamic language for web development and modern applications",
   },
   {
     name: "SQL",
-    icon: "🗃️",
+    icon: <TbSql className="w-8 h-8 text-[#4479A1]" />,
     url: "https://en.wikipedia.org/wiki/SQL",
     category: "Languages",
     description:
@@ -35,7 +58,7 @@ const techStack: TechItem[] = [
   },
   {
     name: "Apache Airflow",
-    icon: "🌊",
+    icon: <SiApacheairflow className="w-8 h-8 text-[#017CEE]" />,
     url: "https://airflow.apache.org/",
     category: "Data Engineering",
     description:
@@ -43,35 +66,35 @@ const techStack: TechItem[] = [
   },
   {
     name: "Kafka",
-    icon: "📡",
+    icon: <SiApachekafka className="w-8 h-8 text-white" />,
     url: "https://kafka.apache.org/",
     category: "Data Engineering",
     description: "Distributed streaming platform for real-time data pipelines",
   },
   {
     name: "AWS",
-    icon: "☁️",
+    icon: <SiAmazon className="w-8 h-8 text-[#FF9900]" />,
     url: "https://aws.amazon.com/",
     category: "Cloud",
     description: "Comprehensive cloud computing platform and services",
   },
   {
     name: "PostgreSQL",
-    icon: "🐘",
+    icon: <SiPostgresql className="w-8 h-8 text-[#336791]" />,
     url: "https://www.postgresql.org/",
     category: "Databases",
     description: "Advanced open-source relational database system",
   },
   {
     name: "MongoDB",
-    icon: "🍃",
+    icon: <SiMongodb className="w-8 h-8 text-[#47A248]" />,
     url: "https://www.mongodb.com/",
     category: "Databases",
     description: "Document-oriented NoSQL database for modern applications",
   },
   {
     name: "Data Lakes",
-    icon: "🏞️",
+    icon: <TbDatabaseImport className="w-8 h-8 text-[#2C8EBB]" />,
     url: "https://en.wikipedia.org/wiki/Data_lake",
     category: "Data Engineering",
     description:
@@ -79,21 +102,21 @@ const techStack: TechItem[] = [
   },
   {
     name: "Data Warehouses",
-    icon: "🏭",
+    icon: <TbDatabase className="w-8 h-8 text-[#FF6C37]" />,
     url: "https://en.wikipedia.org/wiki/Data_warehouse",
     category: "Data Engineering",
     description: "Central repository for integrated data from multiple sources",
   },
   {
     name: "TensorFlow",
-    icon: "🤖",
+    icon: <SiTensorflow className="w-8 h-8 text-[#FF6F00]" />,
     url: "https://www.tensorflow.org/",
     category: "AI/ML",
     description: "Open-source machine learning framework by Google",
   },
   {
     name: "Scikit-learn",
-    icon: "📈",
+    icon: <SiScikitlearn className="w-8 h-8 text-[#F7931E]" />,
     url: "https://scikit-learn.org/",
     category: "AI/ML",
     description:
@@ -101,14 +124,14 @@ const techStack: TechItem[] = [
   },
   {
     name: "PyTorch",
-    icon: "🔥",
+    icon: <SiPytorch className="w-8 h-8 text-[#EE4C2C]" />,
     url: "https://pytorch.org/",
     category: "AI/ML",
     description: "Deep learning framework with dynamic neural networks",
   },
   {
     name: "Docker",
-    icon: "🐳",
+    icon: <SiDocker className="w-8 h-8 text-[#2496ED]" />,
     url: "https://www.docker.com/",
     category: "DevOps",
     description:
@@ -116,14 +139,14 @@ const techStack: TechItem[] = [
   },
   {
     name: "Git",
-    icon: "🌳",
+    icon: <SiGit className="w-8 h-8 text-[#F05032]" />,
     url: "https://git-scm.com/",
     category: "DevOps",
     description: "Distributed version control system for tracking code changes",
   },
   {
     name: "CI/CD",
-    icon: "🔄",
+    icon: <SiGithubactions className="w-8 h-8 text-[#2088FF]" />,
     url: "https://en.wikipedia.org/wiki/CI/CD",
     category: "DevOps",
     description:
@@ -131,21 +154,21 @@ const techStack: TechItem[] = [
   },
   {
     name: "FastAPI",
-    icon: "🚀",
+    icon: <SiFastapi className="w-8 h-8 text-[#009688]" />,
     url: "https://fastapi.tiangolo.com/",
     category: "Frameworks",
     description: "Modern, fast web framework for building APIs with Python",
   },
   {
     name: "Flask",
-    icon: "🍶",
+    icon: <SiFlask className="w-8 h-8 text-white" />,
     url: "https://flask.palletsprojects.com/",
     category: "Frameworks",
     description: "Lightweight WSGI web application framework for Python",
   },
   {
     name: "MATLAB",
-    icon: "📊",
+    icon: <TbMath className="w-8 h-8 text-[#0076A8]" />,
     url: "https://www.mathworks.com/products/matlab.html",
     category: "Languages",
     description:
@@ -153,21 +176,21 @@ const techStack: TechItem[] = [
   },
   {
     name: "Deno",
-    icon: "🦕",
+    icon: <SiDeno className="w-8 h-8 text-white" />,
     url: "https://deno.com/",
     category: "Runtime",
     description: "Secure runtime for JavaScript and TypeScript",
   },
   {
     name: "Hono",
-    icon: "🌐",
+    icon: <HiOutlineGlobeAlt className="w-8 h-8 text-[#00E6DE]" />,
     url: "https://hono.dev/",
     category: "Frameworks",
     description: "Ultrafast web framework for the edge",
   },
   {
     name: "Svelte",
-    icon: "🧡",
+    icon: <SiSvelte className="w-8 h-8 text-[#FF3E00]" />,
     url: "https://svelte.dev/",
     category: "Frameworks",
     description:
@@ -235,8 +258,6 @@ const TechStack = () => {
     setHoveredTech(null);
   };
 
-
-
   return (
     <section className="py-20 px-4 relative">
       <div className="max-w-7xl mx-auto">
@@ -269,7 +290,7 @@ const TechStack = () => {
           ))}
         </div>
 
-        {/* Smaller tech grid blocks */}
+        {/* Tech grid with SVG icons */}
         <div className="flex justify-center">
           <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-3 md:gap-4 max-w-5xl">
             {filteredTechStack.map((tech, index) => {
@@ -305,12 +326,12 @@ const TechStack = () => {
                       aspect-square
                     "
                     >
-                      {/* Smaller icon */}
-                      <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300">
+                      {/* SVG Icon */}
+                      <div className="flex items-center justify-center h-10 mb-2 group-hover:scale-110 transition-transform duration-300">
                         {tech.icon}
                       </div>
 
-                      {/* Smaller name text */}
+                      {/* Name text */}
                       <div className="text-xs font-medium text-white/80 group-hover:text-white transition-colors duration-300 text-center leading-tight px-1">
                         {tech.name}
                       </div>
