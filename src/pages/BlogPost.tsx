@@ -8,7 +8,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import Seo from '@/components/Seo';
-import { MarkdownComponents, useReadingProgress, calculateReadingTime } from '@/components/MarkdownComponents';
+import { MarkdownComponents, calculateReadingTime } from '@/components/MarkdownComponents';
 import { PageLoader } from '@/components/ui/LoadingStates';
 
 interface Post {
@@ -25,7 +25,6 @@ interface Post {
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
-  const readingProgress = useReadingProgress();
   const [showAllTags, setShowAllTags] = useState(false);
 
   const { data: post, isLoading, error } = useQuery({
@@ -78,13 +77,7 @@ const BlogPost = () => {
         image={post.image_url || undefined}
       />
 
-      {/* Reading Progress Bar */}
-      <div className="fixed top-0 left-0 w-full h-1 bg-white/5 z-50">
-        <div 
-          className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-150 ease-out"
-          style={{ width: `${readingProgress}%` }}
-        />
-      </div>
+
 
       {/* Navigation Bar */}
       <div className="sticky top-1 z-30 w-full backdrop-blur-md bg-black/70 border-b border-white/10">
