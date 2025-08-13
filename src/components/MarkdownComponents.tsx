@@ -158,7 +158,7 @@ export const MarkdownComponents = {
     node?: unknown; 
     inline?: boolean; 
     className?: string; 
-    children: React.ReactNode 
+    children?: React.ReactNode 
   }) => {
     const codeRef = useRef<HTMLPreElement>(null);
     const [copied, setCopied] = useState(false);
