@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ArrowDown } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import Stars from './Stars';
 
 const Hero = () => {
@@ -14,26 +14,26 @@ const Hero = () => {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <Stars />
       {/* Navigation */}
-      <nav className="absolute top-8 right-8 z-20">
+  <nav className="absolute top-8 right-8 z-20" aria-label="Primary">
         <div className="flex gap-6">
-          <Link 
+          <NavLink 
             to="/projects" 
-            className="link-enhanced focus-enhanced"
+            className={({ isActive }) => `link-enhanced focus-enhanced ${isActive ? 'text-white' : ''}`}
           >
             Projects
-          </Link>
-          <Link 
+          </NavLink>
+          <NavLink 
             to="/blogs" 
-            className="link-enhanced focus-enhanced"
+            className={({ isActive }) => `link-enhanced focus-enhanced ${isActive ? 'text-white' : ''}`}
           >
             Blogs
-          </Link>
-          <Link
+          </NavLink>
+          <NavLink
             to="/about"
-            className="link-enhanced focus-enhanced"
+            className={({ isActive }) => `link-enhanced focus-enhanced ${isActive ? 'text-white' : ''}`}
           >
             About Me
-          </Link>
+          </NavLink>
         </div>
       </nav>
 

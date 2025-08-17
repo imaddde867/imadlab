@@ -7,25 +7,31 @@ type SeoProps = {
   description: string;
   keywords?: string;
   image?: string;
+  imageAlt?: string;
   type?: 'website' | 'article';
   publishedTime?: string;
   modifiedTime?: string;
   author?: string;
   canonical?: string;
   noindex?: boolean;
+  tags?: string[];
+  locale?: string;
 };
 
 const Seo = ({ 
   title, 
   description, 
   keywords,
-  image = 'https://imadlab.me/opengraph-image.png',
+  image = 'https://imadlab.me/apple-touch-icon.png',
+  imageAlt,
   type = 'website',
   publishedTime,
   modifiedTime,
   author = 'Imad Eddine El Mouss',
   canonical,
-  noindex = false
+  noindex = false,
+  tags,
+  locale = 'en_US',
 }: SeoProps) => {
   const location = useLocation();
   const defaultTitle = 'Imadlab | Imad - Data Engineer, AI/ML Professional & Student Portfolio';
@@ -48,6 +54,7 @@ const Seo = ({
       "name": author,
       "url": "https://imadlab.me"
     },
+    ...(tags && tags.length ? { "keywords": tags.join(', ') } : {}),
     ...(publishedTime && { "datePublished": publishedTime }),
     ...(modifiedTime && { "dateModified": modifiedTime }),
     ...(type === 'website' && {
@@ -70,9 +77,8 @@ const Seo = ({
       <meta name="description" content={description} />
       <meta name="keywords" content={fullKeywords} />
       <meta name="author" content={author} />
+      <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
       <link rel="canonical" href={canonicalUrl} />
-      
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
       
       {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />
@@ -80,10 +86,15 @@ const Seo = ({
       <meta property="og:type" content={type} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={image} />
+      {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
+      <meta property="og:locale" content={locale} />
       <meta property="og:site_name" content="Imadlab" />
       {publishedTime && <meta property="article:published_time" content={publishedTime} />}
       {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
       {author && <meta property="article:author" content={author} />}
+      {tags && tags.map((tag) => (
+        <meta key={tag} property="article:tag" content={tag} />
+      ))}
       
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -92,6 +103,7 @@ const Seo = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
+      {imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
       
       {/* Structured Data */}
       <script type="application/ld+json">

@@ -68,14 +68,16 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Seo 
-        title={post.title} 
-        description={post.excerpt || ''} 
-        keywords={post.tags ? post.tags.join(', ') : 'data engineering, machine learning, ai, programming'}
-        type="article"
-        publishedTime={post.published_date}
-        image={post.image_url || undefined}
-      />
+        <Seo 
+          title={post.title} 
+          description={post.excerpt || ''} 
+          keywords={post.tags ? post.tags.join(', ') : 'data engineering, machine learning, ai, programming'}
+          type="article"
+          publishedTime={post.published_date}
+          image={post.image_url || undefined}
+          imageAlt={post.title}
+          tags={post.tags || undefined}
+        />
 
   {/* Navigation Bar */}
       <div className="sticky top-1 z-30 w-full backdrop-blur-md bg-black/70 border-b border-white/10">
@@ -113,12 +115,12 @@ const BlogPost = () => {
       </header>
 
       {/* Featured Image */}
-      {post.image_url && (
+  {post.image_url && (
         <div className="w-full max-w-5xl mx-auto px-4 mb-12">
           <div className="aspect-video w-full overflow-hidden rounded-lg shadow-xl">
             <img
               src={post.image_url}
-              alt={post.title}
+      alt={post.title}
               className="w-full h-full object-cover"
               loading="lazy"
             />
