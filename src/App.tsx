@@ -26,6 +26,8 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <>
+    {/* Skip to content for keyboard users */}
+    <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-black text-white p-2 rounded z-50">Skip to content</a>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
@@ -49,6 +51,7 @@ const App = () => (
                 sparkCount={8}
                 duration={400}
               >
+                <main id="main">
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/projects" element={<Projects />} />
@@ -64,6 +67,7 @@ const App = () => (
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
+                </main>
               </ClickSpark>
             </Suspense>
           </ErrorBoundary>
