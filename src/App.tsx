@@ -8,6 +8,7 @@ import React, { Suspense } from "react";
 import ClickSpark from "@/components/ClickSpark";
 import HomeBackground from '@/components/HomeBackground';
 import ErrorBoundary from "@/components/ErrorBoundary";
+import CookieConsent from "@/components/CookieConsent";
 
 const Index = React.lazy(() => import("./pages/Index"));
 const Projects = React.lazy(() => import("./pages/Projects"));
@@ -75,6 +76,7 @@ const App = () => (
       </TooltipProvider>
     </QueryClientProvider>
     <NewsletterPopup />
+  <CookieConsent />
   </>
 );
 
