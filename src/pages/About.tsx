@@ -47,7 +47,7 @@ const About = () => {
               <div className="pt-8">
                 <h2 className="text-4xl font-bold mb-4 text-white">My Philosophy</h2>
                 <p className="text-lg text-white/70 leading-relaxed">
-                  My purpose is to build <span className="font-semibold text-white">enduring, transformative technology</span> that leaves a lasting meaningful and practical impact. I aim to craft systems, products, or frameworks that <span className="font-semibold text-white">empower, simplify, and enlighten</span>, solving real human problems with solutions that are not flashy or temporary, but <span className="font-semibold text-white">foundational</span>, serving as a starting point for others long after I'm gone.
+                  My purpose is to build <span className="font-semibold text-white">technology that endures</span> — transformative systems that make a real, lasting difference. I want to create tools, products, and frameworks that <span className="font-semibold text-white">empower, simplify, and enlighten</span> — solving human problems not with noise or novelty, but with <span className="font-semibold text-white">substance</span>. My work isn’t meant to dazzle for a moment, but to <span className="font-semibold text-white">lay foundations</span> others can build upon long after I’m gone.
                 </p>
               </div>
             </div>
