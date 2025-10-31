@@ -68,8 +68,16 @@ serve(async (req) => {
     const siteUrl = Deno.env.get('SITE_URL') || 'https://imadlab.com'
     const { generateBlogPostEmail, generateProjectEmail } = await import('../shared/email-templates.ts')
 
+    let queueIds: string[] | undefined
+    if (req.headers.get('content-type')?.includes('application/json')) {
+      const payload = await req.json().catch(() => null)
+      if (payload && Array.isArray(payload.queueIds)) {
+        queueIds = payload.queueIds.filter((value): value is string => typeof value === 'string' && value.length > 0)
+      }
+    }
+
     // Get pending email queue items
-    const { data: queueItems, error: queueError } = await supabaseClient
+    let queueQuery = supabaseClient
       .from('email_queue')
       .select('*')
       .eq('status', 'pending')
@@ -77,25 +85,22 @@ serve(async (req) => {
       .order('scheduled_at', { ascending: true })
       .limit(50) // Process in batches
 
+    if (queueIds && queueIds.length > 0) {
+      queueQuery = queueQuery.in('id', queueIds)
+    }
+
+    const { data: queueItems, error: queueError } = await queueQuery
+
     if (queueError) {
       throw new Error(`Failed to fetch queue items: ${queueError.message}`)
     }
 
     if (!queueItems || queueItems.length === 0) {
       return new Response(
-        JSON.stringify({ message: 'No pending emails to process' }),
+        JSON.stringify({ message: queueIds?.length ? 'No matching queue items to process' : 'No pending emails to process' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
-
-    // Get active subscribers - first let's check all subscribers
-    console.log('Checking newsletter_subscribers table...')
-    const { data: allSubscribers, error: allSubError } = await supabaseClient
-      .from('newsletter_subscribers')
-      .select('*')
-
-    console.log('All subscribers:', allSubscribers)
-    console.log('All subscribers error:', allSubError)
 
     // Get active subscribers
     const { data: subscribers, error: subscribersError } = await supabaseClient
@@ -103,30 +108,13 @@ serve(async (req) => {
       .select('id, email, unsubscribe_token, status')
       .eq('status', 'active')
 
-    console.log('Active subscribers:', subscribers)
-    console.log('Subscribers error:', subscribersError)
-
     if (subscribersError) {
       throw new Error(`Failed to fetch subscribers: ${subscribersError.message}`)
     }
 
     if (!subscribers || subscribers.length === 0) {
-      // Let's also try without the status filter to see if there are any subscribers at all
-      const { data: anySubscribers } = await supabaseClient
-        .from('newsletter_subscribers')
-        .select('*')
-      
-      console.log('Any subscribers at all:', anySubscribers)
-      
       return new Response(
-        JSON.stringify({ 
-          message: 'No active subscribers found',
-          debug: {
-            allSubscribers: allSubscribers?.length || 0,
-            anySubscribers: anySubscribers?.length || 0,
-            subscribersError: subscribersError?.message
-          }
-        }),
+        JSON.stringify({ message: 'No active subscribers found' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -206,20 +194,18 @@ serve(async (req) => {
             }
 
             // Send email via Resend
-            console.log(`Sending email to ${subscriber.email} with subject: ${subject}`)
-            
+                        
             const emailPayload = {
               from: 'imadlab <onboarding@resend.dev>',
               to: [subscriber.email],
               subject: subject,
               html: emailHtml,
               headers: {
-                'List-Unsubscribe': `<${Deno.env.get('SITE_URL')}/functions/v1/handle-unsubscribe?token=${subscriber.unsubscribe_token}>`,
+                'List-Unsubscribe': `<${siteUrl}/functions/v1/handle-unsubscribe?token=${subscriber.unsubscribe_token}>`,
               }
             }
             
-            console.log('Email payload:', JSON.stringify(emailPayload, null, 2))
-            
+                        
             const emailResponse = await fetch('https://api.resend.com/emails', {
               method: 'POST',
               headers: {
@@ -229,8 +215,7 @@ serve(async (req) => {
               body: JSON.stringify(emailPayload),
             })
 
-            console.log('Resend response status:', emailResponse.status)
-            
+                        
             if (!emailResponse.ok) {
               const errorText = await emailResponse.text()
               console.error('Resend API error:', errorText)
