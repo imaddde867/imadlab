@@ -4,6 +4,12 @@ import { Cookie as CookieIcon } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { acceptAll, rejectAll, setConsent, getConsent, ConsentState, hasDecision } from '@/lib/consent';
 
+declare global {
+  interface Window {
+    imadlabOpenCookiePrefs?: () => void;
+  }
+}
+
 type Prefs = Pick<ConsentState, 'analytics' | 'marketing' | 'functional'>;
 
 const CookieConsent = () => {
@@ -19,11 +25,11 @@ const CookieConsent = () => {
       setPrefs({ analytics: current.analytics, marketing: current.marketing, functional: current.functional });
     }
     // expose global opener for footer or settings link
-    try {
-      (window as any).imadlabOpenCookiePrefs = () => {
+    if (typeof window !== 'undefined') {
+      window.imadlabOpenCookiePrefs = () => {
         setOpen(true);
       };
-    } catch {}
+    }
   }, []);
 
   const handleAcceptAll = () => {

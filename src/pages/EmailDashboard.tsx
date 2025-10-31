@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,18 +8,18 @@ import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { RefreshCw, Send, Eye, Users, Mail, TrendingUp } from 'lucide-react';
+import type { Database } from '@/integrations/supabase/types';
 
-interface EmailQueueItem {
-  id: string;
+type EmailQueueRow = Database['public']['Tables']['email_queue']['Row'];
+type NewsletterSubscriberRow = Database['public']['Tables']['newsletter_subscribers']['Row'];
+type EmailAnalyticsRow = Database['public']['Tables']['email_analytics']['Row'];
+type BlogPostRow = Database['public']['Tables']['posts']['Row'];
+type ProjectRow = Database['public']['Tables']['projects']['Row'];
+
+type EmailQueueItem = EmailQueueRow & {
   content_type: 'blog_post' | 'project';
-  content_id: string;
   status: 'pending' | 'processing' | 'sent' | 'failed';
-  scheduled_at: string;
-  sent_at?: string;
-  error_message?: string;
-  retry_count: number;
-  created_at: string;
-}
+};
 
 interface EmailStats {
   totalSubscribers: number;
@@ -29,6 +29,49 @@ interface EmailStats {
   openRate: number;
   clickRate: number;
 }
+
+type BlogPreviewPayload = {
+  subscriberEmail: string;
+  unsubscribeToken: string;
+  siteUrl: string;
+  post: BlogPostRow;
+};
+
+type ProjectPreviewPayload = {
+  subscriberEmail: string;
+  unsubscribeToken: string;
+  siteUrl: string;
+  project: ProjectRow;
+};
+
+const normalizeContentType = (value: string | null): EmailQueueItem['content_type'] =>
+  value === 'project' ? 'project' : 'blog_post';
+
+const normalizeStatus = (value: string | null): EmailQueueItem['status'] => {
+  switch (value) {
+    case 'processing':
+    case 'sent':
+    case 'failed':
+      return value;
+    case 'pending':
+    default:
+      return 'pending';
+  }
+};
+
+type SubscriberSummary = Pick<NewsletterSubscriberRow, 'email' | 'status'> & {
+  created_at?: string;
+  updated_at?: string;
+};
+
+type SubscriberMetrics = {
+  sent: number;
+  delivered: number;
+  opened: number;
+  clicked: number;
+  bounced: number;
+  lastEvent?: string;
+};
 
 const EmailDashboard = () => {
   const navigate = useNavigate();
@@ -41,40 +84,9 @@ const EmailDashboard = () => {
   const [previewContent, setPreviewContent] = useState<string>('');
   const [previewLoading, setPreviewLoading] = useState(false);
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate('/admin/login');
-        toast({ title: 'Unauthorized', description: 'Please log in to access the admin dashboard.', variant: 'destructive' });
-      } else {
-        setUser({ email: user.email });
-        await loadEmailData();
-      }
-    };
-    checkUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session?.user) {
-        navigate('/admin/login');
-      } else {
-        setUser(session.user ? { email: session.user.email } : null);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate, toast]);
-
-  const loadEmailData = async () => {
+  const loadEmailData = useCallback(async () => {
     try {
       setLoading(true);
-      
-      // Debug: Check current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      console.log('Current user:', user);
-      console.log('User error:', userError);
       
       // Load email queue
       const { data: queueData, error: queueError } = await supabase
@@ -84,35 +96,29 @@ const EmailDashboard = () => {
         .limit(50);
 
       if (queueError) throw queueError;
-      setEmailQueue((queueData as EmailQueueItem[]) || []);
+      const normalizedQueue: EmailQueueItem[] = (queueData ?? []).map((item) => ({
+        ...item,
+        content_type: normalizeContentType(item.content_type ?? null),
+        status: normalizeStatus(item.status ?? null),
+      }));
+      setEmailQueue(normalizedQueue);
 
       // Load email statistics
       const [subscribersResult, analyticsResult] = await Promise.all([
         supabase.from('newsletter_subscribers').select('status, email'),
-        supabase.from('email_analytics').select('*')
+        supabase.from('email_analytics').select('*'),
       ]);
 
-      console.log('Subscribers query result:', subscribersResult);
-      console.log('Subscribers data:', subscribersResult.data);
-      console.log('Subscribers error:', subscribersResult.error);
-
       if (subscribersResult.data && analyticsResult.data) {
-        const subscribers = subscribersResult.data;
-        const analytics = analyticsResult.data;
-
-        console.log('Subscribers array:', subscribers);
-        console.log('Subscribers length:', subscribers.length);
+        const subscribers = subscribersResult.data as Array<Pick<NewsletterSubscriberRow, 'status' | 'email'>>;
+        const analytics = analyticsResult.data as EmailAnalyticsRow[];
 
         const totalSubscribers = subscribers.length;
-        // Count active subscribers, treating null/undefined status as active for backward compatibility
-        const activeSubscribers = subscribers.filter(s => !s.status || s.status === 'active').length;
-        
-        console.log('Total subscribers:', totalSubscribers);
-        console.log('Active subscribers:', activeSubscribers);
-        const totalEmailsSent = analytics.filter(a => a.sent_at).length;
-        const deliveredEmails = analytics.filter(a => a.delivered_at).length;
-        const openedEmails = analytics.filter(a => a.opened_at).length;
-        const clickedEmails = analytics.filter(a => a.clicked_at).length;
+        const activeSubscribers = subscribers.filter((subscriber) => !subscriber.status || subscriber.status === 'active').length;
+        const totalEmailsSent = analytics.filter((entry) => entry.sent_at).length;
+        const deliveredEmails = analytics.filter((entry) => entry.delivered_at).length;
+        const openedEmails = analytics.filter((entry) => entry.opened_at).length;
+        const clickedEmails = analytics.filter((entry) => entry.clicked_at).length;
 
         setEmailStats({
           totalSubscribers,
@@ -129,13 +135,40 @@ const EmailDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!data.user) {
+        navigate('/admin/login');
+        toast({ title: 'Unauthorized', description: 'Please log in to access the admin dashboard.', variant: 'destructive' });
+        return;
+      }
+
+      setUser({ email: data.user.email });
+      await loadEmailData();
+    };
+
+    checkUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session?.user) {
+        navigate('/admin/login');
+      } else {
+        setUser({ email: session.user.email });
+      }
+    });
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, [loadEmailData, navigate, toast]);
 
   const processEmailQueue = async () => {
     try {
       setProcessing(true);
-      
-      const { data, error } = await supabase.functions.invoke('send-newsletter-emails', {
+      const { data, error } = await supabase.functions.invoke<{ processedItems?: number }>('send-newsletter-emails', {
         method: 'POST',
         body: {}
       });
@@ -144,7 +177,7 @@ const EmailDashboard = () => {
 
       toast({ 
         title: 'Success', 
-        description: `Processed ${data.processedItems || 0} email queue items` 
+        description: `Processed ${data?.processedItems ?? 0} email queue items` 
       });
       
       await loadEmailData();
@@ -163,58 +196,77 @@ const EmailDashboard = () => {
   const previewEmail = async (contentType: 'blog_post' | 'project') => {
     try {
       setPreviewLoading(true);
-      
-      // Get the latest content of the specified type
-      const tableName = contentType === 'blog_post' ? 'posts' : 'projects';
-      const { data: content, error } = await supabase
-        .from(tableName)
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
 
-      if (error || !content) {
-        toast({ 
-          title: 'Error', 
-          description: `No ${contentType.replace('_', ' ')} found for preview`, 
-          variant: 'destructive' 
-        });
-        return;
-      }
+      if (contentType === 'blog_post') {
+        const { data: post, error } = await supabase
+          .from('posts')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-      // Generate preview HTML (simplified version)
-      const sampleData = {
-        subscriberEmail: 'preview@example.com',
-        unsubscribeToken: 'preview-token',
-        siteUrl: window.location.origin,
-        [contentType === 'blog_post' ? 'post' : 'project']: {
-          ...content,
-          publishedDate: (content as any).published_date || content.created_at,
-          techTags: (content as any).tech_tags || [],
-          tags: (content as any).tags || []
+        if (error || !post) {
+          toast({
+            title: 'Error',
+            description: 'No blog posts found for preview',
+            variant: 'destructive',
+          });
+          return;
         }
-      };
 
-      // Create a simple preview HTML
-      const previewHtml = contentType === 'blog_post' 
-        ? generateBlogPreview(sampleData)
-        : generateProjectPreview(sampleData);
-      
-      setPreviewContent(previewHtml);
+        const previewData: BlogPreviewPayload = {
+          subscriberEmail: 'preview@example.com',
+          unsubscribeToken: 'preview-token',
+          siteUrl: window.location.origin,
+          post,
+        };
+
+        setPreviewContent(generateBlogPreview(previewData));
+      } else {
+        const { data: project, error } = await supabase
+          .from('projects')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (error || !project) {
+          toast({
+            title: 'Error',
+            description: 'No projects found for preview',
+            variant: 'destructive',
+          });
+          return;
+        }
+
+        const previewData: ProjectPreviewPayload = {
+          subscriberEmail: 'preview@example.com',
+          unsubscribeToken: 'preview-token',
+          siteUrl: window.location.origin,
+          project,
+        };
+
+        setPreviewContent(generateProjectPreview(previewData));
+      }
     } catch (error) {
       console.error('Error generating preview:', error);
-      toast({ 
-        title: 'Error', 
-        description: 'Failed to generate email preview', 
-        variant: 'destructive' 
+      toast({
+        title: 'Error',
+        description: 'Failed to generate email preview',
+        variant: 'destructive',
       });
     } finally {
       setPreviewLoading(false);
     }
   };
 
-  const generateBlogPreview = (data: any) => {
-    const post = data.post;
+  const generateBlogPreview = (data: BlogPreviewPayload) => {
+    const { post } = data;
+    const publishedDate = new Date(post.published_date || post.created_at).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
     return `
       <div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #000000; border: 1px solid #1a1a1a; border-radius: 12px; overflow: hidden;">
         <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 48px 32px; text-align: center; border-bottom: 1px solid #1a1a1a;">
@@ -224,7 +276,7 @@ const EmailDashboard = () => {
         <div style="padding: 48px 32px;">
           <h1 style="font-size: 28px; font-weight: 700; color: #ffffff; margin-bottom: 16px; line-height: 1.2; letter-spacing: -0.02em;">${post.title}</h1>
           <div style="color: #666666; font-size: 13px; font-weight: 500; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.05em;">
-            ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            ${publishedDate}
           </div>
           <div style="color: #cccccc; font-size: 16px; line-height: 1.7; margin-bottom: 32px;">
             ${post.excerpt || 'Dive into the latest insights on data engineering, AI/ML, and cutting-edge web development techniques.'}
@@ -243,8 +295,14 @@ const EmailDashboard = () => {
     `;
   };
 
-  const generateProjectPreview = (data: any) => {
-    const project = data.project;
+  const generateProjectPreview = (data: ProjectPreviewPayload) => {
+    const { project } = data;
+    const techStack = (project.tech_tags ?? [])
+      .map(
+        (tech) =>
+          `<span style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 8px 16px; border-radius: 6px; font-size: 11px; font-weight: 500; margin-right: 8px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid #333333;">${tech}</span>`
+      )
+      .join('');
     return `
       <div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #000000; border: 1px solid #1a1a1a; border-radius: 12px; overflow: hidden;">
         <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 48px 32px; text-align: center; border-bottom: 1px solid #1a1a1a;">
@@ -256,10 +314,10 @@ const EmailDashboard = () => {
           <div style="color: #cccccc; font-size: 16px; line-height: 1.7; margin-bottom: 32px;">
             ${project.description || 'Explore this new project showcasing innovative solutions and modern development practices.'}
           </div>
-          ${project.tech_tags && project.tech_tags.length > 0 ? `
+          ${techStack ? `
           <div style="margin-bottom: 40px;">
             <div style="color: #ffffff; font-size: 14px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em;">Tech Stack</div>
-            ${project.tech_tags.map((tech: string) => `<span style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 8px 16px; border-radius: 6px; font-size: 11px; font-weight: 500; margin-right: 8px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid #333333;">${tech}</span>`).join('')}
+            ${techStack}
           </div>
           ` : ''}
           <div style="height: 1px; background: linear-gradient(90deg, transparent 0%, #333333 50%, transparent 100%); margin: 32px 0;"></div>
@@ -279,16 +337,16 @@ const EmailDashboard = () => {
     `;
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: EmailQueueItem['status']) => {
     const variants = {
       pending: 'secondary',
       processing: 'default',
       sent: 'default',
       failed: 'destructive'
     } as const;
-    
+    const variant = variants[status] ?? 'secondary';
     return (
-      <Badge variant={variants[status as keyof typeof variants] || 'secondary'}>
+      <Badge variant={variant}>
         {status}
       </Badge>
     );
