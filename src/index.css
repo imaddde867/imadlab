@@ -310,18 +310,28 @@ All colors MUST be HSL.
   .transition-all-ease {
     transition: all 0.3s ease-in-out;
   }
+
+  /* Slow spin utilities for decorative SVGs */
+  .animate-spin-slow {
+    animation: loading-spin 18s linear infinite;
+  }
+
+  .animate-spin-slow-reverse {
+    animation: loading-spin 24s linear infinite reverse;
+  }
+
+  /* Gentle ambient glow flicker */
+  .animate-subtle-flicker {
+    animation: subtle-flicker 12s ease-in-out infinite;
+  }
+
+  /* Smooth drift for background dots */
+  .animate-dot-move {
+    animation: dot-move var(--dot-duration, 18s) ease-in-out var(--dot-delay, 0s) infinite alternate;
+  }
 }
 
-@keyframes shooting-star {
-  0% {
-    transform: translateX(0) translateY(0) rotate(45deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(-100vw) translateY(100vh) rotate(45deg);
-    opacity: 0;
-  }
-}
+/* shooting-star removed */
 
 @keyframes star-move {
   0% { transform: translate(0, 0); }
@@ -330,13 +340,26 @@ All colors MUST be HSL.
 }
 
 @keyframes star-twinkle {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 0.2; }
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 0.35; }
 }
 
 @keyframes star-pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.2); }
+}
+
+/* Subtle ambient flicker for background glow */
+@keyframes subtle-flicker {
+  0%, 100% { opacity: 0.18; filter: brightness(1); }
+  50% { opacity: 0.26; filter: brightness(1.06); }
+}
+
+/* Background dot drift (used by HomeBackground) */
+@keyframes dot-move {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(var(--tw-translate-x), var(--tw-translate-y)) scale(1.05); }
+  100% { transform: translate(0, 0) scale(1); }
 }
 
 /* Enhanced Loading Animations */

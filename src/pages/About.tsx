@@ -11,13 +11,7 @@ const About = () => {
   return (
     <div className="relative min-h-screen bg-black text-white py-24 px-4">
         <Stars />
-        <div className="absolute inset-0 opacity-20 animate-subtle-flicker" />
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-1/3 left-0 w-full h-px bg-white"></div>
-          <div className="absolute top-2/3 left-0 w-2/3 h-px bg-white"></div>
-          <div className="absolute left-1/4 top-0 w-px h-full bg-white"></div>
-          <div className="absolute right-1/3 top-0 w-px h-2/3 bg-white"></div>
-        </div>
+        <div className="absolute inset-0 opacity-10 animate-subtle-flicker" />
         <Seo
           title="About Imad Eddine"
           description="Learn more about Imad Eddine El Mouss, a Data Engineer and AI enthusiast."

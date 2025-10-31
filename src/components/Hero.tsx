@@ -37,18 +37,8 @@ const Hero = () => {
         </div>
       </nav>
 
-      {/* Animated background glow */}
-      <div 
-        className="absolute inset-0 opacity-20 animate-subtle-flicker"
-      />
-      
-      {/* Asymmetrical grid lines */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-1/3 left-0 w-full h-px bg-white"></div>
-        <div className="absolute top-2/3 left-0 w-2/3 h-px bg-white"></div>
-        <div className="absolute left-1/4 top-0 w-px h-full bg-white"></div>
-        <div className="absolute right-1/3 top-0 w-px h-2/3 bg-white"></div>
-      </div>
+      {/* Subtle ambient glow (reduced intensity) */}
+      <div className="absolute inset-0 opacity-10 animate-subtle-flicker" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 items-center min-h-screen">
         {/* Main content - asymmetrically placed */}
