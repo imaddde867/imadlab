@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React, { Suspense } from "react";
 import ClickSpark from "@/components/ClickSpark";
 import HomeBackground from '@/components/HomeBackground';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import ErrorBoundary from "@/components/ErrorBoundary";
 import CookieConsent from "@/components/CookieConsent";
 
@@ -33,6 +35,7 @@ const App = () => (
         <Toaster />
         <BrowserRouter>
           <HomeBackground />
+          <Header />
           <ErrorBoundary>
             <Suspense fallback={
               <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
@@ -50,7 +53,7 @@ const App = () => (
                 sparkCount={8}
                 duration={400}
               >
-                <main id="main">
+                <main id="main" className="pt-14">
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/projects" element={<Projects />} />
@@ -70,6 +73,7 @@ const App = () => (
               </ClickSpark>
             </Suspense>
           </ErrorBoundary>
+          <Footer />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

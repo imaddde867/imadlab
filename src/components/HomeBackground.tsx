@@ -31,6 +31,8 @@ const HomeBackground = () => {
 
   return (
     <>
+      {/* Subtle noise texture */}
+      <div className="noise-overlay" />
       {/* Animated background glow (static, not mouse-follow) */}
       <div
         className="fixed inset-0 opacity-20 animate-subtle-flicker pointer-events-none -z-10"

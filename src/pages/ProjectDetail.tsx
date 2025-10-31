@@ -112,14 +112,13 @@ const ProjectDetail = () => {
         additionalSchemas={projectSchemas}
       />
 
-      {/* Navigation Bar */}
-      <div className="sticky top-0 z-30 w-full backdrop-blur-md bg-black/70 border-b border-white/10">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/projects" className="inline-flex items-center text-white/80 hover:text-white transition-colors group">
+      {/* Back row under global header */}
+      <div className="container-narrow pt-6">
+        <div className="flex items-center justify-between text-sm text-white/70">
+          <Link to="/projects" className="inline-flex items-center hover:text-white transition-colors group">
             <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
             Back to Projects
           </Link>
-          
           {project.repo_url && (
             <a
               href={project.repo_url}
@@ -128,7 +127,7 @@ const ProjectDetail = () => {
               className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md text-white/90 hover:text-white transition-all duration-200 text-sm"
             >
               <Code className="w-4 h-4" />
-              <span>View Code</span>
+              View Code
               <ExternalLink className="w-3 h-3" />
             </a>
           )}
@@ -136,8 +135,8 @@ const ProjectDetail = () => {
       </div>
 
       {/* Hero Section - Simplified */}
-      <header className="relative pt-16 pb-12 md:pt-24 md:pb-16 px-4">
-        <div className="max-w-4xl mx-auto">
+      <header className="relative pt-8 md:pt-12 pb-10">
+        <div className="container-narrow">
           {/* Project Title */}
           <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
             {project.title}
@@ -200,7 +199,7 @@ const ProjectDetail = () => {
 
       {/* Featured Image */}
       {project.image_url && (
-        <div className="w-full max-w-5xl mx-auto px-4 mb-12">
+        <div className="w-full container-narrow mb-12">
           <div className="aspect-video w-full overflow-hidden rounded-lg shadow-xl">
             <img
               src={project.image_url}
@@ -213,7 +212,7 @@ const ProjectDetail = () => {
       )}
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 pb-16">
+      <main className="container-narrow pb-16">
         {project.full_description ? (
           <div className="prose prose-invert prose-lg max-w-none">
             <ReactMarkdown
@@ -243,38 +242,7 @@ const ProjectDetail = () => {
         )}
       </main>
       
-      {/* Footer */}
-      <footer className="border-t border-white/10 bg-black/30 py-6">
-        <div className="max-w-4xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="text-sm text-white/60">
-            Project created on {new Date(project.created_at).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </div>
-          <div className="flex items-center gap-6">
-            {project.repo_url && (
-              <a
-                href={project.repo_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
-              >
-                <Code className="w-4 h-4" />
-                Source Code
-              </a>
-            )}
-            <Link 
-              to="/projects" 
-              className="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              More projects
-            </Link>
-          </div>
-        </div>
-      </footer>
+      {/* Page footer removed; global Footer is used */}
     </div>
   );
 };

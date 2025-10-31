@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import SpotifyNowPlaying from '@/components/SpotifyNowPlaying';
+import SectionHeader from '@/components/SectionHeader';
 
 const Contact = () => {
   const { toast } = useToast();
@@ -59,13 +60,13 @@ const Contact = () => {
 
   const socialLinks = [
     { name: 'GitHub', href: 'https://github.com/imaddde867', icon: '⚡' },
-    { name: 'LinkedIn', href: 'https://www.linkedin.com/in/imad-eddine-el-mouss-986741262/', icon: '💼' },
+    { name: 'LinkedIn', href: 'https://www.linkedin.com/in/imad-eddine-e-986741262', icon: '💼' },
     { name: 'Twitter', href: 'https://x.com/Imad1194318', icon: '🐦' },
     { name: 'Email', href: 'mailto:imadeddine200507@gmail.com', icon: '✉️' }
   ];
 
   return (
-    <section className="py-24 px-4 relative">
+    <section className="section relative">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-1/4 right-0 w-3/4 h-px bg-white"></div>
@@ -73,18 +74,10 @@ const Contact = () => {
         <div className="absolute left-1/4 top-0 w-px h-2/3 bg-white"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* Section header */}
-        <div className="mb-20 text-center">
-          <h2 className="text-section-title text-hierarchy-primary mb-8">
-            Let's Build
-            <br />
-            <span className="text-hierarchy-muted">Something Amazing</span>
-          </h2>
-          <div className="w-24 h-1 bg-white/40 mx-auto"></div>
-        </div>
+      <div className="container-site relative z-10">
+        <SectionHeader align="center" title={"Let's Build"} subtitle={"Something Amazing"} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           {/* Contact form */}
           <div className="lg:col-span-7 lg:col-start-1 relative z-10">
             <Form {...form}>
@@ -149,12 +142,13 @@ const Contact = () => {
 
                 <Button
                   type="submit"
-                  className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/10 border border-white/30 rounded-full btn-text-primary transition-all duration-300 hover:bg-white/20 hover:border-white/50 hover:scale-105 focus-enhanced"
+                  variant="cta"
+                  size="pill"
+                  className="group"
                   disabled={form.formState.isSubmitting}
                 >
-                  <span>{form.formState.isSubmitting ? "Sending..." : "Send Message"}</span>
-                  <ArrowUp className="w-5 h-5 rotate-45 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                  <div className="absolute inset-0 rounded-full bg-white/10 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                  <span className="btn-text-primary">{form.formState.isSubmitting ? "Sending..." : "Send Message"}</span>
+                  <ArrowUp className="w-5 h-5 ml-3 rotate-45 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </Button>
               </form>
             </Form>
@@ -186,16 +180,7 @@ const Contact = () => {
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="mt-24 pt-12 border-t border-white/10 text-center">
-          <p className="text-body-small text-hierarchy-subtle">
-            © 2025 Imad Eddine. Crafted with care{' '}
-            <a href="https://imadlab.me/admin/login" className="inline-block align-middle link-subtle focus-enhanced" title="Admin Login">
-              🤍
-            </a>
-            .
-          </p>
-        </footer>
+        {/* Inner footer removed; global Footer is used */}
       </div>
     </section>
   );

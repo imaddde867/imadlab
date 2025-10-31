@@ -100,8 +100,8 @@ const Seo = ({
         name: author,
         url: `${SITE_URL}/about`,
         sameAs: [
-          'https://github.com/imadlab',
-          'https://www.linkedin.com/in/imadlab'
+          'https://github.com/imaddde867',
+          'https://www.linkedin.com/in/imad-eddine-e-986741262'
         ]
       }
     };
@@ -116,8 +116,8 @@ const Seo = ({
         name: author,
         url: `${SITE_URL}/about`,
         sameAs: [
-          'https://github.com/imadlab',
-          'https://www.linkedin.com/in/imadlab'
+          'https://github.com/imaddde867',
+          'https://www.linkedin.com/in/imad-eddine-e-986741262'
         ]
       };
       if (tags && tags.length) {
