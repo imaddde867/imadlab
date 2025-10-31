@@ -125,10 +125,10 @@ const NewsletterSignup: React.FC<NewsletterSignupProps> = ({ className = '' }) =
 
   return (
     <section 
-      className={`py-8 sm:py-12 px-4 sm:px-6 border-t border-white/10 mt-12 sm:mt-16 ${className}`}
+      className={`py-8 sm:py-12 border-t border-white/10 mt-12 sm:mt-16 ${className}`}
       aria-labelledby="newsletter-heading"
     >
-      <div className="max-w-6xl mx-auto">
+      <div className="container-site">
         <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 items-start lg:items-center">
           {/* Left content - heading and description */}
           <div className="w-full lg:w-2/5 mb-6 lg:mb-0">

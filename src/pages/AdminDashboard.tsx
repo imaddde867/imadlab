@@ -54,8 +54,8 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white py-12 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-black text-white py-12">
+      <div className="container-site max-w-4xl">
         <div className="mb-8">
           <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"></path></svg>

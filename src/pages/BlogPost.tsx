@@ -11,6 +11,7 @@ import Seo from '@/components/Seo';
 import { MarkdownComponents } from '@/components/MarkdownComponents';
 import { calculateReadingTime, stripMarkdown } from '@/lib/markdown-utils';
 import { PageLoader } from '@/components/ui/LoadingStates';
+import BackRow from '@/components/BackRow';
 import TagList from '@/components/TagList';
 
 interface Post {
@@ -114,21 +115,17 @@ const BlogPost = () => {
           additionalSchemas={speakableSchema}
         />
 
-      {/* Back link row under global header */}
-      <div className="container-narrow pt-6">
-        <div className="flex items-center justify-between text-sm text-white/70">
-          <Link to="/blogs" className="inline-flex items-center hover:text-white transition-colors group">
-            <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
-            Back to Blog
-          </Link>
-          {articleReadTime && (
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              {articleReadTime} min read
-            </div>
-          )}
-        </div>
-      </div>
+      <BackRow
+        to="/blogs"
+        label="Back to Blog"
+        icon={<ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />}
+        right={articleReadTime ? (
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            {articleReadTime} min read
+          </div>
+        ) : undefined}
+      />
       {/* Hero Section */}
       <header className="relative pt-8 md:pt-12 pb-10">
         <div className="container-narrow">
