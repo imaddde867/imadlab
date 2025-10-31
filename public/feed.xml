@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Imadlab Blog</title>
-    <link>https://imadlab.me</link>
-    <description>Latest writing from Imadlab on data engineering, AI, and machine learning.</description>
-    <language>en-us</language>
-    <lastBuildDate>Mon, 01 Jan 2001 00:00:00 GMT</lastBuildDate>
-    <atom:link href="https://imadlab.me/feed.xml" rel="self" type="application/rss+xml" />
-  </channel>
+<channel>
+  <title>Imadlab Blog</title>
+  <link>https://imadlab.me</link>
+  <description>Latest writing from Imadlab on data engineering, AI, and machine learning.</description>
+  <language>en-us</language>
+  <lastBuildDate>Fri, 31 Oct 2025 15:53:00 GMT</lastBuildDate>
+  <atom:link href="https://imadlab.me/feed.xml" rel="self" type="application/rss+xml" />
+  <item>
+    <title>How I Built My First Small Local LLM From Scratch</title>
+    <link>https://imadlab.me/blogs/1st-llm</link>
+    <guid>https://imadlab.me/blogs/1st-llm</guid>
+    <description><![CDATA[A journey of curiosity, countless late nights, and surprisingly many cups of coffee]]></description>
+    <pubDate>Fri, 11 Jul 2025 21:07:09 GMT</pubDate>
+    <category>Machine-Learning</category>
+    <category>LLM</category>
+    <category>NLP</category>
+    <category>DeepLearning</category>
+    <category>Transformer</category>
+  </item>
+</channel>
 </rss>
