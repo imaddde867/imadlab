@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
+import type { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import Seo from '@/components/Seo';
@@ -136,7 +137,7 @@ const BlogPost = () => {
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeRaw]}
-              components={MarkdownComponents}
+              components={MarkdownComponents as Components}
             >
               {post.body}
             </ReactMarkdown>
