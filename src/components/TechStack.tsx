@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { ExternalLink, Info, ChevronDown, ChevronUp } from "lucide-react";
+import SectionHeader from '@/components/SectionHeader';
 
 // Import tech logos
 import {
@@ -416,19 +417,17 @@ const TechStack = () => {
   };
 
   return (
-    <section className="py-20 px-4 relative">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
-            Tech Stack
-          </h2>
-          <p className="text-lg text-white/60 mb-8 max-w-2xl mx-auto">
-            Technologies and tools I use to build scalable data solutions and
-            modern applications
-          </p>
-          <div className="w-24 h-1 bg-gradient-to-r from-white/60 to-white/20 mx-auto" />
-        </div>
+    <section className="section relative">
+      <div className="container-site">
+        <SectionHeader
+          align="center"
+          title={<span className="text-brand-gradient">Tech Stack</span>}
+          description={
+            <>
+              Technologies and tools I use to build scalable data solutions and modern applications
+            </>
+          }
+        />
 
         {/* Category filter */}
         <div className="flex flex-wrap justify-center gap-3 mb-12">

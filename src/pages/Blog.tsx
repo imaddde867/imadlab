@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
 import { ArrowLeft } from 'lucide-react';
 import Seo from '@/components/Seo';
+import SectionHeader from '@/components/SectionHeader';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { readPrerenderData } from '@/lib/prerender-data';
 
@@ -67,7 +68,7 @@ const Blogs = () => {
   ] : undefined;
 
   return (
-    <div className="min-h-screen bg-black text-white py-24 px-4">
+    <div className="min-h-screen bg-black text-white section">
       <Seo
         title="Blog"
         description="Read articles and tutorials on data engineering, AI, machine learning, and more. Stay up-to-date with the latest trends and technologies."
@@ -80,18 +81,15 @@ const Blogs = () => {
         ]}
         additionalSchemas={postListSchema}
       />
-      <div className="max-w-6xl mx-auto">
+      <div className="container-site">
         <div className="mb-8">
           <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Link>
         </div>
-        <div className="flex justify-between items-center mb-12">
-          <div>
-            <h1 className="text-5xl md:text-6xl font-black mb-4">Blog</h1>
-            <div className="w-24 h-1 bg-white/40"></div>
-          </div>
+        <div className="mb-12">
+          <SectionHeader title={<span className="text-brand-gradient">Blog</span>} />
         </div>
 
         {isSkeletonVisible ? (
@@ -99,7 +97,7 @@ const Blogs = () => {
             <div className="text-white/60">Loading posts...</div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
             {posts.map((post) => (
               <CardItem
                 key={post.id}

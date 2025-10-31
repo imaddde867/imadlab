@@ -8,6 +8,7 @@ import Seo from '@/components/Seo';
 import { GridSkeleton } from '@/components/ui/LoadingStates';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { readPrerenderData } from '@/lib/prerender-data';
+import SectionHeader from '@/components/SectionHeader';
 
 interface Project {
   id: string;
@@ -66,7 +67,7 @@ const Projects = () => {
   ] : undefined;
 
   return (
-    <div className="min-h-screen bg-black text-white py-24 px-4">
+    <div className="min-h-screen bg-black text-white section">
       <Seo
         title="Projects"
         description="Explore a collection of my projects in data engineering, AI, and machine learning. See live demos and browse the source code."
@@ -79,24 +80,21 @@ const Projects = () => {
         ]}
         additionalSchemas={projectListSchema}
       />
-      <div className="max-w-6xl mx-auto">
+      <div className="container-site">
         <div className="mb-8">
           <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Link>
         </div>
-        <div className="flex justify-between items-center mb-12">
-          <div>
-            <h1 className="text-5xl md:text-6xl font-black mb-4">Projects</h1>
-            <div className="w-24 h-1 bg-white/40"></div>
-          </div>
+        <div className="mb-12">
+          <SectionHeader title={<span className="text-brand-gradient">Projects</span>} />
         </div>
 
         {isSkeletonVisible ? (
           <GridSkeleton count={6} columns={3} />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
             {projects.map((project) => (
               <CardItem
                 key={project.id}

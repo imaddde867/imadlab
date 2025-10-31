@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
 import { ArrowDown } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import Stars from './Stars';
 
 const Hero = () => {
@@ -11,117 +10,52 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen -mt-14 pb-14 flex items-center justify-center overflow-hidden">
       <Stars />
-      {/* Navigation */}
-  <nav className="absolute top-8 right-8 z-20" aria-label="Primary">
-        <div className="flex gap-6">
-          <NavLink 
-            to="/projects" 
-            className={({ isActive }) => `link-enhanced focus-enhanced ${isActive ? 'text-white' : ''}`}
-          >
-            Projects
-          </NavLink>
-          <NavLink 
-            to="/blogs" 
-            className={({ isActive }) => `link-enhanced focus-enhanced ${isActive ? 'text-white' : ''}`}
-          >
-            Blogs
-          </NavLink>
-          <NavLink
-            to="/about"
-            className={({ isActive }) => `link-enhanced focus-enhanced ${isActive ? 'text-white' : ''}`}
-          >
-            About Me
-          </NavLink>
-        </div>
-      </nav>
+      {/* Global header now handles navigation */}
 
       {/* Subtle ambient glow (reduced intensity) */}
       <div className="absolute inset-0 opacity-10 animate-subtle-flicker" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 items-center min-h-screen">
+      <div className="relative z-10 container-site min-h-[calc(100vh-56px)] flex items-center justify-center">
         {/* Main content - asymmetrically placed */}
-        <div className="lg:col-span-8 lg:col-start-2 space-y-8">
+        <div className="w-full max-w-4xl mx-auto space-y-8 text-center">
           <div className="space-y-4">
             <h1 className="text-display text-hierarchy-primary font-black animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s' }}>
               Hi, I'm{' '}
               <span className="relative inline-block">
-                Imad
-                <div className="absolute -inset-2 bg-white/5 blur-xl rounded-full animate-pulse"></div>
+                <span className="text-brand-gradient">Imad</span>
+                <div className="absolute -inset-2 bg-white/10 blur-xl rounded-full animate-pulse opacity-60" />
               </span>
               .
             </h1>
             
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-hierarchy-secondary ml-4 lg:ml-12 animate-fade-in-left opacity-0" style={{ animationDelay: '0.3s' }}>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-hierarchy-secondary animate-fade-in-left opacity-0" style={{ animationDelay: '0.3s' }}>
               Data Engineering &{' '}
-              <span className="relative">
-                AI Innovator
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-white/60 to-transparent"></div>
-              </span>
+              <span className="relative text-brand-gradient">AI Innovator</span>
             </h2>
           </div>
 
-          <div className="ml-8 lg:ml-24 space-y-6">
-            <div className="reading-width space-y-4">
+          <div className="space-y-6">
+            <div className="reading-width mx-auto space-y-4">
               <p className="text-body-large text-hierarchy-tertiary leading-relaxed animate-fade-in-up opacity-0" style={{ animationDelay: '0.5s' }}>
                 I'm a passionate data engineer and AI innovator, dedicated to building intelligent systems that transform raw data into actionable insights.
               </p>
-              <p className="text-body-large text-hierarchy-tertiary leading-relaxed animate-fade-in-up opacity-0" style={{ animationDelay: '0.7s' }}>
-                I specialize in scalable architectures and cutting-edge AI solutions that drive business innovation.
-              </p>
             </div>
-            <button 
-                onClick={scrollToProjects}
-                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/20 rounded-full btn-text-primary transition-all duration-300 hover:bg-white/10 hover:border-white/40 hover:scale-105 focus-enhanced animate-fade-in-scale opacity-0"
-                style={{ animationDelay: '0.9s' }}
-              >
-                <span>See My Work</span>
-                <ArrowDown className="w-5 h-5 transition-transform group-hover:translate-y-1" />
-                <div className="absolute inset-0 rounded-full bg-white/5 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
-              </button>
+            <Button
+              variant="cta"
+              size="pill"
+              onClick={scrollToProjects}
+              className="group animate-fade-in-scale opacity-0"
+              style={{ animationDelay: '0.9s' }}
+            >
+              <span className="btn-text-primary">See My Work</span>
+              <ArrowDown className="w-5 h-5 ml-3 transition-transform group-hover:translate-y-1" />
+            </Button>
           </div>
         </div>
 
-        {/* Floating accent element */}
-        <div className="hidden lg:block lg:col-span-3 lg:col-start-10">
-          <div className="relative">
-            {/* Outer circle with random cuts */}
-            <svg className="w-32 h-32 animate-spin-slow" viewBox="0 0 128 128">
-              <circle
-                cx="64"
-                cy="64"
-                r="60"
-                fill="none"
-                stroke="rgba(255, 255, 255, 0.2)"
-                strokeWidth="1"
-                strokeDasharray="90 15 70 8 45 12"
-                strokeLinecap="round"
-              />
-            </svg>
-            
-            {/* Middle circle with random cuts */}
-            <svg className="absolute inset-4 w-24 h-24 animate-spin-slow-reverse" viewBox="0 0 96 96">
-              <circle
-                cx="48"
-                cy="48"
-                r="44"
-                fill="none"
-                stroke="rgba(255, 255, 255, 0.1)"
-                strokeWidth="1"
-                strokeDasharray="85 35 60 25 50 40"
-                strokeLinecap="round"
-              />
-            </svg>
-            
-            {/* Inner circle - solid glow */}
-            <div className="absolute inset-8 w-16 h-16 rounded-full bg-white/5"></div>
-            
-            {/* Accent dots */}
-            <div className="absolute -top-8 -right-8 w-4 h-4 bg-white rounded-full animate-pulse"></div>
-            <div className="absolute -bottom-4 -left-4 w-2 h-2 bg-white/60 rounded-full"></div>
-          </div>
-        </div>
+        
       </div>
     </section>
   );

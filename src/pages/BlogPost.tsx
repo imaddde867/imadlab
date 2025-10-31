@@ -114,27 +114,24 @@ const BlogPost = () => {
           additionalSchemas={speakableSchema}
         />
 
-  {/* Navigation Bar */}
-      <div className="sticky top-1 z-30 w-full backdrop-blur-md bg-black/70 border-b border-white/10">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/blogs" className="inline-flex items-center text-white/80 hover:text-white transition-colors group">
+      {/* Back link row under global header */}
+      <div className="container-narrow pt-6">
+        <div className="flex items-center justify-between text-sm text-white/70">
+          <Link to="/blogs" className="inline-flex items-center hover:text-white transition-colors group">
             <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
             Back to Blog
           </Link>
-          
           {articleReadTime && (
-            <div className="flex items-center gap-3">
-              <div className="text-sm text-white/70 flex items-center">
-                <Clock className="w-4 h-4 mr-1" />
-                {articleReadTime} min read
-              </div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              {articleReadTime} min read
             </div>
           )}
         </div>
       </div>
       {/* Hero Section */}
-      <header className="relative pt-16 pb-12 md:pt-24 md:pb-16 px-4">
-        <div className="max-w-4xl mx-auto">
+      <header className="relative pt-8 md:pt-12 pb-10">
+        <div className="container-narrow">
           <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">{post.title}</h1>
           <div className="flex flex-wrap items-center gap-y-4 gap-x-6 mb-8">
             <div className="flex items-center text-sm text-white/70">
@@ -152,8 +149,8 @@ const BlogPost = () => {
       </header>
 
       {/* Featured Image */}
-  {post.image_url && (
-        <div className="w-full max-w-5xl mx-auto px-4 mb-12">
+      {post.image_url && (
+        <div className="w-full container-narrow mb-12">
           <div className="aspect-video w-full overflow-hidden rounded-lg shadow-xl">
             <img
               src={post.image_url}
@@ -166,7 +163,7 @@ const BlogPost = () => {
       )}
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 pb-16">
+      <main className="container-narrow pb-16">
         {post.body ? (
           <div className="prose prose-invert prose-lg max-w-none">
             <ReactMarkdown
@@ -184,27 +181,7 @@ const BlogPost = () => {
         )}
       </main>
       
-      {/* Footer */}
-      <footer className="border-t border-white/10 bg-black/30 py-6">
-        <div className="max-w-4xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="text-sm text-white/60">
-            Published on {new Date(post.published_date).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </div>
-          <div className="flex items-center gap-6">
-            <Link 
-              to="/blogs" 
-              className="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              More articles
-            </Link>
-          </div>
-        </div>
-      </footer>
+      {/* Page footer removed; global Footer is used */}
     </div>
   );
 };
