@@ -33,6 +33,23 @@ const Blogs = () => {
     }
   });
 
+  const postListSchema = posts && posts.length > 0 ? [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Latest blog posts',
+      itemListOrder: 'Descending',
+      numberOfItems: posts.length,
+      itemListElement: posts.map((post, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `https://imadlab.me/blogs/${post.slug}`,
+        name: post.title,
+        description: post.excerpt ?? undefined
+      }))
+    }
+  ] : undefined;
+
   return (
     <div className="min-h-screen bg-black text-white py-24 px-4">
       <Seo
@@ -40,6 +57,12 @@ const Blogs = () => {
         description="Read articles and tutorials on data engineering, AI, machine learning, and more. Stay up-to-date with the latest trends and technologies."
         keywords="data engineering blog, machine learning tutorials, ai articles, python tutorials, tech blog, data science articles, programming tutorials"
         type="website"
+        schemaType="CollectionPage"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Blog', path: '/blogs' }
+        ]}
+        additionalSchemas={postListSchema}
       />
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">

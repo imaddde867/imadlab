@@ -1,6 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import Seo from '@/components/Seo';
 import { MarkdownComponents } from '@/components/MarkdownComponents';
-import { calculateReadingTime } from '@/lib/markdown-utils';
+import { calculateReadingTime, stripMarkdown } from '@/lib/markdown-utils';
 import { PageLoader } from '@/components/ui/LoadingStates';
 import TagList from '@/components/TagList';
 
@@ -24,7 +23,19 @@ interface Post {
   published_date: string;
   read_time?: number | null;
   image_url?: string | null;
+  updated_at?: string | null;
 }
+
+const buildMetaDescription = (excerpt?: string | null, body?: string | null) => {
+  if (excerpt && excerpt.trim().length > 60) {
+    return excerpt.trim();
+  }
+  if (body) {
+    const plain = stripMarkdown(body);
+    return plain.slice(0, 155) + (plain.length > 155 ? '...' : '');
+  }
+  return 'Read data engineering and AI insights by Imad Eddine El Mouss.';
+};
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -35,7 +46,7 @@ const BlogPost = () => {
       if (!slug) throw new Error('No slug provided');
       const { data, error } = await supabase
         .from('posts')
-        .select('id,title,slug,body,excerpt,tags,published_date')
+        .select('id,title,slug,body,excerpt,tags,published_date,updated_at,read_time,image_url')
         .eq('slug', slug)
         .maybeSingle();
       if (error) throw error;
@@ -68,17 +79,39 @@ const BlogPost = () => {
     );
   }
 
+  const articleTags = post.tags?.filter((tag): tag is string => Boolean(tag && tag.trim())) ?? [];
+  const metaDescription = buildMetaDescription(post.excerpt, post.body);
+  const breadcrumbTrail = [
+    { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blogs' },
+    { name: post.title, url: `https://imadlab.me/blogs/${post.slug}` },
+  ];
+  const articleReadTime = post.read_time || estimatedReadTime || undefined;
+  const speakableSchema = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SpeakableSpecification',
+      xpath: [
+        "//*[@id='main']//h1",
+        "//*[@id='main']//p[1]"
+      ]
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-black text-white">
         <Seo 
           title={post.title} 
-          description={post.excerpt || ''} 
-          keywords={post.tags ? post.tags.join(', ') : 'data engineering, machine learning, ai, programming'}
+          description={metaDescription} 
+          keywords={articleTags.length ? articleTags.join(', ') : 'data engineering, machine learning, ai, programming'}
           type="article"
           publishedTime={post.published_date}
+          modifiedTime={post.updated_at ?? post.published_date}
           image={post.image_url || undefined}
           imageAlt={post.title}
-          tags={post.tags || undefined}
+          tags={articleTags}
+          breadcrumbs={breadcrumbTrail}
+          additionalSchemas={speakableSchema}
         />
 
   {/* Navigation Bar */}
@@ -89,12 +122,14 @@ const BlogPost = () => {
             Back to Blog
           </Link>
           
-          <div className="flex items-center gap-3">
-            <div className="text-sm text-white/70 flex items-center">
-              <Clock className="w-4 h-4 mr-1" />
-              {post.read_time || estimatedReadTime} min read
+          {articleReadTime && (
+            <div className="flex items-center gap-3">
+              <div className="text-sm text-white/70 flex items-center">
+                <Clock className="w-4 h-4 mr-1" />
+                {articleReadTime} min read
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       {/* Hero Section */}
@@ -106,8 +141,8 @@ const BlogPost = () => {
               <Calendar className="w-4 h-4 mr-2" />
               {new Date(post.published_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             </div>
-            {post.tags && post.tags.length > 0 && (
-              <TagList tags={post.tags} label="Tags:" />
+            {articleTags.length > 0 && (
+              <TagList tags={articleTags} label="Tags:" />
             )}
           </div>
           {post.excerpt && (
