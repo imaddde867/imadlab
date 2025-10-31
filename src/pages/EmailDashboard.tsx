@@ -20,6 +20,7 @@ type ProjectRow = Database['public']['Tables']['projects']['Row'];
 type EmailQueueItem = EmailQueueRow & {
   content_type: 'blog_post' | 'project';
   status: 'pending' | 'processing' | 'sent' | 'failed';
+  content_title?: string;
 };
 
 interface EmailStats {
@@ -129,12 +130,44 @@ const EmailDashboard = () => {
         .limit(50);
 
       if (queueError) throw queueError;
+      
+      // Normalize queue items
       const normalizedQueue: EmailQueueItem[] = (queueData ?? []).map((item) => ({
         ...item,
         content_type: normalizeContentType(item.content_type ?? null),
         status: normalizeStatus(item.status ?? null),
       }));
-      setEmailQueue(normalizedQueue);
+
+      // Fetch titles for all queue items
+      const blogIds = normalizedQueue
+        .filter(item => item.content_type === 'blog_post')
+        .map(item => item.content_id);
+      const projectIds = normalizedQueue
+        .filter(item => item.content_type === 'project')
+        .map(item => item.content_id);
+
+      const [blogTitles, projectTitles] = await Promise.all([
+        blogIds.length > 0
+          ? supabase.from('posts').select('id, title').in('id', blogIds)
+          : Promise.resolve({ data: [] as Array<{ id: string; title: string }> }),
+        projectIds.length > 0
+          ? supabase.from('projects').select('id, title').in('id', projectIds)
+          : Promise.resolve({ data: [] as Array<{ id: string; title: string }> }),
+      ]);
+
+      // Create title lookup maps
+      const blogTitleMap = new Map((blogTitles.data || []).map(b => [b.id, b.title]));
+      const projectTitleMap = new Map((projectTitles.data || []).map(p => [p.id, p.title]));
+
+      // Add titles to queue items
+      const queueWithTitles = normalizedQueue.map(item => ({
+        ...item,
+        content_title: item.content_type === 'blog_post'
+          ? blogTitleMap.get(item.content_id)
+          : projectTitleMap.get(item.content_id),
+      }));
+
+      setEmailQueue(queueWithTitles);
 
       // Load email statistics
       const [{ data: subscriberRows }, { data: analyticsRows }] = await Promise.all([
@@ -745,6 +778,7 @@ const EmailDashboard = () => {
                       const targetRecipients =
                         canSend ? activeCount : (metric.uniqueRecipients || metric.sent || metric.delivered || 0);
                       const contentLabel = item.content_type === 'blog_post' ? 'Blog Post' : 'Project';
+                      const displayTitle = item.content_title || 'Untitled';
 
                       return (
                         <div
@@ -753,16 +787,21 @@ const EmailDashboard = () => {
                         >
                           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                             <div className="space-y-3">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <Badge variant="outline" className="text-white border-white/20">
-                                  {contentLabel}
-                                </Badge>
-                                {getStatusBadge(item.status)}
-                                {item.retry_count > 0 && (
-                                  <span className="rounded-full border border-amber-400/40 bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-100">
-                                    Retry {item.retry_count}
-                                  </span>
-                                )}
+                              <div className="flex flex-col gap-2">
+                                <h3 className="text-base font-semibold text-white">
+                                  {displayTitle}
+                                </h3>
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <Badge variant="outline" className="text-white border-white/20">
+                                    {contentLabel}
+                                  </Badge>
+                                  {getStatusBadge(item.status)}
+                                  {item.retry_count > 0 && (
+                                    <span className="rounded-full border border-amber-400/40 bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-100">
+                                      Retry {item.retry_count}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                               <div className="text-sm leading-relaxed text-white/70 space-y-1">
                                 <div>Queued: {formatDate(item.created_at)}</div>
