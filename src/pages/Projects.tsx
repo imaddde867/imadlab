@@ -32,6 +32,23 @@ const Projects = () => {
     }
   });
 
+  const projectListSchema = projects && projects.length > 0 ? [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Projects list',
+      itemListOrder: 'Descending',
+      numberOfItems: projects.length,
+      itemListElement: projects.map((project, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `https://imadlab.me/projects/${project.id}`,
+        name: project.title,
+        description: project.description ?? undefined
+      }))
+    }
+  ] : undefined;
+
   return (
     <div className="min-h-screen bg-black text-white py-24 px-4">
       <Seo
@@ -39,6 +56,12 @@ const Projects = () => {
         description="Explore a collection of my projects in data engineering, AI, and machine learning. See live demos and browse the source code."
         keywords="data engineering projects, machine learning projects, ai projects, python projects, react projects, open source, github projects, portfolio projects"
         type="website"
+        schemaType="CollectionPage"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Projects', path: '/projects' }
+        ]}
+        additionalSchemas={projectListSchema}
       />
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">

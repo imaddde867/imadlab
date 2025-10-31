@@ -10,6 +10,7 @@ import rehypeRaw from 'rehype-raw';
 import Seo from '@/components/Seo';
 import { MarkdownComponents } from '@/components/MarkdownComponents';
 import { PageLoader } from '@/components/ui/LoadingStates';
+import { stripMarkdown } from '@/lib/markdown-utils';
 
 interface Project {
   id: string;
@@ -20,6 +21,7 @@ interface Project {
   tech_tags: string[] | null;
   repo_url: string | null;
   created_at: string;
+  updated_at?: string | null;
 }
 
 const ProjectDetail = () => {
@@ -62,15 +64,52 @@ const ProjectDetail = () => {
     );
   }
 
+  const projectTags = project.tech_tags?.filter((tag): tag is string => Boolean(tag && tag.trim())) ?? [];
+  const fallbackDescription = project.full_description
+    ? (() => {
+        const plain = stripMarkdown(project.full_description ?? '');
+        return plain.slice(0, 155) + (plain.length > 155 ? '...' : '');
+      })()
+    : 'Explore a highlighted data or AI project delivered by Imad Eddine El Mouss.';
+  const metaDescription = project.description?.trim().length
+    ? project.description.trim()
+    : fallbackDescription;
+  const breadcrumbTrail = [
+    { name: 'Home', path: '/' },
+    { name: 'Projects', path: '/projects' },
+    { name: project.title, url: `https://imadlab.me/projects/${project.id}` }
+  ];
+  const projectSchemas = project.repo_url
+    ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'SoftwareSourceCode',
+          name: project.title,
+          description: metaDescription,
+          codeRepository: project.repo_url,
+          url: `https://imadlab.me/projects/${project.id}`,
+          dateCreated: project.created_at,
+          dateModified: project.updated_at ?? project.created_at,
+          programmingLanguage: projectTags
+        }
+      ]
+    : undefined;
+
   return (
     <div className="min-h-screen bg-black text-white">
       <Seo 
         title={project.title} 
-        description={project.description || ''} 
-        keywords={project.tech_tags ? project.tech_tags.join(', ') : 'data engineering, machine learning, ai, programming'}
-        type="article"
+        description={metaDescription} 
+        keywords={projectTags.length ? projectTags.join(', ') : 'data engineering, machine learning, ai, programming'}
+        type="project"
+        schemaType="CreativeWork"
         publishedTime={project.created_at}
+        modifiedTime={project.updated_at ?? project.created_at}
         image={project.image_url || undefined}
+        imageAlt={project.title}
+        tags={projectTags}
+        breadcrumbs={breadcrumbTrail}
+        additionalSchemas={projectSchemas}
       />
 
       {/* Navigation Bar */}
@@ -115,10 +154,10 @@ const ProjectDetail = () => {
               })}
             </div>
             
-            {project.tech_tags && project.tech_tags.length > 0 && (
+            {projectTags.length > 0 && (
               <div className="flex flex-wrap gap-2 items-center">
                 <span className="text-sm text-white/70">Technologies:</span>
-                {(showAllTags ? project.tech_tags : project.tech_tags.slice(0, 3)).map((tag, index) => (
+                {(showAllTags ? projectTags : projectTags.slice(0, 3)).map((tag, index) => (
                   <span
                     key={index}
                     className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90"
@@ -127,7 +166,7 @@ const ProjectDetail = () => {
                   </span>
                 ))}
                 
-                {project.tech_tags.length > 3 && (
+                {projectTags.length > 3 && (
                   <button
                     onClick={() => setShowAllTags(!showAllTags)}
                     className="text-xs text-blue-400 hover:text-blue-300 flex items-center"
@@ -141,7 +180,7 @@ const ProjectDetail = () => {
                     ) : (
                       <>
                         <ChevronDown className="w-3 h-3 mr-1" />
-                        +{project.tech_tags.length - 3} more
+                        +{projectTags.length - 3} more
                       </>
                     )}
                   </button>
