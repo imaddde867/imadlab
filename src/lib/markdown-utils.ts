@@ -23,3 +23,14 @@ export const calculateReadingTime = (text: string): number => {
   const words = text.trim().split(/\s+/).length;
   return Math.ceil(words / wordsPerMinute);
 };
+
+export const stripMarkdown = (value: string): string => {
+  return value
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`[^`]*`/g, ' ')
+    .replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]+)]\([^)]*\)/g, '$1')
+    .replace(/[#>*_~`]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+};

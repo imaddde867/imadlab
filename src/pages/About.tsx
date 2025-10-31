@@ -21,6 +21,13 @@ const About = () => {
         <Seo
           title="About Imad Eddine"
           description="Learn more about Imad Eddine El Mouss, a Data Engineer and AI enthusiast."
+          keywords="about imadlab, imad eddine biography, data engineer experience, ai professional background"
+          schemaType="AboutPage"
+          breadcrumbs={[
+            { name: 'Home', path: '/' },
+            { name: 'About', path: '/about' }
+          ]}
+          tags={['Data Engineer', 'AI Professional', 'Machine Learning']}
         />
         <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-8 py-12">
           <div className="mb-8">
