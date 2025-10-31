@@ -1,27 +1,50 @@
+import { useMemo, type CSSProperties } from "react";
+
+type DotStyle = CSSProperties & {
+  "--tw-translate-x"?: string;
+  "--tw-translate-y"?: string;
+};
+
+const DOT_COUNT = 50;
+
 // Extracted from Hero for global use
 const HomeBackground = () => {
+  const dots = useMemo(() => {
+    return Array.from({ length: DOT_COUNT }, () => {
+      const size = Math.random() * 3 + 1;
+      const opacity = Math.random() * 0.3 + 0.1;
+      const translateX = (Math.random() - 0.5) * 200;
+      const translateY = (Math.random() - 0.5) * 200;
+
+      return {
+        width: `${size}px`,
+        height: `${size}px`,
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        opacity: `${opacity}`,
+        animationDelay: `${Math.random() * 10}s`,
+        "--tw-translate-x": `${translateX}px`,
+        "--tw-translate-y": `${translateY}px`,
+      } satisfies DotStyle;
+    });
+  }, []);
+
   return (
     <>
       {/* Animated background glow (static, not mouse-follow) */}
-      <div 
+      <div
         className="fixed inset-0 opacity-20 animate-subtle-flicker pointer-events-none -z-10"
-        style={{background: `radial-gradient(600px circle at 50% 30%, rgba(255,255,255,0.06), transparent 40%)`}}
+        style={{
+          background:
+            "radial-gradient(600px circle at 50% 30%, rgba(255,255,255,0.06), transparent 40%)",
+        }}
       />
       {/* Background dots */}
-      {[...Array(50)].map((_, i) => (
+      {dots.map((style, index) => (
         <div
-          key={i}
+          key={index}
           className="fixed bg-white/10 rounded-full animate-dot-move pointer-events-none -z-10"
-          style={{
-            width: `${Math.random() * 3 + 1}px`,
-            height: `${Math.random() * 3 + 1}px`,
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            opacity: `${Math.random() * 0.3 + 0.1}`,
-            animationDelay: `${Math.random() * 10}s`,
-            '--tw-translate-x': `${(Math.random() - 0.5) * 200}px`,
-            '--tw-translate-y': `${(Math.random() - 0.5) * 200}px`,
-          } as React.CSSProperties}
+          style={style}
         />
       ))}
       {/* Asymmetrical grid lines */}

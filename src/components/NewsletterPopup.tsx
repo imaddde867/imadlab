@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/hooks/use-toast';
 import { X } from 'lucide-react';
 
@@ -28,7 +27,7 @@ const NewsletterPopup: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('newsletter_subscribers')
       .insert([{ email }]);
 
@@ -90,7 +89,6 @@ const NewsletterPopup: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
-      <Toaster />
     </>
   );
 };

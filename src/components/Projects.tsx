@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, type CSSProperties } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
@@ -15,6 +15,28 @@ interface Project {
 
 const Projects = () => {
 	const [projects, setProjects] = useState<Project[]>([]);
+	const dots = useMemo(() => {
+		return Array.from({ length: 50 }, () => {
+			const size = Math.random() * 8 + 4;
+			const opacity = Math.random() * 0.7 + 0.3;
+			const translateX = (Math.random() - 0.5) * 200;
+			const translateY = (Math.random() - 0.5) * 200;
+
+			return {
+				width: `${size}px`,
+				height: `${size}px`,
+				left: `${Math.random() * 100}%`,
+				top: `${Math.random() * 100}%`,
+				opacity: `${opacity}`,
+				animationDelay: `${Math.random() * 10}s`,
+				"--tw-translate-x": `${translateX}px`,
+				"--tw-translate-y": `${translateY}px`,
+			} satisfies CSSProperties & {
+				"--tw-translate-x"?: string;
+				"--tw-translate-y"?: string;
+			};
+		});
+	}, []);
 
 	useEffect(() => {
 		const fetchProjects = async () => {
@@ -42,22 +64,11 @@ const Projects = () => {
 					}}
 				/>
 				{/* Background dots (larger, more opaque) */}
-				{[...Array(50)].map((_, i) => (
+				{dots.map((style, i) => (
 					<div
 						key={i}
 						className="absolute bg-white/40 rounded-full animate-dot-move"
-						style={
-							{
-								width: `${Math.random() * 8 + 4}px`,
-								height: `${Math.random() * 8 + 4}px`,
-								left: `${Math.random() * 100}%`,
-								top: `${Math.random() * 100}%`,
-								opacity: `${Math.random() * 0.7 + 0.3}`,
-								animationDelay: `${Math.random() * 10}s`,
-								'--tw-translate-x': `${(Math.random() - 0.5) * 200}px`,
-								'--tw-translate-y': `${(Math.random() - 0.5) * 200}px`,
-							} as React.CSSProperties & { '--tw-translate-x'?: string; '--tw-translate-y'?: string; }
-						}
+						style={style}
 					/>
 				))}
 				{/* Asymmetrical grid lines (thicker, more visible) */}
