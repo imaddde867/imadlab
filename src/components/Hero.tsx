@@ -96,10 +96,38 @@ const Hero = () => {
         {/* Floating accent element */}
         <div className="hidden lg:block lg:col-span-3 lg:col-start-10">
           <div className="relative">
-            <div className="w-32 h-32 rounded-full border border-white/20 animate-spin-slow">
-              <div className="absolute inset-4 rounded-full border border-white/10"></div>
-              <div className="absolute inset-8 rounded-full bg-white/5"></div>
-            </div>
+            {/* Outer circle with random cuts */}
+            <svg className="w-32 h-32 animate-spin-slow" viewBox="0 0 128 128">
+              <circle
+                cx="64"
+                cy="64"
+                r="60"
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.2)"
+                strokeWidth="1"
+                strokeDasharray="90 15 70 8 45 12"
+                strokeLinecap="round"
+              />
+            </svg>
+            
+            {/* Middle circle with random cuts */}
+            <svg className="absolute inset-4 w-24 h-24 animate-spin-slow-reverse" viewBox="0 0 96 96">
+              <circle
+                cx="48"
+                cy="48"
+                r="44"
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.1)"
+                strokeWidth="1"
+                strokeDasharray="85 35 60 25 50 40"
+                strokeLinecap="round"
+              />
+            </svg>
+            
+            {/* Inner circle - solid glow */}
+            <div className="absolute inset-8 w-16 h-16 rounded-full bg-white/5"></div>
+            
+            {/* Accent dots */}
             <div className="absolute -top-8 -right-8 w-4 h-4 bg-white rounded-full animate-pulse"></div>
             <div className="absolute -bottom-4 -left-4 w-2 h-2 bg-white/60 rounded-full"></div>
           </div>
