@@ -281,8 +281,8 @@ const ManagePosts = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white py-12 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-black text-white py-12">
+      <div className="container-site">
         <div className="mb-8">
           <Link
             to="/admin"
