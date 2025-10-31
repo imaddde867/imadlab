@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import type { BlogPostEmailData, ProjectEmailData } from '../shared/email-templates.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,6 +20,26 @@ interface NewsletterSubscriber {
   email: string;
   status: string;
   unsubscribe_token: string;
+}
+
+interface BlogPostContent {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  published_date: string | null;
+  created_at: string;
+  tags: string[] | null;
+}
+
+interface ProjectContent {
+  id: string;
+  title: string;
+  description: string | null;
+  tech_tags: string[] | null;
+  image_url: string | null;
+  repo_url: string | null;
+  created_at: string;
 }
 
 serve(async (req) => {
@@ -43,6 +64,9 @@ serve(async (req) => {
     if (!resendApiKey) {
       throw new Error('RESEND_API_KEY environment variable is required')
     }
+
+    const siteUrl = Deno.env.get('SITE_URL') || 'https://imadlab.com'
+    const { generateBlogPostEmail, generateProjectEmail } = await import('../shared/email-templates.ts')
 
     // Get pending email queue items
     const { data: queueItems, error: queueError } = await supabaseClient
@@ -119,7 +143,7 @@ serve(async (req) => {
           .eq('id', queueItem.id)
 
         // Get content data
-        let contentData
+        let contentData: BlogPostContent | ProjectContent | null = null
         if (queueItem.content_type === 'blog_post') {
           const { data: post } = await supabaseClient
             .from('posts')
@@ -143,28 +167,43 @@ serve(async (req) => {
         // Send emails to all subscribers
         const emailPromises = subscribers.map(async (subscriber: NewsletterSubscriber) => {
           try {
-            const emailData = {
-              subscriberEmail: subscriber.email,
-              unsubscribeToken: subscriber.unsubscribe_token,
-              siteUrl: Deno.env.get('SITE_URL') || 'https://imadlab.com',
-              [queueItem.content_type === 'blog_post' ? 'post' : 'project']: {
-                ...contentData,
-                publishedDate: contentData.published_date || contentData.created_at,
-                techTags: contentData.tech_tags || [],
-                tags: contentData.tags || []
+            let emailHtml = ''
+            let subject = ''
+
+            if (queueItem.content_type === 'blog_post') {
+              const blogContent = contentData as BlogPostContent
+              const emailData: BlogPostEmailData = {
+                subscriberEmail: subscriber.email,
+                unsubscribeToken: subscriber.unsubscribe_token,
+                siteUrl,
+                post: {
+                  title: blogContent.title,
+                  excerpt: blogContent.excerpt ?? '',
+                  slug: blogContent.slug,
+                  publishedDate: blogContent.published_date ?? blogContent.created_at,
+                  tags: blogContent.tags ?? []
+                }
               }
+              emailHtml = generateBlogPostEmail(emailData)
+              subject = `New Blog Post: ${blogContent.title}`
+            } else {
+              const projectContent = contentData as ProjectContent
+              const emailData: ProjectEmailData = {
+                subscriberEmail: subscriber.email,
+                unsubscribeToken: subscriber.unsubscribe_token,
+                siteUrl,
+                project: {
+                  title: projectContent.title,
+                  description: projectContent.description ?? '',
+                  techTags: projectContent.tech_tags ?? [],
+                  imageUrl: projectContent.image_url ?? undefined,
+                  repoUrl: projectContent.repo_url ?? undefined,
+                  id: projectContent.id
+                }
+              }
+              emailHtml = generateProjectEmail(emailData)
+              subject = `New Project: ${projectContent.title}`
             }
-
-            // Import email template function
-            const { generateBlogPostEmail, generateProjectEmail } = await import('../shared/email-templates.ts')
-            
-            const emailHtml = queueItem.content_type === 'blog_post' 
-              ? generateBlogPostEmail(emailData as any)
-              : generateProjectEmail(emailData as any)
-
-            const subject = queueItem.content_type === 'blog_post'
-              ? `New Blog Post: ${contentData.title}`
-              : `New Project: ${contentData.title}`
 
             // Send email via Resend
             console.log(`Sending email to ${subscriber.email} with subject: ${subject}`)
@@ -211,8 +250,9 @@ serve(async (req) => {
 
             return { success: true, email: subscriber.email, emailId: emailResult.id }
           } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unknown error'
             console.error(`Failed to send email to ${subscriber.email}:`, error)
-            return { success: false, email: subscriber.email, error: error.message }
+            return { success: false, email: subscriber.email, error: message }
           }
         })
 
@@ -251,21 +291,21 @@ serve(async (req) => {
         })
 
       } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown error'
         console.error(`Failed to process queue item ${queueItem.id}:`, error)
         
-        // Update queue item with error
         await supabaseClient
           .from('email_queue')
           .update({ 
             status: 'failed',
             retry_count: queueItem.retry_count + 1,
-            error_message: error.message
+            error_message: message
           })
           .eq('id', queueItem.id)
 
         results.push({
           queueItemId: queueItem.id,
-          error: error.message
+          error: message
         })
       }
     }
@@ -281,9 +321,10 @@ serve(async (req) => {
     )
 
   } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
     console.error('Email sending function error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: message }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

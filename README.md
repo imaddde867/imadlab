@@ -4,54 +4,44 @@
   <p>Where Data Engineering Meets Cutting-Edge Web Development</p>
 </div>
 
-## 🌟 Project Showcase
+## Overview
 
-**Live Demo:** [imadlab.me](https://imadlab.me) | **GitHub Repo:** [github.com/imaddde867/imadlab](https://github.com/imaddde867/imadlab)
+imadlab is a production-ready portfolio that shows how I design and operate data-centric web systems. The site combines a React 18 front end with Supabase services, automated publishing flows, and real-time integrations—all tuned for fast performance and clean operations.
 
-### Why This Stands Out
-This isn't just another portfolio - it's a **fully interactive technical ecosystem** that demonstrates:
-- Real-time data integrations
-- Secure content management
-- Modern performance optimizations
-- Professional-grade architecture
+**Live Demo:** [imadlab.me](https://imadlab.me) · **Source:** [github.com/imaddde867/imadlab](https://github.com/imaddde867/imadlab)
 
-## 🚀 Try It Yourself
+## Quick Start
 
 ```bash
-# Clone and run locally
 git clone https://github.com/imaddde867/imadlab.git
 cd imadlab
 npm install
 npm run dev
 ```
 
-## 🎯 Key Features
+## Highlights
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px 0;">
 
-### 🖥️ Interactive Portfolio
-- Dynamic project filtering
-- Case study detail pages
-- Tech stack visualization
-- Real-time content updates
+### Portfolio Delivery
+- Dynamic project filtering and deep-dive case studies
+- Cross-platform responsive layouts and design tokens
+- Automated sync with GitHub repos and hosted demos
 
-### 📝 Technical Blog
-- Markdown with LaTeX support
-- Code syntax highlighting
-- Reading time estimates
-- SEO-optimized structure
+### Publishing Pipeline
+- Markdown authoring with analytics-aware metadata
+- Secure admin workflow with previews and staged deploys
+- SEO-first rendering (OpenGraph, sitemap, schema.org)
 
-### ⚡ Real-Time Magic
+### Operations & Automations
 <video src="https://raw.githubusercontent.com/imaddde867/imadlab/master/doc/admin_demo.mov" controls width="100%" style="border-radius:12px;"></video>
 
-- Live Spotify integration
-- Instant content updates
-- Smart notifications
-- Background sync
-
+- Newsletter queue with retries, analytics, and unsubscribe handling
+- Spotify, Formspree, and Resend integrations
+- Supabase Edge Functions for background jobs and telemetry
 </div>
 
-## 🛠️ My Tech Stack Deep Dive
+## Technology Stack
 
 ```mermaid
 graph TD
@@ -74,43 +64,34 @@ graph TD
     O --> R[Netlify]
 ```
 
-## 💡 Behind the Scenes
+## Architecture
 
-### Architectural Highlights
 ```bash
 src/
-├── components/ # 35+ reusable UI elements
-├── hooks/      # Custom React logic
-├── integrations/ # API connections
-├── lib/        # Utilities & helpers
-└── pages/      # Route-based components
+├── components/      # Reusable UI library (shadcn-based)
+├── hooks/           # Data fetching and UI state
+├── integrations/    # Supabase and external API clients
+├── lib/             # Utilities, analytics, consent management
+└── pages/           # Route-level views and admin surfaces
 ```
 
-**Innovative Solutions I Implemented:**
-1. **Spotify Now Playing**: Built with Supabase Edge Functions for real-time updates
-2. **Admin Portal**: Secure CRUD operations with role-based access
-3. **Performance**: Achieved 95+ Lighthouse scores with:
-   - Code splitting
-   - Lazy loading
-   - Optimized assets
+Key patterns:
 
-## 📈 Business Impact
+- Supabase Edge Functions send newsletters, track webhooks, and manage auth
+- React Query drives fetching with caching, suspense, and optimistic updates
+- Typed Supabase schemas keep the database and UI in sync
+- Automated migrations, linting, and CI guardrails ensure consistency
 
-This project demonstrates my ability to:
-- Design complete full-stack systems
-- Implement secure authentication flows
-- Optimize for both UX and SEO
-- Build maintainable architecture
+## Impact
 
-## 📚 Learning Resources
+imadlab demonstrates:
 
-Want to build something similar? Here's what helped me:
-1. [Supabase Documentation]
-2. [Vite Performance Guide]
-3. [React Best Practices]
+- End-to-end ownership of a cloud-native content platform
+- Secure admin tooling with robust error handling and observability
+- Performance-tuned UX with Lighthouse 95+ scores
+- Maintainable, extensible architecture suited for production workloads
 
-
-[Contact Me](https://imadlab.me#contact) | [LinkedIn](#) | [Twitter](#)
+---
 
 <div align="center" style="margin-top: 40px;">
   <a href="https://imadlab.me">
@@ -120,4 +101,9 @@ Want to build something similar? Here's what helped me:
     <img src="https://img.shields.io/badge/View_Source_Code-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
   </a>
 </div>
-```
+
+<p align="center">
+  <a href="https://imadlab.me#contact">Contact</a> ·
+  <a href="https://www.linkedin.com/in/imad-eddine-elmouss/">LinkedIn</a> ·
+  <a href="https://x.com/Imaddd867">X (Twitter)</a>
+</p>

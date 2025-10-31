@@ -176,7 +176,7 @@ serve(async (req) => {
     }
 
     // Update analytics based on event type
-    const updateData: any = {}
+    const updateData: Partial<Record<'delivered_at' | 'opened_at' | 'clicked_at' | 'bounced_at', string>> = {}
     const eventTimestamp = new Date(event.created_at).toISOString()
 
     switch (event.type) {

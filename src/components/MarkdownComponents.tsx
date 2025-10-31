@@ -1,5 +1,5 @@
 // Enhanced Markdown renderers with improved typography and syntax highlighting
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Check, Copy, ExternalLink, Quote } from 'lucide-react';
 
 // Reading progress hook
@@ -26,6 +26,130 @@ export const calculateReadingTime = (text: string): number => {
   const wordsPerMinute = 200;
   const words = text.trim().split(/\s+/).length;
   return Math.ceil(words / wordsPerMinute);
+};
+
+type MarkdownImageProps = { node?: unknown } & React.ImgHTMLAttributes<HTMLImageElement>;
+
+const MarkdownImage: React.FC<MarkdownImageProps> = ({ node: _node, alt, src, title, ...props }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  return (
+    <figure className="my-10 text-center">
+      <div className="relative inline-block max-w-full">
+        {!loaded && !error && (
+          <div className="absolute inset-0 bg-white/5 animate-pulse rounded-xl flex items-center justify-center min-h-[200px]">
+            <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin"></div>
+          </div>
+        )}
+        <img
+          src={src}
+          alt={alt || ''}
+          title={title}
+          className={`max-w-full h-auto rounded-xl shadow-2xl transition-opacity duration-300 ${
+            loaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={() => setLoaded(true)}
+          onError={() => setError(true)}
+          loading="lazy"
+          {...props}
+        />
+      </div>
+      {(alt || title) && (
+        <figcaption className="mt-4 text-sm text-white/60 italic">
+          {title || alt}
+        </figcaption>
+      )}
+    </figure>
+  );
+};
+
+type MarkdownCodeProps = {
+  node?: unknown;
+  inline?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+};
+
+const MarkdownCode: React.FC<MarkdownCodeProps> = ({ inline = false, className, children, ...props }) => {
+  const [copied, setCopied] = useState(false);
+  const codeString = String(children).replace(/\n$/, '');
+  const language = className?.replace('language-', '') || '';
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(codeString);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy code:', err);
+    }
+  };
+
+  if (inline) {
+    return (
+      <code
+        className="bg-white/15 text-white/95 px-2 py-1 rounded-md text-sm font-mono border border-white/10"
+        {...props}
+      >
+        {children}
+      </code>
+    );
+  }
+
+  const isOutputBlock =
+    codeString.includes('precision') &&
+    codeString.includes('recall') &&
+    codeString.includes('f1-score') &&
+    codeString.includes('support');
+
+  if (isOutputBlock) {
+    return (
+      <pre
+        className="my-6 p-4 bg-black/30 rounded-lg border border-white/10 overflow-x-auto font-mono text-sm text-white/90"
+        style={{
+          fontSize: '14px',
+          lineHeight: '1.5',
+          fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Inconsolata, "Roboto Mono", monospace'
+        }}
+      >
+        <code className="text-white/90" {...props}>
+          {children}
+        </code>
+      </pre>
+    );
+  }
+
+  return (
+    <div className="relative my-6">
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="absolute top-3 right-3 bg-black/60 hover:bg-black/80 text-white px-3 py-1 rounded-md text-xs flex items-center gap-1 border border-white/10 transition-colors"
+      >
+        {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+        {copied ? 'Copied!' : 'Copy'}
+      </button>
+      {language && (
+        <div className="absolute top-3 left-3 bg-white/10 text-white/80 text-xs font-mono px-2 py-1 rounded-md border border-white/10 uppercase tracking-widest">
+          {language}
+        </div>
+      )}
+      <pre
+        className="bg-black/70 border border-white/10 rounded-xl overflow-hidden shadow-lg"
+        style={{
+          fontSize: '14px',
+          lineHeight: '1.6',
+          fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Inconsolata, "Roboto Mono", monospace'
+        }}
+        {...props}
+      >
+        <code className="block w-full overflow-x-auto p-5 text-white/90">
+          {children}
+        </code>
+      </pre>
+    </div>
+  );
 };
 
 export const MarkdownComponents = {
@@ -119,140 +243,10 @@ export const MarkdownComponents = {
   ),
 
   // Enhanced images with loading states and captions
-  img: ({ node, alt, src, title, ...props }: { node?: unknown } & React.ImgHTMLAttributes<HTMLImageElement>) => {
-    const [loaded, setLoaded] = useState(false);
-    const [error, setError] = useState(false);
-
-    return (
-      <figure className="my-10 text-center">
-        <div className="relative inline-block max-w-full">
-          {!loaded && !error && (
-            <div className="absolute inset-0 bg-white/5 animate-pulse rounded-xl flex items-center justify-center min-h-[200px]">
-              <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin"></div>
-            </div>
-          )}
-          <img
-            src={src}
-            alt={alt || ''}
-            title={title}
-            className={`max-w-full h-auto rounded-xl shadow-2xl transition-opacity duration-300 ${
-              loaded ? 'opacity-100' : 'opacity-0'
-            }`}
-            onLoad={() => setLoaded(true)}
-            onError={() => setError(true)}
-            loading="lazy"
-            {...props}
-          />
-        </div>
-        {(alt || title) && (
-          <figcaption className="mt-4 text-sm text-white/60 italic">
-            {title || alt}
-          </figcaption>
-        )}
-      </figure>
-    );
-  },
+  img: MarkdownImage,
 
   // Enhanced code blocks with syntax highlighting and language detection
-  code: ({ node, inline = false, className, children, ...props }: { 
-    node?: unknown; 
-    inline?: boolean; 
-    className?: string; 
-    children?: React.ReactNode 
-  }) => {
-    const codeRef = useRef<HTMLPreElement>(null);
-    const [copied, setCopied] = useState(false);
-    const codeString = String(children).replace(/\n$/, '');
-    // Extract language from className without displaying it as visible text
-    const language = className?.replace('language-', '') || '';
-
-    const handleCopy = async () => {
-      try {
-        // Copy the actual code content, not the language identifier
-        await navigator.clipboard.writeText(codeString);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      } catch (err) {
-        console.error('Failed to copy code:', err);
-      }
-    };
-
-    if (inline) {
-      return (
-        <code 
-          className="bg-white/15 text-white/95 px-2 py-1 rounded-md text-sm font-mono border border-white/10" 
-          {...props}
-        >
-          {children}
-        </code>
-      );
-    }
-
-    // Check if this is a classification report or similar output
-    const isOutputBlock = 
-      codeString.includes('precision') && 
-      codeString.includes('recall') && 
-      codeString.includes('f1-score') && 
-      codeString.includes('support');
-
-    // For classification reports and similar outputs, use a simpler display
-    if (isOutputBlock) {
-      return (
-        <pre
-          className="my-6 p-4 bg-black/30 rounded-lg border border-white/10 overflow-x-auto font-mono text-sm text-white/90"
-          style={{ 
-            fontSize: '14px',
-            lineHeight: '1.5',
-            fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Inconsolata, "Roboto Mono", monospace'
-          }}
-        >
-          <code className="text-white/90" {...props}>
-            {children}
-          </code>
-        </pre>
-      );
-    }
-
-    // For regular code blocks
-    return (
-      <div className="relative my-6">
-        {/* Copy button (absolute positioned) */}
-        <button
-          onClick={handleCopy}
-          className="absolute top-2 right-2 flex items-center gap-1 bg-white/10 hover:bg-white/20 text-xs px-2 py-1 rounded-md transition-all duration-200 border border-white/10 text-white/80 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 z-10"
-          title={copied ? 'Copied!' : 'Copy code'}
-          type="button"
-        >
-          {copied ? (
-            <>
-              <Check className="w-3 h-3 text-green-400" />
-              <span>Copied</span>
-            </>
-          ) : (
-            <>
-              <Copy className="w-3 h-3" />
-              <span>Copy</span>
-            </>
-          )}
-        </button>
-        
-        {/* Code content */}
-        <pre
-          ref={codeRef}
-          className={`overflow-x-auto p-4 bg-black/30 rounded-lg border border-white/10 ${language ? `language-${language}` : ''}`}
-          style={{ 
-            fontSize: '14px',
-            lineHeight: '1.6',
-            fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Inconsolata, "Roboto Mono", monospace'
-          }}
-        >
-          <code className={`text-white/90 font-mono ${language ? `language-${language}` : ''}`} {...props}>
-            {children}
-          </code>
-        </pre>
-      </div>
-    );
-  },
+  code: MarkdownCode,
 
   // Enhanced tables
   table: ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (

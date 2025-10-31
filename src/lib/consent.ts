@@ -31,8 +31,9 @@ const getCookie = (name: string): string | null => {
   return match ? match[2] : null;
 };
 
-const encode = (obj: any) => encodeURIComponent(JSON.stringify(obj));
-const decode = (str: string) => JSON.parse(decodeURIComponent(str));
+const encode = (obj: ConsentState) => encodeURIComponent(JSON.stringify(obj));
+const decode = (str: string): ConsentState =>
+  JSON.parse(decodeURIComponent(str)) as ConsentState;
 
 export function getConsent(): ConsentState | null {
   try {
@@ -57,12 +58,18 @@ export function setConsent(next: Omit<ConsentState, 'version' | 'timestamp' | 'e
     functional: !!next.functional,
   };
   const encoded = encode(state);
-  try { localStorage.setItem(CONSENT_COOKIE, encoded); } catch {}
+  try {
+    localStorage.setItem(CONSENT_COOKIE, encoded);
+  } catch (error) {
+    console.warn('imadlab: unable to persist consent in localStorage', error);
+  }
   setCookie(CONSENT_COOKIE, encoded, CONSENT_MAX_AGE_DAYS);
   subscribers.forEach((cb) => cb(state));
   try {
     window.dispatchEvent(new CustomEvent('imadlab:consentchange', { detail: state }));
-  } catch {}
+  } catch (error) {
+    console.warn('imadlab: unable to dispatch consent change event', error);
+  }
 }
 
 export function onConsentChange(cb: Subscriber) {
