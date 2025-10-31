@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { RefreshCw, Send, Eye, Users, Mail, TrendingUp } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { RefreshCw, Send, Eye, Users, Mail, TrendingUp, Trash2 } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
 type EmailQueueRow = Database['public']['Tables']['email_queue']['Row'];
@@ -73,6 +74,31 @@ type SubscriberMetrics = {
   lastEvent?: string;
 };
 
+type QueueMetrics = {
+  sent: number;
+  delivered: number;
+  opened: number;
+  clicked: number;
+  bounced: number;
+  uniqueRecipients: number;
+};
+
+type PreviewRequest =
+  | { mode: 'latest'; contentType: 'blog_post' | 'project' }
+  | { mode: 'queue'; queueItem: EmailQueueItem };
+
+const SECTION_CARD_CLASS = 'rounded-2xl border border-white/10 bg-white/[0.06] shadow-sm';
+const SECTION_HEADER_CLASS = 'px-6 pt-6 pb-0';
+const SECTION_TITLE_CLASS = 'text-lg font-semibold text-white';
+const SECTION_DESCRIPTION_CLASS = 'text-sm text-white/60';
+const SECTION_CONTENT_CLASS = 'px-6 pb-6 space-y-6';
+const TOOLBAR_BUTTON_CLASS = 'border-white/20 bg-black/40 text-white hover:bg-white/15';
+const PRIMARY_ACTION_BUTTON_CLASS = 'bg-white text-black border-white/20 hover:bg-white/85';
+const PREVIEW_BUTTON_CLASS = 'border-white/20 bg-black/40 text-white hover:bg-white/15 data-[state=open]:bg-white/15';
+const FILTER_BUTTON_ACTIVE_CLASS = 'bg-white text-black border-white shadow-sm';
+const FILTER_BUTTON_INACTIVE_CLASS = 'bg-black/40 text-white/70 hover:bg-white/10 hover:text-white';
+const METRIC_LABEL_CLASS = 'text-xs uppercase tracking-widest text-white/60';
+
 const EmailDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -83,6 +109,13 @@ const EmailDashboard = () => {
   const [processing, setProcessing] = useState(false);
   const [previewContent, setPreviewContent] = useState<string>('');
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewTitle, setPreviewTitle] = useState<string>('');
+  const [subscriberList, setSubscriberList] = useState<SubscriberSummary[]>([]);
+  const [subscriberMetrics, setSubscriberMetrics] = useState<Record<string, SubscriberMetrics>>({});
+  const [subscriberFilter, setSubscriberFilter] = useState<'all' | 'active' | 'inactive' | 'unsubscribed'>('all');
+  const [queueMetrics, setQueueMetrics] = useState<Record<string, QueueMetrics>>({});
+  const [blogAutoSend, setBlogAutoSend] = useState(true);
+  const [projectAutoSend, setProjectAutoSend] = useState(true);
 
   const loadEmailData = useCallback(async () => {
     try {
@@ -104,14 +137,14 @@ const EmailDashboard = () => {
       setEmailQueue(normalizedQueue);
 
       // Load email statistics
-      const [subscribersResult, analyticsResult] = await Promise.all([
-        supabase.from('newsletter_subscribers').select('status, email'),
+      const [{ data: subscriberRows }, { data: analyticsRows }] = await Promise.all([
+        supabase.from('newsletter_subscribers').select('status, email, created_at, updated_at'),
         supabase.from('email_analytics').select('*'),
       ]);
 
-      if (subscribersResult.data && analyticsResult.data) {
-        const subscribers = subscribersResult.data as Array<Pick<NewsletterSubscriberRow, 'status' | 'email'>>;
-        const analytics = analyticsResult.data as EmailAnalyticsRow[];
+      if (subscriberRows && analyticsRows) {
+        const subscribers = subscriberRows as Array<Pick<NewsletterSubscriberRow, 'status' | 'email' | 'created_at' | 'updated_at'>>;
+        const analytics = analyticsRows as EmailAnalyticsRow[];
 
         const totalSubscribers = subscribers.length;
         const activeSubscribers = subscribers.filter((subscriber) => !subscriber.status || subscriber.status === 'active').length;
@@ -119,6 +152,92 @@ const EmailDashboard = () => {
         const deliveredEmails = analytics.filter((entry) => entry.delivered_at).length;
         const openedEmails = analytics.filter((entry) => entry.opened_at).length;
         const clickedEmails = analytics.filter((entry) => entry.clicked_at).length;
+
+        const summaries: SubscriberSummary[] = subscribers.map((subscriber) => ({
+          email: subscriber.email,
+          status: subscriber.status ?? 'active',
+          created_at: subscriber.created_at ?? undefined,
+          updated_at: subscriber.updated_at ?? undefined,
+        }));
+
+        const subscriberMetricsMap: Record<string, SubscriberMetrics> = {};
+        const queueAccumulator: Record<string, { metrics: QueueMetrics; recipients: Set<string> }> = {};
+
+        analytics.forEach((entry) => {
+          const key = entry.subscriber_email;
+          if (!subscriberMetricsMap[key]) {
+            subscriberMetricsMap[key] = {
+              sent: 0,
+              delivered: 0,
+              opened: 0,
+              clicked: 0,
+              bounced: 0,
+              lastEvent: undefined,
+            };
+          }
+
+          const subscriberMetric = subscriberMetricsMap[key];
+
+          if (entry.sent_at) subscriberMetric.sent += 1;
+          if (entry.delivered_at) subscriberMetric.delivered += 1;
+          if (entry.opened_at) subscriberMetric.opened += 1;
+          if (entry.clicked_at) subscriberMetric.clicked += 1;
+          if (entry.bounced_at) subscriberMetric.bounced += 1;
+
+          const timestamps = [
+            entry.clicked_at,
+            entry.opened_at,
+            entry.delivered_at,
+            entry.sent_at,
+            entry.bounced_at,
+            entry.unsubscribed_at,
+          ]
+            .filter(Boolean)
+            .map((value) => new Date(value as string).getTime());
+
+          if (timestamps.length) {
+            const latest = Math.max(...timestamps);
+            if (!subscriberMetric.lastEvent || latest > new Date(subscriberMetric.lastEvent).getTime()) {
+              subscriberMetric.lastEvent = new Date(latest).toISOString();
+            }
+          }
+
+          if (entry.email_queue_id) {
+            if (!queueAccumulator[entry.email_queue_id]) {
+              queueAccumulator[entry.email_queue_id] = {
+                metrics: {
+                  sent: 0,
+                  delivered: 0,
+                  opened: 0,
+                  clicked: 0,
+                  bounced: 0,
+                  uniqueRecipients: 0,
+                },
+                recipients: new Set<string>(),
+              };
+            }
+
+            const queueMetric = queueAccumulator[entry.email_queue_id];
+            queueMetric.recipients.add(entry.subscriber_email);
+            if (entry.sent_at) queueMetric.metrics.sent += 1;
+            if (entry.delivered_at) queueMetric.metrics.delivered += 1;
+            if (entry.opened_at) queueMetric.metrics.opened += 1;
+            if (entry.clicked_at) queueMetric.metrics.clicked += 1;
+            if (entry.bounced_at) queueMetric.metrics.bounced += 1;
+          }
+        });
+
+        const queueMetricsMap: Record<string, QueueMetrics> = {};
+        Object.entries(queueAccumulator).forEach(([queueId, accumulator]) => {
+          queueMetricsMap[queueId] = {
+            ...accumulator.metrics,
+            uniqueRecipients: accumulator.recipients.size,
+          };
+        });
+
+        setSubscriberList(summaries);
+        setSubscriberMetrics(subscriberMetricsMap);
+        setQueueMetrics(queueMetricsMap);
 
         setEmailStats({
           totalSubscribers,
@@ -165,87 +284,151 @@ const EmailDashboard = () => {
     };
   }, [loadEmailData, navigate, toast]);
 
-  const processEmailQueue = async () => {
+  const processEmailQueue = async (queueIds?: string[]) => {
     try {
       setProcessing(true);
-      const { data, error } = await supabase.functions.invoke<{ processedItems?: number }>('send-newsletter-emails', {
-        method: 'POST',
-        body: {}
-      });
+      const { data, error } = await supabase.functions.invoke<{ processedItems?: number }>(
+        'send-newsletter-emails',
+        {
+          method: 'POST',
+          body: queueIds && queueIds.length ? { queueIds } : {},
+        }
+      );
 
       if (error) throw error;
 
-      toast({ 
-        title: 'Success', 
-        description: `Processed ${data?.processedItems ?? 0} email queue items` 
+      toast({
+        title: 'Success',
+        description: `Processed ${data?.processedItems ?? 0} email queue items`,
       });
-      
+
       await loadEmailData();
     } catch (error) {
       console.error('Error processing email queue:', error);
-      toast({ 
-        title: 'Error', 
-        description: 'Failed to process email queue', 
-        variant: 'destructive' 
+      toast({
+        title: 'Error',
+        description: 'Failed to process email queue',
+        variant: 'destructive',
       });
     } finally {
       setProcessing(false);
     }
   };
 
-  const previewEmail = async (contentType: 'blog_post' | 'project') => {
+  const processSpecificQueueItem = async (queueId: string) => {
+    await processEmailQueue([queueId]);
+  };
+
+
+  const deleteQueueItem = async (queueId: string) => {
+    if (!confirm('Delete this queue entry? This cannot be undone.')) {
+      return;
+    }
     try {
+      setProcessing(true);
+      const { error } = await supabase
+        .from('email_queue')
+        .delete()
+        .eq('id', queueId);
+
+      if (error) throw error;
+
+      toast({ title: 'Queue item deleted', description: 'The email entry has been removed.' });
+      await loadEmailData();
+    } catch (error) {
+      console.error(`Error deleting queue item ${queueId}:`, error);
+      toast({ title: 'Error', description: 'Failed to delete this queue item.', variant: 'destructive' });
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const filteredSubscribers = useMemo(() => {
+    if (subscriberFilter === 'all') return subscriberList;
+    return subscriberList.filter((subscriber) => (subscriber.status ?? 'active') === subscriberFilter);
+  }, [subscriberList, subscriberFilter]);
+
+  const totalSubscribers = subscriberList.length;
+  const activeCount = subscriberList.filter((subscriber) => (subscriber.status ?? 'active') === 'active').length;
+  const inactiveCount = subscriberList.filter((subscriber) => subscriber.status === 'inactive').length;
+  const unsubscribedCount = subscriberList.filter((subscriber) => subscriber.status === 'unsubscribed').length;
+
+  const openPreview = async (request: PreviewRequest) => {
+    try {
+      setPreviewTitle('Email Preview');
       setPreviewLoading(true);
+      setPreviewContent('');
+      const siteUrl = window.location.origin;
+      const resolveTable = (contentType: 'blog_post' | 'project') =>
+        contentType === 'blog_post' ? 'posts' : 'projects';
 
-      if (contentType === 'blog_post') {
-        const { data: post, error } = await supabase
-          .from('posts')
+      let contentRow: BlogPostRow | ProjectRow | null = null;
+      let contentType: 'blog_post' | 'project';
+
+      if (request.mode === 'queue') {
+        contentType = request.queueItem.content_type;
+        const table = resolveTable(contentType);
+        const { data, error } = await supabase
+          .from(table)
           .select('*')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+          .eq('id', request.queueItem.content_id)
+          .single();
 
-        if (error || !post) {
+        if (error || !data) {
           toast({
             title: 'Error',
-            description: 'No blog posts found for preview',
+            description: 'Unable to load content for this queue item.',
             variant: 'destructive',
           });
           return;
         }
 
+        contentRow = data as BlogPostRow | ProjectRow;
+        setPreviewTitle(
+          `${contentType === 'blog_post' ? 'Blog Post' : 'Project'} • ${contentRow.title}`
+        );
+      } else {
+        contentType = request.contentType;
+        const table = resolveTable(contentType);
+        const { data, error } = await supabase
+          .from(table)
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (error || !data) {
+          toast({
+            title: 'Error',
+            description: `No recent ${contentType === 'blog_post' ? 'blog posts' : 'projects'} found.`,
+            variant: 'destructive',
+          });
+          return;
+        }
+
+        contentRow = data as BlogPostRow | ProjectRow;
+        setPreviewTitle(
+          `Latest ${contentType === 'blog_post' ? 'Blog Post' : 'Project'} • ${contentRow.title}`
+        );
+      }
+
+      if (contentType === 'blog_post') {
+        const blogContent = contentRow as BlogPostRow;
         const previewData: BlogPreviewPayload = {
           subscriberEmail: 'preview@example.com',
           unsubscribeToken: 'preview-token',
-          siteUrl: window.location.origin,
-          post,
+          siteUrl,
+          post: blogContent,
         };
-
         setPreviewContent(generateBlogPreview(previewData));
       } else {
-        const { data: project, error } = await supabase
-          .from('projects')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (error || !project) {
-          toast({
-            title: 'Error',
-            description: 'No projects found for preview',
-            variant: 'destructive',
-          });
-          return;
-        }
-
+        const projectContent = contentRow as ProjectRow;
         const previewData: ProjectPreviewPayload = {
           subscriberEmail: 'preview@example.com',
           unsubscribeToken: 'preview-token',
-          siteUrl: window.location.origin,
-          project,
+          siteUrl,
+          project: projectContent,
         };
-
         setPreviewContent(generateProjectPreview(previewData));
       }
     } catch (error) {
@@ -258,6 +441,30 @@ const EmailDashboard = () => {
     } finally {
       setPreviewLoading(false);
     }
+  };
+
+  const renderPreviewBody = () => {
+    if (previewLoading) {
+      return (
+        <div className="flex items-center justify-center py-16 text-white/60">
+          Generating preview…
+        </div>
+      );
+    }
+
+    if (!previewContent) {
+      return (
+        <div className="flex items-center justify-center py-12 text-white/40">
+          Preview will appear here when generated.
+        </div>
+      );
+    }
+
+    return (
+      <div className="border border-white/10 rounded-lg p-4 bg-black">
+        <div dangerouslySetInnerHTML={{ __html: previewContent }} />
+      </div>
+    );
   };
 
   const generateBlogPreview = (data: BlogPreviewPayload) => {
@@ -344,16 +551,31 @@ const EmailDashboard = () => {
       sent: 'default',
       failed: 'destructive'
     } as const;
-    const variant = variants[status] ?? 'secondary';
     return (
-      <Badge variant={variant}>
+      <Badge variant={variants[status] ?? 'secondary'}>
         {status}
       </Badge>
     );
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString();
+  const getSubscriberBadge = (status: SubscriberSummary['status'] | null | undefined) => {
+    const value = status ?? 'active';
+    const label = value.charAt(0).toUpperCase() + value.slice(1);
+    const baseClasses = 'border border-white/15 px-2.5 py-1 text-xs font-medium rounded-full';
+    const styleMap: Record<string, string> = {
+      active: 'bg-emerald-500/10 text-emerald-200 border-emerald-400/40',
+      inactive: 'bg-amber-500/10 text-amber-200 border-amber-300/40',
+      unsubscribed: 'bg-red-500/10 text-red-200 border-red-400/40',
+    };
+    const classes = `${baseClasses} ${styleMap[value] ?? 'bg-white/10 text-white/70'}`;
+    return <span className={classes}>{label}</span>;
+  };
+
+  const formatDate = (dateString?: string | null) => {
+    if (!dateString) return '—';
+    const parsed = new Date(dateString);
+    if (Number.isNaN(parsed.getTime())) return '—';
+    return parsed.toLocaleString();
   };
 
   if (user === null || loading) {
@@ -374,14 +596,23 @@ const EmailDashboard = () => {
           </Link>
         </div>
 
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
           <h1 className="text-4xl font-bold">Email Management</h1>
-          <div className="flex gap-4">
-            <Button onClick={loadEmailData} variant="outline" disabled={loading} className="bg-white text-black border-white hover:bg-white/90">
+          <div className="flex gap-3">
+            <Button
+              onClick={loadEmailData}
+              variant="outline"
+              disabled={loading}
+              className={TOOLBAR_BUTTON_CLASS}
+            >
               <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-            <Button onClick={processEmailQueue} disabled={processing}>
+            <Button
+              onClick={() => processEmailQueue()}
+              disabled={processing}
+              className={PRIMARY_ACTION_BUTTON_CLASS}
+            >
               <Send className={`w-4 h-4 mr-2 ${processing ? 'animate-pulse' : ''}`} />
               {processing ? 'Processing...' : 'Process Queue'}
             </Button>
@@ -390,72 +621,72 @@ const EmailDashboard = () => {
 
         {emailStats && (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-            <Card className="bg-white/5 border-white/10">
-              <CardContent className="p-4">
+            <Card className="border border-white/10 bg-white/[0.06] rounded-2xl shadow-sm">
+              <CardContent className="p-5">
                 <div className="flex items-center">
                   <Users className="w-4 h-4 text-white mr-2" />
                   <div>
-                    <p className="text-sm text-white/60">Total Subscribers</p>
+                    <p className="text-xs font-medium uppercase tracking-widest text-white/60">Total Subscribers</p>
                     <p className="text-2xl font-bold text-white">{emailStats.totalSubscribers}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white/5 border-white/10">
-              <CardContent className="p-4">
+            <Card className="border border-white/10 bg-white/[0.06] rounded-2xl shadow-sm">
+              <CardContent className="p-5">
                 <div className="flex items-center">
                   <Users className="w-4 h-4 text-green-400 mr-2" />
                   <div>
-                    <p className="text-sm text-white/60">Active</p>
+                    <p className="text-xs font-medium uppercase tracking-widest text-white/60">Active</p>
                     <p className="text-2xl font-bold text-white">{emailStats.activeSubscribers}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 border-white/10">
-              <CardContent className="p-4">
+            <Card className="border border-white/10 bg-white/[0.06] rounded-2xl shadow-sm">
+              <CardContent className="p-5">
                 <div className="flex items-center">
                   <Mail className="w-4 h-4 text-purple-400 mr-2" />
                   <div>
-                    <p className="text-sm text-white/60">Emails Sent</p>
+                    <p className="text-xs uppercase tracking-widest text-white/60">Emails Sent</p>
                     <p className="text-2xl font-bold text-white">{emailStats.totalEmailsSent}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 border-white/10">
-              <CardContent className="p-4">
+            <Card className="border border-white/10 bg-white/[0.06] rounded-2xl shadow-sm">
+              <CardContent className="p-5">
                 <div className="flex items-center">
                   <TrendingUp className="w-4 h-4 text-yellow-400 mr-2" />
                   <div>
-                    <p className="text-sm text-white/60">Delivery Rate</p>
+                    <p className="text-xs uppercase tracking-widest text-white/60">Delivery Rate</p>
                     <p className="text-2xl font-bold text-white">{emailStats.deliveryRate.toFixed(1)}%</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 border-white/10">
-              <CardContent className="p-4">
+            <Card className="border border-white/10 bg-white/[0.06] rounded-2xl shadow-sm">
+              <CardContent className="p-5">
                 <div className="flex items-center">
                   <Eye className="w-4 h-4 text-orange-400 mr-2" />
                   <div>
-                    <p className="text-sm text-white/60">Open Rate</p>
+                    <p className="text-xs uppercase tracking-widest text-white/60">Open Rate</p>
                     <p className="text-2xl font-bold text-white">{emailStats.openRate.toFixed(1)}%</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 border-white/10">
-              <CardContent className="p-4">
+            <Card className="border border-white/10 bg-white/[0.06] rounded-2xl shadow-sm">
+              <CardContent className="p-5">
                 <div className="flex items-center">
                   <TrendingUp className="w-4 h-4 text-red-400 mr-2" />
                   <div>
-                    <p className="text-sm text-white/60">Click Rate</p>
+                    <p className="text-xs uppercase tracking-widest text-white/60">Click Rate</p>
                     <p className="text-2xl font-bold text-white">{emailStats.clickRate.toFixed(1)}%</p>
                   </div>
                 </div>
@@ -465,74 +696,300 @@ const EmailDashboard = () => {
         )}
 
         <Tabs defaultValue="queue" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-white/5">
-            <TabsTrigger value="queue">Email Queue</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 rounded-2xl border border-white/10 bg-white/[0.05] p-1">
+            <TabsTrigger
+              value="queue"
+              className="rounded-xl px-4 py-2 text-sm font-semibold text-white/70 transition data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm"
+            >
+              Email Queue
+            </TabsTrigger>
+            <TabsTrigger
+              value="subscribers"
+              className="rounded-xl px-4 py-2 text-sm font-semibold text-white/70 transition data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm"
+            >
+              Subscribers
+            </TabsTrigger>
+            <TabsTrigger
+              value="settings"
+              className="rounded-xl px-4 py-2 text-sm font-semibold text-white/70 transition data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm"
+            >
+              Settings
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="queue" className="space-y-4">
-            <Card className="bg-white/5 border-white/10">
-              <CardHeader>
-                <CardTitle className="text-white">Email Queue</CardTitle>
-                <CardDescription className="text-white/60">
+            <Card className={SECTION_CARD_CLASS}>
+              <CardHeader className={`${SECTION_HEADER_CLASS} space-y-1`}>
+                <CardTitle className={SECTION_TITLE_CLASS}>Email Queue</CardTitle>
+                <CardDescription className={SECTION_DESCRIPTION_CLASS}>
                   Manage pending and processed email notifications
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className={`${SECTION_CONTENT_CLASS} pt-4`}>
                 {emailQueue.length === 0 ? (
                   <p className="text-white/60 text-center py-8">No email queue items found</p>
                 ) : (
                   <div className="space-y-4">
-                    {emailQueue.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="outline" className="text-white border-white/20">
-                              {item.content_type.replace('_', ' ')}
-                            </Badge>
-                            {getStatusBadge(item.status)}
-                            {item.retry_count > 0 && (
-                              <Badge variant="secondary">
-                                Retry {item.retry_count}
-                              </Badge>
-                            )}
+                    {emailQueue.map((item) => {
+                      const metric =
+                        queueMetrics[item.id] ?? {
+                          sent: 0,
+                          delivered: 0,
+                          opened: 0,
+                          clicked: 0,
+                          bounced: 0,
+                          uniqueRecipients: 0,
+                        };
+                      const canSend = item.status === 'pending' || item.status === 'failed';
+                      const buttonLabel = item.status === 'failed' ? 'Retry' : 'Send Now';
+                      const targetRecipients =
+                        canSend ? activeCount : (metric.uniqueRecipients || metric.sent || metric.delivered || 0);
+                      const contentLabel = item.content_type === 'blog_post' ? 'Blog Post' : 'Project';
+
+                      return (
+                        <div
+                          key={item.id}
+                          className="rounded-2xl border border-white/10 bg-white/[0.06] p-6"
+                        >
+                          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                            <div className="space-y-3">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <Badge variant="outline" className="text-white border-white/20">
+                                  {contentLabel}
+                                </Badge>
+                                {getStatusBadge(item.status)}
+                                {item.retry_count > 0 && (
+                                  <span className="rounded-full border border-amber-400/40 bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-100">
+                                    Retry {item.retry_count}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-sm leading-relaxed text-white/70 space-y-1">
+                                <div>Queued: {formatDate(item.created_at)}</div>
+                                {item.sent_at && <div>Sent: {formatDate(item.sent_at)}</div>}
+                                {item.error_message && (
+                                  <div className="text-red-400">Error: {item.error_message}</div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2 md:justify-end">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={PREVIEW_BUTTON_CLASS}
+                                    onClick={() => openPreview({ mode: 'queue', queueItem: item })}
+                                  >
+                                    <Eye className="w-4 h-4 mr-2" />
+                                    Preview
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-slate-900 text-white border border-white/10">
+                                  <DialogHeader>
+                                    <DialogTitle>{previewTitle || 'Email Preview'}</DialogTitle>
+                                    <DialogDescription className="text-white/60">
+                                      Preview of the message generated for this queue item.
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  {renderPreviewBody()}
+                                </DialogContent>
+                              </Dialog>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className={`border-emerald-500/40 bg-emerald-500/10 text-emerald-100 hover:bg-emerald-500/20 ${
+                                  !canSend ? 'opacity-50 cursor-not-allowed hover:bg-transparent' : ''
+                                }`}
+                                disabled={processing || !canSend}
+                                title={
+                                  canSend
+                                    ? 'Send this email now'
+                                    : 'Only pending or failed items can be resent'
+                                }
+                                onClick={() => processSpecificQueueItem(item.id)}
+                              >
+                                <Send className={`w-4 h-4 mr-2 ${processing ? 'animate-pulse' : ''}`} />
+                                {canSend
+                                  ? buttonLabel
+                                  : item.status === 'sent'
+                                  ? 'Processed'
+                                  : item.status === 'processing'
+                                  ? 'Processing'
+                                  : 'Queued'}
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="border-red-500/40 bg-red-500/10 text-red-200 hover:bg-red-500/20"
+                                disabled={processing}
+                                title="Remove this queue item"
+                                onClick={() => deleteQueueItem(item.id)}
+                              >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Delete
+                              </Button>
+                            </div>
                           </div>
-                          <p className="text-sm text-white/80">
-                            Scheduled: {formatDate(item.scheduled_at)}
-                          </p>
-                          {item.sent_at && (
-                            <p className="text-sm text-white/60">
-                              Sent: {formatDate(item.sent_at)}
-                            </p>
-                          )}
-                          {item.error_message && (
-                            <p className="text-sm text-red-400 mt-1">
-                              Error: {item.error_message}
-                            </p>
-                          )}
+
+                          <div className="mt-4 grid grid-cols-2 md:grid-cols-6 gap-3 text-xs uppercase tracking-wide text-white/60">
+                            <div>
+                              <p className="text-[11px] uppercase tracking-widest text-white/40">Recipients</p>
+                              <p className="text-base font-semibold text-white">{targetRecipients}</p>
+                            </div>
+                            <div>
+                              <p className="text-[11px] uppercase tracking-widest text-white/40">Sent</p>
+                              <p className="text-base font-semibold text-white">{metric.sent}</p>
+                            </div>
+                            <div>
+                              <p className="text-[11px] uppercase tracking-widest text-white/40">Delivered</p>
+                              <p className="text-base font-semibold text-white">{metric.delivered}</p>
+                            </div>
+                            <div>
+                              <p className="text-[11px] uppercase tracking-widest text-white/40">Opened</p>
+                              <p className="text-base font-semibold text-white">{metric.opened}</p>
+                            </div>
+                            <div>
+                              <p className="text-[11px] uppercase tracking-widest text-white/40">Clicked</p>
+                              <p className="text-base font-semibold text-white">{metric.clicked}</p>
+                            </div>
+                            <div>
+                              <p className="text-[11px] uppercase tracking-widest text-white/40">Bounced</p>
+                              <p className="text-base font-semibold text-white">{metric.bounced}</p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
 
+          <TabsContent value="subscribers" className="space-y-4">
+            <Card className={SECTION_CARD_CLASS}>
+              <CardHeader className={`${SECTION_HEADER_CLASS} space-y-1`}>
+                <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+                  <div>
+                    <CardTitle className={SECTION_TITLE_CLASS}>Subscribers</CardTitle>
+                    <CardDescription className={SECTION_DESCRIPTION_CLASS}>
+                      Monitor list health and engagement performance
+                    </CardDescription>
+                  </div>
+                  <div className="flex flex-wrap gap-3 text-xs font-medium text-white/60">
+                    <span>Total: {totalSubscribers}</span>
+                    <span>Active: {activeCount}</span>
+                    <span>Inactive: {inactiveCount}</span>
+                    <span>Unsubscribed: {unsubscribedCount}</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className={`${SECTION_CONTENT_CLASS} pt-4`}>
+                <div className="flex flex-wrap gap-2">
+                  {(['all', 'active', 'inactive', 'unsubscribed'] as const).map((filter) => {
+                    const isActive = subscriberFilter === filter;
+                    const label = filter === 'all' ? 'All' : filter.charAt(0).toUpperCase() + filter.slice(1);
+                    return (
+                      <Button
+                        key={filter}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSubscriberFilter(filter)}
+                        className={`border-white/20 transition-colors ${isActive ? FILTER_BUTTON_ACTIVE_CLASS : FILTER_BUTTON_INACTIVE_CLASS}`}
+                      >
+                        {label}
+                      </Button>
+                    );
+                  })}
+                </div>
+
+                <div className="overflow-x-auto rounded-xl border border-white/10 bg-black/40">
+                  <table className="min-w-full divide-y divide-white/10">
+                    <thead className="bg-white/5">
+                      <tr className={METRIC_LABEL_CLASS}>
+                        <th className="px-4 py-3 text-left font-medium">Subscriber</th>
+                        <th className="px-4 py-3 text-left font-medium">Status</th>
+                        <th className="px-4 py-3 text-left font-medium">Sent</th>
+                        <th className="px-4 py-3 text-left font-medium">Delivered</th>
+                        <th className="px-4 py-3 text-left font-medium">Opened</th>
+                        <th className="px-4 py-3 text-left font-medium">Clicked</th>
+                        <th className="px-4 py-3 text-left font-medium">Bounced</th>
+                        <th className="px-4 py-3 text-left font-medium">Last Activity</th>
+                        <th className="px-4 py-3 text-left font-medium">Subscribed</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/10">
+                      {filteredSubscribers.length === 0 ? (
+                        <tr>
+                          <td colSpan={9} className="px-4 py-8 text-center text-white/50">
+                            No subscribers match the selected filter.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredSubscribers.map((subscriber) => {
+                          const metrics = subscriberMetrics[subscriber.email] ?? {
+                            sent: 0,
+                            delivered: 0,
+                            opened: 0,
+                            clicked: 0,
+                            bounced: 0,
+                            lastEvent: undefined,
+                          };
+                          const status = subscriber.status ?? 'active';
+                          return (
+                            <tr key={subscriber.email} className="text-sm text-white/80">
+                              <td className="px-4 py-3">
+                                <div className="flex flex-col">
+                                  <span className="text-base font-semibold text-white">{subscriber.email}</span>
+                                  <span className="text-xs text-white/50">
+                                    Last updated: {formatDate(subscriber.updated_at)}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">{getSubscriberBadge(status)}</td>
+                              <td className="px-4 py-3">{metrics.sent}</td>
+                              <td className="px-4 py-3">{metrics.delivered}</td>
+                              <td className="px-4 py-3">{metrics.opened}</td>
+                              <td className="px-4 py-3">{metrics.clicked}</td>
+                              <td className="px-4 py-3">{metrics.bounced}</td>
+                              <td className="px-4 py-3">{formatDate(metrics.lastEvent)}</td>
+                              <td className="px-4 py-3">{formatDate(subscriber.created_at)}</td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="settings" className="space-y-4">
-            <Card className="bg-white/5 border-white/10">
-              <CardHeader>
-                <CardTitle className="text-white">Email Settings</CardTitle>
-                <CardDescription className="text-white/60">
+            <Card className={SECTION_CARD_CLASS}>
+              <CardHeader className={`${SECTION_HEADER_CLASS} space-y-1`}>
+                <CardTitle className={SECTION_TITLE_CLASS}>Email Settings</CardTitle>
+                <CardDescription className={SECTION_DESCRIPTION_CLASS}>
                   Configure email notification preferences and preview templates
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
+              <CardContent className={`${SECTION_CONTENT_CLASS} pt-4`}>
+                <div className="flex flex-col gap-6">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
-                      <h3 className="font-medium">Auto-send Blog Post Emails</h3>
-                      <p className="text-sm text-white/60">Automatically send emails when new blog posts are published</p>
+                      <h3 className="text-base font-semibold text-white">Auto-send Blog Post Emails</h3>
+                      <p className="text-sm text-white/60 mt-1">Automatically send emails when new blog posts are published</p>
+                      <div className="mt-3 flex items-center gap-2">
+                        <Switch
+                          checked={blogAutoSend}
+                          onCheckedChange={setBlogAutoSend}
+                          aria-label="Toggle blog auto-send"
+                        />
+                        <span className="text-xs font-medium text-white/60">
+                          {blogAutoSend ? 'Enabled' : 'Disabled'}
+                        </span>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Dialog>
@@ -540,80 +997,69 @@ const EmailDashboard = () => {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => previewEmail('blog_post')}
+                            onClick={() => openPreview({ mode: 'latest', contentType: 'blog_post' })}
                             disabled={previewLoading}
+                            className={PREVIEW_BUTTON_CLASS}
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             Preview
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white">
+                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-slate-900 text-white border border-white/10">
                           <DialogHeader>
-                            <DialogTitle className="text-white">Blog Post Email Preview</DialogTitle>
-                            <DialogDescription className="text-gray-600">
+                            <DialogTitle>{previewTitle || 'Email Preview'}</DialogTitle>
+                            <DialogDescription className="text-white/60">
                               Preview of how blog post notification emails will appear to subscribers
                             </DialogDescription>
                           </DialogHeader>
-                          <div 
-                            className="border rounded-lg p-4 bg-gray-50"
-                            dangerouslySetInnerHTML={{ __html: previewContent }}
-                          />
+                          {renderPreviewBody()}
                         </DialogContent>
                       </Dialog>
-                      <Badge variant="default">Enabled</Badge>
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
-                      <h3 className="font-medium">Auto-send Project Emails</h3>
-                      <p className="text-sm text-white/60">Automatically send emails when new projects are published</p>
+                      <h3 className="text-base font-semibold text-white">Auto-send Project Emails</h3>
+                      <p className="text-sm text-white/60 mt-1">Automatically send emails when new projects are published</p>
+                      <div className="mt-3 flex items-center gap-2">
+                        <Switch
+                          checked={projectAutoSend}
+                          onCheckedChange={setProjectAutoSend}
+                          aria-label="Toggle project auto-send"
+                        />
+                        <span className="text-xs font-medium text-white/60">
+                          {projectAutoSend ? 'Enabled' : 'Disabled'}
+                        </span>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
-                            onClick={() => previewEmail('project')}
+                            onClick={() => openPreview({ mode: 'latest', contentType: 'project' })}
                             disabled={previewLoading}
+                            className={PREVIEW_BUTTON_CLASS}
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             Preview
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white">
+                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-slate-900 text-white border border-white/10">
                           <DialogHeader>
-                            <DialogTitle className="text-white">Project Email Preview</DialogTitle>
-                            <DialogDescription className="text-gray-600">
+                            <DialogTitle>{previewTitle || 'Email Preview'}</DialogTitle>
+                            <DialogDescription className="text-white/60">
                               Preview of how project notification emails will appear to subscribers
                             </DialogDescription>
                           </DialogHeader>
-                          <div 
-                            className="border rounded-lg p-4 bg-gray-50"
-                            dangerouslySetInnerHTML={{ __html: previewContent }}
-                          />
+                          {renderPreviewBody()}
                         </DialogContent>
                       </Dialog>
-                      <Badge variant="default">Enabled</Badge>
                     </div>
                   </div>
 
-                  <div className="border-t border-white/10 pt-4">
-                    <h3 className="font-medium mb-2">Manual Email Actions</h3>
-                    <p className="text-sm text-white/60 mb-4">Send test emails or manually trigger newsletter sends</p>
-                    <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={processEmailQueue}
-                        disabled={processing}
-                      >
-                        <Send className={`w-4 h-4 mr-2 ${processing ? 'animate-pulse' : ''}`} />
-                        {processing ? 'Processing...' : 'Process Pending Emails'}
-                      </Button>
-                    </div>
-                  </div>
                 </div>
               </CardContent>
             </Card>
