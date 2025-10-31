@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type Star = {
   x: number;
@@ -11,10 +11,45 @@ type Star = {
 };
 
 const Stars = () => {
+  // Responsive star counts to prevent mobile lag
+  type Counts = { base: number; mid: number; glow: number };
+  const computeCounts = (): Counts => {
+    if (typeof window === 'undefined') return { base: 140, mid: 90, glow: 30 };
+    const w = window.innerWidth;
+    if (w <= 640) return { base: 70, mid: 45, glow: 14 }; // phones
+    if (w <= 1024) return { base: 110, mid: 70, glow: 24 }; // tablets
+    return { base: 140, mid: 90, glow: 30 }; // desktop
+  };
+
+  const [counts, setCounts] = useState<Counts>(computeCounts);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    let raf = 0;
+    const onResize = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const next = computeCounts();
+        if (
+          next.base !== counts.base ||
+          next.mid !== counts.mid ||
+          next.glow !== counts.glow
+        ) {
+          setCounts(next);
+        }
+      });
+    };
+    window.addEventListener('resize', onResize);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [counts.base, counts.mid, counts.glow]);
+
   // Layered starfield for depth
 
   const baseStars = useMemo<Star[]>(() =>
-    Array.from({ length: 140 }, () => ({
+    Array.from({ length: counts.base }, () => ({
       x: Math.random() * 100,
       y: Math.random() * 100,
       size: Math.random() * 1.2 + 0.4,
@@ -23,10 +58,10 @@ const Stars = () => {
       opacity: Math.random() * 0.5 + 0.3,
       blur: Math.random() * 0.6,
     })),
-  []);
+  [counts.base]);
 
   const midStars = useMemo<Star[]>(() =>
-    Array.from({ length: 90 }, () => ({
+    Array.from({ length: counts.mid }, () => ({
       x: Math.random() * 100,
       y: Math.random() * 100,
       size: Math.random() * 1.8 + 0.8,
@@ -35,10 +70,10 @@ const Stars = () => {
       opacity: Math.random() * 0.5 + 0.35,
       blur: Math.random() * 0.8 + 0.2,
     })),
-  []);
+  [counts.mid]);
 
   const glowStars = useMemo<Star[]>(() =>
-    Array.from({ length: 30 }, () => ({
+    Array.from({ length: counts.glow }, () => ({
       x: Math.random() * 100,
       y: Math.random() * 100,
       size: Math.random() * 2.4 + 1.2,
@@ -47,7 +82,7 @@ const Stars = () => {
       opacity: Math.random() * 0.4 + 0.4,
       blur: Math.random() * 1.2 + 0.4,
     })),
-  []);
+  [counts.glow]);
 
   // Shooting stars removed per request
 
