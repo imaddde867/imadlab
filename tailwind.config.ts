@@ -147,6 +147,10 @@ export default {
 				'spin-slow': {
 					from: { transform: 'rotate(0deg)' },
 					to: { transform: 'rotate(360deg)' }
+				},
+				'spin-slow-reverse': {
+					from: { transform: 'rotate(0deg)' },
+					to: { transform: 'rotate(-360deg)' }
 				}
 			},
 			animation: {
@@ -155,7 +159,8 @@ export default {
 				'fade-in': 'fade-in 1s ease-out forwards',
 				'subtle-flicker': 'subtle-flicker 3s infinite alternate',
 				'dot-move': 'dot-move 10s infinite alternate ease-in-out',
-				'spin-slow': 'spin 8s linear infinite'
+				'spin-slow': 'spin 20s linear infinite',
+				'spin-slow-reverse': 'spin-slow-reverse 25s linear infinite'
 			}
 		}
 	},
