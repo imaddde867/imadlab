@@ -1,6 +1,57 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import LoadingSpinner from './LoadingSpinner';
+
+// Inline spinner component
+const Spinner: React.FC<{
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'dots' | 'pulse' | 'orbit' | 'wave';
+  text?: string;
+}> = ({ size = 'md', variant = 'default', text }) => {
+  const sizeClasses = {
+    sm: 'w-8 h-8',
+    md: 'w-12 h-12',
+    lg: 'w-16 h-16'
+  };
+
+  const renderSpinner = () => {
+    switch (variant) {
+      case 'orbit':
+        return (
+          <div className={cn('relative', sizeClasses[size])}>
+            <div className="absolute inset-0 border-4 border-white/20 rounded-full" />
+            <div className="absolute inset-0 border-4 border-transparent border-t-white rounded-full animate-spin" />
+          </div>
+        );
+      case 'dots':
+        return (
+          <div className="flex gap-2">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="w-3 h-3 bg-white rounded-full animate-bounce"
+                style={{ animationDelay: `${i * 0.15}s` }}
+              />
+            ))}
+          </div>
+        );
+      case 'pulse':
+        return (
+          <div className={cn(sizeClasses[size], 'bg-white rounded-full animate-pulse')} />
+        );
+      default:
+        return (
+          <div className={cn(sizeClasses[size], 'border-4 border-white/20 border-t-white rounded-full animate-spin')} />
+        );
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      {renderSpinner()}
+      {text && <p className="text-white/80 text-sm font-medium">{text}</p>}
+    </div>
+  );
+};
 
 // Card skeleton loader
 export const CardSkeleton: React.FC<{ className?: string }> = ({ className }) => (
@@ -44,7 +95,7 @@ export const PageLoader: React.FC<{
 }> = ({ text = 'Loading...', variant = 'orbit' }) => (
   <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
     <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 shadow-2xl">
-      <LoadingSpinner size="lg" variant={variant} text={text} />
+      <Spinner size="lg" variant={variant} text={text} />
     </div>
   </div>
 );
@@ -56,7 +107,7 @@ export const ContentLoader: React.FC<{
   className?: string;
 }> = ({ text = 'Loading content...', variant = 'pulse', className }) => (
   <div className={cn('flex items-center justify-center py-16', className)}>
-    <LoadingSpinner size="md" variant={variant} text={text} />
+    <Spinner size="md" variant={variant} text={text} />
   </div>
 );
 
@@ -90,7 +141,7 @@ export const FormLoader: React.FC<{
 
   return (
     <div className="flex items-center gap-2 text-blue-400">
-      <LoadingSpinner size="sm" variant="default" />
+      <Spinner size="sm" variant="default" />
       <span className="text-sm font-medium">{text}</span>
     </div>
   );
@@ -195,5 +246,3 @@ export const ButtonLoader: React.FC<{
     </div>
   );
 };
-
-export default LoadingSpinner;

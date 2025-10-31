@@ -52,9 +52,21 @@ coverage/
 .Trashes
 Thumbs.db
 
+# TypeScript
+*.tsbuildinfo
+
+# Bun specific
+.bun/
+bun.lockb.bak
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
 # Supabase specific files
 supabase/config.toml
 supabase/db/
-supabase/migrations/
-!supabase/migrations/.gitkeep
 supabase/.temp/
+.supabase/
