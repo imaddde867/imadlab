@@ -8,7 +8,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import Seo from '@/components/Seo';
-import { MarkdownComponents, calculateReadingTime } from '@/components/MarkdownComponents';
+import { MarkdownComponents } from '@/components/MarkdownComponents';
+import { calculateReadingTime } from '@/lib/markdown-utils';
 import { PageLoader } from '@/components/ui/LoadingStates';
 import TagList from '@/components/TagList';
 

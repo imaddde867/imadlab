@@ -1,32 +1,5 @@
-// Enhanced Markdown renderers with improved typography and syntax highlighting
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Check, Copy, ExternalLink, Quote } from 'lucide-react';
-
-// Reading progress hook
-export const useReadingProgress = () => {
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const updateProgress = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (scrollTop / docHeight) * 100;
-      setProgress(Math.min(100, Math.max(0, progress)));
-    };
-
-    window.addEventListener('scroll', updateProgress);
-    return () => window.removeEventListener('scroll', updateProgress);
-  }, []);
-
-  return progress;
-};
-
-// Enhanced reading time calculator
-export const calculateReadingTime = (text: string): number => {
-  const wordsPerMinute = 200;
-  const words = text.trim().split(/\s+/).length;
-  return Math.ceil(words / wordsPerMinute);
-};
 
 type MarkdownImageProps = { node?: unknown } & React.ImgHTMLAttributes<HTMLImageElement>;
 
@@ -69,7 +42,7 @@ type MarkdownCodeProps = {
   inline?: boolean;
   className?: string;
   children?: React.ReactNode;
-};
+} & React.HTMLAttributes<HTMLElement>;
 
 const MarkdownCode: React.FC<MarkdownCodeProps> = ({ inline = false, className, children, ...props }) => {
   const [copied, setCopied] = useState(false);
