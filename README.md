@@ -105,5 +105,4 @@ imadlab demonstrates:
 <p align="center">
   <a href="https://imadlab.me#contact">Contact</a> ·
   <a href="https://www.linkedin.com/in/imad-eddine-elmouss/">LinkedIn</a> ·
-  <a href="https://x.com/Imaddd867">X (Twitter)</a>
 </p>
