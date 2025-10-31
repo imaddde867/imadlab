@@ -10,6 +10,7 @@ import rehypeRaw from 'rehype-raw';
 import Seo from '@/components/Seo';
 import { MarkdownComponents } from '@/components/MarkdownComponents';
 import { PageLoader } from '@/components/ui/LoadingStates';
+import BackRow from '@/components/BackRow';
 import { stripMarkdown } from '@/lib/markdown-utils';
 
 interface Project {
@@ -112,27 +113,23 @@ const ProjectDetail = () => {
         additionalSchemas={projectSchemas}
       />
 
-      {/* Back row under global header */}
-      <div className="container-narrow pt-6">
-        <div className="flex items-center justify-between text-sm text-white/70">
-          <Link to="/projects" className="inline-flex items-center hover:text-white transition-colors group">
-            <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
-            Back to Projects
-          </Link>
-          {project.repo_url && (
-            <a
-              href={project.repo_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md text-white/90 hover:text-white transition-all duration-200 text-sm"
-            >
-              <Code className="w-4 h-4" />
-              View Code
-              <ExternalLink className="w-3 h-3" />
-            </a>
-          )}
-        </div>
-      </div>
+      <BackRow
+        to="/projects"
+        label="Back to Projects"
+        icon={<ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />}
+        right={project.repo_url ? (
+          <a
+            href={project.repo_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md text-white/90 hover:text-white transition-all duration-200 text-sm"
+          >
+            <Code className="w-4 h-4" />
+            View Code
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        ) : undefined}
+      />
 
       {/* Hero Section - Simplified */}
       <header className="relative pt-8 md:pt-12 pb-10">
