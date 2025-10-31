@@ -1,28 +1,40 @@
 import { useState, useEffect, useRef } from "react";
-import { ExternalLink, Info } from "lucide-react";
+import { ExternalLink, Info, ChevronDown, ChevronUp } from "lucide-react";
 
 // Import tech logos
 import {
   SiPython,
-  SiJavascript,
+  SiTypescript,
   SiPostgresql,
-  SiMongodb,
-  SiTensorflow,
   SiPytorch,
   SiScikitlearn,
   SiDocker,
   SiGit,
   SiApacheairflow,
   SiApachekafka,
+  SiApachespark,
   SiAmazon,
   SiFastapi,
-  SiFlask,
-  SiDeno,
-  SiSvelte,
+  SiNextdotjs,
   SiGithubactions,
+  SiPandas,
+  SiInfluxdb,
+  SiNodedotjs,
+  SiMlflow,
+  SiKeycloak,
+  SiGrafana,
+  SiApachepulsar,
+  SiMqtt,
+  SiTensorflow,
+  SiNumpy,
+  SiOpencv,
+  SiStreamlit,
+  SiLeaflet,
+  SiApacheparquet,
+  SiAmazons3,
 } from "react-icons/si";
-import { TbSql, TbDatabase, TbDatabaseImport, TbMath } from "react-icons/tb";
-import { HiOutlineGlobeAlt } from "react-icons/hi2";
+import { TbSql, TbMapPin, TbLock, TbContainer, TbDatabase } from "react-icons/tb";
+import { SiHuggingface } from "react-icons/si";
 
 interface TechItem {
   name: string;
@@ -33,6 +45,7 @@ interface TechItem {
 }
 
 const techStack: TechItem[] = [
+  // Languages
   {
     name: "Python",
     icon: <SiPython className="w-8 h-8 text-[#3776AB]" />,
@@ -40,13 +53,6 @@ const techStack: TechItem[] = [
     category: "Languages",
     description:
       "Versatile programming language for data science and backend development",
-  },
-  {
-    name: "JavaScript",
-    icon: <SiJavascript className="w-8 h-8 text-[#F7DF1E]" />,
-    url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
-    category: "Languages",
-    description: "Dynamic language for web development and modern applications",
   },
   {
     name: "SQL",
@@ -57,6 +63,14 @@ const techStack: TechItem[] = [
       "Standard language for managing and querying relational databases",
   },
   {
+    name: "TypeScript",
+    icon: <SiTypescript className="w-8 h-8 text-[#3178C6]" />,
+    url: "https://www.typescriptlang.org/",
+    category: "Languages",
+    description: "Typed superset of JavaScript for scalable applications",
+  },
+  // Data Engineering
+  {
     name: "Apache Airflow",
     icon: <SiApacheairflow className="w-8 h-8 text-[#017CEE]" />,
     url: "https://airflow.apache.org/",
@@ -65,63 +79,20 @@ const techStack: TechItem[] = [
       "Platform for developing, scheduling, and monitoring workflows",
   },
   {
-    name: "Kafka",
+    name: "Apache Spark",
+    icon: <SiApachespark className="w-8 h-8 text-[#E25A1C]" />,
+    url: "https://spark.apache.org/",
+    category: "Data Engineering",
+    description: "Unified analytics engine for large-scale data processing",
+  },
+  {
+    name: "Apache Kafka",
     icon: <SiApachekafka className="w-8 h-8 text-white" />,
     url: "https://kafka.apache.org/",
     category: "Data Engineering",
     description: "Distributed streaming platform for real-time data pipelines",
   },
-  {
-    name: "AWS",
-    icon: <SiAmazon className="w-8 h-8 text-[#FF9900]" />,
-    url: "https://aws.amazon.com/",
-    category: "Cloud",
-    description: "Comprehensive cloud computing platform and services",
-  },
-  {
-    name: "PostgreSQL",
-    icon: <SiPostgresql className="w-8 h-8 text-[#336791]" />,
-    url: "https://www.postgresql.org/",
-    category: "Databases",
-    description: "Advanced open-source relational database system",
-  },
-  {
-    name: "MongoDB",
-    icon: <SiMongodb className="w-8 h-8 text-[#47A248]" />,
-    url: "https://www.mongodb.com/",
-    category: "Databases",
-    description: "Document-oriented NoSQL database for modern applications",
-  },
-  {
-    name: "Data Lakes",
-    icon: <TbDatabaseImport className="w-8 h-8 text-[#2C8EBB]" />,
-    url: "https://en.wikipedia.org/wiki/Data_lake",
-    category: "Data Engineering",
-    description:
-      "Storage repository for structured and unstructured data at scale",
-  },
-  {
-    name: "Data Warehouses",
-    icon: <TbDatabase className="w-8 h-8 text-[#FF6C37]" />,
-    url: "https://en.wikipedia.org/wiki/Data_warehouse",
-    category: "Data Engineering",
-    description: "Central repository for integrated data from multiple sources",
-  },
-  {
-    name: "TensorFlow",
-    icon: <SiTensorflow className="w-8 h-8 text-[#FF6F00]" />,
-    url: "https://www.tensorflow.org/",
-    category: "AI/ML",
-    description: "Open-source machine learning framework by Google",
-  },
-  {
-    name: "Scikit-learn",
-    icon: <SiScikitlearn className="w-8 h-8 text-[#F7931E]" />,
-    url: "https://scikit-learn.org/",
-    category: "AI/ML",
-    description:
-      "Machine learning library for Python with simple and efficient tools",
-  },
+  // AI/ML
   {
     name: "PyTorch",
     icon: <SiPytorch className="w-8 h-8 text-[#EE4C2C]" />,
@@ -130,71 +101,236 @@ const techStack: TechItem[] = [
     description: "Deep learning framework with dynamic neural networks",
   },
   {
+    name: "scikit-learn",
+    icon: <SiScikitlearn className="w-8 h-8 text-[#F7931E]" />,
+    url: "https://scikit-learn.org/",
+    category: "AI/ML",
+    description:
+      "Machine learning library for Python with simple and efficient tools",
+  },
+  {
+    name: "Pandas",
+    icon: <SiPandas className="w-8 h-8 text-[#150458]" />,
+    url: "https://pandas.pydata.org/",
+    category: "AI/ML",
+    description: "Data manipulation and analysis library for Python",
+  },
+  {
+    name: "Hugging Face",
+    icon: <SiHuggingface className="w-8 h-8 text-[#FFD21E]" />,
+    url: "https://huggingface.co/",
+    category: "AI/ML",
+    description: "Platform for machine learning models and datasets",
+  },
+  {
+    name: "llama.cpp",
+    icon: <SiPython className="w-8 h-8 text-[#3776AB]" />,
+    url: "https://github.com/ggerganov/llama.cpp",
+    category: "AI/ML",
+    description: "Inference of LLaMA models in pure C/C++",
+  },
+  // Web & APIs
+  {
+    name: "FastAPI",
+    icon: <SiFastapi className="w-8 h-8 text-[#009688]" />,
+    url: "https://fastapi.tiangolo.com/",
+    category: "Web & APIs",
+    description: "Modern, fast web framework for building APIs with Python",
+  },
+  {
+    name: "Next.js",
+    icon: <SiNextdotjs className="w-8 h-8 text-white" />,
+    url: "https://nextjs.org/",
+    category: "Web & APIs",
+    description: "React framework for production-grade applications",
+  },
+  // Databases
+  {
+    name: "PostgreSQL",
+    icon: <SiPostgresql className="w-8 h-8 text-[#336791]" />,
+    url: "https://www.postgresql.org/",
+    category: "Databases",
+    description: "Advanced open-source relational database system",
+  },
+  {
+    name: "PostGIS",
+    icon: <TbMapPin className="w-8 h-8 text-[#336791]" />,
+    url: "https://postgis.net/",
+    category: "Databases",
+    description: "Spatial database extension for PostgreSQL",
+  },
+  {
+    name: "InfluxDB",
+    icon: <SiInfluxdb className="w-8 h-8 text-[#22ADF6]" />,
+    url: "https://www.influxdata.com/",
+    category: "Databases",
+    description: "Time series database for metrics and events",
+  },
+  {
+    name: "Grafana",
+    icon: <SiGrafana className="w-8 h-8 text-[#F46800]" />,
+    url: "https://grafana.com/",
+    category: "Databases",
+    description: "Analytics and monitoring platform for visualizing data",
+  },
+  // Cloud & Containers
+  {
+    name: "AWS",
+    icon: <SiAmazon className="w-8 h-8 text-[#FF9900]" />,
+    url: "https://aws.amazon.com/",
+    category: "Cloud & Containers",
+    description: "Comprehensive cloud computing platform and services",
+  },
+  {
     name: "Docker",
     icon: <SiDocker className="w-8 h-8 text-[#2496ED]" />,
     url: "https://www.docker.com/",
-    category: "DevOps",
+    category: "Cloud & Containers",
     description:
       "Platform for developing, shipping, and running applications in containers",
+  },
+  // MLOps
+  {
+    name: "MLflow",
+    icon: <SiMlflow className="w-8 h-8 text-[#0194E2]" />,
+    url: "https://mlflow.org/",
+    category: "MLOps",
+    description: "Platform for managing the ML lifecycle",
+  },
+  {
+    name: "GitHub Actions",
+    icon: <SiGithubactions className="w-8 h-8 text-[#2088FF]" />,
+    url: "https://github.com/features/actions",
+    category: "MLOps",
+    description:
+      "Automate workflows and CI/CD pipelines",
   },
   {
     name: "Git",
     icon: <SiGit className="w-8 h-8 text-[#F05032]" />,
     url: "https://git-scm.com/",
-    category: "DevOps",
+    category: "MLOps",
     description: "Distributed version control system for tracking code changes",
   },
+  // Security
   {
-    name: "CI/CD",
-    icon: <SiGithubactions className="w-8 h-8 text-[#2088FF]" />,
-    url: "https://en.wikipedia.org/wiki/CI/CD",
-    category: "DevOps",
-    description:
-      "Continuous integration and deployment practices for software delivery",
+    name: "Keycloak",
+    icon: <SiKeycloak className="w-8 h-8 text-[#008AAF]" />,
+    url: "https://www.keycloak.org/",
+    category: "Security",
+    description: "Open-source identity and access management solution",
   },
+  // Runtime
   {
-    name: "FastAPI",
-    icon: <SiFastapi className="w-8 h-8 text-[#009688]" />,
-    url: "https://fastapi.tiangolo.com/",
-    category: "Frameworks",
-    description: "Modern, fast web framework for building APIs with Python",
-  },
-  {
-    name: "Flask",
-    icon: <SiFlask className="w-8 h-8 text-white" />,
-    url: "https://flask.palletsprojects.com/",
-    category: "Frameworks",
-    description: "Lightweight WSGI web application framework for Python",
-  },
-  {
-    name: "MATLAB",
-    icon: <TbMath className="w-8 h-8 text-[#0076A8]" />,
-    url: "https://www.mathworks.com/products/matlab.html",
-    category: "Languages",
-    description:
-      "Programming platform for engineering and scientific computing",
-  },
-  {
-    name: "Deno",
-    icon: <SiDeno className="w-8 h-8 text-white" />,
-    url: "https://deno.com/",
+    name: "Node.js",
+    icon: <SiNodedotjs className="w-8 h-8 text-[#339933]" />,
+    url: "https://nodejs.org/",
     category: "Runtime",
-    description: "Secure runtime for JavaScript and TypeScript",
+    description: "JavaScript runtime built on Chrome's V8 engine",
+  },
+  // Additional Tools - Messaging & Streaming
+  {
+    name: "Apache Pulsar",
+    icon: <SiApachepulsar className="w-8 h-8 text-[#188FFF]" />,
+    url: "https://pulsar.apache.org/",
+    category: "Additional Tools",
+    description: "Distributed messaging and streaming platform",
   },
   {
-    name: "Hono",
-    icon: <HiOutlineGlobeAlt className="w-8 h-8 text-[#00E6DE]" />,
-    url: "https://hono.dev/",
-    category: "Frameworks",
-    description: "Ultrafast web framework for the edge",
+    name: "MQTT",
+    icon: <SiMqtt className="w-8 h-8 text-[#660066]" />,
+    url: "https://mqtt.org/",
+    category: "Additional Tools",
+    description: "Lightweight messaging protocol for IoT",
+  },
+  // Additional Tools - AI/ML Libraries
+  {
+    name: "TensorFlow",
+    icon: <SiTensorflow className="w-8 h-8 text-[#FF6F00]" />,
+    url: "https://www.tensorflow.org/",
+    category: "Additional Tools",
+    description: "Open-source machine learning framework by Google",
   },
   {
-    name: "Svelte",
-    icon: <SiSvelte className="w-8 h-8 text-[#FF3E00]" />,
-    url: "https://svelte.dev/",
-    category: "Frameworks",
-    description:
-      "Cybernetically enhanced web apps with compile-time optimizations",
+    name: "NumPy",
+    icon: <SiNumpy className="w-8 h-8 text-[#013243]" />,
+    url: "https://numpy.org/",
+    category: "Additional Tools",
+    description: "Fundamental package for scientific computing with Python",
+  },
+  {
+    name: "OpenCV",
+    icon: <SiOpencv className="w-8 h-8 text-[#5C3EE8]" />,
+    url: "https://opencv.org/",
+    category: "Additional Tools",
+    description: "Computer vision and machine learning software library",
+  },
+  // Additional Tools - Visualization & UI
+  {
+    name: "Streamlit",
+    icon: <SiStreamlit className="w-8 h-8 text-[#FF4B4B]" />,
+    url: "https://streamlit.io/",
+    category: "Additional Tools",
+    description: "Framework for building data apps in Python",
+  },
+  {
+    name: "Leaflet",
+    icon: <SiLeaflet className="w-8 h-8 text-[#199900]" />,
+    url: "https://leafletjs.com/",
+    category: "Additional Tools",
+    description: "JavaScript library for interactive maps",
+  },
+  // Additional Tools - Data Formats & Storage
+  {
+    name: "Parquet",
+    icon: <SiApacheparquet className="w-8 h-8 text-[#50ABF1]" />,
+    url: "https://parquet.apache.org/",
+    category: "Additional Tools",
+    description: "Columnar storage format for big data",
+  },
+  {
+    name: "Arrow",
+    icon: <TbDatabase className="w-8 h-8 text-[#E95420]" />,
+    url: "https://arrow.apache.org/",
+    category: "Additional Tools",
+    description: "Cross-language platform for in-memory data",
+  },
+  {
+    name: "S3 Storage",
+    icon: <SiAmazons3 className="w-8 h-8 text-[#569A31]" />,
+    url: "https://aws.amazon.com/s3/",
+    category: "Additional Tools",
+    description: "Object storage service for the cloud",
+  },
+  // Additional Tools - HPC & Containers
+  {
+    name: "Slurm",
+    icon: <TbContainer className="w-8 h-8 text-[#0078D7]" />,
+    url: "https://slurm.schedmd.com/",
+    category: "Additional Tools",
+    description: "Workload manager for HPC clusters",
+  },
+  {
+    name: "Apptainer",
+    icon: <TbContainer className="w-8 h-8 text-[#7C4DFF]" />,
+    url: "https://apptainer.org/",
+    category: "Additional Tools",
+    description: "Container platform for secure HPC environments",
+  },
+  // Additional Tools - Privacy & Security
+  {
+    name: "TenSEAL",
+    icon: <TbLock className="w-8 h-8 text-[#00ACC1]" />,
+    url: "https://github.com/OpenMined/TenSEAL",
+    category: "Additional Tools",
+    description: "Library for homomorphic encryption on tensors",
+  },
+  {
+    name: "Differential Privacy",
+    icon: <TbLock className="w-8 h-8 text-[#9C27B0]" />,
+    url: "https://en.wikipedia.org/wiki/Differential_privacy",
+    category: "Additional Tools",
+    description: "Privacy-preserving data analysis techniques",
   },
 ];
 
@@ -203,10 +339,11 @@ const categories = [
   "Languages",
   "Data Engineering",
   "AI/ML",
-  "Cloud",
+  "Web & APIs",
   "Databases",
-  "DevOps",
-  "Frameworks",
+  "Cloud & Containers",
+  "MLOps",
+  "Security",
   "Runtime",
 ];
 
@@ -217,9 +354,11 @@ const TechStack = () => {
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const tooltipRef = useRef<HTMLDivElement>(null);
 
+  const ADDITIONAL_CATEGORY = "Additional Tools";
+
   const filteredTechStack =
     selectedCategory === "All"
-      ? techStack
+      ? techStack.filter((tech) => tech.category !== ADDITIONAL_CATEGORY)
       : techStack.filter((tech) => tech.category === selectedCategory);
 
   useEffect(() => {
@@ -237,14 +376,49 @@ const TechStack = () => {
     });
   };
 
-  const handleMouseLeave = () => {
-    setHoveredTech(null);
+  const renderTechCard = (tech: TechItem, index: number) => {
+    const isVisible = visibleTechs.has(tech.name);
+
+    return (
+      <div
+        key={tech.name}
+        data-tech={tech.name}
+        className={`group relative transition-all duration-500 transform cursor-pointer ${
+          isVisible
+            ? "opacity-100 translate-y-0 scale-100"
+            : "opacity-0 translate-y-8 scale-95"
+        }`}
+        style={{ transitionDelay: `${index * 50}ms` }}
+        onMouseEnter={(e) => handleMouseEnter(tech, e)}
+        onMouseLeave={() => setHoveredTech(null)}
+      >
+        <a
+          href={tech.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full h-full"
+        >
+          <div className="relative p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:scale-105 hover:shadow-lg hover:shadow-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300 flex flex-col items-center justify-center aspect-square">
+            <div className="flex items-center justify-center h-10 mb-2 group-hover:scale-110 transition-transform duration-300">
+              {tech.icon}
+            </div>
+            <div className="text-xs font-medium text-white/80 group-hover:text-white transition-colors duration-300 text-center leading-tight px-1">
+              {tech.name}
+            </div>
+            <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-50 transition-all duration-300">
+              <ExternalLink className="w-2.5 h-2.5 text-white/40" />
+            </div>
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+          </div>
+        </a>
+      </div>
+    );
   };
 
   return (
     <section className="py-20 px-4 relative">
       <div className="max-w-7xl mx-auto">
-        {/* Enhanced header */}
+        {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
             Tech Stack
@@ -253,7 +427,7 @@ const TechStack = () => {
             Technologies and tools I use to build scalable data solutions and
             modern applications
           </p>
-          <div className="w-24 h-1 bg-gradient-to-r from-white/60 to-white/20 mx-auto"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-white/60 to-white/20 mx-auto" />
         </div>
 
         {/* Category filter */}
@@ -273,68 +447,44 @@ const TechStack = () => {
           ))}
         </div>
 
-        {/* Tech grid with SVG icons */}
+        {/* Tech grid */}
         <div className="flex justify-center">
           <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-3 md:gap-4 max-w-5xl">
-            {filteredTechStack.map((tech, index) => {
-              const isVisible = visibleTechs.has(tech.name);
-
-              return (
-                <div
-                  key={tech.name}
-                  data-tech={tech.name}
-                  className={`
-                    group relative transition-all duration-500 transform cursor-pointer
-                    ${
-                      isVisible
-                        ? "opacity-100 translate-y-0 scale-100"
-                        : "opacity-0 translate-y-8 scale-95"
-                    }
-                  `}
-                  style={{ transitionDelay: `${index * 50}ms` }}
-                  onMouseEnter={(e) => handleMouseEnter(tech, e)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <a
-                    href={tech.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full h-full"
-                  >
-                    <div
-                      className="
-                      relative p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10
-                      hover:scale-105 hover:shadow-lg hover:shadow-white/5 hover:bg-white/10 hover:border-white/20
-                      transition-all duration-300 flex flex-col items-center justify-center
-                      aspect-square
-                    "
-                    >
-                      {/* SVG Icon */}
-                      <div className="flex items-center justify-center h-10 mb-2 group-hover:scale-110 transition-transform duration-300">
-                        {tech.icon}
-                      </div>
-
-                      {/* Name text */}
-                      <div className="text-xs font-medium text-white/80 group-hover:text-white transition-colors duration-300 text-center leading-tight px-1">
-                        {tech.name}
-                      </div>
-
-                      {/* Subtle external link indicator */}
-                      <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-50 transition-all duration-300">
-                        <ExternalLink className="w-2.5 h-2.5 text-white/40" />
-                      </div>
-
-                      {/* Clean hover glow */}
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                    </div>
-                  </a>
-                </div>
-              );
-            })}
+            {filteredTechStack.map((tech, index) => renderTechCard(tech, index))}
           </div>
         </div>
 
-        {/* Enhanced tooltip */}
+        {/* Additional Tools Section - Show toggle when viewing "All" */}
+        {selectedCategory === "All" && (
+          <div className="mt-12 flex justify-center">
+            <button
+              onClick={() => setSelectedCategory(ADDITIONAL_CATEGORY)}
+              className="group flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300"
+            >
+              <span className="text-sm font-medium text-white/70 group-hover:text-white/90">
+                View Additional Tools
+              </span>
+              <ChevronDown className="w-4 h-4 text-white/70 group-hover:text-white/90" />
+            </button>
+          </div>
+        )}
+
+        {/* Close Additional Tools Section - Show when viewing Additional Tools */}
+        {selectedCategory === ADDITIONAL_CATEGORY && (
+          <div className="mt-12 flex justify-center">
+            <button
+              onClick={() => setSelectedCategory("All")}
+              className="group flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300"
+            >
+              <span className="text-sm font-medium text-white/70 group-hover:text-white/90">
+                Back to Core Stack
+              </span>
+              <ChevronUp className="w-4 h-4 text-white/70 group-hover:text-white/90" />
+            </button>
+          </div>
+        )}
+
+        {/* Tooltip */}
         {hoveredTech && (
           <div
             ref={tooltipRef}
@@ -359,8 +509,7 @@ const TechStack = () => {
                 Category:{" "}
                 {techStack.find((t) => t.name === hoveredTech)?.category}
               </div>
-              {/* Tooltip arrow */}
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/90"></div>
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/90" />
             </div>
           </div>
         )}
