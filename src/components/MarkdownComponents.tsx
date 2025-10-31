@@ -42,9 +42,9 @@ type MarkdownCodeProps = {
   inline?: boolean;
   className?: string;
   children?: React.ReactNode;
-} & React.HTMLAttributes<HTMLElement>;
+};
 
-const MarkdownCode: React.FC<MarkdownCodeProps> = ({ inline = false, className, children, ...props }) => {
+const MarkdownCode: React.FC<MarkdownCodeProps> = ({ inline = false, className, children, node: _node }) => {
   const [copied, setCopied] = useState(false);
   const codeString = String(children).replace(/\n$/, '');
   const language = className?.replace('language-', '') || '';
@@ -63,7 +63,6 @@ const MarkdownCode: React.FC<MarkdownCodeProps> = ({ inline = false, className, 
     return (
       <code
         className="bg-white/15 text-white/95 px-2 py-1 rounded-md text-sm font-mono border border-white/10"
-        {...props}
       >
         {children}
       </code>
@@ -86,7 +85,7 @@ const MarkdownCode: React.FC<MarkdownCodeProps> = ({ inline = false, className, 
           fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Inconsolata, "Roboto Mono", monospace'
         }}
       >
-        <code className="text-white/90" {...props}>
+        <code className="text-white/90">
           {children}
         </code>
       </pre>
@@ -115,7 +114,6 @@ const MarkdownCode: React.FC<MarkdownCodeProps> = ({ inline = false, className, 
           lineHeight: '1.6',
           fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Inconsolata, "Roboto Mono", monospace'
         }}
-        {...props}
       >
         <code className="block w-full overflow-x-auto p-5 text-white/90">
           {children}
