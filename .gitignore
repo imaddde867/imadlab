@@ -59,6 +59,10 @@ Thumbs.db
 .bun/
 bun.lockb.bak
 
+# Lock files (using bun.lockb)
+package-lock.json
+yarn.lock
+
 # Temporary files
 *.tmp
 *.temp
