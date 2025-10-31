@@ -1,10 +1,11 @@
 import Seo from '@/components/Seo';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Github, Linkedin, Mail } from 'lucide-react';
+import { ArrowLeft, Github, Linkedin, Mail, FileText } from 'lucide-react';
 import Stars from '@/components/Stars';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 
 const About = () => {
   return (
@@ -72,8 +73,25 @@ const About = () => {
                   </div>
                 </CardContent>
               </Card>
-              <p className="text-center text-white/60">Thanks for stopping by,</p>
-              <p className="text-center text-lg font-semibold">— Imad</p>
+              <div className="flex flex-col items-center space-y-4">
+                <p className="text-center text-white/60">Thanks for stopping by,</p>
+                <Button 
+                  asChild 
+                  variant="outline" 
+                  size="lg"
+                  className="bg-white/5 border-white/20 text-white hover:bg-white/10 hover:text-white hover:border-white/30 transition-all"
+                >
+                  <a 
+                    href="/Resume.pdf" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2"
+                  >
+                    <FileText className="w-4 h-4" />
+                    View Resume
+                  </a>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
