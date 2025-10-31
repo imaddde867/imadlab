@@ -1,3 +1,4 @@
+import { useMemo, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
@@ -6,6 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import Seo from '@/components/Seo';
 import { GridSkeleton } from '@/components/ui/LoadingStates';
 import NewsletterSignup from '@/components/NewsletterSignup';
+import { readPrerenderData } from '@/lib/prerender-data';
 
 interface Project {
   id: string;
@@ -19,7 +21,16 @@ interface Project {
 }
 
 const Projects = () => {
-  const { data: projects, isLoading } = useQuery({
+  const initialProjects = useMemo(() => readPrerenderData<Project[]>('projects'), []);
+  const initialUpdatedAt = useRef<number | undefined>(
+    initialProjects ? Date.now() : undefined
+  );
+
+  const {
+    data: projects = [],
+    isLoading,
+    isFetching,
+  } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -29,10 +40,15 @@ const Projects = () => {
       
       if (error) throw error;
       return data as Project[];
-    }
+    },
+    initialData: initialProjects,
+    initialDataUpdatedAt: initialUpdatedAt.current,
+    staleTime: 1000 * 60,
   });
 
-  const projectListSchema = projects && projects.length > 0 ? [
+  const isSkeletonVisible = isLoading && !projects.length && !isFetching;
+
+  const projectListSchema = projects.length > 0 ? [
     {
       '@context': 'https://schema.org',
       '@type': 'ItemList',
@@ -77,11 +93,11 @@ const Projects = () => {
           </div>
         </div>
 
-        {isLoading ? (
+        {isSkeletonVisible ? (
           <GridSkeleton count={6} columns={3} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects?.map((project) => (
+            {projects.map((project) => (
               <CardItem
                 key={project.id}
                 title={project.title}
@@ -96,7 +112,7 @@ const Projects = () => {
           </div>
         )}
 
-        {projects && projects.length === 0 && (
+        {!isSkeletonVisible && projects.length === 0 && (
           <div className="text-center py-12">
             <div className="text-white/60 mb-4">No projects yet</div>
           </div>

@@ -1,3 +1,4 @@
+import { useMemo, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
@@ -5,6 +6,7 @@ import CardItem from '@/components/ui/CardItem';
 import { ArrowLeft } from 'lucide-react';
 import Seo from '@/components/Seo';
 import NewsletterSignup from '@/components/NewsletterSignup';
+import { readPrerenderData } from '@/lib/prerender-data';
 
 interface Post {
   id: string;
@@ -20,7 +22,16 @@ interface Post {
 }
 
 const Blogs = () => {
-  const { data: posts, isLoading } = useQuery({
+  const initialPosts = useMemo(() => readPrerenderData<Post[]>('posts'), []);
+  const initialUpdatedAt = useRef<number | undefined>(
+    initialPosts ? Date.now() : undefined
+  );
+
+  const {
+    data: posts = [],
+    isLoading,
+    isFetching,
+  } = useQuery({
     queryKey: ['posts'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -30,10 +41,15 @@ const Blogs = () => {
       
       if (error) throw error;
       return data as Post[];
-    }
+    },
+    initialData: initialPosts,
+    initialDataUpdatedAt: initialUpdatedAt.current,
+    staleTime: 1000 * 60,
   });
 
-  const postListSchema = posts && posts.length > 0 ? [
+  const isSkeletonVisible = isLoading && !posts.length && !isFetching;
+
+  const postListSchema = posts.length > 0 ? [
     {
       '@context': 'https://schema.org',
       '@type': 'ItemList',
@@ -78,13 +94,13 @@ const Blogs = () => {
           </div>
         </div>
 
-        {isLoading ? (
+        {isSkeletonVisible ? (
           <div className="text-center py-12">
             <div className="text-white/60">Loading posts...</div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts?.map((post) => (
+            {posts.map((post) => (
               <CardItem
                 key={post.id}
                 title={post.title}
@@ -101,7 +117,7 @@ const Blogs = () => {
           </div>
         )}
 
-        {posts && posts.length === 0 && (
+        {!isSkeletonVisible && posts.length === 0 && (
           <div className="text-center py-12">
             <div className="text-white/60 mb-4">No posts yet</div>
           </div>
