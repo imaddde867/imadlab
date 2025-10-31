@@ -186,6 +186,21 @@ const EmailDashboard = () => {
         const openedEmails = analytics.filter((entry) => entry.opened_at).length;
         const clickedEmails = analytics.filter((entry) => entry.clicked_at).length;
 
+        // Debug logging
+        console.log('📧 Email Analytics Debug:', {
+          totalAnalyticsRecords: analytics.length,
+          totalEmailsSent,
+          deliveredEmails,
+          openedEmails,
+          clickedEmails,
+          sampleRecords: analytics.slice(0, 3).map(a => ({
+            sent_at: a.sent_at,
+            delivered_at: a.delivered_at,
+            opened_at: a.opened_at,
+            clicked_at: a.clicked_at,
+          }))
+        });
+
         const summaries: SubscriberSummary[] = subscribers.map((subscriber) => ({
           email: subscriber.email,
           status: subscriber.status ?? 'active',
@@ -272,13 +287,23 @@ const EmailDashboard = () => {
         setSubscriberMetrics(subscriberMetricsMap);
         setQueueMetrics(queueMetricsMap);
 
+        // Calculate rates - use sent emails as baseline if delivered data is missing
+        const baselineForOpen = deliveredEmails > 0 ? deliveredEmails : totalEmailsSent;
+        const baselineForClick = deliveredEmails > 0 ? deliveredEmails : totalEmailsSent;
+
         setEmailStats({
           totalSubscribers,
           activeSubscribers,
           totalEmailsSent,
           deliveryRate: totalEmailsSent > 0 ? (deliveredEmails / totalEmailsSent) * 100 : 0,
-          openRate: deliveredEmails > 0 ? (openedEmails / deliveredEmails) * 100 : 0,
-          clickRate: deliveredEmails > 0 ? (clickedEmails / deliveredEmails) * 100 : 0,
+          openRate: baselineForOpen > 0 ? (openedEmails / baselineForOpen) * 100 : 0,
+          clickRate: baselineForClick > 0 ? (clickedEmails / baselineForClick) * 100 : 0,
+        });
+
+        console.log('📊 Calculated Stats:', {
+          deliveryRate: totalEmailsSent > 0 ? ((deliveredEmails / totalEmailsSent) * 100).toFixed(2) + '%' : '0%',
+          openRate: baselineForOpen > 0 ? ((openedEmails / baselineForOpen) * 100).toFixed(2) + '%' : '0%',
+          clickRate: baselineForClick > 0 ? ((clickedEmails / baselineForClick) * 100).toFixed(2) + '%' : '0%',
         });
       }
     } catch (error) {
