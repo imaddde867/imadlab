@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 
 const About = () => {
   return (
-    <div className="relative min-h-screen bg-black text-white py-24 px-4">
+    <div className="relative min-h-screen bg-black text-white section">
         <Stars />
         <div className="absolute inset-0 opacity-10 animate-subtle-flicker" />
         <Seo
@@ -23,14 +23,14 @@ const About = () => {
           ]}
           tags={['Data Engineer', 'AI Professional', 'Machine Learning']}
         />
-        <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-8 py-12">
+        <div className="relative z-10 container-site">
           <div className="mb-8">
             <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Home
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 grid-gap-default">
             <div className="md:col-span-2 space-y-8">
               <div className="pb-8">
                 <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white">
@@ -67,7 +67,7 @@ const About = () => {
                       <Github className="w-4 h-4 mr-2" />
                       imaddde867
                     </a>
-                    <a href="https://www.linkedin.com/in/imad-eddine-el-mouss-986741262/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-white/80 hover:text-white transition-colors">
+                    <a href="https://www.linkedin.com/in/imad-eddine-e-986741262" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-white/80 hover:text-white transition-colors">
                       <Linkedin className="w-4 h-4 mr-2" />
                       Imad Eddine El Mouss
                     </a>

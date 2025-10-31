@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, type CSSProperties } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
+import SectionHeader from '@/components/SectionHeader';
 
 interface Project {
 	id: string;
@@ -53,14 +54,14 @@ const Projects = () => {
 	}, []);
 
 	return (
-		<section id="projects" className="py-24 px-4 relative overflow-hidden">
+		<section id="projects" className="section relative overflow-hidden scroll-mt-20">
 			{/* Modern background inspired by Hero */}
 			<div className="absolute inset-0 -z-10 pointer-events-none">
 				{/* Animated background glow (stronger) */}
 				<div 
-					className="absolute inset-0 opacity-70 animate-subtle-flicker"
+					className="absolute inset-0 opacity-35 animate-subtle-flicker"
 					style={{
-						background: 'radial-gradient(800px circle at 50% 30%, rgba(255,255,255,0.18), transparent 50%)'
+						background: 'radial-gradient(800px circle at 50% 30%, rgba(255,255,255,0.12), transparent 55%)'
 					}}
 				/>
 				{/* Background dots (larger, more opaque) */}
@@ -72,23 +73,18 @@ const Projects = () => {
 					/>
 				))}
 				{/* Asymmetrical grid lines (thicker, more visible) */}
-				<div className="absolute inset-0 opacity-40">
-					<div className="absolute top-1/3 left-0 w-full h-1 bg-white"></div>
-					<div className="absolute top-2/3 left-0 w-2/3 h-1 bg-white"></div>
-					<div className="absolute left-1/4 top-0 w-1 h-full bg-white"></div>
-					<div className="absolute right-1/3 top-0 w-1 h-2/3 bg-white"></div>
+				<div className="absolute inset-0 opacity-20">
+					<div className="absolute top-1/3 left-0 w-full h-px bg-white"></div>
+					<div className="absolute top-2/3 left-0 w-2/3 h-px bg-white"></div>
+					<div className="absolute left-1/4 top-0 w-px h-full bg-white"></div>
+					<div className="absolute right-1/3 top-0 w-px h-2/3 bg-white"></div>
 				</div>
 			</div>
 
-			<div className="max-w-7xl mx-auto">
+			<div className="container-site">
 				<div className="mb-20 ml-8 lg:ml-16 flex items-center justify-between">
-					<div>
-						<h2 className="text-section-title text-hierarchy-primary mb-4">
-							Latest
-							<br />
-							<span className="ml-8 text-hierarchy-muted">Projects</span>
-						</h2>
-						<div className="w-24 h-1 bg-white/40 ml-8"></div>
+					<div className="w-full max-w-xl">
+						<SectionHeader title={<span className="ml-0">Latest</span>} subtitle={<span className="ml-8">Projects</span>} />
 					</div>
 					<a
 						href="/projects"

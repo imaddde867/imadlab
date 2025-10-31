@@ -14,11 +14,13 @@ export const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "underline-offset-4 hover:underline text-primary",
+        cta: "relative bg-white/10 text-white border border-white/20 hover:bg-white/20 hover:border-white/40 shadow-[0_8px_30px_rgba(255,255,255,0.05)]",
       },
       size: {
         default: "h-10 py-2 px-4",
         sm: "h-9 px-3 rounded-md",
         lg: "h-11 px-8 rounded-md",
+        pill: "h-12 px-8 rounded-full",
         icon: "h-10 w-10",
       },
     },

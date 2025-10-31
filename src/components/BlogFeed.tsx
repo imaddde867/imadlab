@@ -3,6 +3,7 @@ import CardItem from '@/components/ui/CardItem';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { GridSkeleton } from '@/components/ui/LoadingStates';
+import SectionHeader from '@/components/SectionHeader';
 
 interface Post {
   id: string;
@@ -32,7 +33,7 @@ const BlogFeed = () => {
   });
 
 	return (
-		<section className="py-24 px-4 relative">
+		<section className="section relative">
 			{/* Background elements */}
 			<div className="absolute inset-0 opacity-5">
 				<div className="absolute top-1/4 left-0 w-2/3 h-px bg-white"></div>
@@ -40,30 +41,25 @@ const BlogFeed = () => {
 				<div className="absolute right-1/3 top-0 w-px h-full bg-white"></div>
 			</div>
 
-			<div className="max-w-7xl mx-auto">
+			<div className="container-site">
 				{/* Section header */}
-				<div className="mb-20 ml-8 lg:ml-16 flex items-center justify-between">
-					<div>
-						<h2 className="text-section-title text-hierarchy-primary mb-4">
-							Latest
-							<br />
-							<span className="ml-8 text-hierarchy-muted">Insights</span>
-						</h2>
-						<div className="w-24 h-1 bg-white/40 ml-8"></div>
+				<div className="mb-20 flex items-center justify-between">
+					<div className="w-full max-w-xl">
+						<SectionHeader title={"Latest"} subtitle={"Insights"} />
 					</div>
 					<Link
-  to="/blogs"
-  className="link-enhanced focus-enhanced mr-4 mt-4 md:mt-0 md:mr-8 ml-12 md:ml-0 z-10"
->
-  View all posts
-</Link>
+						to="/blogs"
+						className="link-enhanced focus-enhanced z-10"
+					>
+						View all posts
+					</Link>
 				</div>
 
 				{/* 4-column grid layout for blogs, matching Latest Projects */}
 				{isLoading ? (
 					<GridSkeleton count={3} columns={3} />
 				) : (
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 grid-gap-default">
 						{posts?.slice(0, 3).map((post) => (
 							<CardItem
 								key={post.id}
