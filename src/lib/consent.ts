@@ -83,6 +83,8 @@ export function onConsentChange(cb: Subscriber) {
 export function isAllowed(category: ConsentCategory): boolean {
   if (category === 'essential') return true;
   const c = getConsent();
+  // If no decision has been made yet, allow all by default
+  if (!c) return true;
   return !!c && !!c[category];
 }
 
@@ -91,7 +93,8 @@ export function acceptAll() {
 }
 
 export function rejectAll() {
-  setConsent({ analytics: false, marketing: false, functional: false });
+  // Only keep functional cookies, reject analytics and marketing
+  setConsent({ analytics: false, marketing: false, functional: true });
 }
 
 export async function loadScriptIfConsented(category: ConsentCategory, src: string, attrs: Record<string, string> = {}) {

@@ -15,12 +15,14 @@ type Prefs = Pick<ConsentState, 'analytics' | 'marketing' | 'functional'>;
 const CookieConsent = () => {
   const [open, setOpen] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
-  const [prefs, setPrefs] = useState<Prefs>({ analytics: false, marketing: false, functional: true });
+  const [prefs, setPrefs] = useState<Prefs>({ analytics: true, marketing: true, functional: true });
 
   useEffect(() => {
     const current = getConsent();
     if (!current) {
       setShowBanner(true);
+      // Set all to true by default when no decision has been made
+      setPrefs({ analytics: true, marketing: true, functional: true });
     } else {
       setPrefs({ analytics: current.analytics, marketing: current.marketing, functional: current.functional });
     }
