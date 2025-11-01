@@ -29,16 +29,17 @@ npm run dev
 - Automated sync with GitHub repos and hosted demos
 
 ### Publishing Pipeline
-- Markdown authoring with analytics-aware metadata
+- GitHub-Flavored Markdown with KaTeX math, Mermaid diagrams, and syntax highlighting
 - Secure admin workflow with previews and staged deploys
 - SEO-first rendering (OpenGraph, sitemap, schema.org)
 
-### Operations & Automations
+### Real-Time Integrations
 <video src="https://raw.githubusercontent.com/imaddde867/imadlab/master/doc/admin_demo.mov" controls width="100%" style="border-radius:12px;"></video>
 
-- Newsletter queue with retries, analytics, and unsubscribe handling
-- Spotify, Formspree, and Resend integrations
-- Supabase Edge Functions for background jobs and telemetry
+- **Strava API**: Running stats, activity timelines, and year-over-year trends with smart caching
+- **Analytics Dashboard**: Privacy-first tracking with GDPR-compliant consent management
+- **Newsletter System**: Queue with retries, unsubscribe handling, and delivery analytics
+- **Spotify Now Playing**: Real-time music status via Edge Functions
 </div>
 
 ## Technology Stack
@@ -48,37 +49,55 @@ graph TD
     A[Frontend] --> B[React 18]
     A --> C[TypeScript]
     A --> D[Vite]
-    A --> E[Tailwind CSS]
+    A --> E[Tailwind CSS + shadcn/ui]
     
     F[Backend] --> G[Supabase]
-    G --> H[PostgreSQL]
+    G --> H[PostgreSQL + RLS]
     G --> I[Auth]
     G --> J[Storage]
+    G --> K[Edge Functions]
     
-    K[Integrations] --> L[Spotify API]
-    K --> M[Formspree]
-    K --> N[Resend]
+    L[Integrations] --> M[Strava API]
+    L --> N[Spotify API]
+    L --> O[Formspree]
+    L --> P[Resend]
     
-    O[DevOps] --> P[GitHub Actions]
-    O --> Q[Vercel]
-    O --> R[Netlify]
+    Q[Content] --> R[React Markdown]
+    R --> S[GitHub-Flavored Markdown]
+    R --> T[KaTeX Math]
+    R --> U[Mermaid Diagrams]
+    R --> V[Syntax Highlighting]
+    
+    W[DevOps] --> X[GitHub Actions]
+    W --> Y[Vercel/Netlify]
+    W --> Z[Automated SEO]
 ```
 
 ## Architecture
 
 ```bash
 src/
-├── components/      # Reusable UI library (shadcn-based)
-├── hooks/           # Data fetching and UI state
-├── integrations/    # Supabase and external API clients
-├── lib/             # Utilities, analytics, consent management
-└── pages/           # Route-level views and admin surfaces
+├── components/      # Reusable UI library (shadcn-based + custom)
+│   ├── running/     # Strava integration components
+│   ├── markdown/    # GFM renderer with math & diagrams
+│   └── ui/          # Core design system components
+├── hooks/           # Analytics, scroll effects, toast notifications
+├── integrations/    # Supabase, Strava, Spotify API clients
+├── lib/             # Utilities, caching, consent management
+└── pages/           # Route-level views and admin dashboards
+
+supabase/
+├── functions/       # Edge Functions (Strava, Spotify, newsletters)
+└── migrations/      # Database schema and RLS policies
 ```
 
 Key patterns:
 
-- Supabase Edge Functions send newsletters, track webhooks, and manage auth
-- React Query drives fetching with caching, suspense, and optimistic updates
+- **Supabase Edge Functions** proxy external APIs, send newsletters, and track analytics
+- **React Query** drives data fetching with intelligent caching and optimistic updates
+- **Advanced Markdown** supports GFM, KaTeX equations, Mermaid diagrams, and code highlighting
+- **Privacy-First Analytics** with GDPR cookie consent and visitor session tracking
+- **Smart Caching** for Strava data with rate limit protection and fallback strategies
 - Typed Supabase schemas keep the database and UI in sync
 - Automated migrations, linting, and CI guardrails ensure consistency
 
@@ -86,9 +105,12 @@ Key patterns:
 
 imadlab demonstrates:
 
-- End-to-end ownership of a cloud-native content platform
-- Secure admin tooling with robust error handling and observability
-- Performance-tuned UX with Lighthouse 95+ scores
+- End-to-end ownership of a cloud-native content platform with real-time integrations
+- Advanced markdown rendering with mathematical equations, diagrams, and code highlighting
+- Privacy-compliant analytics with GDPR cookie consent and visitor tracking
+- Robust API integration patterns with smart caching and rate limit handling
+- Secure admin tooling with error handling, observability, and email campaign management
+- Performance-tuned UX with Lighthouse 95+ scores and responsive design
 - Maintainable, extensible architecture suited for production workloads
 
 ---

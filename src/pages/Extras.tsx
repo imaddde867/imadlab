@@ -25,7 +25,7 @@ const Extras = () => {
       
       const [statsData, activitiesData] = await Promise.all([
         stravaClient.getAthleteStats(),
-        stravaClient.getRecentActivities(),
+        stravaClient.getRecentActivities(5),
       ]);
       
       setStats(statsData);
