@@ -51,38 +51,26 @@ class StravaClient {
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
   async getData(): Promise<StravaData> {
-    // Return cached data if available and fresh
     if (this.cache && Date.now() - this.cache.timestamp < this.CACHE_DURATION) {
       return this.cache.data;
     }
 
     const { data, error } = await supabase.functions.invoke('strava-proxy');
 
-    if (error) {
-      throw new Error(error.message || 'Failed to fetch Strava data');
+    if (error || !data || data.error) {
+      throw new Error(error?.message || data?.error || 'Failed to fetch Strava data');
     }
 
-    if (!data || data.error) {
-      throw new Error(data?.error || 'Failed to fetch Strava data');
-    }
-
-    // Cache the response
-    this.cache = {
-      data: data as StravaData,
-      timestamp: Date.now(),
-    };
-
+    this.cache = { data: data as StravaData, timestamp: Date.now() };
     return data as StravaData;
   }
 
   async getAthleteStats(): Promise<StravaStats> {
-    const data = await this.getData();
-    return data.stats;
+    return (await this.getData()).stats;
   }
 
   async getRecentActivities(): Promise<StravaActivity[]> {
-    const data = await this.getData();
-    return data.activities;
+    return (await this.getData()).activities;
   }
 }
 
