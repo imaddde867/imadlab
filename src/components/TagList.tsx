@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface TagListProps {
@@ -8,8 +8,7 @@ interface TagListProps {
   variant?: 'hash' | 'plain';
 }
 
-// Reusable tag list with show more/less behavior
-const TagList: React.FC<TagListProps> = ({ tags, initialVisible = 3, label, variant = 'hash' }) => {
+const TagList = ({ tags, initialVisible = 3, label, variant = 'hash' }: TagListProps) => {
   const [expanded, setExpanded] = useState(false);
   if (!tags || tags.length === 0) return null;
   const visible = expanded ? tags : tags.slice(0, initialVisible);

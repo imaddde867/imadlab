@@ -1,21 +1,17 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import "./SpotlightCard.css";
 
-interface Position {
-  x: number;
-  y: number;
-}
-
-interface SpotlightCardProps extends React.PropsWithChildren {
+interface SpotlightCardProps {
+  children: React.ReactNode;
   className?: string;
   spotlightColor?: `rgba(${number}, ${number}, ${number}, ${number})`;
 }
 
-const SpotlightCard: React.FC<SpotlightCardProps> = ({
+const SpotlightCard = ({
   children,
   className = "",
   spotlightColor = "rgba(255, 255, 255, 0.25)"
-}) => {
+}: SpotlightCardProps) => {
   const divRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove: React.MouseEventHandler<HTMLDivElement> = (e) => {
