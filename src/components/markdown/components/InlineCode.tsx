@@ -5,7 +5,7 @@ type InlineCodeProps = {
 };
 
 export const InlineCode = ({ children }: InlineCodeProps) => (
-  <span className="rounded-md border border-white/15 bg-white/10 px-1.5 py-0.5 text-[0.95em] font-medium text-white/90 shadow-sm">
+  <code className="rounded-sm bg-white/10 px-1.5 py-[1px] text-[0.95em] text-white/90">
     {children}
-  </span>
+  </code>
 );
