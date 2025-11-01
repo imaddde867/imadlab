@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { getConsent } from '@/lib/consent';
+import { isAllowed } from '@/lib/consent';
 
 const generateSessionId = (): string => {
   const stored = sessionStorage.getItem('analytics_session_id');
@@ -19,8 +19,7 @@ export const useAnalytics = () => {
   const sessionInitialized = useRef<boolean>(false);
 
   useEffect(() => {
-    const consent = getConsent();
-    if (!consent || !consent.analytics) return;
+    if (!isAllowed('analytics')) return;
 
     const sessionId = sessionIdRef.current;
 
@@ -45,8 +44,7 @@ export const useAnalytics = () => {
   }, []);
 
   useEffect(() => {
-    const consent = getConsent();
-    if (!consent || !consent.analytics) return;
+    if (!isAllowed('analytics')) return;
 
     const sessionId = sessionIdRef.current;
     const startTime = Date.now();
@@ -76,7 +74,7 @@ export const useAnalytics = () => {
 
     return () => {
       const duration = Math.floor((Date.now() - startTime) / 1000);
-      if (duration > 0 && consent.analytics) {
+      if (duration > 0 && isAllowed('analytics')) {
         supabase
           .from('page_views')
           .update({ duration })
