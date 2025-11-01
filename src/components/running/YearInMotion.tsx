@@ -77,15 +77,18 @@ const YearInMotion = ({ activities }: YearInMotionProps) => {
       return `M ${points[0].x} ${points[0].y}`;
     }
 
-    // Create smooth curve
+    // Create simple smooth line
     let path = `M ${points[0].x} ${points[0].y}`;
     
     for (let i = 1; i < points.length; i++) {
       const prev = points[i - 1];
       const current = points[i];
-      const cpX = (prev.x + current.x) / 2;
-      path += ` Q ${cpX} ${prev.y}, ${cpX} ${(prev.y + current.y) / 2}`;
-      path += ` Q ${cpX} ${current.y}, ${current.x} ${current.y}`;
+      const midX = (prev.x + current.x) / 2;
+      const midY = (prev.y + current.y) / 2;
+      path += ` Q ${prev.x} ${prev.y}, ${midX} ${midY}`;
+      if (i === points.length - 1) {
+        path += ` Q ${current.x} ${current.y}, ${current.x} ${current.y}`;
+      }
     }
 
     return path;
@@ -142,30 +145,6 @@ const YearInMotion = ({ activities }: YearInMotionProps) => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-                
-                {/* Data points */}
-                {last3MonthsData.map((data, idx) => {
-                  const width = 100;
-                  const height = 100;
-                  const padding = 5;
-                  const x = padding + ((width - 2 * padding) / Math.max(last3MonthsData.length - 1, 1)) * idx;
-                  const y = height - padding - ((height - 2 * padding) * (data.distance / maxDistance));
-                  
-                  return (
-                    <circle
-                      key={idx}
-                      cx={x}
-                      cy={y}
-                      r="1"
-                      fill="rgba(255,255,255,0.9)"
-                      className="hover:r-1.5 transition-all cursor-pointer"
-                    >
-                      <title>
-                        {data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}: {formatDistanceCompact(data.distance)} km
-                      </title>
-                    </circle>
-                  );
-                })}
               </svg>
               
               {/* Month labels on X axis */}
