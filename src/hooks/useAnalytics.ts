@@ -19,7 +19,7 @@ export const useAnalytics = () => {
 
   useEffect(() => {
     const consent = getConsent();
-    if (!consent.analytics) return;
+    if (!consent || !consent.analytics) return;
 
     const sessionId = sessionIdRef.current;
 
@@ -41,7 +41,7 @@ export const useAnalytics = () => {
 
   useEffect(() => {
     const consent = getConsent();
-    if (!consent.analytics) return;
+    if (!consent || !consent.analytics) return;
 
     const sessionId = sessionIdRef.current;
     const startTime = Date.now();
