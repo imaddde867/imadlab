@@ -26,13 +26,13 @@ const RunningStatsGrid = ({ stats }: RunningStatsGridProps) => {
             <h3 className="text-2xl font-bold mb-2">
               {new Date().getFullYear()} Progress
             </h3>
-            <p className="text-white/60">Your journey so far this year</p>
+            <p className="text-white/60">My journey so far this year</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               { icon: Activity, label: 'Total Runs', value: ytdStats.count, subtitle: 'activities completed' },
-              { icon: Zap, label: 'Distance', value: formatDistanceCompact(ytdStats.distance), subtitle: 'kilometers covered' },
+              { icon: Zap, label: 'Distance', value: formatDistanceCompact(ytdStats.distance), subtitle: 'kilometers ran' },
               { icon: Clock, label: 'Time', value: formatTime(ytdStats.moving_time).split(' ')[0], subtitle: 'hours in motion' }
             ].map((stat, idx) => (
               <div
