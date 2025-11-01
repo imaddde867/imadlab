@@ -16,6 +16,7 @@ export const useAnalytics = () => {
   const location = useLocation();
   const sessionIdRef = useRef<string>(generateSessionId());
   const pageStartTime = useRef<number>(Date.now());
+  const sessionInitialized = useRef<boolean>(false);
 
   useEffect(() => {
     const consent = getConsent();
@@ -33,7 +34,11 @@ export const useAnalytics = () => {
           user_agent: navigator.userAgent,
         }, { onConflict: 'session_id' });
 
-      if (error) console.error('Analytics session error:', error);
+      if (error) {
+        console.error('Analytics session error:', error);
+      } else {
+        sessionInitialized.current = true;
+      }
     };
 
     initSession();
@@ -47,8 +52,15 @@ export const useAnalytics = () => {
     const startTime = Date.now();
     pageStartTime.current = startTime;
 
-    // Track page view
+    // Track page view - ensure session exists first
     const trackPageView = async () => {
+      // Wait for session to be initialized if not ready yet
+      let attempts = 0;
+      while (!sessionInitialized.current && attempts < 10) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+
       const { error } = await supabase
         .from('page_views')
         .insert({
