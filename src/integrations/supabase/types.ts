@@ -194,6 +194,66 @@ export type Database = {
           }
         ]
       }
+      visitor_sessions: {
+        Row: {
+          id: string
+          session_id: string
+          created_at: string
+          last_activity: string
+          user_agent: string | null
+          country: string | null
+          region: string | null
+          city: string | null
+        }
+        Insert: {
+          id?: string
+          session_id: string
+          created_at?: string
+          last_activity?: string
+          user_agent?: string | null
+          country?: string | null
+          region?: string | null
+          city?: string | null
+        }
+        Update: {
+          id?: string
+          session_id?: string
+          created_at?: string
+          last_activity?: string
+          user_agent?: string | null
+          country?: string | null
+          region?: string | null
+          city?: string | null
+        }
+        Relationships: []
+      }
+      page_views: {
+        Row: {
+          id: string
+          session_id: string | null
+          path: string
+          referrer: string | null
+          viewed_at: string
+          duration: number | null
+        }
+        Insert: {
+          id?: string
+          session_id?: string | null
+          path: string
+          referrer?: string | null
+          viewed_at?: string
+          duration?: number | null
+        }
+        Update: {
+          id?: string
+          session_id?: string | null
+          path?: string
+          referrer?: string | null
+          viewed_at?: string
+          duration?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
