@@ -25,7 +25,7 @@ export const useAnalytics = () => {
 
     // Create or update session
     const initSession = async () => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('visitor_sessions')
         .upsert({
           session_id: sessionId,
@@ -34,8 +34,10 @@ export const useAnalytics = () => {
         }, { onConflict: 'session_id' });
 
       if (error) {
-        console.error('Analytics session error:', error);
+        console.error('❌ Analytics session error:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
       } else {
+        console.log('✅ Analytics session created/updated:', sessionId);
         sessionInitialized.current = true;
       }
     };
@@ -59,7 +61,7 @@ export const useAnalytics = () => {
         attempts++;
       }
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('page_views')
         .insert({
           session_id: sessionId,
@@ -67,7 +69,12 @@ export const useAnalytics = () => {
           referrer: document.referrer || null,
         });
 
-      if (error) console.error('Analytics tracking error:', error);
+      if (error) {
+        console.error('❌ Analytics page view error:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
+      } else {
+        console.log('✅ Page view tracked:', location.pathname);
+      }
     };
 
     trackPageView();
@@ -81,7 +88,14 @@ export const useAnalytics = () => {
           .eq('session_id', sessionId)
           .eq('path', location.pathname)
           .order('viewed_at', { ascending: false })
-          .limit(1);
+          .limit(1)
+          .then(({ error }) => {
+            if (error) {
+              console.error('❌ Duration update error:', error);
+            } else {
+              console.log('✅ Duration updated:', duration, 's');
+            }
+          });
       }
     };
   }, [location.pathname]);
