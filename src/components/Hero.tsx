@@ -32,7 +32,7 @@ const Hero = () => {
             
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-hierarchy-secondary animate-fade-in-left opacity-0" style={{ animationDelay: '0.3s' }}>
               Data Engineering &{' '}
-              <span className="relative text-brand-gradient">AI Innovator</span>
+              <span className="relative text-brand-gradient">AI Student</span>
             </h2>
           </div>
 
