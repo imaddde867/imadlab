@@ -21,6 +21,7 @@ const Footer = () => {
           <nav className="flex items-center gap-6 text-sm text-white/70">
             <Link to="/projects" className="hover:text-white transition-colors">Projects</Link>
             <Link to="/blogs" className="hover:text-white transition-colors">Blogs</Link>
+            <Link to="/extras" className="hover:text-white transition-colors">Extras</Link>
             <Link to="/about" className="hover:text-white transition-colors">About</Link>
           </nav>
 
