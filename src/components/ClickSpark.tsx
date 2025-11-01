@@ -1,6 +1,7 @@
-import React, { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, type ReactNode } from "react";
 
 interface ClickSparkProps {
+  children?: ReactNode;
   sparkColor?: string;
   sparkSize?: number;
   sparkRadius?: number;
@@ -8,7 +9,6 @@ interface ClickSparkProps {
   duration?: number;
   easing?: "linear" | "ease-in" | "ease-out" | "ease-in-out";
   extraScale?: number;
-  children?: React.ReactNode;
 }
 
 interface Spark {
@@ -18,7 +18,7 @@ interface Spark {
   startTime: number;
 }
 
-const ClickSpark: React.FC<ClickSparkProps> = ({
+const ClickSpark = ({
   sparkColor = "#fff",
   sparkSize = 10,
   sparkRadius = 15,
