@@ -70,7 +70,7 @@ const AdminDashboard = () => {
         </div>
         <p className="text-white/70 mb-8">Welcome, {user?.email}!</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Link to="/admin/posts">
             <Button className="w-full h-24 text-xl bg-white/10 hover:bg-white/20 border border-white/20">
               Manage Blog Posts
@@ -84,6 +84,11 @@ const AdminDashboard = () => {
           <Link to="/admin/emails">
             <Button className="w-full h-24 text-xl bg-white/10 hover:bg-white/20 border border-white/20">
               Email Management
+            </Button>
+          </Link>
+          <Link to="/admin/analytics">
+            <Button className="w-full h-24 text-xl bg-white/10 hover:bg-white/20 border border-white/20">
+              Analytics Dashboard
             </Button>
           </Link>
         </div>
