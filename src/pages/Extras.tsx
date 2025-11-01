@@ -7,7 +7,7 @@ import RecentActivitiesTimeline from '@/components/running/RecentActivitiesTimel
 import RunningPageSkeleton from '@/components/running/RunningPageSkeleton';
 import { stravaClient, type StravaStats, type StravaActivity } from '@/integrations/strava/client';
 import { StravaCache } from '@/lib/strava-cache';
-import { Clock } from 'lucide-react';
+import { Clock, ExternalLink } from 'lucide-react';
 
 const Extras = () => {
   const [stats, setStats] = useState<StravaStats | null>(null);
@@ -77,10 +77,22 @@ const Extras = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-24 relative z-10">
-        <SectionHeader
-          title="Beyond Code"
-          subtitle={<>I LOVE running too!!</>}
-        />
+        <div className="flex items-start justify-between gap-4 mb-16">
+          <SectionHeader
+            title="Beyond Code"
+            subtitle={<>I LOVE running too!!</>}
+            className="mb-0"
+          />
+          <a
+            href="https://www.strava.com/athletes/124531733"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/30 rounded-lg transition-all font-medium text-sm group mt-2"
+          >
+            <span>View on Strava</span>
+            <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          </a>
+        </div>
 
         {/* Cache indicator */}
         {!loading && !error && isUsingCache && cacheAge > 0 && (
