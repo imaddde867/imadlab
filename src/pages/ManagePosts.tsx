@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -11,18 +11,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/ui/page-header";
+import { Tag as TagChip } from "@/components/ui/tag";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
   Plus,
   Edit,
   Trash2,
   Eye,
   Calendar,
   Clock,
-  Tag,
+  Tag as TagIcon,
   ExternalLink,
 } from "lucide-react";
 
@@ -93,6 +94,88 @@ const ManagePosts = () => {
       ) as Post[];
     },
   });
+
+  const totalPosts = posts?.length ?? 0;
+
+  const postsThisMonth = useMemo(() => {
+    if (!posts?.length) return 0;
+    const now = new Date();
+    return posts.filter((post) => {
+      const postDate = new Date(post.created_at);
+      return (
+        postDate.getMonth() === now.getMonth() &&
+        postDate.getFullYear() === now.getFullYear()
+      );
+    }).length;
+  }, [posts]);
+
+  const averageReadTime = useMemo(() => {
+    if (!posts?.length) return 0;
+    const total = posts.reduce(
+      (accumulator, post) => accumulator + (post.read_time || 0),
+      0
+    );
+    return Math.round(total / posts.length);
+  }, [posts]);
+
+  const totalTags = useMemo(() => {
+    if (!posts?.length) return 0;
+    return new Set(posts.flatMap((post) => post.tags || [])).size;
+  }, [posts]);
+
+  const headerMeta = useMemo(
+    () => [
+      {
+        label: `${totalPosts} total posts`,
+        icon: <Eye className="h-3.5 w-3.5" aria-hidden="true" />,
+        variant: "neutral" as const,
+      },
+      {
+        label: `${postsThisMonth} this month`,
+        icon: <Calendar className="h-3.5 w-3.5" aria-hidden="true" />,
+        variant: "subtle" as const,
+      },
+      {
+        label: `${totalTags} unique tags`,
+        icon: <TagIcon className="h-3.5 w-3.5" aria-hidden="true" />,
+        variant: "outline" as const,
+      },
+      {
+        label: `${averageReadTime || 0} min avg read`,
+        icon: <Clock className="h-3.5 w-3.5" aria-hidden="true" />,
+        variant: "subtle" as const,
+      },
+    ],
+    [averageReadTime, postsThisMonth, totalPosts, totalTags]
+  );
+
+  const overviewStats = useMemo(
+    () => [
+      {
+        label: "Total posts",
+        value: totalPosts,
+        icon: <Eye className="h-4 w-4 text-white/80" aria-hidden="true" />,
+      },
+      {
+        label: "Published this month",
+        value: postsThisMonth,
+        icon: <Calendar className="h-4 w-4 text-emerald-300" aria-hidden="true" />,
+      },
+      {
+        label: "Average read time",
+        value: `${averageReadTime || 0}m`,
+        icon: <Clock className="h-4 w-4 text-sky-300" aria-hidden="true" />,
+      },
+      {
+        label: "Unique tags",
+        value: totalTags,
+        icon: <TagIcon className="h-4 w-4 text-amber-300" aria-hidden="true" />,
+      },
+    ],
+    [averageReadTime, postsThisMonth, totalPosts, totalTags]
+  );
+
+  const isPostsLoading = isLoading;
 
   const addPostMutation = useMutation({
     mutationFn: async (newPost: Omit<Post, "id" | "created_at">) => {
@@ -176,6 +259,8 @@ const ManagePosts = () => {
       });
     },
   });
+
+  const isMutating = addPostMutation.isPending || updatePostMutation.isPending;
 
   const deletePostMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -282,120 +367,66 @@ const ManagePosts = () => {
 
   return (
     <div className="min-h-screen bg-black text-white py-12">
-      <div className="container-site">
-        <div className="mb-8">
-          <Link
-            to="/admin"
-            className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Admin Dashboard
-          </Link>
-        </div>
-
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">Blog Posts Management</h1>
-          <Button
-            onClick={() => {
-              setShowForm(!showForm);
-              setEditingPost(null);
-              setFormData({
-                title: "",
-                slug: "",
-                body: "",
-                excerpt: "",
-                tags: "",
-                image_url: "",
-              });
-            }}
-            disabled={addPostMutation.isPending || updatePostMutation.isPending}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            {showForm ? "Cancel" : "New Post"}
-          </Button>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Eye className="w-4 h-4 text-white mr-2" />
-                <div>
-                  <p className="text-sm text-white/60">Total Posts</p>
-                  <p className="text-2xl font-bold text-white">{posts?.length || 0}</p>
+      <div className="container-site space-y-10 pb-24">
+        <PageHeader
+          eyebrow="Admin Suite"
+          title="Blog Posts"
+          description="Craft, edit, and publish articles across imadlab while keeping tabs on performance."
+          breadcrumbs={[
+            { label: "Admin", href: "/admin" },
+            { label: "Posts", href: "/admin/posts" },
+          ]}
+          meta={headerMeta}
+          actions={
+            <Button
+              variant={showForm ? "outline" : "inverted"}
+              size="lg"
+              onClick={() => {
+                setShowForm(!showForm);
+                setEditingPost(null);
+                setFormData({
+                  title: "",
+                  slug: "",
+                  body: "",
+                  excerpt: "",
+                  tags: "",
+                  image_url: "",
+                });
+              }}
+              disabled={isMutating}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {showForm ? "Cancel" : "New Post"}
+            </Button>
+          }
+        >
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {overviewStats.map((stat) => (
+              <div
+                key={stat.label}
+                className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 shadow-[0_16px_48px_rgba(15,23,42,0.45)] backdrop-blur-sm"
+              >
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
+                  {stat.icon}
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Calendar className="w-4 h-4 text-green-400 mr-2" />
                 <div>
-                  <p className="text-sm text-white/60">This Month</p>
-                  <p className="text-2xl font-bold text-white">
-                    {posts?.filter((post) => {
-                      const postDate = new Date(post.created_at);
-                      const now = new Date();
-                      return (
-                        postDate.getMonth() === now.getMonth() &&
-                        postDate.getFullYear() === now.getFullYear()
-                      );
-                    }).length || 0}
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/60">
+                    {stat.label}
                   </p>
+                  <p className="text-2xl font-bold text-white">{stat.value}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Clock className="w-4 h-4 text-purple-400 mr-2" />
-                <div>
-                  <p className="text-sm text-white/60">Avg Read Time</p>
-                  <p className="text-2xl font-bold text-white">
-                    {posts && posts.length > 0
-                      ? Math.round(
-                          posts.reduce(
-                            (acc, post) => acc + (post.read_time || 0),
-                            0
-                          ) / posts.length
-                        )
-                      : 0}
-                    m
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Tag className="w-4 h-4 text-orange-400 mr-2" />
-                <div>
-                  <p className="text-sm text-white/60">Total Tags</p>
-                  <p className="text-2xl font-bold text-white">
-                    {posts
-                      ? new Set(posts.flatMap((post) => post.tags || [])).size
-                      : 0}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            ))}
+          </div>
+        </PageHeader>
 
         {showForm && (
-          <Card className="bg-white/5 border-white/10 mb-8">
+          <Card className="rounded-3xl border border-white/10 bg-white/5 shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-md">
             <CardHeader>
               <CardTitle className="text-white">
                 {editingPost ? "Edit Post" : "Create New Post"}
               </CardTitle>
-              <CardDescription className="text-white/60">
+              <CardDescription className="text-white/70">
                 {editingPost
                   ? "Update your blog post details"
                   : "Add a new blog post to your collection"}
@@ -491,13 +522,11 @@ const ManagePosts = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-3">
                   <Button
                     type="submit"
-                    disabled={
-                      addPostMutation.isPending || updatePostMutation.isPending
-                    }
-                    className="bg-white text-black hover:bg-white/90"
+                    variant="inverted"
+                    disabled={isMutating}
                   >
                     {editingPost
                       ? updatePostMutation.isPending
@@ -510,7 +539,6 @@ const ManagePosts = () => {
                   <Button
                     type="button"
                     variant="ghost"
-                    className="text-white hover:bg-white/10 hover:text-white"
                     onClick={() => {
                       setShowForm(false);
                       setEditingPost(null);
@@ -533,105 +561,148 @@ const ManagePosts = () => {
         )}
 
         {/* Posts List */}
-        <Card className="bg-white/5 border-white/10">
+        <Card className="rounded-3xl border border-white/10 bg-white/5 shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-md">
           <CardHeader>
             <CardTitle className="text-white">All Posts</CardTitle>
-            <CardDescription className="text-white/60">
+            <CardDescription className="text-white/70">
               Manage your blog posts and track their performance
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {posts && posts.length === 0 ? (
-              <div className="text-center py-12">
-                <Eye className="w-12 h-12 text-white/20 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No posts yet</h3>
-                <p className="text-white/60 mb-4">
-                  Create your first blog post to get started
+            {isPostsLoading ? (
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
+                  >
+                    <Skeleton className="h-6 w-2/3" />
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Skeleton className="h-6 w-24 rounded-full" />
+                      <Skeleton className="h-6 w-20 rounded-full" />
+                      <Skeleton className="h-6 w-16 rounded-full" />
+                    </div>
+                    <Skeleton className="mt-5 h-4 w-full" />
+                    <Skeleton className="mt-2 h-4 w-3/5" />
+                    <div className="mt-6 flex flex-wrap gap-3">
+                      <Skeleton className="h-9 w-24 rounded-lg" />
+                      <Skeleton className="h-9 w-24 rounded-lg" />
+                      <Skeleton className="h-9 w-24 rounded-lg" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : !posts || posts.length === 0 ? (
+              <div className="py-12 text-center">
+                <Eye
+                  className="mx-auto mb-4 h-12 w-12 text-white/20"
+                  aria-hidden="true"
+                />
+                <h3 className="text-lg font-semibold text-white">
+                  No posts yet
+                </h3>
+                <p className="mt-3 text-sm text-white/70">
+                  Create your first blog post to get started.
                 </p>
-                <Button onClick={() => setShowForm(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
+                <Button
+                  className="mt-6"
+                  variant="inverted"
+                  onClick={() => setShowForm(true)}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
                   Create First Post
                 </Button>
               </div>
             ) : (
               <div className="space-y-4">
-                {posts?.map((post) => (
+                {posts.map((post) => (
                   <div
                     key={post.id}
-                    className="p-6 bg-white/5 border border-white/10 rounded-lg"
+                    className="rounded-2xl border border-white/10 bg-black/60 p-6 shadow-[0_16px_48px_rgba(15,23,42,0.45)] backdrop-blur-sm transition hover:border-white/20"
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                      <div className="flex-1 space-y-3">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                           <h3 className="text-xl font-semibold text-white">
                             {post.title}
                           </h3>
                           {post.tags && post.tags.length > 0 && (
-                            <div className="flex gap-1">
+                            <div className="flex flex-wrap gap-2">
                               {post.tags.slice(0, 3).map((tag, index) => (
-                                <Badge
-                                  key={index}
-                                  variant="secondary"
-                                  className="text-xs"
+                                <TagChip
+                                  key={`${post.id}-tag-${index}`}
+                                  size="xs"
+                                  variant="outline"
+                                  className="text-white/80"
                                 >
                                   {tag}
-                                </Badge>
+                                </TagChip>
                               ))}
                               {post.tags.length > 3 && (
-                                <Badge variant="secondary" className="text-xs">
+                                <TagChip
+                                  size="xs"
+                                  variant="subtle"
+                                  className="text-white/80"
+                                >
                                   +{post.tags.length - 3}
-                                </Badge>
+                                </TagChip>
                               )}
                             </div>
                           )}
                         </div>
-
-                        <p className="text-white/60 text-sm mb-3 line-clamp-2">
+                        <p className="text-sm text-white/70 line-clamp-2">
                           {post.excerpt || "No excerpt available"}
                         </p>
-
-                        <div className="flex items-center gap-4 text-xs text-white/40">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
+                        <div className="flex flex-wrap gap-4 text-xs text-white/60">
+                          <div className="flex items-center gap-1.5">
+                            <Calendar
+                              className="h-3.5 w-3.5 text-white/50"
+                              aria-hidden="true"
+                            />
                             {new Date(post.published_date).toLocaleDateString()}
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
+                          <div className="flex items-center gap-1.5">
+                            <Clock
+                              className="h-3.5 w-3.5 text-white/50"
+                              aria-hidden="true"
+                            />
                             {post.read_time || 0} min read
                           </div>
-                          <div className="flex items-center gap-1">
-                            <ExternalLink className="w-3 h-3" />/{post.slug}
+                          <div className="flex items-center gap-1.5">
+                            <ExternalLink
+                              className="h-3.5 w-3.5 text-white/50"
+                              aria-hidden="true"
+                            />
+                            /{post.slug}
                           </div>
                         </div>
                       </div>
-
-                      <div className="flex items-center gap-2 ml-4">
-                        <Button
-                          asChild
-                          size="sm"
-                          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
-                        >
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Button asChild variant="soft" size="sm">
                           <Link
                             to={`/blogs/${post.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="mr-2 h-4 w-4" />
+                            Preview
                           </Link>
                         </Button>
                         <Button
+                          variant="soft"
                           size="sm"
                           onClick={() => handleEditClick(post)}
-                          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
                         >
-                          <Edit className="w-4 h-4" />
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
                         </Button>
                         <Button
+                          variant="destructive"
                           size="sm"
                           onClick={() => handleDeleteClick(post.id)}
-                          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
                         </Button>
                       </div>
                     </div>

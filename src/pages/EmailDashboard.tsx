@@ -3,11 +3,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
+import { Tag } from '@/components/ui/tag';
+import type { TagVariantProps } from '@/components/ui/tag.utils';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
+import { ContentLoader } from '@/components/ui/LoadingStates';
 import { RefreshCw, Send, Eye, Users, Mail, TrendingUp, Trash2 } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -91,14 +94,11 @@ type PreviewRequest =
 const SECTION_CARD_CLASS = 'rounded-2xl border border-white/10 bg-white/[0.06] shadow-sm';
 const SECTION_HEADER_CLASS = 'px-6 pt-6 pb-0';
 const SECTION_TITLE_CLASS = 'text-lg font-semibold text-white';
-const SECTION_DESCRIPTION_CLASS = 'text-sm text-white/60';
+const SECTION_DESCRIPTION_CLASS = 'text-sm text-white/70';
 const SECTION_CONTENT_CLASS = 'px-6 pb-6 space-y-6';
-const TOOLBAR_BUTTON_CLASS = 'border-white/20 bg-black/40 text-white hover:bg-white/15';
-const PRIMARY_ACTION_BUTTON_CLASS = 'bg-white text-black border-white/20 hover:bg-white/85';
-const PREVIEW_BUTTON_CLASS = 'border-white/20 bg-black/40 text-white hover:bg-white/15 data-[state=open]:bg-white/15';
-const FILTER_BUTTON_ACTIVE_CLASS = 'bg-white text-black border-white shadow-sm';
-const FILTER_BUTTON_INACTIVE_CLASS = 'bg-black/40 text-white/70 hover:bg-white/10 hover:text-white';
-const METRIC_LABEL_CLASS = 'text-xs uppercase tracking-widest text-white/60';
+const FILTER_BUTTON_ACTIVE_CLASS = 'bg-white text-black border border-white/80 shadow-sm';
+const FILTER_BUTTON_INACTIVE_CLASS = 'bg-black/40 text-white/75 hover:bg-white/10 hover:text-white';
+const METRIC_LABEL_CLASS = 'text-xs uppercase tracking-widest text-white/70';
 
 const EmailDashboard = () => {
   const navigate = useNavigate();
@@ -411,6 +411,65 @@ const EmailDashboard = () => {
   const inactiveCount = subscriberList.filter((subscriber) => subscriber.status === 'inactive').length;
   const unsubscribedCount = subscriberList.filter((subscriber) => subscriber.status === 'unsubscribed').length;
 
+  const headerMeta = useMemo(
+    () => [
+      {
+        label: `${emailQueue.length} queue items`,
+        variant: 'outline' as TagVariantProps['variant'],
+      },
+      {
+        label: `Blog auto-send ${blogAutoSend ? 'on' : 'off'}`,
+        variant: (blogAutoSend ? 'success' : 'warning') as TagVariantProps['variant'],
+      },
+      {
+        label: `Project auto-send ${projectAutoSend ? 'on' : 'off'}`,
+        variant: (projectAutoSend ? 'success' : 'warning') as TagVariantProps['variant'],
+      },
+      {
+        label: `${totalSubscribers} subscribers`,
+        variant: 'neutral' as TagVariantProps['variant'],
+      },
+    ],
+    [blogAutoSend, emailQueue.length, projectAutoSend, totalSubscribers]
+  );
+
+  const overviewStats = useMemo(() => {
+    if (!emailStats) return [] as Array<{ label: string; value: string | number; icon: JSX.Element }>;
+    const formatPercent = (value: number) => `${value.toFixed(1)}%`;
+    return [
+      {
+        label: 'Total Subscribers',
+        value: emailStats.totalSubscribers,
+        icon: <Users className="h-4 w-4 text-white/80" aria-hidden="true" />,
+      },
+      {
+        label: 'Active Subscribers',
+        value: emailStats.activeSubscribers,
+        icon: <Users className="h-4 w-4 text-emerald-300" aria-hidden="true" />,
+      },
+      {
+        label: 'Emails Sent',
+        value: emailStats.totalEmailsSent,
+        icon: <Mail className="h-4 w-4 text-sky-300" aria-hidden="true" />,
+      },
+      {
+        label: 'Delivery Rate',
+        value: formatPercent(emailStats.deliveryRate),
+        icon: <TrendingUp className="h-4 w-4 text-purple-300" aria-hidden="true" />,
+      },
+      {
+        label: 'Open Rate',
+        value: formatPercent(emailStats.openRate),
+        icon: <Eye className="h-4 w-4 text-amber-300" aria-hidden="true" />,
+      },
+      {
+        label: 'Click Rate',
+        value: formatPercent(emailStats.clickRate),
+        icon: <Send className="h-4 w-4 text-blue-300" aria-hidden="true" />,
+      },
+    ];
+  }, [emailStats]);
+
   const openPreview = async (request: PreviewRequest) => {
     try {
       setPreviewTitle('Email Preview');
@@ -512,7 +571,7 @@ const EmailDashboard = () => {
 
     if (!previewContent) {
       return (
-        <div className="flex items-center justify-center py-12 text-white/40">
+        <div className="flex items-center justify-center py-12 text-white/55">
           Preview will appear here when generated.
         </div>
       );
@@ -603,30 +662,42 @@ const EmailDashboard = () => {
   };
 
   const getStatusBadge = (status: EmailQueueItem['status']) => {
-    const variants = {
-      pending: 'secondary',
-      processing: 'default',
-      sent: 'default',
-      failed: 'destructive'
+    const variantMap = {
+      pending: 'outline',
+      processing: 'info',
+      sent: 'success',
+      failed: 'danger',
     } as const;
+    const label = status.charAt(0).toUpperCase() + status.slice(1);
     return (
-      <Badge variant={variants[status] ?? 'secondary'}>
-        {status}
-      </Badge>
+      <Tag
+        variant={variantMap[status] ?? 'outline'}
+        size="xs"
+        className="uppercase tracking-wide text-[11px]"
+      >
+        {label}
+      </Tag>
     );
   };
 
   const getSubscriberBadge = (status: SubscriberSummary['status'] | null | undefined) => {
     const value = status ?? 'active';
     const label = value.charAt(0).toUpperCase() + value.slice(1);
-    const baseClasses = 'border border-white/15 px-2.5 py-1 text-xs font-medium rounded-full';
-    const styleMap: Record<string, string> = {
-      active: 'bg-emerald-500/10 text-emerald-200 border-emerald-400/40',
-      inactive: 'bg-amber-500/10 text-amber-200 border-amber-300/40',
-      unsubscribed: 'bg-red-500/10 text-red-200 border-red-400/40',
+    const variantMap: Record<string, TagVariantProps['variant']> = {
+      active: 'success',
+      inactive: 'warning',
+      unsubscribed: 'danger',
     };
-    const classes = `${baseClasses} ${styleMap[value] ?? 'bg-white/10 text-white/70'}`;
-    return <span className={classes}>{label}</span>;
+    const variant = variantMap[value] ?? 'outline';
+    return (
+      <Tag
+        variant={variant}
+        size="xs"
+        className="uppercase tracking-wide text-[11px]"
+      >
+        {label}
+      </Tag>
+    );
   };
 
   const formatDate = (dateString?: string | null) => {
@@ -638,121 +709,74 @@ const EmailDashboard = () => {
 
   if (user === null || loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-white/60 text-xl">Loading email dashboard...</div>
+      <div className="min-h-screen bg-black text-white">
+        <ContentLoader
+          className="min-h-screen"
+          text="Loading email dashboard..."
+          variant="orbit"
+        />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-black text-white py-12">
-      <div className="container-site">
-        <div className="mb-8">
-          <Link to="/admin" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"></path></svg>
-            Back to Admin Dashboard
-          </Link>
-        </div>
-
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
-          <h1 className="text-4xl font-bold">Email Management</h1>
-          <div className="flex gap-3">
-            <Button
-              onClick={loadEmailData}
-              variant="outline"
-              disabled={loading}
-              className={TOOLBAR_BUTTON_CLASS}
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
-            <Button
-              onClick={() => processEmailQueue()}
-              disabled={processing}
-              className={PRIMARY_ACTION_BUTTON_CLASS}
-            >
-              <Send className={`w-4 h-4 mr-2 ${processing ? 'animate-pulse' : ''}`} />
-              {processing ? 'Processing...' : 'Process Queue'}
-            </Button>
-          </div>
-        </div>
-
-        {emailStats && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-            <Card className="border border-white/10 bg-white/[0.06] rounded-2xl shadow-sm">
-              <CardContent className="p-5">
-                <div className="flex items-center">
-                  <Users className="w-4 h-4 text-white mr-2" />
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-widest text-white/60">Total Subscribers</p>
-                    <p className="text-2xl font-bold text-white">{emailStats.totalSubscribers}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="border border-white/10 bg-white/[0.06] rounded-2xl shadow-sm">
-              <CardContent className="p-5">
-                <div className="flex items-center">
-                  <Users className="w-4 h-4 text-green-400 mr-2" />
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-widest text-white/60">Active</p>
-                    <p className="text-2xl font-bold text-white">{emailStats.activeSubscribers}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border border-white/10 bg-white/[0.06] rounded-2xl shadow-sm">
-              <CardContent className="p-5">
-                <div className="flex items-center">
-                  <Mail className="w-4 h-4 text-purple-400 mr-2" />
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-white/60">Emails Sent</p>
-                    <p className="text-2xl font-bold text-white">{emailStats.totalEmailsSent}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border border-white/10 bg-white/[0.06] rounded-2xl shadow-sm">
-              <CardContent className="p-5">
-                <div className="flex items-center">
-                  <TrendingUp className="w-4 h-4 text-yellow-400 mr-2" />
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-white/60">Delivery Rate</p>
-                    <p className="text-2xl font-bold text-white">{emailStats.deliveryRate.toFixed(1)}%</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border border-white/10 bg-white/[0.06] rounded-2xl shadow-sm">
-              <CardContent className="p-5">
-                <div className="flex items-center">
-                  <Eye className="w-4 h-4 text-orange-400 mr-2" />
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-white/60">Open Rate</p>
-                    <p className="text-2xl font-bold text-white">{emailStats.openRate.toFixed(1)}%</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border border-white/10 bg-white/[0.06] rounded-2xl shadow-sm">
-              <CardContent className="p-5">
-                <div className="flex items-center">
-                  <TrendingUp className="w-4 h-4 text-red-400 mr-2" />
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-white/60">Click Rate</p>
-                    <p className="text-2xl font-bold text-white">{emailStats.clickRate.toFixed(1)}%</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
+      <div className="container-site space-y-10 pb-24">
+        <PageHeader
+          eyebrow="Admin Suite"
+          title="Email Management"
+          description="Monitor automations, deliver campaigns, and keep the audience up to date."
+          breadcrumbs={[
+            { label: 'Admin', href: '/admin' },
+            { label: 'Emails', href: '/admin/emails' },
+          ]}
+          meta={headerMeta}
+          actions={
+            <div className="flex flex-wrap gap-3">
+              <Button
+                variant="soft"
+                onClick={loadEmailData}
+                disabled={loading}
+              >
+                <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <Button
+                variant="inverted"
+                onClick={() => processEmailQueue()}
+                disabled={processing}
+              >
+                <Send className={`mr-2 h-4 w-4 ${processing ? 'animate-pulse' : ''}`} />
+                {processing ? 'Processing…' : 'Process Queue'}
+              </Button>
+            </div>
+          }
+        >
+          {!!overviewStats.length && (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {overviewStats.map((stat) => (
+                <Card
+                  key={stat.label}
+                  className="rounded-2xl border border-white/10 bg-white/5 shadow-[0_16px_48px_rgba(15,23,42,0.35)] backdrop-blur-sm"
+                >
+                  <CardContent className="p-5">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
+                        {stat.icon}
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/60">
+                          {stat.label}
+                        </p>
+                        <p className="text-2xl font-bold text-white">{stat.value}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </PageHeader>
         <Tabs defaultValue="queue" className="w-full">
           <TabsList className="grid w-full grid-cols-3 rounded-2xl border border-white/10 bg-white/[0.05] p-1">
             <TabsTrigger
@@ -817,14 +841,14 @@ const EmailDashboard = () => {
                                   {displayTitle}
                                 </h3>
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <Badge variant="outline" className="text-white border-white/20">
+                                  <Tag variant="outline" size="xs" className="text-white/80">
                                     {contentLabel}
-                                  </Badge>
+                                  </Tag>
                                   {getStatusBadge(item.status)}
                                   {item.retry_count > 0 && (
-                                    <span className="rounded-full border border-amber-400/40 bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-100">
+                                    <Tag variant="warning" size="xs" className="text-amber-100">
                                       Retry {item.retry_count}
-                                    </span>
+                                    </Tag>
                                   )}
                                 </div>
                               </div>
@@ -840,9 +864,9 @@ const EmailDashboard = () => {
                               <Dialog>
                                 <DialogTrigger asChild>
                                   <Button
-                                    variant="outline"
+                                    variant="soft"
                                     size="sm"
-                                    className={PREVIEW_BUTTON_CLASS}
+                                    className="data-[state=open]:bg-white/15"
                                     onClick={() => openPreview({ mode: 'queue', queueItem: item })}
                                   >
                                     <Eye className="w-4 h-4 mr-2" />
@@ -860,10 +884,10 @@ const EmailDashboard = () => {
                                 </DialogContent>
                               </Dialog>
                               <Button
-                                variant="outline"
+                                variant="soft"
                                 size="sm"
-                                className={`border-emerald-500/40 bg-emerald-500/10 text-emerald-100 hover:bg-emerald-500/20 ${
-                                  !canSend ? 'opacity-50 cursor-not-allowed hover:bg-transparent' : ''
+                                className={`border-emerald-400/40 bg-emerald-500/20 text-emerald-100 hover:bg-emerald-500/25 ${
+                                  !canSend ? 'opacity-50 cursor-not-allowed hover:bg-emerald-500/20' : ''
                                 }`}
                                 disabled={processing || !canSend}
                                 title={
@@ -883,9 +907,8 @@ const EmailDashboard = () => {
                                   : 'Queued'}
                               </Button>
                               <Button
-                                variant="outline"
+                                variant="destructive"
                                 size="sm"
-                                className="border-red-500/40 bg-red-500/10 text-red-200 hover:bg-red-500/20"
                                 disabled={processing}
                                 title="Remove this queue item"
                                 onClick={() => deleteQueueItem(item.id)}
@@ -896,29 +919,29 @@ const EmailDashboard = () => {
                             </div>
                           </div>
 
-                          <div className="mt-4 grid grid-cols-2 md:grid-cols-6 gap-3 text-xs uppercase tracking-wide text-white/60">
+                          <div className="mt-4 grid grid-cols-2 md:grid-cols-6 gap-3 text-xs uppercase tracking-wide text-white/65">
                             <div>
-                              <p className="text-[11px] uppercase tracking-widest text-white/40">Recipients</p>
+                              <p className="text-[11px] uppercase tracking-widest text-white/60">Recipients</p>
                               <p className="text-base font-semibold text-white">{targetRecipients}</p>
                             </div>
                             <div>
-                              <p className="text-[11px] uppercase tracking-widest text-white/40">Sent</p>
+                              <p className="text-[11px] uppercase tracking-widest text-white/60">Sent</p>
                               <p className="text-base font-semibold text-white">{metric.sent}</p>
                             </div>
                             <div>
-                              <p className="text-[11px] uppercase tracking-widest text-white/40">Delivered</p>
+                              <p className="text-[11px] uppercase tracking-widest text-white/60">Delivered</p>
                               <p className="text-base font-semibold text-white">{metric.delivered}</p>
                             </div>
                             <div>
-                              <p className="text-[11px] uppercase tracking-widest text-white/40">Opened</p>
+                              <p className="text-[11px] uppercase tracking-widest text-white/60">Opened</p>
                               <p className="text-base font-semibold text-white">{metric.opened}</p>
                             </div>
                             <div>
-                              <p className="text-[11px] uppercase tracking-widest text-white/40">Clicked</p>
+                              <p className="text-[11px] uppercase tracking-widest text-white/60">Clicked</p>
                               <p className="text-base font-semibold text-white">{metric.clicked}</p>
                             </div>
                             <div>
-                              <p className="text-[11px] uppercase tracking-widest text-white/40">Bounced</p>
+                              <p className="text-[11px] uppercase tracking-widest text-white/60">Bounced</p>
                               <p className="text-base font-semibold text-white">{metric.bounced}</p>
                             </div>
                           </div>
@@ -1059,11 +1082,11 @@ const EmailDashboard = () => {
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button 
-                            variant="outline" 
+                            variant="soft" 
                             size="sm"
                             onClick={() => openPreview({ mode: 'latest', contentType: 'blog_post' })}
                             disabled={previewLoading}
-                            className={PREVIEW_BUTTON_CLASS}
+                            className="data-[state=open]:bg-white/15"
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             Preview
@@ -1100,12 +1123,12 @@ const EmailDashboard = () => {
                     <div className="flex items-center gap-2">
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
+                          <Button 
+                            variant="soft" 
                             size="sm"
                             onClick={() => openPreview({ mode: 'latest', contentType: 'project' })}
                             disabled={previewLoading}
-                            className={PREVIEW_BUTTON_CLASS}
+                            className="data-[state=open]:bg-white/15"
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             Preview

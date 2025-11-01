@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { CSSProperties } from 'react';
 
 type Star = {
   x: number;
@@ -8,18 +9,25 @@ type Star = {
   hue: number;
   opacity: number;
   blur: number;
+  driftX: number;
+  driftY: number;
+  moveDuration: number;
+  twinkleDuration: number;
 };
+
+type Counts = { base: number; mid: number; glow: number };
 
 const Stars = () => {
   // Responsive star counts to prevent mobile lag
-  type Counts = { base: number; mid: number; glow: number };
-  const computeCounts = (): Counts => {
-    if (typeof window === 'undefined') return { base: 140, mid: 90, glow: 30 };
-    const w = window.innerWidth;
-    if (w <= 640) return { base: 70, mid: 45, glow: 14 }; // phones
-    if (w <= 1024) return { base: 110, mid: 70, glow: 24 }; // tablets
+  const computeCounts = useCallback((): Counts => {
+    if (typeof window === 'undefined') {
+      return { base: 140, mid: 90, glow: 30 };
+    }
+    const width = window.innerWidth;
+    if (width <= 640) return { base: 70, mid: 45, glow: 14 }; // phones
+    if (width <= 1024) return { base: 110, mid: 70, glow: 24 }; // tablets
     return { base: 140, mid: 90, glow: 30 }; // desktop
-  };
+  }, []);
 
   const [counts, setCounts] = useState<Counts>(computeCounts);
 
@@ -30,13 +38,13 @@ const Stars = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
         const next = computeCounts();
-        if (
-          next.base !== counts.base ||
-          next.mid !== counts.mid ||
-          next.glow !== counts.glow
-        ) {
-          setCounts(next);
-        }
+        setCounts((current) =>
+          current.base === next.base &&
+          current.mid === next.mid &&
+          current.glow === next.glow
+            ? current
+            : next
+        );
       });
     };
     window.addEventListener('resize', onResize);
@@ -44,45 +52,87 @@ const Stars = () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
     };
-  }, [counts.base, counts.mid, counts.glow]);
+  }, [computeCounts]);
 
   // Layered starfield for depth
 
-  const baseStars = useMemo<Star[]>(() =>
-    Array.from({ length: counts.base }, () => ({
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 1.2 + 0.4,
-      delay: Math.random() * 8,
-      hue: 210 + Math.random() * 20, // cool white-blue tint
-      opacity: Math.random() * 0.5 + 0.3,
-      blur: Math.random() * 0.6,
-    })),
-  [counts.base]);
+  const createStars = useCallback(
+    (
+      amount: number,
+      options: {
+        size: [number, number];
+        delay: [number, number];
+        hue: [number, number];
+        opacity: [number, number];
+        blur: [number, number];
+        drift: number;
+        move: { base: number; variance: number };
+        twinkle: { base: number; variance: number };
+      }
+    ): Star[] =>
+      Array.from({ length: amount }, () => ({
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * (options.size[1] - options.size[0]) + options.size[0],
+        delay: Math.random() * (options.delay[1] - options.delay[0]) + options.delay[0],
+        hue: Math.random() * (options.hue[1] - options.hue[0]) + options.hue[0],
+        opacity:
+          Math.random() * (options.opacity[1] - options.opacity[0]) + options.opacity[0],
+        blur: Math.random() * (options.blur[1] - options.blur[0]) + options.blur[0],
+        driftX: (Math.random() - 0.5) * options.drift,
+        driftY: (Math.random() - 0.5) * options.drift,
+        moveDuration:
+          options.move.base + Math.random() * options.move.variance,
+        twinkleDuration:
+          options.twinkle.base + Math.random() * options.twinkle.variance,
+      })),
+    []
+  );
 
-  const midStars = useMemo<Star[]>(() =>
-    Array.from({ length: counts.mid }, () => ({
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 1.8 + 0.8,
-      delay: Math.random() * 10,
-      hue: 220 + Math.random() * 10,
-      opacity: Math.random() * 0.5 + 0.35,
-      blur: Math.random() * 0.8 + 0.2,
-    })),
-  [counts.mid]);
+  const baseStars = useMemo<Star[]>(
+    () =>
+      createStars(counts.base, {
+        size: [0.4, 1.6],
+        delay: [0, 8],
+        hue: [210, 230],
+        opacity: [0.3, 0.8],
+        blur: [0, 0.6],
+        drift: 50,
+        move: { base: 16, variance: 12 },
+        twinkle: { base: 5, variance: 7 },
+      }),
+    [counts.base, createStars]
+  );
 
-  const glowStars = useMemo<Star[]>(() =>
-    Array.from({ length: counts.glow }, () => ({
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 2.4 + 1.2,
-      delay: Math.random() * 12,
-      hue: 200 + Math.random() * 30,
-      opacity: Math.random() * 0.4 + 0.4,
-      blur: Math.random() * 1.2 + 0.4,
-    })),
-  [counts.glow]);
+  const midStars = useMemo<Star[]>(
+    () =>
+      createStars(counts.mid, {
+        size: [0.8, 2.6],
+        delay: [0, 10],
+        hue: [220, 230],
+        opacity: [0.35, 0.85],
+        blur: [0.2, 1],
+        drift: 80,
+        move: { base: 24, variance: 14 },
+        twinkle: { base: 6, variance: 8 },
+      }),
+    [counts.mid, createStars]
+  );
+
+  const glowStars = useMemo<Star[]>(
+    () =>
+      createStars(counts.glow, {
+        size: [1.2, 3.6],
+        delay: [0, 12],
+        hue: [200, 230],
+        opacity: [0.4, 0.8],
+        blur: [0.4, 1.6],
+        drift: 110,
+        move: { base: 32, variance: 16 },
+        twinkle: { base: 7, variance: 9 },
+      }),
+    [counts.glow, createStars]
+  );
 
   // Shooting stars removed per request
 
@@ -116,31 +166,31 @@ const Stars = () => {
           className="absolute inset-0 transform-gpu"
           style={{ contain: 'layout paint' }}
         >
-          {layer.map((s, i) => (
-            <div
-              key={`${li}-${i}`}
-              className="absolute rounded-full"
-              style={{
-                left: `${s.x}%`,
-                top: `${s.y}%`,
-                width: `${s.size}px`,
-                height: `${s.size}px`,
-                backgroundColor: `hsl(${s.hue}, 80%, 96%)`,
-                opacity: s.opacity,
-                // keep glow/filter only on the top glow layer to reduce paint cost
-                filter:
-                  li === 2
-                    ? `blur(${s.blur}px) drop-shadow(0 0 ${Math.max(1.5, s.size * 2)}px rgba(255,255,255,0.12))`
-                    : undefined,
-                animation: `star-move ${16 + li * 8 + Math.random() * 12}s ease-in-out ${s.delay}s infinite alternate, star-twinkle ${5 + Math.random() * 7}s ease-in-out ${s.delay}s infinite alternate`,
-                // gentle drift vector per-star
-                // @ts-ignore CSS var for keyframes
-                '--tw-translate-x': `${(Math.random() - 0.5) * (li === 0 ? 50 : li === 1 ? 80 : 110)}px`,
-                // @ts-ignore
-                '--tw-translate-y': `${(Math.random() - 0.5) * (li === 0 ? 50 : li === 1 ? 80 : 110)}px`,
-              } as React.CSSProperties}
-            />
-          ))}
+          {layer.map((s, i) => {
+            const starStyle: CSSProperties & Record<'--tw-translate-x' | '--tw-translate-y', string> = {
+              left: `${s.x}%`,
+              top: `${s.y}%`,
+              width: `${s.size}px`,
+              height: `${s.size}px`,
+              backgroundColor: `hsl(${s.hue}, 80%, 96%)`,
+              opacity: s.opacity,
+              filter:
+                li === 2
+                  ? `blur(${s.blur}px) drop-shadow(0 0 ${Math.max(1.5, s.size * 2)}px rgba(255,255,255,0.12))`
+                  : undefined,
+              animation: `star-move ${s.moveDuration}s ease-in-out ${s.delay}s infinite alternate, star-twinkle ${s.twinkleDuration}s ease-in-out ${s.delay}s infinite alternate`,
+              '--tw-translate-x': `${s.driftX}px`,
+              '--tw-translate-y': `${s.driftY}px`,
+            };
+
+            return (
+              <div
+                key={`${li}-${i}`}
+                className="absolute rounded-full"
+                style={starStyle}
+              />
+            );
+          })}
         </div>
       ))}
 

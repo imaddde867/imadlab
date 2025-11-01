@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
+import { Tag as TagChip } from '@/components/ui/tag';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Edit, Trash2, Eye, Calendar, Code, ExternalLink, FolderOpen } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Calendar, Code, ExternalLink, FolderOpen, Tag as TagIcon } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -62,6 +64,84 @@ const ManageProjects = () => {
       return data as Project[];
     }
   });
+
+  const totalProjects = projects?.length ?? 0;
+
+  const projectsThisMonth = useMemo(() => {
+    if (!projects?.length) return 0;
+    const now = new Date();
+    return projects.filter((project) => {
+      const created = new Date(project.created_at);
+      return (
+        created.getMonth() === now.getMonth() &&
+        created.getFullYear() === now.getFullYear()
+      );
+    }).length;
+  }, [projects]);
+
+  const projectsWithRepo = useMemo(() => {
+    if (!projects?.length) return 0;
+    return projects.filter((project) => Boolean(project.repo_url)).length;
+  }, [projects]);
+
+  const uniqueTechTags = useMemo(() => {
+    if (!projects?.length) return 0;
+    return new Set(projects.flatMap((project) => project.tech_tags || [])).size;
+  }, [projects]);
+
+  const headerMeta = useMemo(
+    () => [
+      {
+        label: `${totalProjects} active projects`,
+        icon: <FolderOpen className="h-3.5 w-3.5" aria-hidden="true" />,
+        variant: 'neutral' as const,
+      },
+      {
+        label: `${projectsWithRepo} with repo access`,
+        icon: <Code className="h-3.5 w-3.5" aria-hidden="true" />,
+        variant: 'outline' as const,
+      },
+      {
+        label: `${uniqueTechTags} tech tags`,
+        icon: <TagIcon className="h-3.5 w-3.5" aria-hidden="true" />,
+        variant: 'subtle' as const,
+      },
+      {
+        label: `${projectsThisMonth} this month`,
+        icon: <Calendar className="h-3.5 w-3.5" aria-hidden="true" />,
+        variant: 'subtle' as const,
+      },
+    ],
+    [projectsThisMonth, projectsWithRepo, totalProjects, uniqueTechTags]
+  );
+
+  const overviewStats = useMemo(
+    () => [
+      {
+        label: 'Total projects',
+        value: totalProjects,
+        icon: <FolderOpen className="h-4 w-4 text-white/80" aria-hidden="true" />,
+      },
+      {
+        label: 'Published this month',
+        value: projectsThisMonth,
+        icon: <Calendar className="h-4 w-4 text-emerald-300" aria-hidden="true" />,
+      },
+      {
+        label: 'Repositories linked',
+        value: projectsWithRepo,
+        icon: <Code className="h-4 w-4 text-sky-300" aria-hidden="true" />,
+      },
+      {
+        label: 'Unique tech tags',
+        value: uniqueTechTags,
+        icon: <TagIcon className="h-4 w-4 text-amber-300" aria-hidden="true" />,
+      },
+    ],
+    [projectsThisMonth, projectsWithRepo, totalProjects, uniqueTechTags]
+  );
+
+  const isProjectsLoading = isLoading || isFetching;
 
   const addProjectMutation = useMutation({
     mutationFn: async (newProject: Omit<Project, 'id' | 'created_at'>) => {
@@ -119,6 +199,8 @@ const ManageProjects = () => {
       toast({ title: 'Error updating project', description: error.message, variant: 'destructive' });
     }
   });
+
+  const isMutating = addProjectMutation.isPending || updateProjectMutation.isPending;
 
   const deleteProjectMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -192,95 +274,57 @@ const ManageProjects = () => {
 
   return (
     <div className="min-h-screen bg-black text-white py-12">
-      <div className="container-site">
-        <div className="mb-8">
-          <Link to="/admin" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Admin Dashboard
-          </Link>
-        </div>
-
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">Projects Management</h1>
-          <Button
-            onClick={() => { 
-              setShowForm(!showForm); 
-              setEditingProject(null); 
-              setFormData({ title: '', description: '', full_description: '', image_url: '', tech_tags: '', repo_url: '' }); 
-            }}
-            disabled={addProjectMutation.isPending || updateProjectMutation.isPending}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            {showForm ? 'Cancel' : 'New Project'}
-          </Button>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <FolderOpen className="w-4 h-4 text-green-400 mr-2" />
-                <div>
-                  <p className="text-sm text-white/60">Total Projects</p>
-                  <p className="text-2xl font-bold text-white">{projects?.length || 0}</p>
+      <div className="container-site space-y-10 pb-24">
+        <PageHeader
+          eyebrow="Admin Suite"
+          title="Projects"
+          description="Maintain and showcase the portfolio work powering imadlab."
+          breadcrumbs={[
+            { label: 'Admin', href: '/admin' },
+            { label: 'Projects', href: '/admin/projects' },
+          ]}
+          meta={headerMeta}
+          actions={
+            <Button
+              variant={showForm ? 'outline' : 'inverted'}
+              size="lg"
+              onClick={() => {
+                setShowForm(!showForm);
+                setEditingProject(null);
+                setFormData({ title: '', description: '', full_description: '', image_url: '', tech_tags: '', repo_url: '' });
+              }}
+              disabled={isMutating}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              {showForm ? 'Cancel' : 'New Project'}
+            </Button>
+          }
+        >
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {overviewStats.map((stat) => (
+              <div
+                key={stat.label}
+                className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 shadow-[0_16px_48px_rgba(15,23,42,0.45)] backdrop-blur-sm"
+              >
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
+                  {stat.icon}
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Calendar className="w-4 h-4 text-white mr-2" />
                 <div>
-                  <p className="text-sm text-white/60">This Month</p>
-                  <p className="text-2xl font-bold text-white">
-                    {projects?.filter(project => {
-                      const projectDate = new Date(project.created_at);
-                      const now = new Date();
-                      return projectDate.getMonth() === now.getMonth() && projectDate.getFullYear() === now.getFullYear();
-                    }).length || 0}
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/60">
+                    {stat.label}
                   </p>
+                  <p className="text-2xl font-bold text-white">{stat.value}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Code className="w-4 h-4 text-purple-400 mr-2" />
-                <div>
-                  <p className="text-sm text-white/60">With Repo</p>
-                  <p className="text-2xl font-bold text-white">
-                    {projects?.filter(project => project.repo_url).length || 0}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <ExternalLink className="w-4 h-4 text-orange-400 mr-2" />
-                <div>
-                  <p className="text-sm text-white/60">Tech Tags</p>
-                  <p className="text-2xl font-bold text-white">
-                    {projects ? new Set(projects.flatMap(project => project.tech_tags || [])).size : 0}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            ))}
+          </div>
+        </PageHeader>
 
         {showForm && (
-          <Card className="bg-white/5 border-white/10 mb-8">
+          <Card className="rounded-3xl border border-white/10 bg-white/5 shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-md">
             <CardHeader>
               <CardTitle className="text-white">{editingProject ? 'Edit Project' : 'Create New Project'}</CardTitle>
-              <CardDescription className="text-white/60">
+              <CardDescription className="text-white/70">
                 {editingProject ? 'Update your project details' : 'Add a new project to your portfolio'}
               </CardDescription>
             </CardHeader>
@@ -350,11 +394,11 @@ const ManageProjects = () => {
                   />
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-3">
                   <Button 
                     type="submit" 
-                    disabled={addProjectMutation.isPending || updateProjectMutation.isPending}
-                    className="bg-white/10 text-white hover:bg-white/20"
+                    variant="inverted"
+                    disabled={isMutating}
                   >
                     {editingProject 
                       ? (updateProjectMutation.isPending ? 'Updating...' : 'Update Project')
@@ -364,7 +408,6 @@ const ManageProjects = () => {
                   <Button 
                     type="button" 
                     variant="ghost"
-                    className="text-white hover:bg-white/10 hover:text-white"
                     onClick={() => {
                       setShowForm(false);
                       setEditingProject(null);
@@ -380,97 +423,136 @@ const ManageProjects = () => {
         )}
 
         {/* Projects List */}
-        <Card className="bg-white/5 border-white/10">
+        <Card className="rounded-3xl border border-white/10 bg-white/5 shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-md">
           <CardHeader>
             <CardTitle className="text-white">All Projects</CardTitle>
-            <CardDescription className="text-white/60">
+            <CardDescription className="text-white/70">
               Manage your portfolio projects and showcase your work
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {(isLoading || isFetching) ? (
-              <div className="text-center py-12">
-                <div className="text-white/60">Loading projects...</div>
+            {isProjectsLoading ? (
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
+                  >
+                    <Skeleton className="h-6 w-2/3" />
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Skeleton className="h-6 w-24 rounded-full" />
+                      <Skeleton className="h-6 w-20 rounded-full" />
+                      <Skeleton className="h-6 w-16 rounded-full" />
+                    </div>
+                    <Skeleton className="mt-5 h-4 w-full" />
+                    <Skeleton className="mt-2 h-4 w-3/5" />
+                    <div className="mt-6 flex flex-wrap gap-3">
+                      <Skeleton className="h-9 w-24 rounded-lg" />
+                      <Skeleton className="h-9 w-24 rounded-lg" />
+                      <Skeleton className="h-9 w-24 rounded-lg" />
+                    </div>
+                  </div>
+                ))}
               </div>
-            ) : projects && projects.length === 0 ? (
-              <div className="text-center py-12">
-                <FolderOpen className="w-12 h-12 text-white/20 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No projects yet</h3>
-                <p className="text-white/60 mb-4">Create your first project to showcase your work</p>
-                <Button onClick={() => setShowForm(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
+            ) : !projects || projects.length === 0 ? (
+              <div className="py-12 text-center">
+                <FolderOpen
+                  className="mx-auto mb-4 h-12 w-12 text-white/20"
+                  aria-hidden="true"
+                />
+                <h3 className="text-lg font-semibold text-white">No projects yet</h3>
+                <p className="mt-3 text-sm text-white/70">
+                  Create your first project to showcase your work.
+                </p>
+                <Button
+                  className="mt-6"
+                  variant="inverted"
+                  onClick={() => setShowForm(true)}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
                   Create First Project
                 </Button>
               </div>
             ) : (
               <div className="space-y-4">
-                {projects?.map((project) => (
-                  <div key={project.id} className="p-6 bg-white/5 border border-white/10 rounded-lg">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
+                {projects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="rounded-2xl border border-white/10 bg-black/60 p-6 shadow-[0_16px_48px_rgba(15,23,42,0.45)] backdrop-blur-sm transition hover:border-white/20"
+                  >
+                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                      <div className="flex-1 space-y-3">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                           <h3 className="text-xl font-semibold text-white">{project.title}</h3>
                           {project.tech_tags && project.tech_tags.length > 0 && (
-                            <div className="flex gap-1">
+                            <div className="flex flex-wrap gap-2">
                               {project.tech_tags.slice(0, 3).map((tech, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs">
+                                <TagChip
+                                  key={`${project.id}-tag-${index}`}
+                                  size="xs"
+                                  variant="outline"
+                                  className="text-white/80"
+                                >
                                   {tech}
-                                </Badge>
+                                </TagChip>
                               ))}
                               {project.tech_tags.length > 3 && (
-                                <Badge variant="secondary" className="text-xs">
+                                <TagChip size="xs" variant="subtle" className="text-white/80">
                                   +{project.tech_tags.length - 3}
-                                </Badge>
+                                </TagChip>
                               )}
                             </div>
                           )}
                         </div>
                         
-                        <p className="text-white/60 text-sm mb-3 line-clamp-2">
+                        <p className="text-sm text-white/70 line-clamp-2">
                           {project.description || 'No description available'}
                         </p>
                         
-                        <div className="flex items-center gap-4 text-xs text-white/40">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
+                        <div className="flex flex-wrap gap-4 text-xs text-white/60">
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="h-3.5 w-3.5 text-white/50" aria-hidden="true" />
                             {new Date(project.created_at).toLocaleDateString()}
                           </div>
+                          <div className="flex items-center gap-1.5">
+                            <ExternalLink className="h-3.5 w-3.5 text-white/50" aria-hidden="true" />
+                            /projects/{project.id}
+                          </div>
                           {project.repo_url && (
-                            <div className="flex items-center gap-1">
-                              <Code className="w-3 h-3" />
+                            <div className="flex items-center gap-1.5">
+                              <Code className="h-3.5 w-3.5 text-white/50" aria-hidden="true" />
                               Repository available
                             </div>
                           )}
-                          <div className="flex items-center gap-1">
-                            <ExternalLink className="w-3 h-3" />
-                            /projects/{project.id}
-                          </div>
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-2 ml-4">
-                        <Button 
-                          asChild 
-                          size="sm" 
-                          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Button
+                          asChild
+                          variant="soft"
+                          size="sm"
                         >
                           <Link to={`/projects/${project.id}`} target="_blank" rel="noopener noreferrer">
-                            <Eye className="w-4 h-4" />
+                            <Eye className="mr-2 h-4 w-4" />
+                            Preview
                           </Link>
                         </Button>
-                        <Button 
-                          size="sm" 
+                        <Button
+                          variant="soft"
+                          size="sm"
                           onClick={() => handleEditClick(project)}
-                          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
                         >
-                          <Edit className="w-4 h-4" />
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
                         </Button>
-                        <Button 
-                          size="sm" 
+                        <Button
+                          variant="destructive"
+                          size="sm"
                           onClick={() => handleDeleteClick(project.id)}
-                          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
                         </Button>
                       </div>
                     </div>
