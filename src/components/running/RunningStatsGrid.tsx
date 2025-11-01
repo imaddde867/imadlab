@@ -42,7 +42,7 @@ const RunningStatsGrid = ({ stats }: RunningStatsGridProps) => {
                 style={{ transitionDelay: ytdVisible ? `${(idx + 1) * 100}ms` : '0ms' }}
               >
                 <SpotlightCard spotlightColor="rgba(255, 255, 255, 0.15)">
-                  <div className="bg-white/5 border border-white/10 rounded-lg p-8 h-full group hover:bg-white/[0.07] transition-all duration-300">
+                  <div className="p-8 h-full group hover:bg-white/[0.02] transition-all duration-300">
                     <div className="flex items-start justify-between mb-6">
                       <div className="p-3 rounded-lg bg-white/10 group-hover:bg-white/20 transition-colors">
                         <stat.icon className="w-6 h-6" />
@@ -115,9 +115,9 @@ const RunningStatsGrid = ({ stats }: RunningStatsGridProps) => {
                 Elevation
               </div>
               <div className="text-4xl font-bold mb-1 group-hover:text-brand-gradient transition-all">
-                {(allTimeStats.elevation_gain / 1000).toFixed(1)}
+                {Math.round(allTimeStats.elevation_gain).toLocaleString()}
               </div>
-              <div className="text-xs text-white/40">km climbed</div>
+              <div className="text-xs text-white/40">meters climbed</div>
             </div>
           </div>
 
