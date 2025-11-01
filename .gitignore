@@ -1,31 +1,45 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
 # Dependency directories
 node_modules/
+.pnpm-store/
+.yarn/
+.cache/
 
 # Build outputs
 dist/
 dist-ssr/
 build/
 out/
+.next/
+.vercel/
+
+# Logs
+logs/
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.eslintcache
 
 # Environment variables
 .env
 .env.local
 .env.*.local
+.vercel/.env*
 
-# Editor directories and files
+# Editor / tooling
 .vscode/
-.kiro/
 .idea/
+.history/
 .DS_Store
+.kiro/
+.fleet/
+.c9/
+
+# IDE specific files
+*.iml
 *.suo
 *.ntvs*
 *.njsproj
@@ -33,34 +47,21 @@ out/
 *.sw?
 *.sublime-project
 *.sublime-workspace
-.history/
-
-# Test and coverage reports
-coverage/
-.nyc_output/
-.cache/
-
-# IDE specific files
-*.iml
-.project
-.classpath
-.c9/
-*.komodoproject
 
 # OS generated files
 .localized
 .Trashes
 Thumbs.db
+ehthumbs.db
 
-# TypeScript
+# TypeScript build info
 *.tsbuildinfo
 
-# Bun specific
-.bun/
+# Package managers
+bun.lockb
 bun.lockb.bak
-
-# Lock files (using bun.lockb)
 yarn.lock
+pnpm-lock.yaml
 
 # Temporary files
 *.tmp
@@ -68,7 +69,7 @@ yarn.lock
 *.swp
 *~
 
-# Supabase specific files
+# Supabase local artifacts
 supabase/config.toml
 supabase/db/
 supabase/.temp/
