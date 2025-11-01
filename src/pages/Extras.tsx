@@ -87,9 +87,9 @@ const Extras = () => {
             href="https://www.strava.com/athletes/124531733"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2.5 px-6 py-3 bg-[#FC4C02] hover:bg-[#E64402] border border-[#FC4C02] hover:border-[#E64402] rounded-lg transition-all font-medium text-sm group shadow-lg shadow-[#FC4C02]/20 hover:shadow-[#FC4C02]/30"
+            className="flex items-center gap-2.5 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/20 hover:border-[#FC4C02]/40 rounded-lg transition-all font-medium text-sm group"
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <svg className="w-5 h-5 text-[#FC4C02]" viewBox="0 0 24 24" fill="currentColor">
               <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
             </svg>
             <span>View on Strava</span>
