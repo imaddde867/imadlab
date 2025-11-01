@@ -1,6 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { stravaClient, type StravaStats as Stats, type StravaActivity } from '@/integrations/strava/client';
 import { Activity, TrendingUp, MapPin, Timer } from 'lucide-react';
+
+const formatDistance = (meters: number) => `${(meters / 1000).toFixed(1)} km`;
+const formatTime = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+};
 
 const StravaStats = () => {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -8,31 +15,24 @@ const StravaStats = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [statsData, activitiesData] = await Promise.all([
-          stravaClient.getAthleteStats(),
-          stravaClient.getRecentActivities(),
-        ]);
-        setStats(statsData);
-        setActivities(activitiesData);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load Strava data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+  const fetchData = useCallback(async () => {
+    try {
+      const [statsData, activitiesData] = await Promise.all([
+        stravaClient.getAthleteStats(),
+        stravaClient.getRecentActivities(),
+      ]);
+      setStats(statsData);
+      setActivities(activitiesData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load Strava data');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const formatDistance = (meters: number) => `${(meters / 1000).toFixed(1)} km`;
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-  };
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   if (loading) {
     return (
@@ -47,8 +47,11 @@ const StravaStats = () => {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-white/60">Unable to load Strava data</p>
-        <p className="text-sm text-white/40 mt-2">{error}</p>
+        <p className="text-white/60 mb-2">Unable to load Strava data</p>
+        <p className="text-sm text-white/40">{error}</p>
+        <p className="text-xs text-white/30 mt-4">
+          Check the Supabase Edge Function logs for more details
+        </p>
       </div>
     );
   }
