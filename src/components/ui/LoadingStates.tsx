@@ -107,7 +107,13 @@ export const ContentLoader: React.FC<{
   className?: string;
 }> = ({ text = 'Loading content...', variant = 'pulse', className }) => (
   <div className={cn('flex items-center justify-center py-16', className)}>
-    <Spinner size="md" variant={variant} text={text} />
+    <div className="relative flex w-full max-w-md flex-col items-center gap-4 rounded-2xl border border-white/10 bg-white/10 px-10 py-12 text-center shadow-[0_18px_60px_rgba(15,23,42,0.45)] backdrop-blur-xl">
+      <Spinner size="md" variant={variant} />
+      <div className="h-1 w-24 overflow-hidden rounded-full bg-white/10">
+        <div className="h-full w-1/2 animate-[loading-slide_1.8s_linear_infinite] bg-white/40" />
+      </div>
+      <p className="text-sm font-medium text-white/70">{text}</p>
+    </div>
   </div>
 );
 
