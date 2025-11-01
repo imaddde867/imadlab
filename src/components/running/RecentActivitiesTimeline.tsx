@@ -27,10 +27,7 @@ const RecentActivitiesTimeline = ({ activities }: RecentActivitiesTimelineProps)
   return (
     <div ref={elementRef}>
       <div className={`mb-8 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-        <h3 className="text-2xl font-bold mb-2 flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-[#FC4C02]/10 border border-[#FC4C02]/20">
-            <MapPin className="w-6 h-6 text-[#FC4C02]" />
-          </div>
+        <h3 className="text-2xl font-bold mb-2">
           Recent Adventures
         </h3>
         <p className="text-white/60">Latest runs from the road</p>
