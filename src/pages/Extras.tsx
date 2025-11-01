@@ -14,7 +14,7 @@ const Extras = () => {
       <div className="max-w-7xl mx-auto px-4 py-24">
         <SectionHeader
           title="Extras"
-          subtitle="Beyond the code — tracking my fitness journey"
+          subtitle={<>Beyond code<br />I LOVE running too!!</>}
         />
         <div className="mt-12">
           <StravaStats />
