@@ -4,14 +4,11 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Calendar, Code, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
 import Seo from '@/components/Seo';
-import { MarkdownComponents } from '@/components/MarkdownComponents';
 import { PageLoader } from '@/components/ui/LoadingStates';
 import BackRow from '@/components/BackRow';
 import { stripMarkdown } from '@/lib/markdown-utils';
+import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
 
 interface Project {
   id: string;
@@ -211,15 +208,7 @@ const ProjectDetail = () => {
       {/* Main Content */}
       <main className="container-narrow pb-16">
         {project.full_description ? (
-          <div className="prose prose-invert prose-lg max-w-none">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeRaw]}
-              components={MarkdownComponents}
-            >
-              {project.full_description}
-            </ReactMarkdown>
-          </div>
+          <GfmMarkdown source={project.full_description} className="prose-lg" />
         ) : (
           <div className="text-center py-12">
             <div className="text-white/60 mb-4">No detailed description available for this project.</div>
