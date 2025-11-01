@@ -96,6 +96,7 @@ const AnalyticsDashboard = () => {
 
   useEffect(() => {
     if (!loading) fetchAnalytics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange]);
 
   const totalViews = pageViews.length;
