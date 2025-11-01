@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/components/ui/page-header';
 import { Tag } from '@/components/ui/tag';
-import type { TagVariantProps } from '@/components/ui/tag.utils';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -13,6 +12,8 @@ import { Switch } from '@/components/ui/switch';
 import { ContentLoader } from '@/components/ui/LoadingStates';
 import { RefreshCw, Send, Eye, Users, Mail, TrendingUp, Trash2 } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
+
+type TagVariant = 'default' | 'subtle' | 'outline' | 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'info';
 
 type EmailQueueRow = Database['public']['Tables']['email_queue']['Row'];
 type NewsletterSubscriberRow = Database['public']['Tables']['newsletter_subscribers']['Row'];
@@ -186,21 +187,6 @@ const EmailDashboard = () => {
         const openedEmails = analytics.filter((entry) => entry.opened_at).length;
         const clickedEmails = analytics.filter((entry) => entry.clicked_at).length;
 
-        // Debug logging
-        console.log('📧 Email Analytics Debug:', {
-          totalAnalyticsRecords: analytics.length,
-          totalEmailsSent,
-          deliveredEmails,
-          openedEmails,
-          clickedEmails,
-          sampleRecords: analytics.slice(0, 3).map(a => ({
-            sent_at: a.sent_at,
-            delivered_at: a.delivered_at,
-            opened_at: a.opened_at,
-            clicked_at: a.clicked_at,
-          }))
-        });
-
         const summaries: SubscriberSummary[] = subscribers.map((subscriber) => ({
           email: subscriber.email,
           status: subscriber.status ?? 'active',
@@ -298,12 +284,6 @@ const EmailDashboard = () => {
           deliveryRate: totalEmailsSent > 0 ? (deliveredEmails / totalEmailsSent) * 100 : 0,
           openRate: baselineForOpen > 0 ? (openedEmails / baselineForOpen) * 100 : 0,
           clickRate: baselineForClick > 0 ? (clickedEmails / baselineForClick) * 100 : 0,
-        });
-
-        console.log('📊 Calculated Stats:', {
-          deliveryRate: totalEmailsSent > 0 ? ((deliveredEmails / totalEmailsSent) * 100).toFixed(2) + '%' : '0%',
-          openRate: baselineForOpen > 0 ? ((openedEmails / baselineForOpen) * 100).toFixed(2) + '%' : '0%',
-          clickRate: baselineForClick > 0 ? ((clickedEmails / baselineForClick) * 100).toFixed(2) + '%' : '0%',
         });
       }
     } catch (error) {
@@ -415,19 +395,19 @@ const EmailDashboard = () => {
     () => [
       {
         label: `${emailQueue.length} queue items`,
-        variant: 'outline' as TagVariantProps['variant'],
+        variant: 'outline' as TagVariant,
       },
       {
         label: `Blog auto-send ${blogAutoSend ? 'on' : 'off'}`,
-        variant: (blogAutoSend ? 'success' : 'warning') as TagVariantProps['variant'],
+        variant: (blogAutoSend ? 'success' : 'warning') as TagVariant,
       },
       {
         label: `Project auto-send ${projectAutoSend ? 'on' : 'off'}`,
-        variant: (projectAutoSend ? 'success' : 'warning') as TagVariantProps['variant'],
+        variant: (projectAutoSend ? 'success' : 'warning') as TagVariant,
       },
       {
         label: `${totalSubscribers} subscribers`,
-        variant: 'neutral' as TagVariantProps['variant'],
+        variant: 'neutral' as TagVariant,
       },
     ],
     [blogAutoSend, emailQueue.length, projectAutoSend, totalSubscribers]
@@ -683,7 +663,7 @@ const EmailDashboard = () => {
   const getSubscriberBadge = (status: SubscriberSummary['status'] | null | undefined) => {
     const value = status ?? 'active';
     const label = value.charAt(0).toUpperCase() + value.slice(1);
-    const variantMap: Record<string, TagVariantProps['variant']> = {
+    const variantMap: Record<string, TagVariant> = {
       active: 'success',
       inactive: 'warning',
       unsubscribed: 'danger',
