@@ -40,22 +40,34 @@ interface Post {
   image_url: string | null;
 }
 
+type PostFormState = {
+  title: string;
+  slug: string;
+  body: string;
+  excerpt: string;
+  tags: string;
+  image_url: string;
+};
+
+const createEmptyPostForm = (): PostFormState => ({
+  title: "",
+  slug: "",
+  body: "",
+  excerpt: "",
+  tags: "",
+  image_url: "",
+});
+
 const ManagePosts = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
-  const [formData, setFormData] = useState({
-    title: "",
-    slug: "",
-    body: "",
-    excerpt: "",
-    tags: "",
-    image_url: "",
-  });
+  const [formData, setFormData] = useState<PostFormState>(createEmptyPostForm);
   const [authChecked, setAuthChecked] = useState(false);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
 
   useEffect(() => {
     const checkUser = async () => {
@@ -95,33 +107,34 @@ const ManagePosts = () => {
     },
   });
 
-  const totalPosts = posts?.length ?? 0;
+  const postsList = useMemo(() => posts ?? [], [posts]);
+  const totalPosts = postsList.length;
 
   const postsThisMonth = useMemo(() => {
-    if (!posts?.length) return 0;
+    if (!postsList.length) return 0;
     const now = new Date();
-    return posts.filter((post) => {
+    return postsList.filter((post) => {
       const postDate = new Date(post.created_at);
       return (
         postDate.getMonth() === now.getMonth() &&
         postDate.getFullYear() === now.getFullYear()
       );
     }).length;
-  }, [posts]);
+  }, [postsList]);
 
   const averageReadTime = useMemo(() => {
-    if (!posts?.length) return 0;
-    const total = posts.reduce(
+    if (!postsList.length) return 0;
+    const total = postsList.reduce(
       (accumulator, post) => accumulator + (post.read_time || 0),
       0
     );
-    return Math.round(total / posts.length);
-  }, [posts]);
+    return Math.round(total / postsList.length);
+  }, [postsList]);
 
   const totalTags = useMemo(() => {
-    if (!posts?.length) return 0;
-    return new Set(posts.flatMap((post) => post.tags || [])).size;
-  }, [posts]);
+    if (!postsList.length) return 0;
+    return new Set(postsList.flatMap((post) => post.tags || [])).size;
+  }, [postsList]);
 
   const headerMeta = useMemo(
     () => [
@@ -195,16 +208,7 @@ const ManagePosts = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
-      setShowForm(false);
-      setEditingPost(null);
-      setFormData({
-        title: "",
-        slug: "",
-        body: "",
-        excerpt: "",
-        tags: "",
-        image_url: "",
-      });
+      closeForm();
       toast({ title: "Post added successfully!" });
     },
     onError: (error) => {
@@ -239,16 +243,7 @@ const ManagePosts = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
-      setShowForm(false);
-      setEditingPost(null);
-      setFormData({
-        title: "",
-        slug: "",
-        body: "",
-        excerpt: "",
-        tags: "",
-        image_url: "",
-      });
+      closeForm();
       toast({ title: "Post updated successfully!" });
     },
     onError: (error) => {
@@ -293,6 +288,28 @@ const ManagePosts = () => {
     const wordsPerMinute = 200;
     const words = text.split(/\s+/).filter((word) => word.length > 0).length;
     return Math.ceil(words / wordsPerMinute);
+  };
+
+  const resetForm = () => setFormData(createEmptyPostForm());
+
+  const closeForm = () => {
+    setShowForm(false);
+    setEditingPost(null);
+    resetForm();
+  };
+
+  const openCreateForm = () => {
+    setShowForm(true);
+    setEditingPost(null);
+    resetForm();
+  };
+
+  const handleToggleForm = () => {
+    if (showForm) {
+      closeForm();
+    } else {
+      openCreateForm();
+    }
   };
 
   const handleTitleChange = (title: string) => {
@@ -365,6 +382,8 @@ const ManagePosts = () => {
     );
   }
 
+  const hasPosts = postsList.length > 0;
+
   return (
     <div className="min-h-screen bg-black text-white py-12">
       <div className="container-site space-y-10 pb-24">
@@ -381,18 +400,7 @@ const ManagePosts = () => {
             <Button
               variant={showForm ? "outline" : "inverted"}
               size="lg"
-              onClick={() => {
-                setShowForm(!showForm);
-                setEditingPost(null);
-                setFormData({
-                  title: "",
-                  slug: "",
-                  body: "",
-                  excerpt: "",
-                  tags: "",
-                  image_url: "",
-                });
-              }}
+              onClick={handleToggleForm}
               disabled={isMutating}
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -539,18 +547,7 @@ const ManagePosts = () => {
                   <Button
                     type="button"
                     variant="ghost"
-                    onClick={() => {
-                      setShowForm(false);
-                      setEditingPost(null);
-                      setFormData({
-                        title: "",
-                        slug: "",
-                        body: "",
-                        excerpt: "",
-                        tags: "",
-                        image_url: "",
-                      });
-                    }}
+                    onClick={closeForm}
                   >
                     Cancel
                   </Button>
@@ -592,7 +589,7 @@ const ManagePosts = () => {
                   </div>
                 ))}
               </div>
-            ) : !posts || posts.length === 0 ? (
+            ) : !hasPosts ? (
               <div className="py-12 text-center">
                 <Eye
                   className="mx-auto mb-4 h-12 w-12 text-white/20"
@@ -607,7 +604,7 @@ const ManagePosts = () => {
                 <Button
                   className="mt-6"
                   variant="inverted"
-                  onClick={() => setShowForm(true)}
+                  onClick={openCreateForm}
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   Create First Post
@@ -615,7 +612,7 @@ const ManagePosts = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {posts.map((post) => (
+                {postsList.map((post) => (
                   <div
                     key={post.id}
                     className="rounded-2xl border border-white/10 bg-black/60 p-6 shadow-[0_16px_48px_rgba(15,23,42,0.45)] backdrop-blur-sm transition hover:border-white/20"
