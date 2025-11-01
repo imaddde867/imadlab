@@ -1,4 +1,4 @@
-import React, { useState, FormEvent, useRef, useEffect } from 'react';
+import { useState, type FormEvent, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -8,7 +8,7 @@ interface NewsletterSignupProps {
   className?: string;
 }
 
-const NewsletterSignup: React.FC<NewsletterSignupProps> = ({ className = '' }) => {
+const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error' | 'already-subscribed'>('idle');

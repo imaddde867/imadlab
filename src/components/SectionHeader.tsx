@@ -1,23 +1,23 @@
-import React from 'react';
 import { cn } from '@/lib/utils';
+import type { ReactNode } from 'react';
 
 type Align = 'left' | 'center';
 
 interface SectionHeaderProps {
-  title: React.ReactNode;
-  subtitle?: React.ReactNode;
-  description?: React.ReactNode;
+  title: ReactNode;
+  subtitle?: ReactNode;
+  description?: ReactNode;
   align?: Align;
   className?: string;
 }
 
-const SectionHeader: React.FC<SectionHeaderProps> = ({
+const SectionHeader = ({
   title,
   subtitle,
   description,
   align = 'left',
-  className,
-}) => {
+  className = '',
+}: SectionHeaderProps) => {
   const isCenter = align === 'center';
   return (
     <div className={cn('mb-16', isCenter ? 'text-center' : '', className)}>

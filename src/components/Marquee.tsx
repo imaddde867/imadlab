@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 interface MarqueeProps {
   words: string[];
@@ -11,7 +11,7 @@ const speedToDuration: Record<string, string> = {
   fast: '20s',
 };
 
-const Marquee: React.FC<MarqueeProps> = ({ words, speed = 'normal' }) => {
+const Marquee = ({ words, speed = 'normal' }: MarqueeProps) => {
   // Memoize shuffled words and random delay for efficiency
   const { shuffledWords, animationDelay, duration } = useMemo(() => {
     // Shuffle words

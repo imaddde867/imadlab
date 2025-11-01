@@ -1,12 +1,14 @@
-import React from 'react';
+import { type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
-// Inline spinner component
-const Spinner: React.FC<{
+interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg';
   variant?: 'default' | 'dots' | 'pulse' | 'orbit' | 'wave';
   text?: string;
-}> = ({ size = 'md', variant = 'default', text }) => {
+}
+
+// Inline spinner component
+const Spinner = ({ size = 'md', variant = 'default', text }: SpinnerProps) => {
   const sizeClasses = {
     sm: 'w-8 h-8',
     md: 'w-12 h-12',
@@ -54,7 +56,7 @@ const Spinner: React.FC<{
 };
 
 // Card skeleton loader
-export const CardSkeleton: React.FC<{ className?: string }> = ({ className }) => (
+export const CardSkeleton = ({ className }: { className?: string }) => (
   <div className={cn('bg-white/5 border border-white/10 rounded-2xl p-6 animate-pulse', className)}>
     <div className="space-y-4">
       {/* Image placeholder */}
@@ -88,11 +90,13 @@ export const CardSkeleton: React.FC<{ className?: string }> = ({ className }) =>
   </div>
 );
 
-// Page loading overlay
-export const PageLoader: React.FC<{ 
+interface PageLoaderProps {
   text?: string;
   variant?: 'default' | 'dots' | 'pulse' | 'orbit' | 'wave';
-}> = ({ text = 'Loading...', variant = 'orbit' }) => (
+}
+
+// Page loading overlay
+export const PageLoader = ({ text = 'Loading...', variant = 'orbit' }: PageLoaderProps) => (
   <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
     <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 shadow-2xl">
       <Spinner size="lg" variant={variant} text={text} />
@@ -100,12 +104,14 @@ export const PageLoader: React.FC<{
   </div>
 );
 
-// Content area loader
-export const ContentLoader: React.FC<{ 
+interface ContentLoaderProps {
   text?: string;
   variant?: 'default' | 'dots' | 'pulse' | 'orbit' | 'wave';
   className?: string;
-}> = ({ text = 'Loading content...', variant = 'pulse', className }) => (
+}
+
+// Content area loader
+export const ContentLoader = ({ text = 'Loading content...', variant = 'pulse', className }: ContentLoaderProps) => (
   <div className={cn('flex items-center justify-center py-16', className)}>
     <div className="relative flex w-full max-w-md flex-col items-center gap-4 rounded-2xl border border-white/10 bg-white/10 px-10 py-12 text-center shadow-[0_18px_60px_rgba(15,23,42,0.45)] backdrop-blur-xl">
       <Spinner size="md" variant={variant} />
@@ -117,12 +123,14 @@ export const ContentLoader: React.FC<{
   </div>
 );
 
-// Form submission loader
-export const FormLoader: React.FC<{ 
+interface FormLoaderProps {
   text?: string;
   success?: boolean;
   error?: boolean;
-}> = ({ text = 'Processing...', success, error }) => {
+}
+
+// Form submission loader
+export const FormLoader = ({ text = 'Processing...', success, error }: FormLoaderProps) => {
   if (success) {
     return (
       <div className="flex items-center gap-2 text-green-400">
@@ -153,12 +161,14 @@ export const FormLoader: React.FC<{
   );
 };
 
-// Grid skeleton for multiple cards
-export const GridSkeleton: React.FC<{ 
+interface GridSkeletonProps {
   count?: number;
   columns?: 1 | 2 | 3 | 4;
   className?: string;
-}> = ({ count = 6, columns = 3, className }) => (
+}
+
+// Grid skeleton for multiple cards
+export const GridSkeleton = ({ count = 6, columns = 3, className }: GridSkeletonProps) => (
   <div className={cn(
     'grid gap-6',
     columns === 1 && 'grid-cols-1',
@@ -173,11 +183,13 @@ export const GridSkeleton: React.FC<{
   </div>
 );
 
-// Text skeleton for blog content
-export const TextSkeleton: React.FC<{ 
+interface TextSkeletonProps {
   lines?: number;
   className?: string;
-}> = ({ lines = 5, className }) => (
+}
+
+// Text skeleton for blog content
+export const TextSkeleton = ({ lines = 5, className }: TextSkeletonProps) => (
   <div className={cn('space-y-3 animate-pulse', className)}>
     {Array.from({ length: lines }).map((_, i) => (
       <div
@@ -192,9 +204,7 @@ export const TextSkeleton: React.FC<{
 );
 
 // Branded loading screen for app initialization
-export const BrandedLoader: React.FC<{ 
-  text?: string;
-}> = ({ text = 'Loading imadlab...' }) => (
+export const BrandedLoader = ({ text = 'Loading imadlab...' }: { text?: string }) => (
   <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
     <div className="text-center">
       {/* Animated logo/brand element */}
@@ -235,11 +245,13 @@ export const BrandedLoader: React.FC<{
   </div>
 );
 
-// Inline button loader
-export const ButtonLoader: React.FC<{ 
+interface ButtonLoaderProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
-}> = ({ size = 'md', className }) => {
+}
+
+// Inline button loader
+export const ButtonLoader = ({ size = 'md', className }: ButtonLoaderProps) => {
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-5 h-5',

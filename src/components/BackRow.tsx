@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom';
-import React from 'react';
+import type { ReactNode } from 'react';
 
 interface BackRowProps {
   to: string;
   label: string;
-  icon?: React.ReactNode;
-  right?: React.ReactNode;
+  icon?: ReactNode;
+  right?: ReactNode;
 }
 
-const BackRow: React.FC<BackRowProps> = ({ to, label, icon, right }) => {
+const BackRow = ({ to, label, icon, right }: BackRowProps) => {
   return (
     <div className="container-narrow pt-6">
       <div className="flex items-center justify-between text-sm text-white/70">
