@@ -30,7 +30,7 @@ const RecentActivitiesTimeline = ({ activities }: RecentActivitiesTimelineProps)
         <h3 className="text-2xl font-bold mb-2">
           Recent Entries
         </h3>
-        <p className="text-white/60">Latest runs from the road</p>
+        <p className="text-white/60">Latest runs</p>
       </div>
 
       <div className="space-y-3">
