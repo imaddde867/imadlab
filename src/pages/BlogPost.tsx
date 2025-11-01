@@ -158,11 +158,7 @@ const BlogPost = () => {
       {/* Main Content */}
       <main className="container-narrow pb-16">
         {post.body ? (
-          <GfmMarkdown
-            source={post.body}
-            className="prose-lg"
-            config={{ showToc: true, tocDepth: 4 }}
-          />
+          <GfmMarkdown source={post.body} className="prose-lg" />
         ) : (
           <div className="text-center py-12">
             <div className="text-white/60 mb-4">No content available for this article.</div>
