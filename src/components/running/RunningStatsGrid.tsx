@@ -24,7 +24,9 @@ const RunningStatsGrid = ({ stats }: RunningStatsGridProps) => {
         <div ref={ytdRef}>
           <div className={`mb-8 transition-all duration-700 ${ytdVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <h3 className="text-2xl font-bold mb-2 flex items-center gap-3">
-              <TrendingUp className="w-6 h-6" />
+              <div className="p-2 rounded-lg bg-[#FC4C02]/10 border border-[#FC4C02]/20">
+                <TrendingUp className="w-6 h-6 text-[#FC4C02]" />
+              </div>
               {new Date().getFullYear()} Progress
             </h3>
             <p className="text-white/60">Your journey so far this year</p>
@@ -41,17 +43,17 @@ const RunningStatsGrid = ({ stats }: RunningStatsGridProps) => {
                 className={`transition-all duration-700 ${ytdVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
                 style={{ transitionDelay: ytdVisible ? `${(idx + 1) * 100}ms` : '0ms' }}
               >
-                <SpotlightCard spotlightColor="rgba(255, 255, 255, 0.15)">
+                <SpotlightCard spotlightColor="rgba(252, 76, 2, 0.15)">
                   <div className="p-8 h-full group hover:bg-white/[0.02] transition-all duration-300">
                     <div className="flex items-start justify-between mb-6">
-                      <div className="p-3 rounded-lg bg-white/10 group-hover:bg-white/20 transition-colors">
-                        <stat.icon className="w-6 h-6" />
+                      <div className="p-3 rounded-lg bg-[#FC4C02]/10 group-hover:bg-[#FC4C02]/20 transition-colors border border-[#FC4C02]/20">
+                        <stat.icon className="w-6 h-6 text-[#FC4C02]" />
                       </div>
                       <div className="text-xs text-white/40 bg-white/5 px-3 py-1 rounded-full">
                         {stat.label}
                       </div>
                     </div>
-                    <div className="text-5xl font-bold mb-2 text-brand-gradient">
+                    <div className="text-5xl font-bold mb-2 group-hover:text-[#FC4C02] transition-colors">
                       {stat.value}
                     </div>
                     <div className="text-sm text-white/50">{stat.subtitle}</div>
@@ -68,7 +70,9 @@ const RunningStatsGrid = ({ stats }: RunningStatsGridProps) => {
         <div ref={allTimeRef}>
           <div className={`mb-8 transition-all duration-700 ${allTimeVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <h3 className="text-2xl font-bold mb-2 flex items-center gap-3">
-              <Trophy className="w-6 h-6" />
+              <div className="p-2 rounded-lg bg-[#FC4C02]/10 border border-[#FC4C02]/20">
+                <Trophy className="w-6 h-6 text-[#FC4C02]" />
+              </div>
               Lifetime Achievements
             </h3>
             <p className="text-white/60">The complete journey</p>
