@@ -95,6 +95,7 @@ const mathSchemaExtensions: Schema = {
     details: [...(defaultSchema.attributes?.details ?? []), 'open'],
     video: [
       ...(defaultSchema.attributes?.video ?? []),
+      'src',
       'controls',
       'autoplay',
       'loop',
@@ -104,6 +105,11 @@ const mathSchemaExtensions: Schema = {
       'preload',
       'height',
       'width',
+    ],
+    source: [
+      ...(defaultSchema.attributes?.source ?? []),
+      'src',
+      'type',
     ],
     audio: [
       ...(defaultSchema.attributes?.audio ?? []),
@@ -583,7 +589,7 @@ export const GfmMarkdown = ({
   const activeHeading = useActiveHeading(filteredHeadings);
 
   const components = useMemo<Components>(() => {
-    const mapping: Components = {
+    const mapping = {
       h1: (props) => <HeadingRenderer level={1} {...props} />,
       h2: (props) => <HeadingRenderer level={2} {...props} />,
       h3: (props) => <HeadingRenderer level={3} {...props} />,
@@ -651,7 +657,7 @@ export const GfmMarkdown = ({
         </a>
       ),
       footnote: FootnotesContainer,
-    };
+    } as Components;
 
     return mapping;
   }, [
