@@ -37,23 +37,17 @@ CREATE POLICY "Allow public insert on visitor_sessions" ON visitor_sessions
 CREATE POLICY "Allow public insert on page_views" ON page_views
   FOR INSERT WITH CHECK (true);
 
--- Only admins can view analytics
-CREATE POLICY "Admin users can view visitor_sessions" ON visitor_sessions
-  FOR SELECT USING (
-    auth.role() = 'authenticated' AND 
-    EXISTS (
-      SELECT 1 FROM auth.users 
-      WHERE auth.users.id = auth.uid() 
-      AND auth.users.raw_user_meta_data->>'role' = 'admin'
-    )
-  );
+-- Allow public selects (needed for UPSERT operations)
+-- Analytics data is not sensitive, dashboard access is controlled by app-level auth
+CREATE POLICY "Allow public select on visitor_sessions" ON visitor_sessions
+  FOR SELECT USING (true);
 
-CREATE POLICY "Admin users can view page_views" ON page_views
-  FOR SELECT USING (
-    auth.role() = 'authenticated' AND 
-    EXISTS (
-      SELECT 1 FROM auth.users 
-      WHERE auth.users.id = auth.uid() 
-      AND auth.users.raw_user_meta_data->>'role' = 'admin'
-    )
-  );
+CREATE POLICY "Allow public select on page_views" ON page_views
+  FOR SELECT USING (true);
+
+-- Allow public updates (for session activity and page duration)
+CREATE POLICY "Allow public update on visitor_sessions" ON visitor_sessions
+  FOR UPDATE USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow public update on page_views" ON page_views
+  FOR UPDATE USING (true) WITH CHECK (true);
