@@ -3,16 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import ReactMarkdown from 'react-markdown';
-import type { Components } from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
 import Seo from '@/components/Seo';
-import { MarkdownComponents } from '@/components/MarkdownComponents';
 import { calculateReadingTime, stripMarkdown } from '@/lib/markdown-utils';
 import { PageLoader } from '@/components/ui/LoadingStates';
 import BackRow from '@/components/BackRow';
 import TagList from '@/components/TagList';
+import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
 
 interface Post {
   id: string;
@@ -162,15 +158,11 @@ const BlogPost = () => {
       {/* Main Content */}
       <main className="container-narrow pb-16">
         {post.body ? (
-          <div className="prose prose-invert prose-lg max-w-none">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeRaw]}
-              components={MarkdownComponents as Components}
-            >
-              {post.body}
-            </ReactMarkdown>
-          </div>
+          <GfmMarkdown
+            source={post.body}
+            className="prose-lg"
+            config={{ showToc: true, tocDepth: 4 }}
+          />
         ) : (
           <div className="text-center py-12">
             <div className="text-white/60 mb-4">No content available for this article.</div>
