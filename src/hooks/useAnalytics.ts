@@ -2,6 +2,11 @@ import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { isAllowed } from '@/lib/consent';
+import { 
+  getAnalyticsMetadata, 
+  extractUTMParams, 
+  getTrafficSource 
+} from '@/lib/analytics-utils';
 
 const generateSessionId = (): string => {
   const stored = sessionStorage.getItem('analytics_session_id');
@@ -25,12 +30,22 @@ export const useAnalytics = () => {
 
     // Create or update session
     const initSession = async () => {
+      const metadata = await getAnalyticsMetadata();
+      
+      console.log('📊 Analytics metadata collected:', metadata);
+      
       const { data, error } = await supabase
         .from('visitor_sessions')
         .upsert({
           session_id: sessionId,
           last_activity: new Date().toISOString(),
-          user_agent: navigator.userAgent,
+          user_agent: metadata.user_agent,
+          device_type: metadata.device_type,
+          browser: metadata.browser,
+          os: metadata.os,
+          screen_resolution: metadata.screen_resolution,
+          language: metadata.language,
+          timezone: metadata.timezone,
         }, { onConflict: 'session_id' });
 
       if (error) {
@@ -39,6 +54,21 @@ export const useAnalytics = () => {
       } else {
         console.log('✅ Analytics session created/updated:', sessionId);
         sessionInitialized.current = true;
+        
+        // Call geolocation edge function to enrich session with location data
+        try {
+          const { data: functionData, error: functionError } = await supabase.functions.invoke('geolocation', {
+            body: { session_id: sessionId }
+          });
+          
+          if (functionError) {
+            console.warn('⚠️ Geolocation function error:', functionError);
+          } else if (functionData?.location) {
+            console.log('✅ Geolocation data retrieved:', functionData.location);
+          }
+        } catch (geoError) {
+          console.warn('⚠️ Failed to fetch geolocation:', geoError);
+        }
       }
     };
 
@@ -61,19 +91,48 @@ export const useAnalytics = () => {
         attempts++;
       }
 
+      // Get analytics metadata
+      const metadata = await getAnalyticsMetadata();
+      
+      // Extract UTM parameters from current URL
+      const utmParams = extractUTMParams(window.location.href);
+      
+      // Determine traffic source
+      const referrer = document.referrer || null;
+      const trafficSource = getTrafficSource(referrer, utmParams.utm_source);
+
+      console.log('Page view data:', {
+        path: location.pathname,
+        trafficSource,
+        device: metadata.device_type,
+        browser: metadata.browser,
+        os: metadata.os,
+        referrer,
+        ...utmParams
+      });
+
       const { data, error } = await supabase
         .from('page_views')
         .insert({
           session_id: sessionId,
           path: location.pathname,
-          referrer: document.referrer || null,
+          referrer: referrer,
+          traffic_source: trafficSource,
+          utm_source: utmParams.utm_source || null,
+          utm_medium: utmParams.utm_medium || null,
+          utm_campaign: utmParams.utm_campaign || null,
+          utm_term: utmParams.utm_term || null,
+          utm_content: utmParams.utm_content || null,
+          device_type: metadata.device_type,
+          browser: metadata.browser,
+          os: metadata.os,
         });
 
       if (error) {
         console.error('❌ Analytics page view error:', error);
         console.error('Error details:', JSON.stringify(error, null, 2));
       } else {
-        console.log('✅ Page view tracked:', location.pathname);
+        console.log('✅ Page view tracked:', location.pathname, { trafficSource, ...utmParams });
       }
     };
 
