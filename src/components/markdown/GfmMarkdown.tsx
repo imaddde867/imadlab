@@ -488,12 +488,11 @@ export const GfmMarkdown = ({
   const mergedConfig = { ...defaultConfig, ...(config ?? {}) };
   const [headings, setHeadings] = useState<HeadingEntry[]>([]);
 
-  const slugger = useMemo(() => {
-    const instance = new GithubSlugger();
-    instance.reset();
-    void source;
-    return instance;
-  }, [source]);
+  const slugger = useMemo(() => new GithubSlugger(), []);
+
+  useEffect(() => {
+    slugger.reset();
+  }, [slugger, source]);
 
   const repositorySlug = useMemo(() => {
     if (repository?.owner && repository?.name) {
@@ -606,7 +605,7 @@ export const GfmMarkdown = ({
       tbody: TableBody,
       th: TableHeaderCell,
       td: TableCell,
-      code: ({ inline, className, children, node, ...rest }) => {
+      code: ({ inline, className, children, node }) => {
         const nodeType = (node as { type?: string } | undefined)?.type;
         const isBlockCode = nodeType === 'code';
 
@@ -623,9 +622,7 @@ export const GfmMarkdown = ({
           );
         }
 
-        return (
-          <CodeBlock code={codeString} language={language} meta={meta} {...rest} />
-        );
+        return <CodeBlock code={codeString} language={language} meta={meta} />;
       },
       a: LinkRenderer,
       img: (props) =>
