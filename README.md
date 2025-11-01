@@ -119,12 +119,4 @@ imadlab demonstrates:
   <a href="https://imadlab.me">
     <img src="https://img.shields.io/badge/Visit_Live_Site-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Site">
   </a>
-  <a href="https://github.com/imaddde867/imadlab">
-    <img src="https://img.shields.io/badge/View_Source_Code-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
-  </a>
 </div>
-
-<p align="center">
-  <a href="https://imadlab.me#contact">Contact</a> ·
-  <a href="https://www.linkedin.com/in/imad-eddine-elmouss/">LinkedIn</a> ·
-</p>
