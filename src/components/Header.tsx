@@ -31,6 +31,7 @@ const Header = () => {
           {[
             { to: '/projects', label: 'Projects' },
             { to: '/blogs', label: 'Blogs' },
+            { to: '/extras', label: 'Extras' },
             { to: '/about', label: 'About' },
           ].map((item) => (
             <NavLink
