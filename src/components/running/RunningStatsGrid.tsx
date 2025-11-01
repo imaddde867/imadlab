@@ -23,10 +23,7 @@ const RunningStatsGrid = ({ stats }: RunningStatsGridProps) => {
       {ytdStats && ytdStats.count > 0 && (
         <div ref={ytdRef}>
           <div className={`mb-8 transition-all duration-700 ${ytdVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <h3 className="text-2xl font-bold mb-2 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[#FC4C02]/10 border border-[#FC4C02]/20">
-                <TrendingUp className="w-6 h-6 text-[#FC4C02]" />
-              </div>
+            <h3 className="text-2xl font-bold mb-2">
               {new Date().getFullYear()} Progress
             </h3>
             <p className="text-white/60">Your journey so far this year</p>
@@ -69,10 +66,7 @@ const RunningStatsGrid = ({ stats }: RunningStatsGridProps) => {
       {allTimeStats && allTimeStats.count > 0 && (
         <div ref={allTimeRef}>
           <div className={`mb-8 transition-all duration-700 ${allTimeVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <h3 className="text-2xl font-bold mb-2 flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[#FC4C02]/10 border border-[#FC4C02]/20">
-                <Trophy className="w-6 h-6 text-[#FC4C02]" />
-              </div>
+            <h3 className="text-2xl font-bold mb-2">
               Lifetime Achievements
             </h3>
             <p className="text-white/60">The complete journey</p>
