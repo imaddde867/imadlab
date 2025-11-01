@@ -13,7 +13,7 @@ const YearInMotion = ({ activities }: YearInMotionProps) => {
   
   const last3MonthsData = useMemo(() => {
     const now = new Date();
-    const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+    const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
     
     // Filter activities from last 3 months
     const recentActivities = activities.filter(activity => {
@@ -21,7 +21,7 @@ const YearInMotion = ({ activities }: YearInMotionProps) => {
       return activityDate >= threeMonthsAgo;
     });
 
-    // Group by week for smoother line
+    // Group by week for smoother visualization
     const weeklyData: { date: Date; distance: number; count: number }[] = [];
     const weekMap = new Map<string, { distance: number; count: number }>();
 
@@ -59,7 +59,7 @@ const YearInMotion = ({ activities }: YearInMotionProps) => {
   const totalDistance = last3MonthsData.reduce((sum, w) => sum + w.distance, 0);
   const totalRuns = last3MonthsData.reduce((sum, w) => sum + w.count, 0);
 
-  // Generate SVG path for line chart
+  // Generate SVG path for smooth line chart
   const generatePath = () => {
     if (last3MonthsData.length === 0) return '';
     
@@ -70,18 +70,22 @@ const YearInMotion = ({ activities }: YearInMotionProps) => {
     const points = last3MonthsData.map((data, idx) => {
       const x = padding + ((width - 2 * padding) / Math.max(last3MonthsData.length - 1, 1)) * idx;
       const y = height - padding - ((height - 2 * padding) * (data.distance / maxDistance));
-      return { x, y, data };
+      return { x, y };
     });
 
-    // Create smooth curve using quadratic bezier
+    if (points.length === 1) {
+      return `M ${points[0].x} ${points[0].y}`;
+    }
+
+    // Create smooth curve
     let path = `M ${points[0].x} ${points[0].y}`;
     
-    for (let i = 0; i < points.length - 1; i++) {
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
       const current = points[i];
-      const next = points[i + 1];
-      const midX = (current.x + next.x) / 2;
-      path += ` Q ${current.x} ${current.y} ${midX} ${(current.y + next.y) / 2}`;
-      path += ` Q ${next.x} ${next.y} ${next.x} ${next.y}`;
+      const cpX = (prev.x + current.x) / 2;
+      path += ` Q ${cpX} ${prev.y}, ${cpX} ${(prev.y + current.y) / 2}`;
+      path += ` Q ${cpX} ${current.y}, ${current.x} ${current.y}`;
     }
 
     return path;
@@ -102,72 +106,97 @@ const YearInMotion = ({ activities }: YearInMotionProps) => {
         </div>
       </div>
 
-      {/* Line Chart */}
+      {/* Activity Chart */}
       <div className={`relative transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-        <div className="bg-white/5 border border-white/10 rounded-lg p-6 h-64">
+        <div className="bg-white/5 border border-white/10 rounded-lg p-8">
           {last3MonthsData.length > 0 ? (
-            <svg viewBox="0 0 100 100" className="w-full h-full" preserveAspectRatio="none">
-              {/* Grid lines */}
-              <line x1="5" y1="25" x2="95" y2="25" stroke="rgba(255,255,255,0.05)" strokeWidth="0.2" />
-              <line x1="5" y1="50" x2="95" y2="50" stroke="rgba(255,255,255,0.05)" strokeWidth="0.2" />
-              <line x1="5" y1="75" x2="95" y2="75" stroke="rgba(255,255,255,0.05)" strokeWidth="0.2" />
-              
-              {/* Area fill */}
-              <defs>
-                <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(255,255,255,0.2)" />
-                  <stop offset="100%" stopColor="rgba(255,255,255,0.0)" />
-                </linearGradient>
-              </defs>
-              
-              {/* Fill area under curve */}
-              {last3MonthsData.length > 1 && (
-                <path
-                  d={`${generatePath()} L 95 95 L 5 95 Z`}
-                  fill="url(#lineGradient)"
-                  opacity="0.3"
-                />
-              )}
-              
-              {/* Line */}
-              <path
-                d={generatePath()}
-                fill="none"
-                stroke="rgba(255,255,255,0.8)"
-                strokeWidth="0.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{
-                  filter: 'drop-shadow(0 0 2px rgba(255,255,255,0.5))',
-                }}
-              />
-              
-              {/* Data points */}
-              {last3MonthsData.map((data, idx) => {
-                const width = 100;
-                const height = 100;
-                const padding = 5;
-                const x = padding + ((width - 2 * padding) / Math.max(last3MonthsData.length - 1, 1)) * idx;
-                const y = height - padding - ((height - 2 * padding) * (data.distance / maxDistance));
+            <div className="space-y-3">
+              <svg viewBox="0 0 100 100" className="w-full h-56" preserveAspectRatio="none">
+                {/* Subtle grid lines */}
+                <line x1="5" y1="25" x2="95" y2="25" stroke="rgba(255,255,255,0.03)" strokeWidth="0.2" />
+                <line x1="5" y1="50" x2="95" y2="50" stroke="rgba(255,255,255,0.03)" strokeWidth="0.2" />
+                <line x1="5" y1="75" x2="95" y2="75" stroke="rgba(255,255,255,0.03)" strokeWidth="0.2" />
                 
-                return (
-                  <circle
-                    key={idx}
-                    cx={x}
-                    cy={y}
-                    r="0.8"
-                    fill="rgba(255,255,255,0.9)"
-                    className="hover:r-1.5 transition-all cursor-pointer"
-                  >
-                    <title>
-                      {data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}: {formatDistanceCompact(data.distance)} km
-                    </title>
-                  </circle>
-                );
-              })}
-            </svg>
+                {/* Gradient fill */}
+                <defs>
+                  <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="rgba(255,255,255,0.12)" />
+                    <stop offset="100%" stopColor="rgba(255,255,255,0.0)" />
+                  </linearGradient>
+                </defs>
+                
+                {/* Fill area under curve */}
+                {last3MonthsData.length > 1 && (
+                  <path
+                    d={`${generatePath()} L 95 95 L 5 95 Z`}
+                    fill="url(#areaGradient)"
+                  />
+                )}
+                
+                {/* Main line */}
+                <path
+                  d={generatePath()}
+                  fill="none"
+                  stroke="rgba(255,255,255,0.85)"
+                  strokeWidth="0.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                
+                {/* Data points */}
+                {last3MonthsData.map((data, idx) => {
+                  const width = 100;
+                  const height = 100;
+                  const padding = 5;
+                  const x = padding + ((width - 2 * padding) / Math.max(last3MonthsData.length - 1, 1)) * idx;
+                  const y = height - padding - ((height - 2 * padding) * (data.distance / maxDistance));
+                  
+                  return (
+                    <circle
+                      key={idx}
+                      cx={x}
+                      cy={y}
+                      r="1"
+                      fill="rgba(255,255,255,0.9)"
+                      className="hover:r-1.5 transition-all cursor-pointer"
+                    >
+                      <title>
+                        {data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}: {formatDistanceCompact(data.distance)} km
+                      </title>
+                    </circle>
+                  );
+                })}
+              </svg>
+              
+              {/* Month labels on X axis */}
+              <div className="flex justify-between px-1 -mt-2">
+                {(() => {
+                  const months = new Set<string>();
+                  const monthPositions: { month: string; position: number }[] = [];
+                  
+                  last3MonthsData.forEach((data, idx) => {
+                    const month = data.date.toLocaleDateString('en-US', { month: 'short' });
+                    if (!months.has(month)) {
+                      months.add(month);
+                      const position = (idx / Math.max(last3MonthsData.length - 1, 1)) * 100;
+                      monthPositions.push({ month, position });
+                    }
+                  });
+                  
+                  return monthPositions.map((item, idx) => (
+                    <div 
+                      key={idx} 
+                      className="text-xs text-white/50"
+                      style={{ position: 'absolute', left: `${item.position}%` }}
+                    >
+                      {item.month}
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
           ) : (
-            <div className="flex items-center justify-center h-full text-white/40">
+            <div className="flex items-center justify-center h-64 text-white/40">
               No activity data for the last 3 months
             </div>
           )}
@@ -175,40 +204,31 @@ const YearInMotion = ({ activities }: YearInMotionProps) => {
       </div>
 
       {/* Stats summary */}
-      <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-        <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-          <div className="text-sm text-white/60 mb-1">Avg per Week</div>
-          <div className="text-2xl font-bold">
-            {last3MonthsData.length > 0 ? formatDistanceCompact(totalDistance / last3MonthsData.length) : '0'} km
+      <div className={`grid grid-cols-3 gap-4 transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        <div className="bg-white/5 border border-white/10 rounded-lg p-5 text-center">
+          <div className="text-xs text-white/50 mb-2">Total Distance</div>
+          <div className="text-3xl font-bold mb-1">
+            {formatDistanceCompact(totalDistance)}
           </div>
+          <div className="text-xs text-white/40">km</div>
         </div>
         
-        <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-          <div className="text-sm text-white/60 mb-1">Best Week</div>
-          <div className="text-2xl font-bold">
+        <div className="bg-white/5 border border-white/10 rounded-lg p-5 text-center">
+          <div className="text-xs text-white/50 mb-2">Total Runs</div>
+          <div className="text-3xl font-bold mb-1">
+            {totalRuns}
+          </div>
+          <div className="text-xs text-white/40">activities</div>
+        </div>
+        
+        <div className="bg-white/5 border border-white/10 rounded-lg p-5 text-center">
+          <div className="text-xs text-white/50 mb-2">Best Week</div>
+          <div className="text-3xl font-bold mb-1">
             {last3MonthsData.length > 0 
               ? formatDistanceCompact(Math.max(...last3MonthsData.map(w => w.distance))) 
-              : '0'} km
+              : '0'}
           </div>
-        </div>
-        
-        <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-          <div className="text-sm text-white/60 mb-1">Active Weeks</div>
-          <div className="text-2xl font-bold">
-            {last3MonthsData.filter(w => w.count > 0).length}
-          </div>
-        </div>
-        
-        <div className="bg-white/5 border border-white/10 rounded-lg p-4 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-white/60" />
-          <div>
-            <div className="text-sm text-white/60">Trend</div>
-            <div className="text-2xl font-bold">
-              {last3MonthsData.length >= 2 
-                ? (last3MonthsData[last3MonthsData.length - 1].distance > last3MonthsData[0].distance ? '↑' : '↓')
-                : '—'}
-            </div>
-          </div>
+          <div className="text-xs text-white/40">km</div>
         </div>
       </div>
     </div>
