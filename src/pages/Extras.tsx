@@ -80,15 +80,18 @@ const Extras = () => {
         <div className="flex items-start justify-between gap-4 mb-16">
           <SectionHeader
             title="Beyond Code"
-            subtitle={<>I LOVE running too!!</>}
+            subtitle={<>I LOVE running</>}
             className="mb-0"
           />
           <a
             href="https://www.strava.com/athletes/124531733"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/30 rounded-lg transition-all font-medium text-sm group mt-2"
+            className="flex items-center gap-2.5 px-6 py-3 bg-[#FC4C02] hover:bg-[#E64402] border border-[#FC4C02] hover:border-[#E64402] rounded-lg transition-all font-medium text-sm group shadow-lg shadow-[#FC4C02]/20 hover:shadow-[#FC4C02]/30"
           >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+            </svg>
             <span>View on Strava</span>
             <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </a>
@@ -96,13 +99,13 @@ const Extras = () => {
 
         {/* Cache indicator */}
         {!loading && !error && isUsingCache && cacheAge > 0 && (
-          <div className="mt-8 flex items-center justify-center gap-2 text-sm text-white/50">
-            <Clock className="w-4 h-4" />
+          <div className="mt-8 flex items-center justify-center gap-2 text-xs text-white/30">
+            <Clock className="w-3 h-3" />
             <span>
-              Showing cached data from {cacheAge < 60 ? `${cacheAge} minutes` : `${Math.floor(cacheAge / 60)} hours`} ago
+              Cached {cacheAge < 60 ? `${cacheAge}m` : `${Math.floor(cacheAge / 60)}h`} ago
               {!StravaCache.canMakeApiCall() && (
-                <span className="ml-2 text-white/40">
-                  • Fresh data in {Math.ceil(StravaCache.timeUntilNextCall() / 60000)} min
+                <span className="ml-1.5 text-white/20">
+                  · Fresh in {Math.ceil(StravaCache.timeUntilNextCall() / 60000)}m
                 </span>
               )}
             </span>
@@ -114,8 +117,11 @@ const Extras = () => {
             <RunningPageSkeleton />
           </div>
         ) : error ? (
-          <div className="text-center py-24 bg-white/5 border border-white/10 rounded-lg mt-12">
-            <div className="max-w-md mx-auto">
+          <div className="text-center py-24 bg-gradient-to-br from-white/[0.07] to-white/[0.03] border border-white/10 rounded-xl mt-12 relative overflow-hidden">
+            <div className="max-w-md mx-auto relative">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                <Clock className="w-8 h-8 text-white/60" />
+              </div>
               <p className="text-white/60 mb-2 text-lg">Unable to load Strava data</p>
               <p className="text-sm text-white/40 mb-6">{error}</p>
               {error.includes('rate limit') && (
