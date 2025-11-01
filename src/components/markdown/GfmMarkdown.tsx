@@ -607,7 +607,8 @@ export const GfmMarkdown = ({
       th: TableHeaderCell,
       td: TableCell,
       code: ({ inline, className, children, node, ...rest }) => {
-        if (inline) {
+        const isInline = inline ?? (node?.type === 'inlineCode');
+        if (isInline) {
           return <InlineCode>{children}</InlineCode>;
         }
         const language = className?.replace(/language-/, '') ?? '';
