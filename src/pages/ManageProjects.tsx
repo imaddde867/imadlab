@@ -23,17 +23,28 @@ interface Project {
   created_at: string;
 }
 
+type ProjectFormState = {
+  title: string;
+  description: string;
+  full_description: string;
+  image_url: string;
+  tech_tags: string;
+  repo_url: string;
+};
+
+const createEmptyProjectForm = (): ProjectFormState => ({
+  title: '',
+  description: '',
+  full_description: '',
+  image_url: '',
+  tech_tags: '',
+  repo_url: '',
+});
+
 const ManageProjects = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    full_description: '',
-    image_url: '',
-    tech_tags: '',
-    repo_url: ''
-  });
+  const [formData, setFormData] = useState<ProjectFormState>(createEmptyProjectForm);
   const [authChecked, setAuthChecked] = useState(false);
   
   const { toast } = useToast();
@@ -65,29 +76,31 @@ const ManageProjects = () => {
     }
   });
 
-  const totalProjects = projects?.length ?? 0;
+  const projectsList = useMemo(() => projects ?? [], [projects]);
+  const totalProjects = projectsList.length;
+  const hasProjects = totalProjects > 0;
 
   const projectsThisMonth = useMemo(() => {
-    if (!projects?.length) return 0;
+    if (!projectsList.length) return 0;
     const now = new Date();
-    return projects.filter((project) => {
+    return projectsList.filter((project) => {
       const created = new Date(project.created_at);
       return (
         created.getMonth() === now.getMonth() &&
         created.getFullYear() === now.getFullYear()
       );
     }).length;
-  }, [projects]);
+  }, [projectsList]);
 
   const projectsWithRepo = useMemo(() => {
-    if (!projects?.length) return 0;
-    return projects.filter((project) => Boolean(project.repo_url)).length;
-  }, [projects]);
+    if (!projectsList.length) return 0;
+    return projectsList.filter((project) => Boolean(project.repo_url)).length;
+  }, [projectsList]);
 
   const uniqueTechTags = useMemo(() => {
-    if (!projects?.length) return 0;
-    return new Set(projects.flatMap((project) => project.tech_tags || [])).size;
-  }, [projects]);
+    if (!projectsList.length) return 0;
+    return new Set(projectsList.flatMap((project) => project.tech_tags || [])).size;
+  }, [projectsList]);
 
   const headerMeta = useMemo(
     () => [
@@ -141,6 +154,28 @@ const ManageProjects = () => {
     [projectsThisMonth, projectsWithRepo, totalProjects, uniqueTechTags]
   );
 
+  const resetForm = () => setFormData(createEmptyProjectForm());
+
+  const closeForm = () => {
+    setShowForm(false);
+    setEditingProject(null);
+    resetForm();
+  };
+
+  const openCreateForm = () => {
+    setShowForm(true);
+    setEditingProject(null);
+    resetForm();
+  };
+
+  const handleToggleForm = () => {
+    if (showForm) {
+      closeForm();
+    } else {
+      openCreateForm();
+    }
+  };
+
   const isProjectsLoading = isLoading || isFetching;
 
   const addProjectMutation = useMutation({
@@ -159,9 +194,7 @@ const ManageProjects = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      setShowForm(false);
-      setEditingProject(null);
-      setFormData({ title: '', description: '', full_description: '', image_url: '', tech_tags: '', repo_url: '' });
+      closeForm();
       toast({ title: 'Project added successfully!' });
     },
     onError: (error) => {
@@ -190,9 +223,7 @@ const ManageProjects = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      setShowForm(false);
-      setEditingProject(null);
-      setFormData({ title: '', description: '', full_description: '', image_url: '', tech_tags: '', repo_url: '' });
+      closeForm();
       toast({ title: 'Project updated successfully!' });
     },
     onError: (error) => {
@@ -288,11 +319,7 @@ const ManageProjects = () => {
             <Button
               variant={showForm ? 'outline' : 'inverted'}
               size="lg"
-              onClick={() => {
-                setShowForm(!showForm);
-                setEditingProject(null);
-                setFormData({ title: '', description: '', full_description: '', image_url: '', tech_tags: '', repo_url: '' });
-              }}
+              onClick={handleToggleForm}
               disabled={isMutating}
             >
               <Plus className="mr-2 h-4 w-4" />
@@ -408,11 +435,7 @@ const ManageProjects = () => {
                   <Button 
                     type="button" 
                     variant="ghost"
-                    onClick={() => {
-                      setShowForm(false);
-                      setEditingProject(null);
-                      setFormData({ title: '', description: '', full_description: '', image_url: '', tech_tags: '', repo_url: '' });
-                    }}
+                    onClick={closeForm}
                   >
                     Cancel
                   </Button>
@@ -454,7 +477,7 @@ const ManageProjects = () => {
                   </div>
                 ))}
               </div>
-            ) : !projects || projects.length === 0 ? (
+            ) : !hasProjects ? (
               <div className="py-12 text-center">
                 <FolderOpen
                   className="mx-auto mb-4 h-12 w-12 text-white/20"
@@ -467,7 +490,7 @@ const ManageProjects = () => {
                 <Button
                   className="mt-6"
                   variant="inverted"
-                  onClick={() => setShowForm(true)}
+                  onClick={openCreateForm}
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   Create First Project
@@ -475,7 +498,7 @@ const ManageProjects = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {projects.map((project) => (
+                {projectsList.map((project) => (
                   <div
                     key={project.id}
                     className="rounded-2xl border border-white/10 bg-black/60 p-6 shadow-[0_16px_48px_rgba(15,23,42,0.45)] backdrop-blur-sm transition hover:border-white/20"
