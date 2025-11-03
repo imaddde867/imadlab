@@ -122,7 +122,7 @@ Deno.test({
     await cleanupTestData();
     
     // Create test subscriber
-    const subscriber = await createTestSubscriber('test-integration@example.com');
+    const _subscriber = await createTestSubscriber('test-integration@example.com');
     
     // Create test blog post (which should trigger queue creation)
     const { data: post } = await supabase

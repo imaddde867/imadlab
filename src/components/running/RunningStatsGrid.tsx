@@ -1,7 +1,7 @@
 import { StravaStats } from '@/integrations/strava/client';
-import { Activity, TrendingUp, Trophy, Zap, Mountain, Clock } from 'lucide-react';
+import { Activity, Zap, Mountain, Clock } from 'lucide-react';
 import SpotlightCard from '@/components/SpotlightCard';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { formatDistanceCompact, formatTime } from '@/lib/strava-utils';
 
 interface RunningStatsGridProps {
@@ -9,8 +9,8 @@ interface RunningStatsGridProps {
 }
 
 const RunningStatsGrid = ({ stats }: RunningStatsGridProps) => {
-  const { elementRef: ytdRef, isVisible: ytdVisible } = useScrollAnimation({ threshold: 0.2 });
-  const { elementRef: allTimeRef, isVisible: allTimeVisible } = useScrollAnimation({ threshold: 0.2 });
+  const { elementRef: ytdRef, isVisible: ytdVisible } = useIntersectionObserver<HTMLDivElement>({ threshold: 0.2 });
+  const { elementRef: allTimeRef, isVisible: allTimeVisible } = useIntersectionObserver<HTMLDivElement>({ threshold: 0.2 });
   
   if (!stats) return null;
 

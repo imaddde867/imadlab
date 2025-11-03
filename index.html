@@ -81,7 +81,17 @@
     <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Imadlab | Data Engineer & AI/ML Portfolio</h1>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Cloudflare Web Analytics - Only load in production -->
+    <script>
+      // Only load Cloudflare Analytics in production (not on localhost or dev environments)
+      if (window.location.hostname === 'imadlab.me' && !window.location.port) {
+        const script = document.createElement('script');
+        script.defer = true;
+        script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+        script.setAttribute('data-cf-beacon', '{"token": "e8df18bc2d9d4512835bc2f9798f4b24"}');
+        document.body.appendChild(script);
+      }
+    </script>
   </body>
 </html>
-
-<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e8df18bc2d9d4512835bc2f9798f4b24"}'></script><!-- End Cloudflare Web Analytics -->

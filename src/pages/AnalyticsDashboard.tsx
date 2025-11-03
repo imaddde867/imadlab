@@ -66,7 +66,7 @@ const AnalyticsDashboard = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
-  const [sessions, setSessions] = useState<VisitorSession[]>([]);
+  const [_sessions, setSessions] = useState<VisitorSession[]>([]);
   const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d'>('7d');
 
   const fetchAnalytics = useCallback(async () => {
@@ -216,7 +216,7 @@ const AnalyticsDashboard = () => {
           const url = new URL(view.referrer!);
           const domain = url.hostname.replace(/^www\./, '');
           acc[domain] = (acc[domain] || 0) + 1;
-        } catch (e) {
+        } catch {
           acc['unknown'] = (acc['unknown'] || 0) + 1;
         }
         return acc;

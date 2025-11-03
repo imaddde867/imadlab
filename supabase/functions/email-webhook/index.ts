@@ -102,7 +102,7 @@ serve(async (req) => {
     // Get webhook headers
     const signature = req.headers.get('svix-signature')
     const timestamp = req.headers.get('svix-timestamp')
-    const webhookId = req.headers.get('svix-id')
+    const _webhookId = req.headers.get('svix-id')
 
     if (!signature || !timestamp) {
       return new Response('Missing required webhook headers', { 

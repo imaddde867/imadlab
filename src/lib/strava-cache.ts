@@ -2,6 +2,7 @@
  * Persistent cache for Strava data with rate limit protection
  */
 
+import { logger } from '@/lib/logger';
 import type { StravaStats, StravaActivity } from '@/integrations/strava/client';
 
 interface CachedStravaData {
@@ -29,14 +30,14 @@ export class StravaCache {
       // Check if cache is too old
       const age = Date.now() - data.timestamp;
       if (age > MAX_CACHE_AGE) {
-        console.log('Cache expired (>24h), clearing');
+        logger.debug('Cache expired (>24h), clearing');
         this.clear();
         return null;
       }
 
       return data;
     } catch (error) {
-      console.error('Error reading Strava cache:', error);
+      logger.error('Error reading Strava cache:', error);
       return null;
     }
   }
@@ -53,9 +54,9 @@ export class StravaCache {
         lastApiCall: Date.now(),
       };
       localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-      console.log('Strava data cached successfully');
+      logger.debug('Strava data cached successfully');
     } catch (error) {
-      console.error('Error saving Strava cache:', error);
+      logger.error('Error saving Strava cache:', error);
     }
   }
 
@@ -70,7 +71,7 @@ export class StravaCache {
         localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
       }
     } catch (error) {
-      console.error('Error updating API call timestamp:', error);
+      logger.error('Error updating API call timestamp:', error);
     }
   }
 
@@ -86,7 +87,7 @@ export class StravaCache {
     
     if (!canCall) {
       const waitMinutes = Math.ceil((MIN_API_INTERVAL - timeSinceLastCall) / 60000);
-      console.log(`Rate limit protection: wait ${waitMinutes} more minutes before next API call`);
+      logger.debug(`Rate limit protection: wait ${waitMinutes} more minutes before next API call`);
     }
     
     return canCall;
@@ -119,9 +120,9 @@ export class StravaCache {
   static clear(): void {
     try {
       localStorage.removeItem(CACHE_KEY);
-      console.log('Strava cache cleared');
+      logger.debug('Strava cache cleared');
     } catch (error) {
-      console.error('Error clearing Strava cache:', error);
+      logger.error('Error clearing Strava cache:', error);
     }
   }
 

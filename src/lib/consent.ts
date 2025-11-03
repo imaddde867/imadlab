@@ -1,3 +1,5 @@
+import { logger } from './logger';
+
 export type ConsentCategory = 'essential' | 'analytics' | 'marketing' | 'functional';
 
 export type ConsentState = {
@@ -61,14 +63,14 @@ export function setConsent(next: Omit<ConsentState, 'version' | 'timestamp' | 'e
   try {
     localStorage.setItem(CONSENT_COOKIE, encoded);
   } catch (error) {
-    console.warn('imadlab: unable to persist consent in localStorage', error);
+    logger.warn('imadlab: unable to persist consent in localStorage', error);
   }
   setCookie(CONSENT_COOKIE, encoded, CONSENT_MAX_AGE_DAYS);
   subscribers.forEach((cb) => cb(state));
   try {
     window.dispatchEvent(new CustomEvent('imadlab:consentchange', { detail: state }));
   } catch (error) {
-    console.warn('imadlab: unable to dispatch consent change event', error);
+    logger.warn('imadlab: unable to dispatch consent change event', error);
   }
 }
 

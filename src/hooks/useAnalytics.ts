@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { isAllowed } from '@/lib/consent';
+import { logger } from '@/lib/logger';
 import { 
   getAnalyticsMetadata, 
   extractUTMParams, 
@@ -32,9 +33,9 @@ export const useAnalytics = () => {
     const initSession = async () => {
       const metadata = await getAnalyticsMetadata();
       
-      console.log('📊 Analytics metadata collected:', metadata);
+      logger.debug('📊 Analytics metadata collected:', metadata);
       
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('visitor_sessions')
         .upsert({
           session_id: sessionId,
@@ -49,10 +50,9 @@ export const useAnalytics = () => {
         }, { onConflict: 'session_id' });
 
       if (error) {
-        console.error('❌ Analytics session error:', error);
-        console.error('Error details:', JSON.stringify(error, null, 2));
+        logger.error('❌ Analytics session error:', error);
       } else {
-        console.log('✅ Analytics session created/updated:', sessionId);
+        logger.debug('✅ Analytics session created/updated:', sessionId);
         sessionInitialized.current = true;
         
         // Call geolocation edge function to enrich session with location data
@@ -62,12 +62,12 @@ export const useAnalytics = () => {
           });
           
           if (functionError) {
-            console.warn('⚠️ Geolocation function error:', functionError);
+            logger.warn('⚠️ Geolocation function error:', functionError);
           } else if (functionData?.location) {
-            console.log('✅ Geolocation data retrieved:', functionData.location);
+            logger.debug('✅ Geolocation data retrieved:', functionData.location);
           }
         } catch (geoError) {
-          console.warn('⚠️ Failed to fetch geolocation:', geoError);
+          logger.warn('⚠️ Failed to fetch geolocation:', geoError);
         }
       }
     };
@@ -101,7 +101,7 @@ export const useAnalytics = () => {
       const referrer = document.referrer || null;
       const trafficSource = getTrafficSource(referrer, utmParams.utm_source);
 
-      console.log('Page view data:', {
+      logger.debug('Page view data:', {
         path: location.pathname,
         trafficSource,
         device: metadata.device_type,
@@ -111,7 +111,7 @@ export const useAnalytics = () => {
         ...utmParams
       });
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('page_views')
         .insert({
           session_id: sessionId,
@@ -129,10 +129,9 @@ export const useAnalytics = () => {
         });
 
       if (error) {
-        console.error('❌ Analytics page view error:', error);
-        console.error('Error details:', JSON.stringify(error, null, 2));
+        logger.error('❌ Analytics page view error:', error);
       } else {
-        console.log('✅ Page view tracked:', location.pathname, { trafficSource, ...utmParams });
+        logger.debug('✅ Page view tracked:', location.pathname, { trafficSource, ...utmParams });
       }
     };
 
@@ -150,9 +149,9 @@ export const useAnalytics = () => {
           .limit(1)
           .then(({ error }) => {
             if (error) {
-              console.error('❌ Duration update error:', error);
+              logger.error('❌ Duration update error:', error);
             } else {
-              console.log('✅ Duration updated:', duration, 's');
+              logger.debug('✅ Duration updated:', duration, 's');
             }
           });
       }

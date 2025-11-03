@@ -1,10 +1,11 @@
-import { StravaActivity } from '@/integrations/strava/client';
+import { StravaStats, StravaActivity } from '@/integrations/strava/client';
 
 interface YearInMotionProps {
-  activities: StravaActivity[];
+  stats: StravaStats;
+  activities: StravaActivity[]; // Keep for future use
 }
 
-const YearInMotion = ({ activities }: YearInMotionProps) => {
+const YearInMotion = ({ stats: _stats, activities: _activities }: YearInMotionProps) => {
   return null;
 };
 
