@@ -47,6 +47,9 @@ Allow: /*.gif
 Allow: /*.svg
 Allow: /*.webp
 
+# Content preferences (commented to avoid invalid directives for crawlers)
+# Content-signal: search=yes, ai-train=no
+
 # Sitemaps
 Sitemap: https://imadlab.me/sitemap.xml
 

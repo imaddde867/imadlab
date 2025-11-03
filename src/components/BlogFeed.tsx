@@ -68,7 +68,7 @@ const BlogFeed = () => {
 								date={new Date(post.published_date).toLocaleDateString()}
 								excerpt={post.excerpt || ''}
 								linkTo={`/blogs/${post.slug}`}
-								linkLabel="Read More"
+								linkLabel={`Read ${post.title}`}
 								readTime={post.read_time || undefined}
 								isBlog={true}
 								image_url={post.image_url || undefined}
