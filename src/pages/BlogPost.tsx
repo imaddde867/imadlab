@@ -95,6 +95,10 @@ const BlogPost = () => {
     }
   ];
 
+  const body = post.body ?? '';
+  const enableMermaid = body.includes('```mermaid');
+  const enableMath = /\$\$|\\\(|\\\[/.test(body);
+
   return (
     <div className="min-h-screen bg-black text-white">
         <Seo 
@@ -162,7 +166,11 @@ const BlogPost = () => {
       {/* Main Content */}
       <main className="container-narrow pb-16">
         {post.body ? (
-          <GfmMarkdown source={post.body} className="prose-lg" />
+          <GfmMarkdown
+            source={post.body}
+            className="prose-lg"
+            config={{ enableMermaid, enableMath }}
+          />
         ) : (
           <div className="text-center py-12">
             <div className="text-white/60 mb-4">No content available for this article.</div>
