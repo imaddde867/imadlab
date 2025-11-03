@@ -19,8 +19,8 @@ const Hero = () => {
 
       <div className="relative z-10 container-site min-h-[calc(100vh-56px)] flex items-center justify-center">
         {/* Main content - asymmetrically placed */}
-        <div className="w-full max-w-4xl mx-auto space-y-8 text-center">
-          <div className="space-y-4">
+        <div className="w-full max-w-3xl mx-auto space-y-6 text-center">
+          <div className="space-y-3">
             <h1 className="text-display text-hierarchy-primary font-black animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s' }}>
               Hi, I'm{' '}
               <span className="relative inline-block">
@@ -34,8 +34,8 @@ const Hero = () => {
             </h2>
           </div>
 
-          <div className="space-y-6">
-            <div className="reading-width mx-auto space-y-4">
+          <div className="space-y-5">
+            <div className="reading-width mx-auto">
               <p className="text-body-large text-hierarchy-tertiary leading-relaxed animate-fade-in-up opacity-0" style={{ animationDelay: '0.5s' }}>
                 I build end-to-end data and AI systems—from streaming pipelines to deployed models—that turn raw signals into reliable decisions!
               </p>
