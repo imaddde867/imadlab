@@ -27,9 +27,15 @@ export default defineConfig({
             if (id.includes('react-router')) {
               return 'router';
             }
-            // Heavy markdown/code libraries that are lazy-loaded
-            if (id.includes('highlight.js') || id.includes('mermaid') || id.includes('katex')) {
-              return 'syntax-heavy';
+            // Split heavy libraries separately to avoid terser issues
+            if (id.includes('mermaid')) {
+              return 'mermaid';
+            }
+            if (id.includes('highlight.js')) {
+              return 'highlight';
+            }
+            if (id.includes('katex')) {
+              return 'katex';
             }
             // UI libraries
             if (id.includes('@radix-ui') || id.includes('lucide-react')) {
@@ -49,14 +55,8 @@ export default defineConfig({
         assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
-    // Enable minification and compression
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
+    // Use esbuild minification instead of terser (faster and no circular dependency issues)
+    minify: 'esbuild',
     // Set reasonable chunk size
     chunkSizeWarningLimit: 600,
     // Enable CSS code splitting
