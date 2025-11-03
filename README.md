@@ -29,7 +29,7 @@ npm run dev
 - Automated sync with GitHub repos and hosted demos
 
 ### Publishing Pipeline
-- GitHub-Flavored Markdown with KaTeX math, Mermaid diagrams, and syntax highlighting
+- GitHub-alike Markdown with KaTeX math, Mermaid diagrams, and syntax highlighting
 - Secure admin workflow with previews and staged deploys
 - SEO-first rendering (OpenGraph, sitemap, schema.org)
 
@@ -63,7 +63,7 @@ graph TD
     L --> P[Resend]
     
     Q[Content] --> R[React Markdown]
-    R --> S[GitHub-Flavored Markdown]
+    R --> S[GitHub-alike Markdown]
     R --> T[KaTeX Math]
     R --> U[Mermaid Diagrams]
     R --> V[Syntax Highlighting]
