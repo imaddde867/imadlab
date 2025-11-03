@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, type CSSProperties } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import CardItem from '@/components/ui/CardItem';
 import SectionHeader from '@/components/SectionHeader';
+import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer';
 
 interface Project {
 	id: string;
@@ -15,8 +16,10 @@ interface Project {
 
 const Projects = () => {
 	const [projects, setProjects] = useState<Project[]>([]);
+	const isCoarsePointer = useIsCoarsePointer();
 	const dots = useMemo(() => {
-		return Array.from({ length: 50 }, () => {
+		const count = isCoarsePointer ? 15 : 50;
+		return Array.from({ length: count }, () => {
 			const size = Math.random() * 8 + 4;
 			const opacity = Math.random() * 0.7 + 0.3;
 			const translateX = (Math.random() - 0.5) * 200;
@@ -36,13 +39,13 @@ const Projects = () => {
 				"--tw-translate-y"?: string;
 			};
 		});
-	}, []);
+	}, [isCoarsePointer]);
 
 	useEffect(() => {
 		const fetchProjects = async () => {
 			const { data, error } = await supabase
 				.from('projects')
-				.select('*, image_url')
+				.select('id, title, tech_tags, description, repo_url, featured, image_url')
 				.order('created_at', { ascending: false })
 				.limit(3);
 			if (!error && data) {

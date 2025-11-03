@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer';
 
 type Star = {
   x: number;
@@ -20,6 +21,7 @@ type Counts = { base: number; mid: number; glow: number };
 
 const Stars = () => {
   const prefersReducedMotion = usePrefersReducedMotion();
+  const isCoarsePointer = useIsCoarsePointer();
 
   // Responsive star counts to prevent mobile lag
   const computeCounts = useCallback((): Counts => {
@@ -27,7 +29,7 @@ const Stars = () => {
       return { base: 140, mid: 90, glow: 30 };
     }
     const width = window.innerWidth;
-    if (width <= 640) return { base: 70, mid: 45, glow: 14 }; // phones
+    if (width <= 640) return { base: 30, mid: 18, glow: 6 }; // phones
     if (width <= 1024) return { base: 110, mid: 70, glow: 24 }; // tablets
     return { base: 140, mid: 90, glow: 30 }; // desktop
   }, []);
@@ -35,7 +37,7 @@ const Stars = () => {
   const [counts, setCounts] = useState<Counts>(computeCounts);
 
   useEffect(() => {
-    if (prefersReducedMotion || typeof window === 'undefined') {
+    if (prefersReducedMotion || typeof window === 'undefined' || isCoarsePointer) {
       return;
     }
     let raf = 0;
@@ -57,7 +59,7 @@ const Stars = () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
     };
-  }, [computeCounts, prefersReducedMotion]);
+  }, [computeCounts, prefersReducedMotion, isCoarsePointer]);
 
   // Layered starfield for depth
 
@@ -96,7 +98,7 @@ const Stars = () => {
 
   const baseStars = useMemo<Star[]>(
     () =>
-      prefersReducedMotion
+      prefersReducedMotion || isCoarsePointer
         ? []
         : createStars(counts.base, {
             size: [0.4, 1.6],
@@ -108,12 +110,12 @@ const Stars = () => {
             move: { base: 16, variance: 12 },
             twinkle: { base: 5, variance: 7 },
           }),
-    [counts.base, createStars, prefersReducedMotion]
+    [counts.base, createStars, prefersReducedMotion, isCoarsePointer]
   );
 
   const midStars = useMemo<Star[]>(
     () =>
-      prefersReducedMotion
+      prefersReducedMotion || isCoarsePointer
         ? []
         : createStars(counts.mid, {
             size: [0.8, 2.6],
@@ -125,12 +127,12 @@ const Stars = () => {
             move: { base: 24, variance: 14 },
             twinkle: { base: 6, variance: 8 },
           }),
-    [counts.mid, createStars, prefersReducedMotion]
+    [counts.mid, createStars, prefersReducedMotion, isCoarsePointer]
   );
 
   const glowStars = useMemo<Star[]>(
     () =>
-      prefersReducedMotion
+      prefersReducedMotion || isCoarsePointer
         ? []
         : createStars(counts.glow, {
             size: [1.2, 3.6],
@@ -142,7 +144,7 @@ const Stars = () => {
             move: { base: 32, variance: 16 },
             twinkle: { base: 7, variance: 9 },
           }),
-    [counts.glow, createStars, prefersReducedMotion]
+    [counts.glow, createStars, prefersReducedMotion, isCoarsePointer]
   );
 
   const gradientLayers = (
@@ -167,7 +169,7 @@ const Stars = () => {
     </>
   );
 
-  if (prefersReducedMotion) {
+  if (prefersReducedMotion || isCoarsePointer) {
     return (
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
         {gradientLayers}

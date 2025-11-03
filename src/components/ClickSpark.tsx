@@ -1,5 +1,6 @@
 import { useRef, useEffect, useCallback, type ReactNode } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { useIsCoarsePointer } from "@/hooks/useIsCoarsePointer";
 
 interface ClickSparkProps {
   children?: ReactNode;
@@ -33,11 +34,14 @@ const ClickSpark = ({
   const sparksRef = useRef<Spark[]>([]);
   const startTimeRef = useRef<number | null>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const isCoarsePointer = useIsCoarsePointer();
+  const disableEffects = prefersReducedMotion || isCoarsePointer;
 
   useEffect(() => {
-    if (prefersReducedMotion) {
+    if (disableEffects) {
       return;
     }
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const parent = canvas.parentElement;
@@ -61,7 +65,7 @@ const ClickSpark = ({
       ro.disconnect();
       clearTimeout(resizeTimeout);
     };
-  }, [prefersReducedMotion]);
+  }, [disableEffects]);
 
   const easeFunc = useCallback(
     (t: number) => {
@@ -80,9 +84,10 @@ const ClickSpark = ({
   );
 
   useEffect(() => {
-    if (prefersReducedMotion) {
+    if (disableEffects) {
       return;
     }
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -120,10 +125,10 @@ const ClickSpark = ({
     return () => {
       cancelAnimationFrame(animationId);
     };
-  }, [sparkColor, sparkSize, sparkRadius, sparkCount, duration, easeFunc, extraScale, prefersReducedMotion]);
+  }, [sparkColor, sparkSize, sparkRadius, sparkCount, duration, easeFunc, extraScale, disableEffects]);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>): void => {
-    if (prefersReducedMotion) {
+    if (disableEffects) {
       return;
     }
     const canvas = canvasRef.current;
@@ -144,9 +149,9 @@ const ClickSpark = ({
   return (
     <div
       className="relative w-full h-full"
-      onClick={prefersReducedMotion ? undefined : handleClick}
+      onClick={disableEffects ? undefined : handleClick}
     >
-      {!prefersReducedMotion && (
+      {!disableEffects && (
         <canvas
           ref={canvasRef}
           className="absolute inset-0 pointer-events-none z-[9999]"

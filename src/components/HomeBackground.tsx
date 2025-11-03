@@ -1,5 +1,6 @@
 import { useMemo, type CSSProperties } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { useIsCoarsePointer } from "@/hooks/useIsCoarsePointer";
 
 type DotStyle = CSSProperties & {
   "--tw-translate-x"?: string;
@@ -11,11 +12,13 @@ const DOT_COUNT = 50;
 // Extracted from Hero for global use
 const HomeBackground = () => {
   const prefersReducedMotion = usePrefersReducedMotion();
+  const isCoarsePointer = useIsCoarsePointer();
   const dots = useMemo(() => {
     if (prefersReducedMotion) {
       return [];
     }
-    return Array.from({ length: DOT_COUNT }, () => {
+    const count = isCoarsePointer ? Math.ceil(DOT_COUNT / 2) : DOT_COUNT;
+    return Array.from({ length: count }, () => {
       const size = Math.random() * 3 + 1;
       const opacity = Math.random() * 0.3 + 0.1;
       const translateX = (Math.random() - 0.5) * 200;
@@ -32,7 +35,7 @@ const HomeBackground = () => {
         "--tw-translate-y": `${translateY}px`,
       } satisfies DotStyle;
     });
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, isCoarsePointer]);
 
   return (
     <>
