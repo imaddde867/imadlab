@@ -286,6 +286,8 @@ const ImageRenderer = ({
           alt={alt || ''}
           title={title}
           loading="lazy"
+          decoding="async"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 60vw"
           className="h-auto w-full object-cover"
           {...props}
         />

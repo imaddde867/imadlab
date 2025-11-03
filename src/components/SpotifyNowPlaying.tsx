@@ -84,6 +84,10 @@ const SpotifyNowPlaying: React.FC = () => {
           <img
             src={data.albumImageUrl}
             alt={data.album}
+            width="64"
+            height="64"
+            loading="lazy"
+            decoding="async"
             className="w-16 h-16 rounded-md shadow-md border border-white/10"
           />
         )}

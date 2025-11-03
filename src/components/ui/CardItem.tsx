@@ -77,13 +77,14 @@ const CardItem = ({
             </div>
           )}
           
-          {/* Optimized image with enhanced hover effects */}
+          {/* Optimized image with responsive sizes and enhanced hover effects */}
           <img 
             ref={imageRef}
             src={image_url} 
             alt={title} 
             width="640"
             height="360"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className={`w-full h-full object-cover transition-all duration-500 ease-out ${
               imageLoaded ? 'opacity-100' : 'opacity-0'
             } ${
@@ -93,6 +94,7 @@ const CardItem = ({
             onError={handleImageError}
             loading="lazy"
             decoding="async"
+            fetchPriority="low"
           />
           
           {/* Gradient overlay for better text readability */}
