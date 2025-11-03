@@ -1,4 +1,5 @@
 import { useMemo, type CSSProperties } from "react";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 type DotStyle = CSSProperties & {
   "--tw-translate-x"?: string;
@@ -9,7 +10,11 @@ const DOT_COUNT = 50;
 
 // Extracted from Hero for global use
 const HomeBackground = () => {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const dots = useMemo(() => {
+    if (prefersReducedMotion) {
+      return [];
+    }
     return Array.from({ length: DOT_COUNT }, () => {
       const size = Math.random() * 3 + 1;
       const opacity = Math.random() * 0.3 + 0.1;
@@ -27,7 +32,7 @@ const HomeBackground = () => {
         "--tw-translate-y": `${translateY}px`,
       } satisfies DotStyle;
     });
-  }, []);
+  }, [prefersReducedMotion]);
 
   return (
     <>
@@ -35,7 +40,9 @@ const HomeBackground = () => {
       <div className="noise-overlay" />
       {/* Animated background glow (static, not mouse-follow) */}
       <div
-        className="fixed inset-0 opacity-20 animate-subtle-flicker pointer-events-none -z-10"
+        className={`fixed inset-0 pointer-events-none -z-10 ${
+          prefersReducedMotion ? 'opacity-10' : 'opacity-20 animate-subtle-flicker'
+        }`}
         style={{
           background:
             "radial-gradient(600px circle at 50% 30%, rgba(255,255,255,0.06), transparent 40%)",

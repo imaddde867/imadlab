@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback, type ReactNode } from "react";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 interface ClickSparkProps {
   children?: ReactNode;
@@ -31,8 +32,12 @@ const ClickSpark = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sparksRef = useRef<Spark[]>([]);
   const startTimeRef = useRef<number | null>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      return;
+    }
     const canvas = canvasRef.current;
     if (!canvas) return;
     const parent = canvas.parentElement;
@@ -56,7 +61,7 @@ const ClickSpark = ({
       ro.disconnect();
       clearTimeout(resizeTimeout);
     };
-  }, []);
+  }, [prefersReducedMotion]);
 
   const easeFunc = useCallback(
     (t: number) => {
@@ -75,6 +80,9 @@ const ClickSpark = ({
   );
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      return;
+    }
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -112,9 +120,12 @@ const ClickSpark = ({
     return () => {
       cancelAnimationFrame(animationId);
     };
-  }, [sparkColor, sparkSize, sparkRadius, sparkCount, duration, easeFunc, extraScale]);
+  }, [sparkColor, sparkSize, sparkRadius, sparkCount, duration, easeFunc, extraScale, prefersReducedMotion]);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>): void => {
+    if (prefersReducedMotion) {
+      return;
+    }
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
@@ -133,12 +144,14 @@ const ClickSpark = ({
   return (
     <div
       className="relative w-full h-full"
-      onClick={handleClick}
+      onClick={prefersReducedMotion ? undefined : handleClick}
     >
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 pointer-events-none z-[9999]"
-      />
+      {!prefersReducedMotion && (
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 pointer-events-none z-[9999]"
+        />
+      )}
       {children}
     </div>
   );

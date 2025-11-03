@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Github, Linkedin, Menu, X } from 'lucide-react';
+import { PRIMARY_NAV_ITEMS } from '@/lib/navigation';
+import { prefetchRoute } from '@/lib/routePrefetch';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -31,13 +33,6 @@ const Header = () => {
     };
   }, [mobileMenuOpen]);
 
-  const navItems = [
-    { to: '/projects', label: 'Projects' },
-    { to: '/blogs', label: 'Blogs' },
-    { to: '/extras', label: 'Extras' },
-    { to: '/about', label: 'About' },
-  ];
-
   return (
     <>
       <header
@@ -54,10 +49,12 @@ const Header = () => {
 
           {/* Desktop Nav */}
           <nav aria-label="Primary" className="hidden sm:flex items-center gap-6">
-            {navItems.map((item) => (
+            {PRIMARY_NAV_ITEMS.map((item) => (
               <NavLink
-                key={item.to}
-                to={item.to}
+                key={item.path}
+                to={item.path}
+                onPointerEnter={() => prefetchRoute(item.path)}
+                onFocus={() => prefetchRoute(item.path)}
                 className={({ isActive }) =>
                   `relative link-enhanced ${isActive ? 'text-white' : ''}`
                 }
@@ -67,7 +64,7 @@ const Header = () => {
                     {item.label}
                     <span
                       className={`absolute -bottom-1 left-0 h-[2px] transition-all ${
-                        isActive || location.pathname.startsWith(item.to)
+                        isActive || location.pathname.startsWith(item.path)
                           ? 'w-full bg-white/70'
                           : 'w-0 bg-transparent'
                       }`}
@@ -128,13 +125,15 @@ const Header = () => {
             aria-label="Mobile navigation"
           >
             <div className="max-w-7xl mx-auto px-4 py-6 space-y-1">
-              {navItems.map((item) => (
+              {PRIMARY_NAV_ITEMS.map((item) => (
                 <NavLink
-                  key={item.to}
-                  to={item.to}
+                  key={item.path}
+                  to={item.path}
+                  onPointerEnter={() => prefetchRoute(item.path)}
+                  onFocus={() => prefetchRoute(item.path)}
                   className={({ isActive }) =>
                     `block px-4 py-3 rounded-lg text-base font-medium transition-all ${
-                      isActive || location.pathname.startsWith(item.to)
+                      isActive || location.pathname.startsWith(item.path)
                         ? 'bg-white/10 text-white border-l-2 border-white'
                         : 'text-white/70 hover:text-white hover:bg-white/5'
                     }`
