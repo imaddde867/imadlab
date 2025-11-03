@@ -94,7 +94,6 @@ const CardItem = ({
             onError={handleImageError}
             loading="lazy"
             decoding="async"
-            fetchPriority="low"
           />
           
           {/* Gradient overlay for better text readability */}
