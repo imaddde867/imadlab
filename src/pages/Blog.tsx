@@ -13,11 +13,9 @@ interface Post {
   id: string;
   title: string;
   slug: string;
-  body: string | null;
   excerpt: string | null;
   tags: string[] | null;
   published_date: string;
-  created_at: string;
   read_time: number | null;
   image_url: string | null;
 }
@@ -37,7 +35,7 @@ const Blogs = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select('*')
+        .select('id, title, slug, excerpt, tags, published_date, read_time, image_url')
         .order('published_date', { ascending: false });
       
       if (error) throw error;

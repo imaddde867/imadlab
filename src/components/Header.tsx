@@ -3,11 +3,13 @@ import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Github, Linkedin, Menu, X } from 'lucide-react';
 import { PRIMARY_NAV_ITEMS } from '@/lib/navigation';
 import { prefetchRoute } from '@/lib/routePrefetch';
+import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const isCoarsePointer = useIsCoarsePointer();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -33,6 +35,12 @@ const Header = () => {
     };
   }, [mobileMenuOpen]);
 
+  const maybePrefetch = (path: string) => {
+    if (!isCoarsePointer) {
+      prefetchRoute(path);
+    }
+  };
+
   return (
     <>
       <header
@@ -53,8 +61,8 @@ const Header = () => {
               <NavLink
                 key={item.path}
                 to={item.path}
-                onPointerEnter={() => prefetchRoute(item.path)}
-                onFocus={() => prefetchRoute(item.path)}
+                onPointerEnter={() => maybePrefetch(item.path)}
+                onFocus={() => maybePrefetch(item.path)}
                 className={({ isActive }) =>
                   `relative link-enhanced ${isActive ? 'text-white' : ''}`
                 }
@@ -129,8 +137,8 @@ const Header = () => {
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  onPointerEnter={() => prefetchRoute(item.path)}
-                  onFocus={() => prefetchRoute(item.path)}
+                  onPointerEnter={() => maybePrefetch(item.path)}
+                  onFocus={() => maybePrefetch(item.path)}
                   className={({ isActive }) =>
                     `block px-4 py-3 rounded-lg text-base font-medium transition-all ${
                       isActive || location.pathname.startsWith(item.path)
