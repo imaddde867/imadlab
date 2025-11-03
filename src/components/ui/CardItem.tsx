@@ -35,7 +35,7 @@ const CardItem = ({
 }: CardItemProps) => {
   // Enhanced state management for interactions
   const titleRef = useRef<HTMLSpanElement>(null);
-  const containerRef = useRef<HTMLSpanElement>(null);
+  const containerRef = useRef<HTMLHeadingElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const [shouldMarquee, setShouldMarquee] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -62,9 +62,12 @@ const CardItem = ({
   return (
     <SpotlightCard 
       className="h-full flex flex-col overflow-hidden transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-2xl group"
-      onMouseEnter={() => setIsCardHovered(true)}
-      onMouseLeave={() => setIsCardHovered(false)}
     >
+      <div 
+        onMouseEnter={() => setIsCardHovered(true)}
+        onMouseLeave={() => setIsCardHovered(false)}
+        className="h-full flex flex-col"
+      >
       {/* Enhanced image section with better aspect ratio and loading states */}
       {image_url && !imageError && (
         <div className="relative w-full aspect-[16/9] overflow-hidden bg-white/5">
@@ -80,6 +83,8 @@ const CardItem = ({
             ref={imageRef}
             src={image_url} 
             alt={title} 
+            width="640"
+            height="360"
             className={`w-full h-full object-cover transition-all duration-500 ease-out ${
               imageLoaded ? 'opacity-100' : 'opacity-0'
             } ${
@@ -88,6 +93,7 @@ const CardItem = ({
             onLoad={handleImageLoad}
             onError={handleImageError}
             loading="lazy"
+            decoding="async"
           />
           
           {/* Gradient overlay for better text readability */}
@@ -227,6 +233,7 @@ const CardItem = ({
             </div>
           </div>
         )}
+      </div>
       </div>
     </SpotlightCard>
   );

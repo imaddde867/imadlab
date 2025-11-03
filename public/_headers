@@ -1,0 +1,81 @@
+# Cloudflare-optimized cache headers for imadlab.me
+# Note: Cloudflare respects Cache-Control headers and adds its own edge caching
+
+# Cache static assets for 1 year (immutable with hash in filename)
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache fonts for 1 year
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
+/*.ttf
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache images with hash for 1 year
+/assets/*.png
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache static images in public folder for 1 week
+/*.png
+  Cache-Control: public, max-age=604800, s-maxage=604800
+/*.jpg
+  Cache-Control: public, max-age=604800, s-maxage=604800
+/*.jpeg
+  Cache-Control: public, max-age=604800, s-maxage=604800
+/*.webp
+  Cache-Control: public, max-age=604800, s-maxage=604800
+/*.svg
+  Cache-Control: public, max-age=604800, s-maxage=604800
+/*.ico
+  Cache-Control: public, max-age=604800, s-maxage=604800
+/*.pdf
+  Cache-Control: public, max-age=604800, s-maxage=604800
+
+# Cache videos for 1 week
+/*.mp4
+  Cache-Control: public, max-age=604800, s-maxage=604800
+/*.webm
+  Cache-Control: public, max-age=604800, s-maxage=604800
+
+# HTML files - short cache with revalidation
+/*.html
+  Cache-Control: public, max-age=3600, must-revalidate
+
+# Root index - always revalidate
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# JSON feeds - cache for 1 hour
+/*.json
+  Cache-Control: public, max-age=3600, s-maxage=3600
+
+# XML feeds - cache for 1 hour
+/*.xml
+  Cache-Control: public, max-age=3600, s-maxage=3600
+
+# Service worker - no cache
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Manifest
+/site.webmanifest
+  Cache-Control: public, max-age=604800
+
+# Security headers for all routes (compatible with Cloudflare Pages)
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  X-XSS-Protection: 1; mode=block
+

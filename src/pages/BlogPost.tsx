@@ -147,9 +147,13 @@ const BlogPost = () => {
           <div className="aspect-video w-full overflow-hidden rounded-lg shadow-xl">
             <img
               src={post.image_url}
-      alt={post.title}
+              alt={post.title}
+              width="1200"
+              height="675"
               className="w-full h-full object-cover"
               loading="lazy"
+              decoding="async"
+              fetchPriority="high"
             />
           </div>
         </div>
