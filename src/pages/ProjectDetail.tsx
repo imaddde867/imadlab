@@ -198,8 +198,12 @@ const ProjectDetail = () => {
             <img
               src={project.image_url}
               alt={project.title}
+              width="1200"
+              height="675"
               className="w-full h-full object-cover"
               loading="lazy"
+              decoding="async"
+              fetchPriority="high"
             />
           </div>
         </div>

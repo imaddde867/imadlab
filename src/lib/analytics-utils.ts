@@ -166,7 +166,7 @@ export const getScreenResolution = (): string => {
  * Get browser language
  */
 export const getBrowserLanguage = (): string => {
-  return navigator.language || (navigator as any).userLanguage || 'en-US';
+  return navigator.language || (navigator as Navigator & { userLanguage?: string }).userLanguage || 'en-US';
 };
 
 /**
