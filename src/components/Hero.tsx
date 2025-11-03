@@ -27,19 +27,17 @@ const Hero = () => {
                 <span className="text-brand-gradient">Imad</span>
                 <div className="absolute -inset-2 bg-white/10 blur-xl rounded-full animate-pulse opacity-60" />
               </span>
-              .
             </h1>
             
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-hierarchy-secondary animate-fade-in-left opacity-0" style={{ animationDelay: '0.3s' }}>
-              Data Engineering &{' '}
-              <span className="relative text-brand-gradient">AI Student</span>
+              3rd-year ICT at TUAS • CoRe lab intern • Founder of SisuSpeak.
             </h2>
           </div>
 
           <div className="space-y-6">
             <div className="reading-width mx-auto space-y-4">
               <p className="text-body-large text-hierarchy-tertiary leading-relaxed animate-fade-in-up opacity-0" style={{ animationDelay: '0.5s' }}>
-                I'm a passionate data engineer and AI innovator, dedicated to building intelligent systems that transform raw data into actionable insights.
+                I build end-to-end data and AI systems—from streaming pipelines to deployed models—that turn raw signals into reliable decisions!
               </p>
             </div>
             <Button
