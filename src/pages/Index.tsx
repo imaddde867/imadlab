@@ -22,25 +22,18 @@ const Index = () => {
       <div className="my-24">
         <Marquee
           words={[
-            "Data Engineering",
-            "AI Innovation",
-            "Machine Learning",
-            "LLM Fine-tuning",
-            "AWS Cloud",
-            "Real-time Analytics",
-            "Recommendation Systems",
-            "MLOps",
-            "Computer Vision",
-            "Predictive Analytics",
-            "ETL Pipelines",
+            "Streaming",
+            "Orchestration",
+            "Data Modeling",
             "Microservices",
-            "Production-grade AI",
-            "Scalable Solutions",
-            "Business Intelligence",
-            "Deep Learning",
-            "Data Architecture",
-            "Streaming Analytics",
-            "Cloud-native",
+            "Real‑time Analytics",
+            "Feature Engineering",
+            "Training",
+            "Evaluation",
+            "MLOps",
+            "LLM Tooling",
+            "Privacy",
+            "Scalability",
           ]}
           speed="normal"
         />
