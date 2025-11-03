@@ -1,6 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from './button';
 import { Github, ExternalLink } from 'lucide-react';
 import SpotlightCard from '../SpotlightCard';
 

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,7 +52,7 @@ const Contact = () => {
         const data = await response.json();
         toast({ title: data?.error || "Failed to send message.", variant: "destructive" });
       }
-    } catch (error) {
+    } catch {
       toast({ title: "An error occurred.", variant: "destructive" });
     }
   }

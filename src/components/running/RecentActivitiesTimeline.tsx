@@ -1,6 +1,6 @@
 import { StravaActivity } from '@/integrations/strava/client';
-import { MapPin, Timer, TrendingUp, Heart, Award, ExternalLink } from 'lucide-react';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { Heart, Award, ExternalLink } from 'lucide-react';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { 
   formatDistanceCompact, 
   formatTimeDetailed, 
@@ -14,7 +14,7 @@ interface RecentActivitiesTimelineProps {
 }
 
 const RecentActivitiesTimeline = ({ activities }: RecentActivitiesTimelineProps) => {
-  const { elementRef, isVisible } = useScrollAnimation({ threshold: 0.1 });
+  const { elementRef, isVisible } = useIntersectionObserver<HTMLDivElement>({ threshold: 0.1 });
   
   if (activities.length === 0) {
     return (

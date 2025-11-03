@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { ExternalLink, Info, ChevronDown, ChevronUp } from "lucide-react";
 import SectionHeader from '@/components/SectionHeader';
 
@@ -406,10 +406,13 @@ const TechStack = () => {
 
   const ADDITIONAL_CATEGORY = "Additional Tools";
 
-  const filteredTechStack =
-    selectedCategory === "All"
-      ? techStack.filter((tech) => tech.category !== ADDITIONAL_CATEGORY)
-      : techStack.filter((tech) => tech.category === selectedCategory);
+  const filteredTechStack = useMemo(
+    () =>
+      selectedCategory === "All"
+        ? techStack.filter((tech) => tech.category !== ADDITIONAL_CATEGORY)
+        : techStack.filter((tech) => tech.category === selectedCategory),
+    [selectedCategory]
+  );
 
   useEffect(() => {
     // When the filtered tech stack changes (category toggled),
