@@ -19,15 +19,12 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Separate React core libraries for better caching
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
+            // Keep React ecosystem together to avoid dependency issues
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router') || id.includes('scheduler')) {
               return 'react-vendor';
             }
-            if (id.includes('react-router')) {
-              return 'router';
-            }
-            // Split heavy libraries separately to avoid terser issues
+            // Split heavy libraries separately (lazy-loaded)
             if (id.includes('mermaid')) {
               return 'mermaid';
             }
@@ -36,6 +33,10 @@ export default defineConfig({
             }
             if (id.includes('katex')) {
               return 'katex';
+            }
+            // Markdown processing libraries
+            if (id.includes('remark') || id.includes('rehype') || id.includes('react-markdown')) {
+              return 'markdown';
             }
             // UI libraries
             if (id.includes('@radix-ui') || id.includes('lucide-react')) {
@@ -49,17 +50,11 @@ export default defineConfig({
             return 'vendor';
           }
         },
-        // Optimize chunk naming for better caching
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
-    // Use esbuild minification instead of terser (faster and no circular dependency issues)
+    // Use esbuild minification (faster and more reliable)
     minify: 'esbuild',
-    // Set reasonable chunk size
     chunkSizeWarningLimit: 600,
-    // Enable CSS code splitting
     cssCodeSplit: true,
   },
 });
