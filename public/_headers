@@ -25,51 +25,51 @@
 /assets/*.svg
   Cache-Control: public, max-age=31536000, immutable
 
-# Cache static images in public folder for 1 week
+# Cache static images in public folder for 30 days (extended from 1 week)
 /*.png
-  Cache-Control: public, max-age=604800, s-maxage=604800
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
 /*.jpg
-  Cache-Control: public, max-age=604800, s-maxage=604800
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
 /*.jpeg
-  Cache-Control: public, max-age=604800, s-maxage=604800
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
 /*.webp
-  Cache-Control: public, max-age=604800, s-maxage=604800
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
 /*.svg
-  Cache-Control: public, max-age=604800, s-maxage=604800
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
 /*.ico
-  Cache-Control: public, max-age=604800, s-maxage=604800
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
 /*.pdf
-  Cache-Control: public, max-age=604800, s-maxage=604800
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
 
-# Cache videos for 1 week
+# Cache videos for 30 days (extended from 1 week)
 /*.mp4
-  Cache-Control: public, max-age=604800, s-maxage=604800
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
 /*.webm
-  Cache-Control: public, max-age=604800, s-maxage=604800
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
 
-# HTML files - short cache with revalidation
+# HTML files - cache for 1 hour with stale-while-revalidate
 /*.html
-  Cache-Control: public, max-age=3600, must-revalidate
+  Cache-Control: public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400
 
-# Root index - always revalidate
+# Root index - cache for 5 minutes with stale-while-revalidate
 /index.html
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=300, s-maxage=300, must-revalidate, stale-while-revalidate=3600
 
-# JSON feeds - cache for 1 hour
+# JSON feeds - cache for 6 hours (extended from 1 hour)
 /*.json
-  Cache-Control: public, max-age=3600, s-maxage=3600
+  Cache-Control: public, max-age=21600, s-maxage=21600, stale-while-revalidate=3600
 
-# XML feeds - cache for 1 hour
+# XML feeds - cache for 6 hours (extended from 1 hour)
 /*.xml
-  Cache-Control: public, max-age=3600, s-maxage=3600
+  Cache-Control: public, max-age=21600, s-maxage=21600, stale-while-revalidate=3600
 
 # Service worker - no cache
 /sw.js
   Cache-Control: no-cache, no-store, must-revalidate
 
-# Manifest
+# Manifest - cache for 7 days
 /site.webmanifest
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
 
 # Security headers for all routes (compatible with Cloudflare Pages)
 /*
@@ -78,4 +78,3 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   X-XSS-Protection: 1; mode=block
-
