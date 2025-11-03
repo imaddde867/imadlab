@@ -23,36 +23,6 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        // Smart chunking strategy for better caching
-        manualChunks: (id) => {
-          // Vendor chunks
-          if (id.includes('node_modules')) {
-            // React core - changes rarely
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor';
-            }
-            // UI libraries - changes rarely
-            if (id.includes('@radix-ui') || id.includes('lucide-react')) {
-              return 'ui-vendor';
-            }
-            // Markdown and syntax - large but changes rarely
-            if (id.includes('react-markdown') || id.includes('highlight.js') || 
-                id.includes('rehype') || id.includes('remark') || 
-                id.includes('katex') || id.includes('mermaid')) {
-              return 'markdown-vendor';
-            }
-            // Query and routing - changes rarely
-            if (id.includes('@tanstack') || id.includes('react-router')) {
-              return 'data-vendor';
-            }
-            // Supabase
-            if (id.includes('@supabase')) {
-              return 'supabase-vendor';
-            }
-            // Everything else
-            return 'vendor';
-          }
-        },
         // Optimize asset naming for better caching
         assetFileNames: (assetInfo) => {
           // Only apply to actual assets (fonts, images), not JS/CSS
