@@ -36,7 +36,7 @@ export default defineConfig({
           // For everything else, use default naming
           return `assets/[name]-[hash][extname]`;
         },
-        chunkFileNames: (chunkInfo) => {
+        chunkFileNames: (_chunkInfo) => {
           // Force .js extension for all chunks, even if source is .tsx
           return 'assets/js/[name]-[hash].js';
         },
