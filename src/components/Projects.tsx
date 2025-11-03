@@ -9,8 +9,8 @@ interface Project {
 	title: string;
 	tech_tags: string[] | null;
 	description: string | null;
+	short_description?: string | null;
 	repo_url: string | null;
-	featured?: boolean;
 	image_url: string | null;
 }
 
@@ -43,13 +43,38 @@ const Projects = () => {
 
 	useEffect(() => {
 		const fetchProjects = async () => {
-			const { data, error } = await supabase
-				.from('projects')
-				.select('id, title, tech_tags, description, repo_url, featured, image_url')
-				.order('created_at', { ascending: false })
-				.limit(3);
+			const baseQuery = () =>
+				supabase
+					.from('projects')
+					.select('id,title,tech_tags,description,short_description,repo_url,image_url')
+					.order('created_at', { ascending: false })
+					.limit(3);
+
+			let { data, error } = await baseQuery();
+
+			if (error) {
+				const needsFallback =
+					typeof error.message === 'string' &&
+					error.message.toLowerCase().includes('short_description');
+
+				if (needsFallback) {
+					const retry = await supabase
+						.from('projects')
+						.select('id,title,tech_tags,description,repo_url,image_url')
+						.order('created_at', { ascending: false })
+						.limit(3);
+					data = retry.data?.map((project) => ({
+						...project,
+						short_description: null,
+					}));
+					error = retry.error ?? null;
+				}
+			}
+
 			if (!error && data) {
 				setProjects(data as Project[]);
+			} else if (error) {
+				console.error('Failed to load featured projects', error);
 			}
 		};
 		fetchProjects();
@@ -103,7 +128,7 @@ const Projects = () => {
 							key={project.id}
 							title={project.title}
 							tags={project.tech_tags || []}
-							description={project.description || ''}
+							description={project.short_description || project.description || ''}
 							linkTo={`/projects/${project.id}`}
 							linkLabel="View Project"
 							githubUrl={project.repo_url || undefined}

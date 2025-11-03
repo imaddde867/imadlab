@@ -93,6 +93,10 @@ const ProjectDetail = () => {
       ]
     : undefined;
 
+  const longForm = project.full_description ?? '';
+  const enableMermaid = longForm.includes('```mermaid');
+  const enableMath = /\$\$|\\\(|\\\[/.test(longForm);
+
   return (
     <div className="min-h-screen bg-black text-white">
       <Seo 
@@ -212,7 +216,11 @@ const ProjectDetail = () => {
       {/* Main Content */}
       <main className="container-narrow pb-16">
         {project.full_description ? (
-          <GfmMarkdown source={project.full_description} className="prose-lg" />
+          <GfmMarkdown
+            source={project.full_description}
+            className="prose-lg"
+            config={{ enableMermaid, enableMath }}
+          />
         ) : (
           <div className="text-center py-12">
             <div className="text-white/60 mb-4">No detailed description available for this project.</div>
