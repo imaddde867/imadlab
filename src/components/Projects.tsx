@@ -43,36 +43,23 @@ const Projects = () => {
 
 	useEffect(() => {
 		const fetchProjects = async () => {
-			const baseQuery = () =>
-				supabase
-					.from('projects')
-					.select('id,title,tech_tags,description,short_description,repo_url,image_url')
-					.order('created_at', { ascending: false })
-					.limit(3);
+			const includeShort = import.meta.env.VITE_INCLUDE_PROJECT_SHORT_DESC === 'true';
+			const columns = includeShort
+				? 'id,title,tech_tags,description,short_description,repo_url,image_url'
+				: 'id,title,tech_tags,description,repo_url,image_url';
 
-			let { data, error } = await baseQuery();
-
-			if (error) {
-				const needsFallback =
-					typeof error.message === 'string' &&
-					error.message.toLowerCase().includes('short_description');
-
-				if (needsFallback) {
-					const retry = await supabase
-						.from('projects')
-						.select('id,title,tech_tags,description,repo_url,image_url')
-						.order('created_at', { ascending: false })
-						.limit(3);
-					data = retry.data?.map((project) => ({
-						...project,
-						short_description: null,
-					}));
-					error = retry.error ?? null;
-				}
-			}
+			const { data, error } = await supabase
+				.from('projects')
+				.select(columns)
+				.order('created_at', { ascending: false })
+				.limit(3);
 
 			if (!error && data) {
-				setProjects(data as Project[]);
+				setProjects(
+					(data as Project[]).map((project) =>
+						includeShort ? project : { ...project, short_description: null }
+					)
+				);
 			} else if (error) {
 				console.error('Failed to load featured projects', error);
 			}
