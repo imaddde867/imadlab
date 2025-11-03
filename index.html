@@ -28,13 +28,14 @@
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <meta name="theme-color" content="#000000" />
+    
+    <!-- Preload critical assets for faster First Contentful Paint -->
+    <link rel="modulepreload" href="/src/main.tsx">
+    <link rel="modulepreload" href="/src/App.tsx">
 
-    <!-- Font Preconnect and Preload for Performance -->
+    <!-- Font Preconnect for Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <!-- Preload critical fonts -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap">
     
     <!-- Load fonts with font-display: swap for better performance -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -42,9 +43,11 @@
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     </noscript>
     
-    <!-- DNS prefetch for Supabase -->
+    <!-- DNS prefetch for Supabase and Cloudflare Analytics -->
     <link rel="dns-prefetch" href="https://mpkgugcasxpanhrkpkhs.supabase.co">
     <link rel="preconnect" href="https://mpkgugcasxpanhrkpkhs.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://static.cloudflareinsights.com">
+    <link rel="preconnect" href="https://static.cloudflareinsights.com" crossorigin>
     
     <!-- RSS/JSON Feeds -->
     <link rel="alternate" type="application/rss+xml" title="Imadlab Blog RSS Feed" href="/feed.xml" />
@@ -82,15 +85,24 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Cloudflare Web Analytics - Only load in production -->
+    <!-- Cloudflare Web Analytics - Only load in production (deferred for performance) -->
     <script>
       // Only load Cloudflare Analytics in production (not on localhost or dev environments)
       if (window.location.hostname === 'imadlab.me' && !window.location.port) {
-        const script = document.createElement('script');
-        script.defer = true;
-        script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
-        script.setAttribute('data-cf-beacon', '{"token": "e8df18bc2d9d4512835bc2f9798f4b24"}');
-        document.body.appendChild(script);
+        // Use requestIdleCallback to defer loading until browser is idle
+        const loadAnalytics = () => {
+          const script = document.createElement('script');
+          script.defer = true;
+          script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+          script.setAttribute('data-cf-beacon', '{"token": "e8df18bc2d9d4512835bc2f9798f4b24"}');
+          document.body.appendChild(script);
+        };
+        
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(loadAnalytics, { timeout: 2000 });
+        } else {
+          setTimeout(loadAnalytics, 1000);
+        }
       }
     </script>
   </body>
