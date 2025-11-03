@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
+import { PRIMARY_NAV_ITEMS, getAbsoluteNavUrl } from '@/lib/navigation';
 
 type Breadcrumb = {
   name: string;
@@ -142,6 +143,23 @@ const Seo = ({
 
     const schemaList: Array<Record<string, unknown>> = [baseSchema];
 
+    if (PRIMARY_NAV_ITEMS.length) {
+      schemaList.push({
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: 'Primary navigation',
+        itemListElement: PRIMARY_NAV_ITEMS.map((item, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          item: {
+            '@type': 'SiteNavigationElement',
+            name: item.label,
+            url: getAbsoluteNavUrl(SITE_URL, item.path)
+          }
+        }))
+      });
+    }
+
     if (breadcrumbs && breadcrumbs.length) {
       schemaList.push({
         '@context': 'https://schema.org',
@@ -168,6 +186,7 @@ const Seo = ({
     fullTitle,
     locale,
     ogImage,
+    PRIMARY_NAV_ITEMS,
     schemaType,
     tags,
     type,

@@ -11,22 +11,64 @@ import Footer from '@/components/Footer';
 import ErrorBoundary from "@/components/ErrorBoundary";
 import CookieConsent from "@/components/CookieConsent";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { registerRoutePrefetch } from "@/lib/routePrefetch";
 
-// Lazy load all pages for better code splitting
-const Index = React.lazy(() => import("./pages/Index"));
-const Projects = React.lazy(() => import("./pages/Projects"));
-const Blogs = React.lazy(() => import("./pages/Blog"));
-const BlogPost = React.lazy(() => import("./pages/BlogPost"));
-const ProjectDetail = React.lazy(() => import("./pages/ProjectDetail"));
-const Extras = React.lazy(() => import("./pages/Extras"));
-const AdminLogin = React.lazy(() => import("./pages/AdminLogin"));
-const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
-const ManagePosts = React.lazy(() => import("./pages/ManagePosts"));
-const ManageProjects = React.lazy(() => import("./pages/ManageProjects"));
-const EmailDashboard = React.lazy(() => import("./pages/EmailDashboard"));
-const AnalyticsDashboard = React.lazy(() => import("./pages/AnalyticsDashboard"));
-const NotFound = React.lazy(() => import("./pages/NotFound"));
-const About = React.lazy(() => import("./pages/About"));
+// Lazy load all pages for better code splitting and register them for prefetching
+const loadIndex = () => import("./pages/Index");
+registerRoutePrefetch('/', loadIndex);
+const Index = React.lazy(loadIndex);
+
+const loadProjects = () => import("./pages/Projects");
+registerRoutePrefetch('/projects', loadProjects);
+const Projects = React.lazy(loadProjects);
+
+const loadBlogs = () => import("./pages/Blog");
+registerRoutePrefetch('/blogs', loadBlogs);
+const Blogs = React.lazy(loadBlogs);
+
+const loadBlogPost = () => import("./pages/BlogPost");
+registerRoutePrefetch('/blogs/:slug', loadBlogPost);
+const BlogPost = React.lazy(loadBlogPost);
+
+const loadProjectDetail = () => import("./pages/ProjectDetail");
+registerRoutePrefetch('/projects/:id', loadProjectDetail);
+const ProjectDetail = React.lazy(loadProjectDetail);
+
+const loadExtras = () => import("./pages/Extras");
+registerRoutePrefetch('/extras', loadExtras);
+const Extras = React.lazy(loadExtras);
+
+const loadAdminLogin = () => import("./pages/AdminLogin");
+registerRoutePrefetch('/admin/login', loadAdminLogin);
+const AdminLogin = React.lazy(loadAdminLogin);
+
+const loadAdminDashboard = () => import("./pages/AdminDashboard");
+registerRoutePrefetch('/admin', loadAdminDashboard);
+const AdminDashboard = React.lazy(loadAdminDashboard);
+
+const loadManagePosts = () => import("./pages/ManagePosts");
+registerRoutePrefetch('/admin/posts', loadManagePosts);
+const ManagePosts = React.lazy(loadManagePosts);
+
+const loadManageProjects = () => import("./pages/ManageProjects");
+registerRoutePrefetch('/admin/projects', loadManageProjects);
+const ManageProjects = React.lazy(loadManageProjects);
+
+const loadEmailDashboard = () => import("./pages/EmailDashboard");
+registerRoutePrefetch('/admin/emails', loadEmailDashboard);
+const EmailDashboard = React.lazy(loadEmailDashboard);
+
+const loadAnalyticsDashboard = () => import("./pages/AnalyticsDashboard");
+registerRoutePrefetch('/admin/analytics', loadAnalyticsDashboard);
+const AnalyticsDashboard = React.lazy(loadAnalyticsDashboard);
+
+const loadNotFound = () => import("./pages/NotFound");
+registerRoutePrefetch('*', loadNotFound);
+const NotFound = React.lazy(loadNotFound);
+
+const loadAbout = () => import("./pages/About");
+registerRoutePrefetch('/about', loadAbout);
+const About = React.lazy(loadAbout);
 
 // Optimize QueryClient for better performance
 const queryClient = new QueryClient({
