@@ -2,8 +2,11 @@ import { Link } from 'react-router-dom';
 import { Github, Linkedin, Mail } from 'lucide-react';
 import { PRIMARY_NAV_ITEMS } from '@/lib/navigation';
 import { prefetchRoute } from '@/lib/routePrefetch';
+import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer';
 
 const Footer = () => {
+  const isCoarsePointer = useIsCoarsePointer();
+
   return (
     <footer className="mt-24 border-t border-white/10 bg-black/30 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 py-10">
@@ -25,8 +28,8 @@ const Footer = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                onPointerEnter={() => prefetchRoute(item.path)}
-                onFocus={() => prefetchRoute(item.path)}
+                onPointerEnter={() => { if (!isCoarsePointer) prefetchRoute(item.path); }}
+                onFocus={() => { if (!isCoarsePointer) prefetchRoute(item.path); }}
                 className="hover:text-white transition-colors"
               >
                 {item.label}
