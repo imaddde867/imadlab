@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import CardItem from '@/components/ui/CardItem';
 import SectionHeader from '@/components/SectionHeader';
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { readPrerenderData } from '@/lib/prerender-data';
 
 interface Project {
 	id: string;
@@ -15,8 +17,11 @@ interface Project {
 }
 
 const Projects = () => {
-	const [projects, setProjects] = useState<Project[]>([]);
+	const initialProjects = useMemo(() => readPrerenderData<Project[]>('projects'), []);
+	const [projects, setProjects] = useState<Project[]>(() => (initialProjects ?? []).slice(0, 3));
 	const isCoarsePointer = useIsCoarsePointer();
+	const { ref: sectionRef, isIntersecting } = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px' });
+	const [hasFetched, setHasFetched] = useState(false);
 	const dots = useMemo(() => {
 		const count = isCoarsePointer ? 15 : 50;
 		return Array.from({ length: count }, () => {
@@ -64,11 +69,18 @@ const Projects = () => {
 				console.error('Failed to load featured projects', error);
 			}
 		};
-		fetchProjects();
-	}, []);
+		if (!hasFetched && isIntersecting) {
+			setHasFetched(true);
+			fetchProjects();
+		}
+	}, [hasFetched, isIntersecting]);
 
 	return (
-		<section id="projects" className="section relative overflow-hidden scroll-mt-20">
+		<section
+			ref={sectionRef}
+			id="projects"
+			className="section relative overflow-hidden scroll-mt-20"
+		>
 			{/* Modern background inspired by Hero */}
 			<div className="absolute inset-0 -z-10 pointer-events-none">
 				{/* Animated background glow (stronger) */}

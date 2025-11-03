@@ -1,9 +1,12 @@
+import { useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { GridSkeleton } from '@/components/ui/LoadingStates';
 import SectionHeader from '@/components/SectionHeader';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { readPrerenderData } from '@/lib/prerender-data';
 
 interface Post {
   id: string;
@@ -17,7 +20,15 @@ interface Post {
 }
 
 const BlogFeed = () => {
-  const { data: posts, isLoading } = useQuery({
+  const initialPosts = useMemo(() => readPrerenderData<Post[]>('posts'), []);
+  const initialUpdatedAt = useRef<number | undefined>(
+    initialPosts ? Date.now() : undefined
+  );
+  const { ref: sectionRef, isIntersecting } = useIntersectionObserver<HTMLDivElement>({
+    rootMargin: '200px',
+  });
+
+  const { data: posts = initialPosts ?? [], isLoading, isFetching } = useQuery({
     queryKey: ['posts'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -27,11 +38,16 @@ const BlogFeed = () => {
       
       if (error) throw error;
       return data as Post[];
-    }
+    },
+    initialData: initialPosts,
+    initialDataUpdatedAt: initialUpdatedAt.current,
+    staleTime: 1000 * 60,
+    enabled: isIntersecting,
   });
+  const showSkeleton = isIntersecting && (isLoading || isFetching) && (!posts || posts.length === 0);
 
 	return (
-		<section className="section relative">
+		<section ref={sectionRef} className="section relative">
 			{/* Background elements */}
 			<div className="absolute inset-0 opacity-5">
 				<div className="absolute top-1/4 left-0 w-2/3 h-px bg-white"></div>
@@ -54,7 +70,7 @@ const BlogFeed = () => {
 				</div>
 
 				{/* 4-column grid layout for blogs, matching Latest Projects */}
-				{isLoading ? (
+				{showSkeleton ? (
 					<GridSkeleton count={3} columns={3} />
 				) : (
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 grid-gap-default">

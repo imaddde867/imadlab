@@ -30,7 +30,7 @@ const Hero = () => {
             </h1>
             
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-hierarchy-secondary animate-fade-in-left opacity-0" style={{ animationDelay: '0.3s' }}>
-              3rd-year ICT at TUAS • CoRe lab intern • Founder of SisuSpeak.
+              3rd-year ICT at TUAS • CoRe lab intern • Founder of SisuSpeak
             </h2>
           </div>
 
