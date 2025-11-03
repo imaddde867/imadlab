@@ -12,6 +12,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import CookieConsent from "@/components/CookieConsent";
 import { useAnalytics } from "@/hooks/useAnalytics";
 
+// Lazy load all pages for better code splitting
 const Index = React.lazy(() => import("./pages/Index"));
 const Projects = React.lazy(() => import("./pages/Projects"));
 const Blogs = React.lazy(() => import("./pages/Blog"));
@@ -27,7 +28,17 @@ const AnalyticsDashboard = React.lazy(() => import("./pages/AnalyticsDashboard")
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 const About = React.lazy(() => import("./pages/About"));
 
-const queryClient = new QueryClient();
+// Optimize QueryClient for better performance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 10, // 10 minutes (formerly cacheTime)
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
   useAnalytics();
