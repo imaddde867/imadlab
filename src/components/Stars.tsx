@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 type Star = {
   x: number;
@@ -18,6 +19,8 @@ type Star = {
 type Counts = { base: number; mid: number; glow: number };
 
 const Stars = () => {
+  const prefersReducedMotion = usePrefersReducedMotion();
+
   // Responsive star counts to prevent mobile lag
   const computeCounts = useCallback((): Counts => {
     if (typeof window === 'undefined') {
@@ -32,7 +35,9 @@ const Stars = () => {
   const [counts, setCounts] = useState<Counts>(computeCounts);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (prefersReducedMotion || typeof window === 'undefined') {
+      return;
+    }
     let raf = 0;
     const onResize = () => {
       cancelAnimationFrame(raf);
@@ -52,7 +57,7 @@ const Stars = () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
     };
-  }, [computeCounts]);
+  }, [computeCounts, prefersReducedMotion]);
 
   // Layered starfield for depth
 
@@ -91,60 +96,61 @@ const Stars = () => {
 
   const baseStars = useMemo<Star[]>(
     () =>
-      createStars(counts.base, {
-        size: [0.4, 1.6],
-        delay: [0, 8],
-        hue: [210, 230],
-        opacity: [0.3, 0.8],
-        blur: [0, 0.6],
-        drift: 50,
-        move: { base: 16, variance: 12 },
-        twinkle: { base: 5, variance: 7 },
-      }),
-    [counts.base, createStars]
+      prefersReducedMotion
+        ? []
+        : createStars(counts.base, {
+            size: [0.4, 1.6],
+            delay: [0, 8],
+            hue: [210, 230],
+            opacity: [0.3, 0.8],
+            blur: [0, 0.6],
+            drift: 50,
+            move: { base: 16, variance: 12 },
+            twinkle: { base: 5, variance: 7 },
+          }),
+    [counts.base, createStars, prefersReducedMotion]
   );
 
   const midStars = useMemo<Star[]>(
     () =>
-      createStars(counts.mid, {
-        size: [0.8, 2.6],
-        delay: [0, 10],
-        hue: [220, 230],
-        opacity: [0.35, 0.85],
-        blur: [0.2, 1],
-        drift: 80,
-        move: { base: 24, variance: 14 },
-        twinkle: { base: 6, variance: 8 },
-      }),
-    [counts.mid, createStars]
+      prefersReducedMotion
+        ? []
+        : createStars(counts.mid, {
+            size: [0.8, 2.6],
+            delay: [0, 10],
+            hue: [220, 230],
+            opacity: [0.35, 0.85],
+            blur: [0.2, 1],
+            drift: 80,
+            move: { base: 24, variance: 14 },
+            twinkle: { base: 6, variance: 8 },
+          }),
+    [counts.mid, createStars, prefersReducedMotion]
   );
 
   const glowStars = useMemo<Star[]>(
     () =>
-      createStars(counts.glow, {
-        size: [1.2, 3.6],
-        delay: [0, 12],
-        hue: [200, 230],
-        opacity: [0.4, 0.8],
-        blur: [0.4, 1.6],
-        drift: 110,
-        move: { base: 32, variance: 16 },
-        twinkle: { base: 7, variance: 9 },
-      }),
-    [counts.glow, createStars]
+      prefersReducedMotion
+        ? []
+        : createStars(counts.glow, {
+            size: [1.2, 3.6],
+            delay: [0, 12],
+            hue: [200, 230],
+            opacity: [0.4, 0.8],
+            blur: [0.4, 1.6],
+            drift: 110,
+            move: { base: 32, variance: 16 },
+            twinkle: { base: 7, variance: 9 },
+          }),
+    [counts.glow, createStars, prefersReducedMotion]
   );
 
-  // Shooting stars removed per request
-
-  // Mouse-tracking parallax removed per request
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
+  const gradientLayers = (
+    <>
       {/* Night gradient + subtle vignette */}
       <div
         className="absolute inset-0"
         style={{
-          // Lowered gradient intensity for a cleaner, darker sky
           background:
             'radial-gradient(1000px circle at 50% 20%, rgba(60,80,120,0.12), transparent 55%), linear-gradient(180deg, #05060a 0%, #05060a 25%, #03040a 100%)',
         }}
@@ -158,6 +164,24 @@ const Stars = () => {
             'radial-gradient(1200px circle at 50% 40%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.0) 60%, rgba(0,0,0,0.2) 100%)',
         }}
       />
+    </>
+  );
+
+  if (prefersReducedMotion) {
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
+        {gradientLayers}
+      </div>
+    );
+  }
+
+  // Shooting stars removed per request
+
+  // Mouse-tracking parallax removed per request
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
+      {gradientLayers}
 
       {/* Layers of stars for depth */}
       {[baseStars, midStars, glowStars].map((layer, li) => (
