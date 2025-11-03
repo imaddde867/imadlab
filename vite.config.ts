@@ -16,21 +16,10 @@ export default defineConfig({
     },
   },
   build: {
-    // Optimize minification for better compression
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true, // Remove console logs in production
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info'],
-      },
-      format: {
-        comments: false, // Remove comments
-      },
-    },
+    // Use esbuild for faster builds (terser was causing .tsx output bug)
+    minify: 'esbuild',
     chunkSizeWarningLimit: 1000,
     cssCodeSplit: true,
-    // Enable source maps for debugging in production (optional - remove to save ~30% size)
     sourcemap: false,
     rollupOptions: {
       output: {
@@ -66,22 +55,25 @@ export default defineConfig({
         },
         // Optimize asset naming for better caching
         assetFileNames: (assetInfo) => {
-          const info = assetInfo.name?.split('.');
-          const ext = info?.[info.length - 1];
+          // Only apply to actual assets (fonts, images), not JS/CSS
           if (/\.(png|jpe?g|svg|gif|tiff|bmp|ico|webp)$/i.test(assetInfo.name || '')) {
             return `assets/images/[name]-[hash][extname]`;
           } else if (/\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name || '')) {
             return `assets/fonts/[name]-[hash][extname]`;
+          } else if (/\.css$/i.test(assetInfo.name || '')) {
+            return `assets/[name]-[hash][extname]`;
           }
+          // For everything else, use default naming
           return `assets/[name]-[hash][extname]`;
         },
-        chunkFileNames: 'assets/js/[name]-[hash].js',
+        chunkFileNames: (chunkInfo) => {
+          // Force .js extension for all chunks, even if source is .tsx
+          return 'assets/js/[name]-[hash].js';
+        },
         entryFileNames: 'assets/js/[name]-[hash].js',
       },
     },
-    // Enable compression
     reportCompressedSize: true,
-    // Optimize CSS
     cssMinify: true,
   },
 });
