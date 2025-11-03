@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, type CSSProperties } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
 import SectionHeader from '@/components/SectionHeader';
 

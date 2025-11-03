@@ -26,8 +26,8 @@ const ClickSpark = ({
   duration = 400,
   easing = "ease-out",
   extraScale = 1.0,
-  children
-}) => {
+  children,
+}: ClickSparkProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sparksRef = useRef<Spark[]>([]);
   const startTimeRef = useRef<number | null>(null);

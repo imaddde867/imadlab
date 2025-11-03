@@ -150,7 +150,7 @@ export const getTrafficSource = (referrer: string | null, utmSource?: string): T
     
     // Everything else is referral
     return 'referral';
-  } catch (e) {
+  } catch {
     return 'direct';
   }
 };

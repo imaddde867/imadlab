@@ -27,8 +27,8 @@ serve(async (req) => {
     const country = req.headers.get('CF-IPCountry') || null
     const city = req.headers.get('CF-IPCity') || null
     const region = req.headers.get('CF-Region') || null
-    const latitude = req.headers.get('CF-Latitude') || null
-    const longitude = req.headers.get('CF-Longitude') || null
+    const _latitude = req.headers.get('CF-Latitude') || null
+    const _longitude = req.headers.get('CF-Longitude') || null
 
     // Alternative: Use ip-api.com for geolocation if not on Cloudflare
     let geoData = {

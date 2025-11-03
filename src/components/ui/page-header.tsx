@@ -5,6 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 import { Tag } from "./tag"
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const tagVariants = cva(
   "inline-flex items-center justify-center gap-1 rounded-full border px-3 py-1 text-xs font-medium tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:opacity-60",
   {

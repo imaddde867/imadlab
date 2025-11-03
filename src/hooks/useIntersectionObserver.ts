@@ -3,17 +3,24 @@ import type { MutableRefObject } from 'react';
 
 type UseIntersectionObserverOptions = IntersectionObserverInit & {
   once?: boolean;
+  triggerOnce?: boolean; // Alias for 'once' for backward compatibility
 };
 
 type UseIntersectionObserverResult<T extends Element> = {
   ref: MutableRefObject<T | null>;
+  elementRef: MutableRefObject<T | null>; // Alias for backward compatibility
   isIntersecting: boolean;
+  isVisible: boolean; // Alias for backward compatibility
 };
 
+/**
+ * Hook to detect when an element enters the viewport
+ * Supports both ref and elementRef, isIntersecting and isVisible for compatibility
+ */
 export function useIntersectionObserver<T extends Element>(
   options: UseIntersectionObserverOptions = {}
 ): UseIntersectionObserverResult<T> {
-  const { once = true, ...observerOptions } = options;
+  const { once = true, triggerOnce = once, ...observerOptions } = options;
   const { root, rootMargin, threshold } = observerOptions;
   const thresholdKey = Array.isArray(threshold) ? threshold.join(',') : threshold ?? '0';
   const ref = useRef<T | null>(null);
@@ -34,10 +41,10 @@ export function useIntersectionObserver<T extends Element>(
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         setIsIntersecting(true);
-        if (once) {
+        if (triggerOnce) {
           observer.disconnect();
         }
-      } else if (!once) {
+      } else if (!triggerOnce) {
         setIsIntersecting(false);
       }
     }, { root, rootMargin, threshold });
@@ -45,7 +52,12 @@ export function useIntersectionObserver<T extends Element>(
     observer.observe(target);
 
     return () => observer.disconnect();
-  }, [once, root, rootMargin, thresholdKey, threshold]);
+  }, [triggerOnce, root, rootMargin, thresholdKey, threshold]);
 
-  return { ref, isIntersecting };
+  return { 
+    ref, 
+    elementRef: ref, // Alias for backward compatibility
+    isIntersecting,
+    isVisible: isIntersecting // Alias for backward compatibility
+  };
 }
