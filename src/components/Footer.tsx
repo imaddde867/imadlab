@@ -1,11 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Github, Linkedin, Mail } from 'lucide-react';
-import { PRIMARY_NAV_ITEMS } from '@/lib/navigation';
-import { prefetchRoute } from '@/lib/routePrefetch';
-import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer';
 
 const Footer = () => {
-  const isCoarsePointer = useIsCoarsePointer();
 
   return (
     <footer className="mt-0 border-t border-white/10 bg-black/30 backdrop-blur-sm">
@@ -13,29 +9,10 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
           {/* Brand */}
           <div className="text-center md:text-left">
-            <Link to="/" className="inline-flex items-center gap-2 mb-2">
-              <span className="inline-block w-2 h-2 rounded-full bg-white mr-1" />
-              <span className="font-semibold tracking-wide text-white">imadlab</span>
-            </Link>
             <p className="text-sm text-white/60 max-w-md">
               Data Eng, AI/ML projects, blogs, and experiments by Imad Eddine.
             </p>
           </div>
-
-          {/* Links */}
-          <nav className="flex items-center gap-6 text-sm text-white/70">
-            {PRIMARY_NAV_ITEMS.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onPointerEnter={() => { if (!isCoarsePointer) prefetchRoute(item.path); }}
-                onFocus={() => { if (!isCoarsePointer) prefetchRoute(item.path); }}
-                className="hover:text-white transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
 
           {/* Socials */}
           <div className="flex items-center gap-3">
