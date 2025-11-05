@@ -77,11 +77,10 @@ const Extras = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-24 relative z-10">
-        <div className="flex items-start justify-between gap-4 mb-16">
+        <div className="flex items-start justify-between gap-4">
           <SectionHeader
             title="Beyond Code"
             subtitle={<>I LOVE running</>}
-            className="mb-0"
           />
           <a
             href="https://www.strava.com/athletes/124531733"

@@ -31,7 +31,7 @@ const About = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 grid-gap-default">
             <div className="md:col-span-2 space-y-8">
-              <div className="pb-8">
+              <div className="py-8">
                 <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white">
                   Hey — I’m <span className="text-white/90">Imad Eddine</span>.
                 </h1>
@@ -45,7 +45,7 @@ const About = () => {
                   I enjoy working at the intersection of data, software, and intelligence. As a Research Assistant at the <a href="https://www.turkuamk.fi/palvelu/autonomisten-ja-alykkaiden-jarjestelmien-laboratorio/" target="_blank" rel="noopener noreferrer" className="font-semibold text-white hover:underline">Autonomous Intelligent Systems (AIS) Lab</a>, I built data pipelines using tools like <span className="font-semibold text-white">Airflow</span>, <span className="font-semibold text-white">InfluxDB</span>, and <span className="font-semibold text-white">PostgreSQL</span>. This experience taught me the value of clean architecture and clear communication in both research and production environments.
                 </p>
               </div>
-              <div className="pt-8">
+              <div className="py-8">
                 <h2 className="text-4xl font-bold mb-4 text-white">My Philosophy</h2>
                 <p className="text-lg text-white/70 leading-relaxed">
                   My purpose is to build <span className="font-semibold text-white">technology that endures</span> — transformative systems that make a real, lasting difference. I want to create tools, products, and frameworks that <span className="font-semibold text-white">empower, simplify, and enlighten</span> — solving human problems not with noise or novelty, but with <span className="font-semibold text-white">substance</span>. My work isn’t meant to dazzle for a moment, but to <span className="font-semibold text-white">lay foundations</span> others can build upon long after I’m gone.

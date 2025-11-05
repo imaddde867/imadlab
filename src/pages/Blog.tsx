@@ -86,7 +86,7 @@ const Blogs = () => {
             Back to Home
           </Link>
         </div>
-        <div className="mb-12">
+        <div>
           <SectionHeader title={<span className="text-brand-gradient">Blog</span>} />
         </div>
 
@@ -121,7 +121,7 @@ const Blogs = () => {
       </div>
       
       {/* Newsletter signup component */}
-      <NewsletterSignup className="mt-16" />
+      <NewsletterSignup />
     </div>
   );
 };
