@@ -157,7 +157,6 @@ const BlogPost = () => {
               className="w-full h-full object-cover"
               loading="lazy"
               decoding="async"
-              fetchPriority="high"
             />
           </div>
         </div>
