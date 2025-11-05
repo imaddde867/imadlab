@@ -29,7 +29,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen text-white flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen text-white flex flex-col items-center justify-center p-4 pt-14">
       <div className="w-full max-w-md">
         <div className="mb-8">
           <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
