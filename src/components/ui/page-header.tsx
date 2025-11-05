@@ -85,7 +85,7 @@ export const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       >
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -top-32 -left-28 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute -bottom-28 -right-10 h-52 w-52 rounded-full bg-purple-500/20 blur-[120px]" />
+          <div className="absolute -bottom-28 -right-10 h-52 w-52 rounded-full bg-white/12 blur-[120px]" />
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           <div className="absolute inset-x-8 top-8 h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
         </div>
