@@ -65,7 +65,7 @@ const Contact = () => {
   ];
 
   return (
-    <section className="section relative">
+    <section className="section relative !pb-4 md:!pb-6">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-1/4 right-0 w-3/4 h-px bg-white"></div>
