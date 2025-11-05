@@ -8,7 +8,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen -mt-14 pb-14 flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <Stars />
 
       <div className="relative z-10 container-site min-h-[calc(100vh-56px)] flex items-center justify-center">

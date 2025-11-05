@@ -115,7 +115,7 @@ const App = () => (
                   sparkCount={8}
                   duration={400}
                 >
-                  <main id="main" className="pt-14">
+                  <main id="main">
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/projects" element={<Projects />} />
