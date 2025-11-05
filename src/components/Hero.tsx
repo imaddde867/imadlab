@@ -3,18 +3,14 @@ import { Button } from '@/components/ui/button';
 import Stars from './Stars';
 
 const Hero = () => {
-  const SHOW_STARFIELD = true;
-
   const scrollToProjects = () => {
     document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <section className="relative min-h-screen -mt-14 pb-14 flex items-center justify-center overflow-hidden">
-      <Stars enableStarfield={SHOW_STARFIELD} />
+      <Stars />
       {/* Global header now handles navigation */}
-
-      <div className="absolute inset-0 opacity-10 animate-subtle-flicker" />
 
       <div className="relative z-10 container-site min-h-[calc(100vh-56px)] flex items-center justify-center">
         <div className="w-full max-w-3xl mx-auto space-y-6 text-center px-4">
