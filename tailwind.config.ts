@@ -142,14 +142,29 @@ export default {
 				'spin-slow-reverse': {
 					from: { transform: 'rotate(0deg)' },
 					to: { transform: 'rotate(-360deg)' }
-				}
+				},
+        'blink-purple': {
+          '0%, 100%': {
+            transform: 'scale(1)',
+            backgroundColor: 'hsl(var(--primary))',
+            boxShadow: '0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary))',
+            opacity: '1',
+          },
+          '50%': {
+            transform: 'scale(0.8)',
+            backgroundColor: 'hsl(var(--primary))',
+            boxShadow: '0 0 15px hsl(var(--primary)), 0 0 25px hsl(var(--primary))',
+            opacity: '0.7',
+          },
+        },
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 1s ease-out forwards',
 				'spin-slow': 'spin 20s linear infinite',
-				'spin-slow-reverse': 'spin-slow-reverse 25s linear infinite'
+				'spin-slow-reverse': 'spin-slow-reverse 25s linear infinite',
+        'blink-purple': 'blink-purple 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
 			}
 		}
 	},

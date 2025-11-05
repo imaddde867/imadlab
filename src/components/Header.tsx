@@ -51,7 +51,7 @@ const Header = () => {
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           {/* Brand */}
           <Link to="/" className="flex items-center gap-2 focus-enhanced">
-            <span className="inline-block w-2 h-2 rounded-full bg-white mr-1" />
+            <span className="inline-block w-2 h-2 rounded-full bg-primary mr-1 animate-blink-purple" />
             <span className="font-semibold tracking-wide text-white/90 hover:text-white transition-colors">imadlab</span>
           </Link>
 
