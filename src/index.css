@@ -441,11 +441,11 @@ All colors MUST be HSL.
     width: var(--star-size);
     height: var(--star-size);
     border-radius: 9999px;
-    background: radial-gradient(circle, rgba(238, 245, 255, 0.98) 0%, rgba(200, 220, 255, 0.45) 55%, transparent 80%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.98) 0%, rgba(214, 226, 255, 0.62) 42%, rgba(140, 176, 255, 0.22) 70%, transparent 90%);
     opacity: var(--star-base-opacity);
     transform: translate3d(-50%, -50%, 0);
     transform-origin: center;
-    box-shadow: 0 0 calc(6px * var(--star-glow, 0.7)) rgba(136, 172, 255, 0.3);
+    box-shadow: 0 0 calc(10px * var(--star-glow, 0.7)) rgba(150, 190, 255, 0.35);
     will-change: opacity, transform;
     animation: hero-star-twinkle var(--star-twinkle, 14s) ease-in-out var(--star-twinkle-delay, 0s) infinite alternate;
   }
@@ -456,19 +456,21 @@ All colors MUST be HSL.
   }
 
   .hero-starfield__layer--base .hero-starfield__star {
-    --star-glow: 0.65;
+    --star-glow: 0.85;
   }
 
   .hero-starfield__layer--mid .hero-starfield__star {
-    --star-glow: 1;
-    background: radial-gradient(circle, rgba(244, 249, 255, 0.98) 0%, rgba(204, 224, 255, 0.6) 50%, transparent 85%);
-    box-shadow: 0 0 calc(9px * var(--star-glow, 1)) rgba(150, 184, 255, 0.36);
+    --star-glow: 1.2;
+    background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(220, 232, 255, 0.7) 45%, rgba(150, 186, 255, 0.28) 72%, transparent 92%);
+    box-shadow: 0 0 calc(14px * var(--star-glow, 1)) rgba(160, 198, 255, 0.4);
+    filter: brightness(1.05);
   }
 
   .hero-starfield__layer--glow .hero-starfield__star {
-    --star-glow: 1.35;
-    background: radial-gradient(circle, rgba(254, 255, 255, 1) 0%, rgba(210, 230, 255, 0.72) 40%, rgba(140, 176, 255, 0.24) 70%, transparent 100%);
-    box-shadow: 0 0 calc(14px * var(--star-glow, 1)) rgba(160, 200, 255, 0.42);
+    --star-glow: 1.55;
+    background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(224, 236, 255, 0.85) 35%, rgba(158, 192, 255, 0.35) 65%, rgba(118, 166, 255, 0.18) 82%, transparent 100%);
+    box-shadow: 0 0 calc(18px * var(--star-glow, 1)) rgba(168, 206, 255, 0.5);
+    filter: brightness(1.08);
   }
 }
 
