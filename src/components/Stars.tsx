@@ -190,15 +190,21 @@ const Stars = ({ enableStarfield = true }: StarsProps) => {
 
   const gradientLayers = (
     <>
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: "url('/images/hero-moon.png')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
+      <picture className="absolute inset-0 block" aria-hidden="true">
+        <source srcSet="/images/hero-moon.avif" type="image/avif" />
+        <source srcSet="/images/hero-moon.webp" type="image/webp" />
+        <img
+          src="/images/hero-moon.png"
+          alt=""
+          width={2560}
+          height={1440}
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ backgroundColor: '#020617' }}
+        />
+      </picture>
     </>
   );
 
