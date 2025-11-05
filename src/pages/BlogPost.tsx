@@ -100,7 +100,7 @@ const BlogPost = () => {
   const enableMath = /\$\$|\\\(|\\\[/.test(body);
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white pt-14">
         <Seo 
           title={post.title} 
           description={metaDescription} 

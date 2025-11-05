@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 
 const About = () => {
   return (
-    <div className="relative min-h-screen bg-black text-white section">
+    <div className="relative min-h-screen bg-black text-white section pt-14">
         <Stars />
         <div className="absolute inset-0 opacity-10 animate-subtle-flicker" />
         <Seo

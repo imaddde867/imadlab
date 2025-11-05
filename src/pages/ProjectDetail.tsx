@@ -98,7 +98,7 @@ const ProjectDetail = () => {
   const enableMath = /\$\$|\\\(|\\\[/.test(longForm);
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white pt-14">
       <Seo 
         title={project.title} 
         description={metaDescription} 

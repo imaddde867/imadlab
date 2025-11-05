@@ -67,7 +67,7 @@ const Projects = () => {
   ] : undefined;
 
   return (
-    <div className="min-h-screen bg-black text-white section">
+    <div className="min-h-screen bg-black text-white section pt-14">
       <Seo
         title="Projects"
         description="Explore a collection of my projects in data engineering, AI, and machine learning. See live demos and browse the source code."
