@@ -16,7 +16,7 @@ export const Table = ({ className, children, ...props }: TableProps) => (
   <div
     role="region"
     aria-label="Markdown table"
-    className="relative my-8 rounded-lg border border-white/10 bg-white/5"
+    className="relative my-8 w-full max-w-full rounded-lg border border-white/10 bg-white/5"
   >
     <div className="overflow-x-auto">
       <table
@@ -63,4 +63,3 @@ export const TableCell = ({ className, children, ...props }: CellProps) => (
     {children}
   </td>
 );
-

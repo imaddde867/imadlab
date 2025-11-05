@@ -279,8 +279,8 @@ const ImageRenderer = ({
   const resolved = resolveUrl(src);
 
   return (
-    <figure className="my-10">
-      <div className="relative overflow-hidden rounded-lg border border-white/10 bg-black/50">
+    <figure className="my-10 w-full max-w-full">
+      <div className="relative w-full overflow-hidden rounded-lg border border-white/10 bg-black/50">
         <img
           src={resolved}
           alt={alt || ''}
@@ -311,8 +311,8 @@ const VideoRenderer = ({
   const resolved = resolveUrl(src);
 
   return (
-    <figure className="my-10">
-      <div className="overflow-hidden rounded-lg border border-white/10 bg-black/30">
+    <figure className="my-10 w-full max-w-full">
+      <div className="w-full overflow-hidden rounded-lg border border-white/10 bg-black/30">
         <video
           controls
           preload="metadata"
@@ -685,7 +685,7 @@ export const GfmMarkdown = ({
       <HeadingContext.Provider value={{ registerHeading, tocDepth: mergedConfig.tocDepth }}>
         <AssetContext.Provider value={{ resolveUrl, repository }}>
           <div className="flex flex-col gap-8 lg:flex-row">
-            <div className="flex-1">{content}</div>
+            <div className="min-w-0 flex-1">{content}</div>
             {mergedConfig.showToc && filteredHeadings.length > 0 && (
               <Toc headings={filteredHeadings} activeId={activeHeading} />
             )}

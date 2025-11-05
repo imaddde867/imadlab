@@ -173,7 +173,7 @@ export const CodeBlock = ({ code, language, meta }: CodeBlockProps) => {
   return (
     <div
       ref={ref}
-      className="my-8 overflow-hidden rounded-lg border border-white/10 bg-[#0d1016] text-sm text-white/90 shadow-lg"
+      className="my-8 min-w-0 max-w-full overflow-hidden rounded-lg border border-white/10 bg-[#0d1016] text-sm text-white/90 shadow-lg"
       aria-live="polite"
     >
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-white/5 px-4 py-2">
@@ -233,7 +233,7 @@ export const CodeBlock = ({ code, language, meta }: CodeBlockProps) => {
       </div>
       <div
         className={clsx(
-          'relative',
+          'relative w-full',
           wrap ? 'break-words whitespace-pre-wrap' : 'overflow-x-auto whitespace-pre'
         )}
       >
