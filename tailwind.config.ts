@@ -135,15 +135,6 @@ export default {
 					from: { opacity: '0' },
 					to: { opacity: '1' }
 				},
-				'subtle-flicker': {
-					'0%': { opacity: '0.5' },
-					'50%': { opacity: '0.2' },
-					'100%': { opacity: '0.5' }
-				},
-				'dot-move': {
-					'0%': { transform: 'translate(0, 0)' },
-					'100%': { transform: 'translate(var(--tw-translate-x), var(--tw-translate-y))' }
-				},
 				'spin-slow': {
 					from: { transform: 'rotate(0deg)' },
 					to: { transform: 'rotate(360deg)' }
@@ -157,8 +148,6 @@ export default {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 1s ease-out forwards',
-				'subtle-flicker': 'subtle-flicker 3s infinite alternate',
-				'dot-move': 'dot-move 10s infinite alternate ease-in-out',
 				'spin-slow': 'spin 20s linear infinite',
 				'spin-slow-reverse': 'spin-slow-reverse 25s linear infinite'
 			}

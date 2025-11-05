@@ -375,24 +375,6 @@ All colors MUST be HSL.
     backdrop-filter: blur(24px);
   }
 
-  /* Subtle noise overlay (SVG data URI) */
-  .noise-overlay {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: -1;
-    opacity: 0.06;
-    background-image: url("data:image/svg+xml;utf8,\
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>\
-        <filter id='n'>\
-          <feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/>\
-          <feColorMatrix type='saturate' values='0'/>\
-        </filter>\
-        <rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/>\
-      </svg>");
-    background-size: 200px 200px;
-  }
-
   /* Slow spin utilities for decorative SVGs */
   .animate-spin-slow {
     animation: spin-slow 18s linear infinite;
@@ -401,22 +383,6 @@ All colors MUST be HSL.
   .animate-spin-slow-reverse {
     animation: spin-slow-reverse 24s linear infinite;
   }
-
-  /* Gentle ambient glow flicker */
-  .animate-subtle-flicker {
-    animation: subtle-flicker 12s ease-in-out infinite;
-  }
-
-  /* Smooth drift for background dots */
-  .animate-dot-move {
-    animation: dot-move var(--dot-duration, 18s) ease-in-out var(--dot-delay, 0s) infinite alternate;
-  }
-}
-
-/* Subtle ambient flicker for background glow */
-@keyframes subtle-flicker {
-  0%, 100% { opacity: 0.18; filter: brightness(1); }
-  50% { opacity: 0.26; filter: brightness(1.06); }
 }
 
 /* Spin animations */
@@ -428,84 +394,6 @@ All colors MUST be HSL.
 @keyframes spin-slow-reverse {
   from { transform: rotate(0deg); }
   to { transform: rotate(-360deg); }
-}
-
-/* Background dot drift (used by HomeBackground) */
-@keyframes dot-move {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(var(--tw-translate-x), var(--tw-translate-y)) scale(1.05); }
-  100% { transform: translate(0, 0) scale(1); }
-}
-
-@layer components {
-  .hero-starfield {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    mask-image: radial-gradient(circle at 50% 92%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 58%);
-    -webkit-mask-image: radial-gradient(circle at 50% 92%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 58%);
-  }
-
-  .hero-starfield__layer {
-    position: absolute;
-    inset: 0;
-    mix-blend-mode: screen;
-  }
-
-  .hero-starfield__star {
-    position: absolute;
-    top: var(--star-top);
-    left: var(--star-left);
-    width: var(--star-size);
-    height: var(--star-size);
-    border-radius: 9999px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.98) 0%, rgba(214, 226, 255, 0.62) 42%, rgba(140, 176, 255, 0.22) 70%, transparent 90%);
-    opacity: var(--star-base-opacity);
-    transform: translate3d(-50%, -50%, 0);
-    transform-origin: center;
-    box-shadow: 0 0 calc(10px * var(--star-glow, 0.7)) rgba(150, 190, 255, 0.35);
-    will-change: opacity, transform;
-    animation: hero-star-twinkle var(--star-twinkle, 14s) ease-in-out var(--star-twinkle-delay, 0s) infinite alternate;
-  }
-
-  .hero-starfield--static .hero-starfield__star {
-    animation-play-state: paused;
-    opacity: var(--star-base-opacity);
-  }
-
-  .hero-starfield__layer--base .hero-starfield__star {
-    --star-glow: 0.85;
-  }
-
-  .hero-starfield__layer--mid .hero-starfield__star {
-    --star-glow: 1.2;
-    background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(220, 232, 255, 0.7) 45%, rgba(150, 186, 255, 0.28) 72%, transparent 92%);
-    box-shadow: 0 0 calc(14px * var(--star-glow, 1)) rgba(160, 198, 255, 0.4);
-    filter: brightness(1.05);
-  }
-
-  .hero-starfield__layer--glow .hero-starfield__star {
-    --star-glow: 1.55;
-    background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(224, 236, 255, 0.85) 35%, rgba(158, 192, 255, 0.35) 65%, rgba(118, 166, 255, 0.18) 82%, transparent 100%);
-    box-shadow: 0 0 calc(18px * var(--star-glow, 1)) rgba(168, 206, 255, 0.5);
-    filter: brightness(1.08);
-  }
-}
-
-@keyframes hero-star-twinkle {
-  0%,
-  100% {
-    opacity: calc(var(--star-base-opacity) * 0.75);
-    transform: translate3d(-50%, -50%, 0) scale(0.86);
-  }
-  45% {
-    opacity: calc(var(--star-base-opacity) * 1.05);
-    transform: translate3d(-50%, -50%, 0) scale(1.12);
-  }
-  70% {
-    opacity: calc(var(--star-base-opacity) * 0.85);
-    transform: translate3d(-50%, -50%, 0) scale(0.94);
-  }
 }
 
 /* Enhanced Loading Animations */
