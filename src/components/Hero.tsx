@@ -12,8 +12,8 @@ const Hero = () => {
       <Stars />
 
       <div className="relative z-10 container-site min-h-[calc(100vh-56px)] flex items-center justify-center">
-        <div className="w-full max-w-3xl mx-auto space-y-6 text-center px-4">
-          <div className="space-y-3">
+        <div className="w-full max-w-3xl mx-auto space-y-4 text-center px-4">
+          <div className="space-y-2">
             <h1
               className="text-display text-hierarchy-primary font-black animate-fade-in-up opacity-0"
               style={{ animationDelay: '0.1s' }}
@@ -26,15 +26,15 @@ const Hero = () => {
             </h1>
 
             <h2
-              className="text-2xl md:text-3xl lg:text-4xl font-semibold text-hierarchy-secondary animate-fade-in-left opacity-0"
+              className="text-lg md:text-xl lg:text-2xl font-semibold text-hierarchy-secondary animate-fade-in-left opacity-0"
               style={{ animationDelay: '0.3s' }}
             >
               3rd-year ICT at TUAS • CoRe lab intern • Founder of SisuSpeak
             </h2>
           </div>
 
-          <div className="space-y-5">
-            <div className="reading-width mx-auto">
+          <div className="space-y-6">
+            <div className="reading-width-wide mx-auto">
               <p
                 className="text-body-large text-hierarchy-tertiary leading-relaxed animate-fade-in-up opacity-0"
                 style={{ animationDelay: '0.5s' }}
