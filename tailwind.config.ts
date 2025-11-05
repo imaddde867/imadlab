@@ -145,16 +145,13 @@ export default {
 				},
         'blink-purple': {
           '0%, 100%': {
-            transform: 'scale(1)',
-            backgroundColor: 'hsl(var(--primary))',
-            boxShadow: '0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary))',
-            opacity: '1',
+            opacity: '0',
+            boxShadow: 'none',
           },
           '50%': {
-            transform: 'scale(0.8)',
+            opacity: '1',
             backgroundColor: 'hsl(var(--primary))',
-            boxShadow: '0 0 15px hsl(var(--primary)), 0 0 25px hsl(var(--primary))',
-            opacity: '0.7',
+            boxShadow: '0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary))',
           },
         },
 			},
