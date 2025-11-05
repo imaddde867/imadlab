@@ -15,9 +15,16 @@ type Star = {
   driftY: number;
   moveDuration: number;
   twinkleDuration: number;
+  twinklePhase: number;
+  travelAxis: 'x' | 'y';
 };
 
 type Counts = { base: number; mid: number; glow: number };
+
+type StarRegion = {
+  x: [number, number];
+  y: [number, number];
+};
 
 type StarsProps = {
   enableStarfield?: boolean;
@@ -30,15 +37,25 @@ const Stars = ({ enableStarfield = true }: StarsProps) => {
   // Responsive star counts to prevent mobile lag
   const computeCounts = useCallback((): Counts => {
     if (typeof window === 'undefined') {
-      return { base: 140, mid: 90, glow: 30 };
+      return { base: 110, mid: 70, glow: 22 };
     }
     const width = window.innerWidth;
-    if (width <= 640) return { base: 30, mid: 18, glow: 6 }; // phones
-    if (width <= 1024) return { base: 110, mid: 70, glow: 24 }; // tablets
-    return { base: 140, mid: 90, glow: 30 }; // desktop
+    if (width <= 640) return { base: 26, mid: 16, glow: 5 }; // phones
+    if (width <= 1024) return { base: 80, mid: 48, glow: 16 }; // tablets
+    return { base: 110, mid: 70, glow: 22 }; // desktop
   }, []);
 
   const [counts, setCounts] = useState<Counts>(computeCounts);
+
+  const starRegions = useMemo<StarRegion[]>(() => {
+    if (!enableStarfield) {
+      return [];
+    }
+    return [
+      { x: [0, 48], y: [0, 76] },
+      { x: [52, 100], y: [0, 76] },
+    ];
+  }, [enableStarfield]);
 
   useEffect(() => {
     if (prefersReducedMotion || typeof window === 'undefined' || isCoarsePointer) {
@@ -79,11 +96,12 @@ const Stars = ({ enableStarfield = true }: StarsProps) => {
         drift: number;
         move: { base: number; variance: number };
         twinkle: { base: number; variance: number };
-      }
+      },
+      region: StarRegion
     ): Star[] =>
       Array.from({ length: amount }, () => ({
-        x: Math.random() * 100,
-        y: Math.random() * 100,
+        x: Math.random() * (region.x[1] - region.x[0]) + region.x[0],
+        y: Math.random() * (region.y[1] - region.y[0]) + region.y[0],
         size: Math.random() * (options.size[1] - options.size[0]) + options.size[0],
         delay: Math.random() * (options.delay[1] - options.delay[0]) + options.delay[0],
         hue: Math.random() * (options.hue[1] - options.hue[0]) + options.hue[0],
@@ -96,59 +114,78 @@ const Stars = ({ enableStarfield = true }: StarsProps) => {
           options.move.base + Math.random() * options.move.variance,
         twinkleDuration:
           options.twinkle.base + Math.random() * options.twinkle.variance,
+        twinklePhase: Math.random() * Math.PI * 2,
+        travelAxis: Math.random() > 0.5 ? 'x' : 'y',
       })),
     []
   );
 
+  const generateLayer = useCallback(
+    (
+      amount: number,
+      options: Parameters<typeof createStars>[1]
+    ): Star[] => {
+      if (
+        prefersReducedMotion ||
+        isCoarsePointer ||
+        !enableStarfield ||
+        starRegions.length === 0
+      ) {
+        return [];
+      }
+
+      const perRegion = Math.max(1, Math.ceil(amount / starRegions.length));
+      const stars = starRegions.flatMap((region) =>
+        createStars(perRegion, options, region)
+      );
+      return stars.slice(0, amount);
+    },
+    [createStars, enableStarfield, isCoarsePointer, prefersReducedMotion, starRegions]
+  );
+
   const baseStars = useMemo<Star[]>(
     () =>
-      prefersReducedMotion || isCoarsePointer || !enableStarfield
-        ? []
-        : createStars(counts.base, {
-            size: [0.4, 1.6],
-            delay: [0, 8],
-            hue: [210, 230],
-            opacity: [0.3, 0.8],
-            blur: [0, 0.6],
-            drift: 50,
-            move: { base: 16, variance: 12 },
-            twinkle: { base: 5, variance: 7 },
-          }),
-    [counts.base, createStars, prefersReducedMotion, isCoarsePointer, enableStarfield]
+      generateLayer(counts.base, {
+        size: [0.4, 1.6],
+        delay: [0, 9],
+        hue: [206, 228],
+        opacity: [0.18, 0.52],
+        blur: [0, 0.45],
+        drift: 54,
+        move: { base: 18, variance: 12 },
+        twinkle: { base: 5.2, variance: 8 },
+      }),
+    [counts.base, generateLayer]
   );
 
   const midStars = useMemo<Star[]>(
     () =>
-      prefersReducedMotion || isCoarsePointer || !enableStarfield
-        ? []
-        : createStars(counts.mid, {
-            size: [0.8, 2.6],
-            delay: [0, 10],
-            hue: [220, 230],
-            opacity: [0.35, 0.85],
-            blur: [0.2, 1],
-            drift: 80,
-            move: { base: 24, variance: 14 },
-            twinkle: { base: 6, variance: 8 },
-          }),
-    [counts.mid, createStars, prefersReducedMotion, isCoarsePointer, enableStarfield]
+      generateLayer(counts.mid, {
+        size: [0.8, 2.6],
+        delay: [0, 12],
+        hue: [214, 232],
+        opacity: [0.24, 0.72],
+        blur: [0.15, 0.8],
+        drift: 80,
+        move: { base: 26, variance: 16 },
+        twinkle: { base: 6.5, variance: 9 },
+      }),
+    [counts.mid, generateLayer]
   );
 
   const glowStars = useMemo<Star[]>(
     () =>
-      prefersReducedMotion || isCoarsePointer || !enableStarfield
-        ? []
-        : createStars(counts.glow, {
-            size: [1.2, 3.6],
-            delay: [0, 12],
-            hue: [200, 230],
-            opacity: [0.4, 0.8],
-            blur: [0.4, 1.6],
-            drift: 110,
-            move: { base: 32, variance: 16 },
-            twinkle: { base: 7, variance: 9 },
-          }),
-    [counts.glow, createStars, prefersReducedMotion, isCoarsePointer, enableStarfield]
+      generateLayer(counts.glow, {
+        size: [1.4, 3.8],
+        delay: [0, 12],
+        hue: [208, 236],
+        opacity: [0.32, 0.82],
+        blur: [0.6, 1.8],
+        drift: 120,
+        move: { base: 34, variance: 20 },
+        twinkle: { base: 7.2, variance: 11 },
+      }),
+    [counts.glow, generateLayer]
   );
 
   const gradientLayers = (
@@ -182,36 +219,68 @@ const Stars = ({ enableStarfield = true }: StarsProps) => {
       {gradientLayers}
 
       {/* Layers of stars for depth */}
-      {enableStarfield && !prefersReducedMotion && !isCoarsePointer &&
-        [baseStars, midStars, glowStars].map((layer, li) => (
-          <div
-            key={li}
-            className="absolute inset-0 transform-gpu"
-            style={{ contain: 'layout paint' }}
-          >
-            {layer.map((s, i) => {
-              const starStyle: CSSProperties & Record<'--tw-translate-x' | '--tw-translate-y', string> = {
-                left: `${s.x}%`,
-                top: `${s.y}%`,
-                width: `${s.size}px`,
-                height: `${s.size}px`,
-                backgroundColor: `hsl(${s.hue}, 80%, 96%)`,
-                opacity: s.opacity,
-                animation: `star-move ${s.moveDuration}s ease-in-out ${s.delay}s infinite alternate, star-twinkle ${s.twinkleDuration}s ease-in-out ${s.delay}s infinite alternate`,
-                '--tw-translate-x': `${s.driftX}px`,
-                '--tw-translate-y': `${s.driftY}px`,
-              };
+      {enableStarfield && !prefersReducedMotion && !isCoarsePointer && (
+        <div
+          className="absolute inset-0"
+          style={{
+            maskImage:
+              'radial-gradient(circle at 50% 92%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 36%, rgba(0,0,0,1) 58%)',
+            WebkitMaskImage:
+              'radial-gradient(circle at 50% 92%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 36%, rgba(0,0,0,1) 58%)',
+          }}
+        >
+          {[baseStars, midStars, glowStars].map((layer, li) => (
+            <div
+              key={li}
+              className="absolute inset-0 transform-gpu"
+              style={{ contain: 'layout paint' }}
+            >
+              {layer.map((s, i) => {
+                const filterParts: string[] = [];
+                if (li === 2) {
+                  filterParts.push(`blur(${s.blur.toFixed(2)}px)`);
+                  filterParts.push(
+                    `drop-shadow(0 0 ${Math.max(1.2, s.size * 1.8).toFixed(2)}px rgba(130,160,255,0.18))`
+                  );
+                } else if (li === 1) {
+                  filterParts.push(
+                    `drop-shadow(0 0 ${Math.max(0.8, s.size * 1.5).toFixed(2)}px rgba(140,170,255,0.14))`
+                  );
+                }
+                const filter = filterParts.length > 0 ? filterParts.join(' ') : undefined;
+                const animations = [
+                  `${s.travelAxis === 'x' ? 'star-drift-x' : 'star-drift-y'} ${s.moveDuration}s ease-in-out ${s.delay}s infinite alternate`,
+                  `star-twinkle ${s.twinkleDuration}s ease-in-out ${s.delay + s.twinklePhase}s infinite`,
+                ].join(', ');
 
-              return (
-                <div
-                  key={`${li}-${i}`}
-                  className="absolute rounded-full"
-                  style={starStyle}
-                />
-              );
-            })}
-          </div>
-        ))}
+                const starStyle: CSSProperties & Record<'--tw-translate-x' | '--tw-translate-y', string> = {
+                  left: `${s.x}%`,
+                  top: `${s.y}%`,
+                  width: `${s.size}px`,
+                  height: `${s.size}px`,
+                  backgroundColor: `hsl(${s.hue}, 80%, 96%)`,
+                  opacity: s.opacity,
+                  '--tw-star-opacity': s.opacity.toFixed(3),
+                  animation: animations,
+                  '--tw-translate-x': `${s.driftX}px`,
+                  '--tw-translate-y': `${s.driftY}px`,
+                  filter,
+                  mixBlendMode: li === 0 ? 'lighten' : 'screen',
+                  willChange: 'transform, opacity',
+                };
+
+                return (
+                  <div
+                    key={`${li}-${i}`}
+                    className="absolute rounded-full"
+                    style={starStyle}
+                  />
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Shooting stars removed */}
     </div>
