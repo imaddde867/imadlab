@@ -24,27 +24,27 @@ type LayerConfig = {
 const LAYERS: LayerConfig[] = [
   {
     key: 'base',
-    count: 80,
-    sizeRange: [0.9, 1.4],
-    opacityRange: [0.35, 0.7],
-    twinkleRange: [12, 18],
-    intensityRange: [0.3, 0.65],
-  },
-  {
-    key: 'mid',
-    count: 52,
-    sizeRange: [1.1, 1.8],
-    opacityRange: [0.45, 0.82],
-    twinkleRange: [9, 15],
+    count: 94,
+    sizeRange: [1, 1.6],
+    opacityRange: [0.45, 0.78],
+    twinkleRange: [11, 17],
     intensityRange: [0.45, 0.75],
   },
   {
+    key: 'mid',
+    count: 58,
+    sizeRange: [1.2, 2],
+    opacityRange: [0.55, 0.85],
+    twinkleRange: [9, 14],
+    intensityRange: [0.55, 0.82],
+  },
+  {
     key: 'glow',
-    count: 26,
-    sizeRange: [1.3, 2.6],
-    opacityRange: [0.5, 0.9],
-    twinkleRange: [14, 22],
-    intensityRange: [0.6, 1],
+    count: 30,
+    sizeRange: [1.6, 2.9],
+    opacityRange: [0.6, 0.95],
+    twinkleRange: [13, 21],
+    intensityRange: [0.7, 1],
   },
 ];
 
@@ -70,7 +70,7 @@ const makeStars = (layer: LayerConfig, seedOffset: number): Star[] =>
     const glow =
       layer.intensityRange[0] +
       rand(4) * (layer.intensityRange[1] - layer.intensityRange[0]);
-    const baseOpacity = Math.min(1, opacity * glow);
+    const baseOpacity = Math.min(0.97, opacity * 0.6 + glow * 0.45);
 
     return {
       left: rand(5) * 100,
