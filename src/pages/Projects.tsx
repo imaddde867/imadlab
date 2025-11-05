@@ -87,7 +87,7 @@ const Projects = () => {
             Back to Home
           </Link>
         </div>
-        <div className="mb-12">
+        <div>
           <SectionHeader title={<span className="text-brand-gradient">Projects</span>} />
         </div>
 
