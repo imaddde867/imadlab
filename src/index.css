@@ -99,6 +99,11 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html, body {
+    overscroll-behavior: none; /* Prevent rubber-banding/bounce scroll */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+  }
+
   body, #root {
     @apply font-sans antialiased;
     color: hsl(var(--foreground));
