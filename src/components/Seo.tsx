@@ -186,7 +186,6 @@ const Seo = ({
     fullTitle,
     locale,
     ogImage,
-    PRIMARY_NAV_ITEMS,
     schemaType,
     tags,
     type,
