@@ -19,7 +19,11 @@ type Star = {
 
 type Counts = { base: number; mid: number; glow: number };
 
-const Stars = () => {
+type StarsProps = {
+  enableStarfield?: boolean;
+};
+
+const Stars = ({ enableStarfield = true }: StarsProps) => {
   const prefersReducedMotion = usePrefersReducedMotion();
   const isCoarsePointer = useIsCoarsePointer();
 
@@ -98,7 +102,7 @@ const Stars = () => {
 
   const baseStars = useMemo<Star[]>(
     () =>
-      prefersReducedMotion || isCoarsePointer
+      prefersReducedMotion || isCoarsePointer || !enableStarfield
         ? []
         : createStars(counts.base, {
             size: [0.4, 1.6],
@@ -110,12 +114,12 @@ const Stars = () => {
             move: { base: 16, variance: 12 },
             twinkle: { base: 5, variance: 7 },
           }),
-    [counts.base, createStars, prefersReducedMotion, isCoarsePointer]
+    [counts.base, createStars, prefersReducedMotion, isCoarsePointer, enableStarfield]
   );
 
   const midStars = useMemo<Star[]>(
     () =>
-      prefersReducedMotion || isCoarsePointer
+      prefersReducedMotion || isCoarsePointer || !enableStarfield
         ? []
         : createStars(counts.mid, {
             size: [0.8, 2.6],
@@ -127,12 +131,12 @@ const Stars = () => {
             move: { base: 24, variance: 14 },
             twinkle: { base: 6, variance: 8 },
           }),
-    [counts.mid, createStars, prefersReducedMotion, isCoarsePointer]
+    [counts.mid, createStars, prefersReducedMotion, isCoarsePointer, enableStarfield]
   );
 
   const glowStars = useMemo<Star[]>(
     () =>
-      prefersReducedMotion || isCoarsePointer
+      prefersReducedMotion || isCoarsePointer || !enableStarfield
         ? []
         : createStars(counts.glow, {
             size: [1.2, 3.6],
@@ -144,26 +148,18 @@ const Stars = () => {
             move: { base: 32, variance: 16 },
             twinkle: { base: 7, variance: 9 },
           }),
-    [counts.glow, createStars, prefersReducedMotion, isCoarsePointer]
+    [counts.glow, createStars, prefersReducedMotion, isCoarsePointer, enableStarfield]
   );
 
   const gradientLayers = (
     <>
-      {/* Night gradient + subtle vignette */}
       <div
         className="absolute inset-0"
         style={{
-          background:
-            'radial-gradient(1000px circle at 50% 20%, rgba(60,80,120,0.12), transparent 55%), linear-gradient(180deg, #05060a 0%, #05060a 25%, #03040a 100%)',
-        }}
-      />
-
-      {/* Soft vignette edges */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(1200px circle at 50% 40%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.0) 60%, rgba(0,0,0,0.2) 100%)',
+          backgroundImage: "url('/images/hero-moon.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
       />
     </>
@@ -186,39 +182,36 @@ const Stars = () => {
       {gradientLayers}
 
       {/* Layers of stars for depth */}
-      {[baseStars, midStars, glowStars].map((layer, li) => (
-        <div
-          key={li}
-          className="absolute inset-0 transform-gpu"
-          style={{ contain: 'layout paint' }}
-        >
-          {layer.map((s, i) => {
-            const starStyle: CSSProperties & Record<'--tw-translate-x' | '--tw-translate-y', string> = {
-              left: `${s.x}%`,
-              top: `${s.y}%`,
-              width: `${s.size}px`,
-              height: `${s.size}px`,
-              backgroundColor: `hsl(${s.hue}, 80%, 96%)`,
-              opacity: s.opacity,
-              filter:
-                li === 2
-                  ? `blur(${s.blur}px) drop-shadow(0 0 ${Math.max(1.5, s.size * 2)}px rgba(255,255,255,0.12))`
-                  : undefined,
-              animation: `star-move ${s.moveDuration}s ease-in-out ${s.delay}s infinite alternate, star-twinkle ${s.twinkleDuration}s ease-in-out ${s.delay}s infinite alternate`,
-              '--tw-translate-x': `${s.driftX}px`,
-              '--tw-translate-y': `${s.driftY}px`,
-            };
+      {enableStarfield && !prefersReducedMotion && !isCoarsePointer &&
+        [baseStars, midStars, glowStars].map((layer, li) => (
+          <div
+            key={li}
+            className="absolute inset-0 transform-gpu"
+            style={{ contain: 'layout paint' }}
+          >
+            {layer.map((s, i) => {
+              const starStyle: CSSProperties & Record<'--tw-translate-x' | '--tw-translate-y', string> = {
+                left: `${s.x}%`,
+                top: `${s.y}%`,
+                width: `${s.size}px`,
+                height: `${s.size}px`,
+                backgroundColor: `hsl(${s.hue}, 80%, 96%)`,
+                opacity: s.opacity,
+                animation: `star-move ${s.moveDuration}s ease-in-out ${s.delay}s infinite alternate, star-twinkle ${s.twinkleDuration}s ease-in-out ${s.delay}s infinite alternate`,
+                '--tw-translate-x': `${s.driftX}px`,
+                '--tw-translate-y': `${s.driftY}px`,
+              };
 
-            return (
-              <div
-                key={`${li}-${i}`}
-                className="absolute rounded-full"
-                style={starStyle}
-              />
-            );
-          })}
-        </div>
-      ))}
+              return (
+                <div
+                  key={`${li}-${i}`}
+                  className="absolute rounded-full"
+                  style={starStyle}
+                />
+              );
+            })}
+          </div>
+        ))}
 
       {/* Shooting stars removed */}
     </div>
