@@ -110,12 +110,19 @@ All colors MUST be HSL.
       hsl(var(--background));
     background-attachment: fixed;
     transition: background 0.4s ease, color 0.4s ease;
-    overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     font-variant-numeric: oldstyle-nums;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  body::-webkit-scrollbar,
+  #root::-webkit-scrollbar {
+    display: none;
   }
 
   /* Enhanced typography base styles */
@@ -163,23 +170,14 @@ All colors MUST be HSL.
     color: hsl(var(--foreground));
   }
 
-  /* Custom scrollbar for Webkit browsers */
-  ::-webkit-scrollbar {
-    width: 8px;
+  /* Hide scrollbar globally */
+  * {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
   }
 
-  ::-webkit-scrollbar-track {
-    background: hsla(215, 28%, 14%, 0.45);
-    border-radius: 10px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: hsla(0, 0%, 75%, 0.35);
-    border-radius: 10px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: hsla(0, 0%, 85%, 0.55);
+  *::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
   }
 }
 
