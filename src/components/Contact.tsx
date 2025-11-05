@@ -146,8 +146,11 @@ const Contact = () => {
                   className="group"
                   disabled={form.formState.isSubmitting}
                 >
-                  <span className="btn-text-primary">{form.formState.isSubmitting ? "Sending..." : "Send Message"}</span>
-                  <ArrowUp className="w-5 h-5 ml-3 rotate-45 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  <span className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full blur-2xl"></span>
+                  <span className="relative flex items-center">
+                    <span className="btn-text-primary">{form.formState.isSubmitting ? "Sending..." : "Send Message"}</span>
+                    <ArrowUp className="w-5 h-5 ml-3 rotate-45 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </span>
                 </Button>
               </form>
             </Form>
