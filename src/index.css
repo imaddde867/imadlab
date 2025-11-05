@@ -419,25 +419,73 @@ All colors MUST be HSL.
   100% { transform: translate(0, 0) scale(1); }
 }
 
-/* Hero starfield animations */
-@keyframes star-drift-x {
-  0% { transform: translate3d(0, 0, 0); }
-  40% { transform: translate3d(calc(var(--tw-translate-x, 0px) * 1), calc(var(--tw-translate-y, 0px) * 0.35), 0); }
-  100% { transform: translate3d(calc(var(--tw-translate-x, 0px) * -0.45), calc(var(--tw-translate-y, 0px) * -0.25), 0); }
+@layer components {
+  .hero-starfield {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    mask-image: radial-gradient(circle at 50% 92%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 58%);
+    -webkit-mask-image: radial-gradient(circle at 50% 92%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 58%);
+  }
+
+  .hero-starfield__layer {
+    position: absolute;
+    inset: 0;
+    mix-blend-mode: screen;
+  }
+
+  .hero-starfield__star {
+    position: absolute;
+    top: var(--star-top);
+    left: var(--star-left);
+    width: var(--star-size);
+    height: var(--star-size);
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(238, 245, 255, 0.98) 0%, rgba(200, 220, 255, 0.45) 55%, transparent 80%);
+    opacity: var(--star-base-opacity);
+    transform: translate3d(-50%, -50%, 0);
+    transform-origin: center;
+    box-shadow: 0 0 calc(6px * var(--star-glow, 0.7)) rgba(136, 172, 255, 0.3);
+    will-change: opacity, transform;
+    animation: hero-star-twinkle var(--star-twinkle, 14s) ease-in-out var(--star-twinkle-delay, 0s) infinite alternate;
+  }
+
+  .hero-starfield--static .hero-starfield__star {
+    animation-play-state: paused;
+    opacity: var(--star-base-opacity);
+  }
+
+  .hero-starfield__layer--base .hero-starfield__star {
+    --star-glow: 0.65;
+  }
+
+  .hero-starfield__layer--mid .hero-starfield__star {
+    --star-glow: 1;
+    background: radial-gradient(circle, rgba(244, 249, 255, 0.98) 0%, rgba(204, 224, 255, 0.6) 50%, transparent 85%);
+    box-shadow: 0 0 calc(9px * var(--star-glow, 1)) rgba(150, 184, 255, 0.36);
+  }
+
+  .hero-starfield__layer--glow .hero-starfield__star {
+    --star-glow: 1.35;
+    background: radial-gradient(circle, rgba(254, 255, 255, 1) 0%, rgba(210, 230, 255, 0.72) 40%, rgba(140, 176, 255, 0.24) 70%, transparent 100%);
+    box-shadow: 0 0 calc(14px * var(--star-glow, 1)) rgba(160, 200, 255, 0.42);
+  }
 }
 
-@keyframes star-drift-y {
-  0% { transform: translate3d(0, 0, 0); }
-  45% { transform: translate3d(calc(var(--tw-translate-x, 0px) * 0.35), calc(var(--tw-translate-y, 0px) * 1.05), 0); }
-  100% { transform: translate3d(calc(var(--tw-translate-x, 0px) * -0.4), calc(var(--tw-translate-y, 0px) * -0.2), 0); }
-}
-
-@keyframes star-twinkle {
-  0%   { opacity: calc(var(--tw-star-opacity, 0.45) * 0.4); }
-  25%  { opacity: calc(var(--tw-star-opacity, 0.45) + 0.45); }
-  55%  { opacity: calc(var(--tw-star-opacity, 0.45) * 0.25); }
-  80%  { opacity: calc(var(--tw-star-opacity, 0.45) + 0.28); }
-  100% { opacity: calc(var(--tw-star-opacity, 0.45) * 0.5); }
+@keyframes hero-star-twinkle {
+  0%,
+  100% {
+    opacity: calc(var(--star-base-opacity) * 0.75);
+    transform: translate3d(-50%, -50%, 0) scale(0.86);
+  }
+  45% {
+    opacity: calc(var(--star-base-opacity) * 1.05);
+    transform: translate3d(-50%, -50%, 0) scale(1.12);
+  }
+  70% {
+    opacity: calc(var(--star-base-opacity) * 0.85);
+    transform: translate3d(-50%, -50%, 0) scale(0.94);
+  }
 }
 
 /* Enhanced Loading Animations */
