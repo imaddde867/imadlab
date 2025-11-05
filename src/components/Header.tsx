@@ -45,7 +45,7 @@ const Header = () => {
     <>
       <header
         className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 ${
-          scrolled ? 'backdrop-blur-xl bg-black/40 border-b border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)]' : 'backdrop-blur-sm bg-black/20 border-b border-white/5'
+          scrolled ? 'backdrop-blur-xl bg-black/40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]' : 'backdrop-blur-sm bg-black/20'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
