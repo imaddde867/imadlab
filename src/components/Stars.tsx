@@ -37,12 +37,12 @@ const Stars = ({ enableStarfield = true }: StarsProps) => {
   // Responsive star counts to prevent mobile lag
   const computeCounts = useCallback((): Counts => {
     if (typeof window === 'undefined') {
-      return { base: 110, mid: 70, glow: 22 };
+      return { base: 140, mid: 90, glow: 26 };
     }
     const width = window.innerWidth;
-    if (width <= 640) return { base: 26, mid: 16, glow: 5 }; // phones
-    if (width <= 1024) return { base: 80, mid: 48, glow: 16 }; // tablets
-    return { base: 110, mid: 70, glow: 22 }; // desktop
+    if (width <= 640) return { base: 36, mid: 22, glow: 7 }; // phones
+    if (width <= 1024) return { base: 108, mid: 66, glow: 20 }; // tablets
+    return { base: 140, mid: 90, glow: 26 }; // desktop
   }, []);
 
   const [counts, setCounts] = useState<Counts>(computeCounts);
@@ -151,8 +151,8 @@ const Stars = ({ enableStarfield = true }: StarsProps) => {
         hue: [206, 228],
         opacity: [0.18, 0.52],
         blur: [0, 0.45],
-        drift: 54,
-        move: { base: 18, variance: 12 },
+        drift: 96,
+        move: { base: 24, variance: 13 },
         twinkle: { base: 5.2, variance: 8 },
       }),
     [counts.base, generateLayer]
@@ -166,9 +166,9 @@ const Stars = ({ enableStarfield = true }: StarsProps) => {
         hue: [214, 232],
         opacity: [0.24, 0.72],
         blur: [0.15, 0.8],
-        drift: 80,
-        move: { base: 26, variance: 16 },
-        twinkle: { base: 6.5, variance: 9 },
+        drift: 150,
+        move: { base: 32, variance: 19 },
+        twinkle: { base: 6.2, variance: 9 },
       }),
     [counts.mid, generateLayer]
   );
@@ -181,9 +181,9 @@ const Stars = ({ enableStarfield = true }: StarsProps) => {
         hue: [208, 236],
         opacity: [0.32, 0.82],
         blur: [0.6, 1.8],
-        drift: 120,
-        move: { base: 34, variance: 20 },
-        twinkle: { base: 7.2, variance: 11 },
+        drift: 210,
+        move: { base: 38, variance: 23 },
+        twinkle: { base: 6.8, variance: 12 },
       }),
     [counts.glow, generateLayer]
   );
@@ -250,7 +250,7 @@ const Stars = ({ enableStarfield = true }: StarsProps) => {
                 const filter = filterParts.length > 0 ? filterParts.join(' ') : undefined;
                 const animations = [
                   `${s.travelAxis === 'x' ? 'star-drift-x' : 'star-drift-y'} ${s.moveDuration}s ease-in-out ${s.delay}s infinite alternate`,
-                  `star-twinkle ${s.twinkleDuration}s ease-in-out ${s.delay + s.twinklePhase}s infinite`,
+                  `star-twinkle ${s.twinkleDuration}s ease-in-out ${s.delay + s.twinklePhase}s infinite alternate`,
                 ].join(', ');
 
                 const starStyle: CSSProperties & Record<'--tw-translate-x' | '--tw-translate-y', string> = {
