@@ -49,8 +49,11 @@ const Hero = () => {
               className="group animate-fade-in-scale opacity-0"
               style={{ animationDelay: '0.9s' }}
             >
-              <span className="btn-text-primary">See My Work</span>
-              <ArrowDown className="w-5 h-5 ml-3 transition-transform group-hover:translate-y-1" />
+              <span className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full blur-2xl"></span>
+              <span className="relative flex items-center">
+                <span className="btn-text-primary">See My Work</span>
+                <ArrowDown className="w-5 h-5 ml-3 transition-transform group-hover:translate-y-1" />
+              </span>
             </Button>
           </div>
         </div>
