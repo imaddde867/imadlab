@@ -59,7 +59,7 @@ const Extras = () => {
   }, [fetchData]);
 
   return (
-    <div className="min-h-screen bg-black text-white relative">
+    <div className="min-h-screen bg-black text-white relative pt-14">
       {/* Background gradient */}
       <div 
         className="fixed inset-0 pointer-events-none opacity-30"

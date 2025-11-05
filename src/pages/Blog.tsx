@@ -66,7 +66,7 @@ const Blogs = () => {
   ] : undefined;
 
   return (
-    <div className="min-h-screen bg-black text-white section">
+    <div className="min-h-screen bg-black text-white section pt-14">
       <Seo
         title="Blog"
         description="Read articles and tutorials on data engineering, AI, machine learning, and more. Stay up-to-date with the latest trends and technologies."

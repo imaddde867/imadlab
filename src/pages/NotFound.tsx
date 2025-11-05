@@ -14,7 +14,7 @@ const NotFound = () => (
         { name: '404', path: '/404' }
       ]}
     />
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8 pt-14">
       <h1 className="text-6xl font-black mb-6">404</h1>
       <h2 className="text-2xl font-bold mb-4">Page Not Found</h2>
       <p className="text-white/60 mb-8 text-center max-w-md mx-auto">

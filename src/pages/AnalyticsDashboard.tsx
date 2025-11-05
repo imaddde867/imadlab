@@ -289,7 +289,7 @@ const AnalyticsDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white py-12">
+    <div className="min-h-screen bg-black text-white pt-14">
       <div className="container-site space-y-10 pb-24">
         <PageHeader
           eyebrow="Admin Suite"
