@@ -58,9 +58,9 @@ const UserSettings = ({ setUserName, setShowFollowingBadge }: UserSettingsProps)
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] bg-black text-white border border-white/10">
         <DialogHeader>
-          <DialogTitle>User Settings</DialogTitle>
+          <DialogTitle>Cursor Settings</DialogTitle>
           <DialogDescription className="text-white/70">
-            Manage your personal preferences for the website.
+            Manage your mouse cursor preferences for the website.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
