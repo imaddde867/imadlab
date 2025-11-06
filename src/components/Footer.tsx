@@ -23,12 +23,13 @@ const Footer = ({ onOpenCookiePrefs }: FooterProps) => {
           <div className="flex items-center">
             <Button
               variant="ghost"
-              className="bg-white/5 hover:bg-white/15 text-white border border-white/10 rounded-full h-11 w-11 p-0 flex items-center justify-center"
+              className="flex h-11 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 text-white shadow-sm backdrop-blur hover:bg-white/15"
               onClick={onOpenCookiePrefs}
               aria-label="Manage cookie preferences"
               title="Manage cookies"
             >
               <CookieIcon className="w-5 h-5" />
+              <span className="hidden md:inline">Cookies</span>
             </Button>
           </div>
         </div>
