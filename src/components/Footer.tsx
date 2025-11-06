@@ -27,8 +27,7 @@ const Footer = ({ onOpenCookiePrefs }: FooterProps) => {
               <div className="flex items-center">
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className="flex h-auto items-center gap-2 rounded-none border-0 bg-transparent px-0 py-0 text-sm text-white/80 shadow-none hover:bg-transparent hover:text-white focus-visible:ring-offset-0"
+                  className="flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm text-white/90 shadow-sm backdrop-blur transition-all focus-enhanced hover:border-primary/50 hover:bg-primary/25 hover:text-white hover:shadow-[0_0_20px_rgba(148,163,255,0.45)]"
                   onClick={onOpenCookiePrefs}
                   aria-label="Manage cookie preferences"
                   title="Manage cookies"
@@ -52,7 +51,7 @@ const Footer = ({ onOpenCookiePrefs }: FooterProps) => {
       {isCoarsePointer && (
         <Button
           variant="ghost"
-          className="fixed z-50 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 p-0 text-white shadow-lg backdrop-blur transition-colors hover:bg-white/15"
+          className="fixed z-50 flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/8 p-0 text-white shadow-lg backdrop-blur transition-all focus-enhanced hover:border-primary/50 hover:bg-primary/30 hover:shadow-[0_0_22px_rgba(148,163,255,0.55)]"
           style={{
             left: 'calc(env(safe-area-inset-left, 0px) + 2rem)',
             bottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)',
