@@ -58,10 +58,10 @@ const Contact = () => {
   }
 
   const socialLinks = [
-    { name: 'GitHub', href: 'https://github.com/imaddde867', icon: '⚡' },
-    { name: 'LinkedIn', href: 'https://www.linkedin.com/in/imad-eddine-e-986741262', icon: '💼' },
-    { name: 'Twitter', href: 'https://x.com/Imad1194318', icon: '🐦' },
-    { name: 'Email', href: 'mailto:imadeddine200507@gmail.com', icon: '✉️' }
+    { name: 'GitHub', href: 'https://github.com/imaddde867', icon: '⚙️' },   
+    { name: 'LinkedIn', href: 'https://www.linkedin.com/in/imad-eddine-e-986741262', icon: '🌐' },
+    { name: 'Discord', href: 'https://discord.com/users/766969796579295232', icon: '👾' }, 
+    { name: 'Email', href: 'mailto:imadeddine200507@gmail.com', icon: '📡' } 
   ];
 
   return (
