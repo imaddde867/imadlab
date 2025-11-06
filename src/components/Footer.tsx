@@ -1,6 +1,12 @@
 import { Link } from 'react-router-dom';
+import { Cookie as CookieIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-const Footer = () => {
+interface FooterProps {
+  onOpenCookiePrefs: () => void;
+}
+
+const Footer = ({ onOpenCookiePrefs }: FooterProps) => {
 
   return (
     <footer className="mt-0 border-t border-white/10 bg-black/30 backdrop-blur-sm">
@@ -13,7 +19,18 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Socials */}
+          {/* Cookie Preferences Button */}
+          <div className="flex items-center">
+            <Button
+              variant="ghost"
+              className="bg-white/5 hover:bg-white/15 text-white border border-white/10 rounded-full h-11 w-11 p-0 flex items-center justify-center"
+              onClick={onOpenCookiePrefs}
+              aria-label="Manage cookie preferences"
+              title="Manage cookies"
+            >
+              <CookieIcon className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
 
         <div className="mt-8 text-center text-xs text-white/50">
