@@ -11,6 +11,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ErrorBoundary from "@/components/ErrorBoundary";
 import CookieConsent from "@/components/CookieConsent";
+import UserSettings from '@/components/UserSettings';
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { registerRoutePrefetch } from "@/lib/routePrefetch";
 
@@ -89,10 +90,27 @@ const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => {
+  const [userName, setUserName] = React.useState<string>('');
+  const [showFollowingBadge, setShowFollowingBadge] = React.useState<boolean>(true);
+  const [cookieConsentIsOpen, setCookieConsentIsOpen] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    const storedName = localStorage.getItem('userName');
+    if (storedName) {
+      setUserName(storedName);
+    }
+    const storedBadgePreference = localStorage.getItem('showFollowingBadge');
+    if (storedBadgePreference !== null) {
+      setShowFollowingBadge(JSON.parse(storedBadgePreference));
+    }
+  }, []);
+
   const visitorTag = React.useMemo(() => {
     const randomNumber = Math.floor(Math.random() * 900) + 100;
     return `Visitor_${randomNumber}`;
   }, []);
+
+  const displayTag = userName || visitorTag;
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -155,11 +173,12 @@ const App = () => {
                     </ClickSpark>
                   </Suspense>
                 </ErrorBoundary>
-                <Footer />
+                <Footer onOpenCookiePrefs={() => setCookieConsentIsOpen(true)} />
               </AnalyticsWrapper>
             </BrowserRouter>
             <NewsletterPopup />
-            <CookieConsent />
+            <CookieConsent isOpen={cookieConsentIsOpen} onOpenChange={setCookieConsentIsOpen} />
+            <UserSettings setUserName={setUserName} setShowFollowingBadge={setShowFollowingBadge} />
             <Cursor>
               <svg className="size-6 text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
                 <path
@@ -168,11 +187,13 @@ const App = () => {
                 />
               </svg>
             </Cursor>
-            <CursorFollow>
-              <div className="bg-primary text-primary-foreground px-2 py-1 rounded-lg text-sm shadow-lg">
-                {visitorTag}
-              </div>
-            </CursorFollow>
+            {showFollowingBadge && (
+              <CursorFollow>
+                <div className="bg-primary text-primary-foreground px-2 py-1 rounded-lg text-sm shadow-lg">
+                  {displayTag}
+                </div>
+              </CursorFollow>
+            )}
           </CursorProvider>
         </div>
       </TooltipProvider>
