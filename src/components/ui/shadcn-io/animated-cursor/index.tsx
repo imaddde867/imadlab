@@ -266,13 +266,10 @@ function CursorFollow({
   );
 }
  
-export {
-  CursorProvider,
-  Cursor,
-  CursorFollow,
-  useCursor,
-  type CursorContextType,
-  type CursorProviderProps,
-  type CursorProps,
-  type CursorFollowProps,
+export { CursorProvider, Cursor, CursorFollow };
+export type {
+  CursorContextType,
+  CursorProviderProps,
+  CursorProps,
+  CursorFollowProps,
 };

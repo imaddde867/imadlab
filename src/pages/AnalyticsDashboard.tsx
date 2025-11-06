@@ -73,6 +73,7 @@ const AnalyticsDashboard = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
+  const [totalViewCount, setTotalViewCount] = useState<number | null>(null);
   const [_sessions, setSessions] = useState<VisitorSession[]>([]);
   const [cursorEntries, setCursorEntries] = useState<CursorPreference[]>([]);
   const [cursorError, setCursorError] = useState<string | null>(null);
@@ -81,6 +82,7 @@ const AnalyticsDashboard = () => {
   const fetchAnalytics = useCallback(async () => {
     setLoading(true);
     setCursorError(null);
+    setTotalViewCount(null);
     
     const now = new Date();
     const timeRanges = {
@@ -93,7 +95,7 @@ const AnalyticsDashboard = () => {
     const [viewsRes, sessionsRes, cursorRes] = await Promise.all([
       supabase
         .from('page_views')
-        .select('*')
+        .select('*', { count: 'exact' })
         .gte('viewed_at', startDate)
         .order('viewed_at', { ascending: false }),
       supabase
@@ -109,7 +111,27 @@ const AnalyticsDashboard = () => {
         .limit(150),
     ]);
 
-    if (viewsRes.data) setPageViews(viewsRes.data as PageView[]);
+    if (viewsRes.error) {
+      toast({
+        title: 'Analytics data unavailable',
+        description: viewsRes.error.message,
+        variant: 'destructive',
+      });
+    }
+
+    if (viewsRes.data) {
+      setPageViews(viewsRes.data as PageView[]);
+    } else {
+      setPageViews([]);
+    }
+
+    if (typeof viewsRes.count === 'number') {
+      setTotalViewCount(viewsRes.count);
+    } else if (viewsRes.data) {
+      setTotalViewCount((viewsRes.data as PageView[]).length);
+    } else {
+      setTotalViewCount(0);
+    }
     if (sessionsRes.data) setSessions(sessionsRes.data as VisitorSession[]);
     if (cursorRes.error) {
       setCursorEntries([]);
@@ -118,7 +140,7 @@ const AnalyticsDashboard = () => {
       setCursorEntries(cursorRes.data as CursorPreference[]);
     }
     setLoading(false);
-  }, [timeRange]);
+  }, [timeRange, toast]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -142,7 +164,7 @@ const AnalyticsDashboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange]);
 
-  const totalViews = pageViews.length;
+  const totalViews = totalViewCount ?? pageViews.length;
   const uniqueVisitors = new Set(pageViews.map(v => v.session_id)).size;
   const avgDuration = useMemo(() => {
     const withDuration = pageViews.filter(v => v.duration);
