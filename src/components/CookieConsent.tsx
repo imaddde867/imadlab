@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Cookie as CookieIcon } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { acceptAll, rejectAll, setConsent, getConsent, ConsentState, hasDecision } from '@/lib/consent';
+import { acceptAll, rejectAll, setConsent, getConsent, ConsentState } from '@/lib/consent';
 
 declare global {
   interface Window {
@@ -77,8 +76,6 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
       </button>
     </div>
   );
-
-  const decision = hasDecision();
 
   return (
     <>
