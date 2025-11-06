@@ -307,14 +307,20 @@ All colors MUST be HSL.
 
   /* Enhanced Link Styles */
   .link-enhanced {
-    color: hsla(0, 0%, 100%, 0.85);
-    transition: color 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    color: hsl(var(--foreground) / 0.85);
+    transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
     font-weight: 500;
     letter-spacing: 0.02em;
+    text-decoration: none;
   }
 
-  .link-enhanced:hover {
-    color: hsla(0, 0%, 100%, 1);
+  .link-enhanced:hover,
+  .link-enhanced:focus-visible {
+    color: hsl(var(--primary));
+    text-shadow: 0 0 14px hsl(var(--primary) / 0.55);
+    transform: translateY(-1px);
   }
 }
 

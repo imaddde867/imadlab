@@ -71,9 +71,9 @@ const Header = () => {
                   <span className="inline-flex items-center">
                     {item.label}
                     <span
-                      className={`absolute -bottom-1 left-0 h-[2px] transition-all ${
+                      className={`pointer-events-none absolute -bottom-1 left-0 h-[3px] rounded-full transition-all duration-300 ${
                         isActive || location.pathname.startsWith(item.path)
-                          ? 'w-full bg-white/70'
+                          ? 'w-full bg-primary/80 shadow-[0_0_18px_rgba(148,163,255,0.55)]'
                           : 'w-0 bg-transparent'
                       }`}
                     />
