@@ -1,6 +1,6 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/imaddde867/imadlab/refs/heads/master/doc/Hero_section.png" alt="imadlab hero section screenshot" width="800" style="max-width:100%;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.10);margin-bottom:12px;" />
-  <h1>imadlab: Data & AI Systems Portfolio</h1>
+  <h1>imadlab: Data & AI Systems Portfolio/Personal Website</h1>
 </div>
 
 ## Overview
