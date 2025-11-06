@@ -50,7 +50,11 @@ const UserSettings = ({ setUserName, setShowFollowingBadge }: UserSettingsProps)
         <Button
           variant="ghost"
           size="icon"
-          className="fixed bottom-4 left-4 z-50 bg-white/5 hover:bg-white/15 text-white border border-white/10 rounded-full h-11 w-11 p-0 flex items-center justify-center"
+          className="fixed z-50 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 p-0 text-white shadow-lg backdrop-blur transition-colors hover:bg-white/15"
+          style={{
+            left: 'calc(env(safe-area-inset-left, 0px) + 2rem)',
+            bottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)',
+          }}
           aria-label="User Settings"
         >
           <Settings className="h-5 w-5 text-white" />
