@@ -297,7 +297,7 @@ All colors MUST be HSL.
 
   /* Enhanced Focus States */
   .focus-enhanced {
-    @apply focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-black;
   }
 
   /* Improved Button Typography */
