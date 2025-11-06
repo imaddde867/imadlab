@@ -53,6 +53,13 @@ type PathStats = {
   avgDuration: number;
 };
 
+type CursorPreference = {
+  session_id: string;
+  cursor_name: string | null;
+  user_agent: string | null;
+  updated_at: string;
+};
+
 const SECTION_CARD_CLASS = 'rounded-2xl border border-white/10 bg-white/[0.06] shadow-sm';
 const SECTION_HEADER_CLASS = 'px-6 pt-6 pb-0';
 const SECTION_TITLE_CLASS = 'text-lg font-semibold text-white';
@@ -67,10 +74,13 @@ const AnalyticsDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
   const [_sessions, setSessions] = useState<VisitorSession[]>([]);
+  const [cursorEntries, setCursorEntries] = useState<CursorPreference[]>([]);
+  const [cursorError, setCursorError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d'>('7d');
 
   const fetchAnalytics = useCallback(async () => {
     setLoading(true);
+    setCursorError(null);
     
     const now = new Date();
     const timeRanges = {
@@ -80,7 +90,7 @@ const AnalyticsDashboard = () => {
     };
     const startDate = timeRanges[timeRange].toISOString();
 
-    const [viewsRes, sessionsRes] = await Promise.all([
+    const [viewsRes, sessionsRes, cursorRes] = await Promise.all([
       supabase
         .from('page_views')
         .select('*')
@@ -91,10 +101,22 @@ const AnalyticsDashboard = () => {
         .select('*')
         .gte('created_at', startDate)
         .order('created_at', { ascending: false }),
+      supabase
+        .from('cursor_preferences')
+        .select('session_id, cursor_name, user_agent, updated_at')
+        .gte('updated_at', startDate)
+        .order('updated_at', { ascending: false })
+        .limit(150),
     ]);
 
     if (viewsRes.data) setPageViews(viewsRes.data as PageView[]);
     if (sessionsRes.data) setSessions(sessionsRes.data as VisitorSession[]);
+    if (cursorRes.error) {
+      setCursorEntries([]);
+      setCursorError(cursorRes.error.message);
+    } else if (cursorRes.data) {
+      setCursorEntries(cursorRes.data as CursorPreference[]);
+    }
     setLoading(false);
   }, [timeRange]);
 
@@ -675,6 +697,80 @@ const AnalyticsDashboard = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Cursor Preferences */}
+            <section id="cursor-preferences" className="space-y-4">
+              <Card className={SECTION_CARD_CLASS}>
+                <CardHeader className={`${SECTION_HEADER_CLASS} space-y-1`}>
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <CardTitle className={SECTION_TITLE_CLASS}>Cursor Preferences</CardTitle>
+                      <CardDescription className={SECTION_DESCRIPTION_CLASS}>
+                        Latest visitor-selected cursor names (max 150) with session context.
+                      </CardDescription>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      disabled={loading}
+                      onClick={fetchAnalytics}
+                      className="text-white/80 hover:text-white"
+                    >
+                      <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                      Refresh
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className={`${SECTION_CONTENT_CLASS} pt-4`}>
+                  {loading ? (
+                    <p className="text-white/60 text-center py-8">Loading cursor preferences…</p>
+                  ) : cursorError ? (
+                    <p className="text-red-400 text-center py-8">
+                      Failed to load cursor data: {cursorError}
+                    </p>
+                  ) : cursorEntries.length === 0 ? (
+                    <p className="text-white/60 text-center py-8">
+                      No cursor preferences recorded in the selected range.
+                    </p>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="text-xs uppercase tracking-widest text-white/70 border-b border-white/10">
+                            <th className="text-left py-3 px-4 font-semibold">Cursor Name</th>
+                            <th className="text-left py-3 px-4 font-semibold hidden md:table-cell">Session ID</th>
+                            <th className="text-left py-3 px-4 font-semibold hidden lg:table-cell">User Agent</th>
+                            <th className="text-left py-3 px-4 font-semibold">Updated</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {cursorEntries.map((entry) => (
+                            <tr key={entry.session_id} className="border-b border-white/5 hover:bg-white/5 transition">
+                              <td className="py-3 px-4 text-white/90">
+                                {entry.cursor_name && entry.cursor_name.trim().length > 0 ? (
+                                  entry.cursor_name
+                                ) : (
+                                  <span className="text-white/40 italic">No name saved</span>
+                                )}
+                              </td>
+                              <td className="py-3 px-4 text-white/70 font-mono text-xs hidden md:table-cell">
+                                {entry.session_id}
+                              </td>
+                              <td className="py-3 px-4 text-white/60 text-xs leading-relaxed hidden lg:table-cell">
+                                {entry.user_agent ?? '—'}
+                              </td>
+                              <td className="py-3 px-4 text-white/70 text-sm">
+                                {new Date(entry.updated_at).toLocaleString()}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </section>
           </>
         )}
       </div>

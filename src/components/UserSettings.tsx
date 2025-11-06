@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Settings, User, BellOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,6 +14,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 interface UserSettingsProps {
   setUserName: (name: string) => void;
@@ -24,6 +26,25 @@ const UserSettings = ({ setUserName, setShowFollowingBadge }: UserSettingsProps)
   const { toast } = useToast();
   const [localUserName, setLocalUserName] = useState<string>('');
   const [localShowFollowingBadge, setLocalShowFollowingBadge] = useState<boolean>(true);
+  const [isPersisting, setIsPersisting] = useState<boolean>(false);
+  const cursorSessionIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const STORAGE_KEY = 'cursor_profile_session_id';
+    let sessionId = localStorage.getItem(STORAGE_KEY);
+
+    if (!sessionId) {
+      sessionId =
+        typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+          ? crypto.randomUUID()
+          : `cursor_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+      localStorage.setItem(STORAGE_KEY, sessionId);
+    }
+
+    cursorSessionIdRef.current = sessionId;
+  }, []);
 
   useEffect(() => {
     const storedName = localStorage.getItem('userName');
@@ -36,12 +57,64 @@ const UserSettings = ({ setUserName, setShowFollowingBadge }: UserSettingsProps)
     }
   }, []);
 
-  const handleSaveSettings = () => {
-    localStorage.setItem('userName', localUserName);
-    localStorage.setItem('showFollowingBadge', JSON.stringify(localShowFollowingBadge));
-    setUserName(localUserName); // Update parent state
-    setShowFollowingBadge(localShowFollowingBadge); // Update parent state
-    toast({ title: 'Settings saved successfully!' });
+  const persistCursorPreference = async (name: string) => {
+    const sessionId = cursorSessionIdRef.current;
+    if (!sessionId) {
+      logger.warn('⚠️ Unable to persist cursor preference: missing session id');
+      return;
+    }
+
+    const trimmed = name.trim();
+
+    if (!trimmed) {
+      const { error } = await supabase
+        .from('cursor_preferences')
+        .delete()
+        .eq('session_id', sessionId);
+
+      if (error) {
+        throw error;
+      }
+      return;
+    }
+
+    const payload = {
+      session_id: sessionId,
+      cursor_name: trimmed,
+      user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase
+      .from('cursor_preferences')
+      .upsert(payload, { onConflict: 'session_id' });
+
+    if (error) {
+      throw error;
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    setIsPersisting(true);
+    try {
+      localStorage.setItem('userName', localUserName);
+      localStorage.setItem('showFollowingBadge', JSON.stringify(localShowFollowingBadge));
+      setUserName(localUserName); // Update parent state
+      setShowFollowingBadge(localShowFollowingBadge); // Update parent state
+
+      await persistCursorPreference(localUserName);
+
+      toast({ title: 'Settings saved successfully!' });
+    } catch (error) {
+      logger.error('❌ Failed to persist cursor preference', error);
+      toast({
+        title: 'Unable to save settings',
+        description: 'Please try again in a moment.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsPersisting(false);
+    }
   };
 
   return (
@@ -93,7 +166,14 @@ const UserSettings = ({ setUserName, setShowFollowingBadge }: UserSettingsProps)
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSaveSettings} className="bg-white text-black hover:bg-white/90">Save changes</Button>
+          <Button
+            type="submit"
+            onClick={handleSaveSettings}
+            disabled={isPersisting}
+            className="bg-white text-black hover:bg-white/90 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {isPersisting ? 'Saving…' : 'Save changes'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
