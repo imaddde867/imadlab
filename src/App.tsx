@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React, { Suspense } from "react";
+import { CursorProvider, Cursor, CursorFollow } from "@/components/ui/shadcn-io/animated-cursor";
 import ClickSpark from "@/components/ClickSpark";
 import HomeBackground from '@/components/HomeBackground';
 import Header from '@/components/Header';
@@ -88,63 +89,86 @@ const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => (
-  <>
-    {/* Skip to content for keyboard users */}
-    <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-black text-white p-2 rounded z-50">Skip to content</a>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <BrowserRouter>
-          <AnalyticsWrapper>
-            <HomeBackground />
-            <Header />
-            <ErrorBoundary>
-              <Suspense fallback={
-                <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
-                  <div className="relative w-24 h-24 mb-4">
-                    <div className="absolute inset-0 rounded-full border-4 border-t-4 border-white/20 border-t-white animate-spin"></div>
-                    <div className="absolute inset-4 rounded-full border-4 border-t-4 border-white/40 border-t-white animate-spin-reverse" style={{ animationDuration: '1.5s' }}></div>
-                  </div>
-                  <div className="text-xl font-medium tracking-wider">Loading...</div>
-                </div>
-              }>
-                <ClickSpark
-                  sparkColor="#fff"
-                  sparkSize={10}
-                  sparkRadius={15}
-                  sparkCount={8}
-                  duration={400}
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <div className="relative min-h-screen" data-custom-cursor-root>
+        <CursorProvider className="flex min-h-screen flex-col">
+          {/* Skip to content for keyboard users */}
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-black text-white p-2 rounded z-50"
+          >
+            Skip to content
+          </a>
+          <Toaster />
+          <BrowserRouter>
+            <AnalyticsWrapper>
+              <HomeBackground />
+              <Header />
+              <ErrorBoundary>
+                <Suspense
+                  fallback={
+                    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
+                      <div className="relative w-24 h-24 mb-4">
+                        <div className="absolute inset-0 rounded-full border-4 border-t-4 border-white/20 border-t-white animate-spin"></div>
+                        <div
+                          className="absolute inset-4 rounded-full border-4 border-t-4 border-white/40 border-t-white animate-spin-reverse"
+                          style={{ animationDuration: '1.5s' }}
+                        ></div>
+                      </div>
+                      <div className="text-xl font-medium tracking-wider">Loading...</div>
+                    </div>
+                  }
                 >
-                  <main id="main">
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/projects" element={<Projects />} />
-                    <Route path="/blogs" element={<Blogs />} />
-                    <Route path="/blogs/:slug" element={<BlogPost />} />
-                    <Route path="/projects/:id" element={<ProjectDetail />} />
-                    <Route path="/extras" element={<Extras />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/admin/login" element={<AdminLogin />} />
-                    <Route path="/admin" element={<AdminDashboard />} />
-                    <Route path="/admin/posts" element={<ManagePosts />} />
-                    <Route path="/admin/projects" element={<ManageProjects />} />
-                    <Route path="/admin/emails" element={<EmailDashboard />} />
-                    <Route path="/admin/analytics" element={<AnalyticsDashboard />} />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                  </main>
-                </ClickSpark>
-              </Suspense>
-            </ErrorBoundary>
-            <Footer />
-          </AnalyticsWrapper>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-    <NewsletterPopup />
-  <CookieConsent />
-  </>
+                  <ClickSpark
+                    sparkColor="#fff"
+                    sparkSize={10}
+                    sparkRadius={15}
+                    sparkCount={8}
+                    duration={400}
+                  >
+                    <main id="main">
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/projects" element={<Projects />} />
+                        <Route path="/blogs" element={<Blogs />} />
+                        <Route path="/blogs/:slug" element={<BlogPost />} />
+                        <Route path="/projects/:id" element={<ProjectDetail />} />
+                        <Route path="/extras" element={<Extras />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/admin/login" element={<AdminLogin />} />
+                        <Route path="/admin" element={<AdminDashboard />} />
+                        <Route path="/admin/posts" element={<ManagePosts />} />
+                        <Route path="/admin/projects" element={<ManageProjects />} />
+                        <Route path="/admin/emails" element={<EmailDashboard />} />
+                        <Route path="/admin/analytics" element={<AnalyticsDashboard />} />
+                        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </main>
+                  </ClickSpark>
+                </Suspense>
+              </ErrorBoundary>
+              <Footer />
+            </AnalyticsWrapper>
+          </BrowserRouter>
+          <NewsletterPopup />
+          <CookieConsent />
+          <Cursor>
+            <svg className="size-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+              <path
+                fill="currentColor"
+                d="M1.8 4.4 7 36.2c.3 1.8 2.6 2.3 3.6.8l3.9-5.7c1.7-2.5 4.5-4.1 7.5-4.3l6.9-.5c1.8-.1 2.5-2.4 1.1-3.5L5 2.5c-1.4-1.1-3.5 0-3.3 1.9Z"
+              />
+            </svg>
+          </Cursor>
+          <CursorFollow>
+            <div className="bg-blue-500 text-white px-2 py-1 rounded-lg text-sm shadow-lg">Designer</div>
+          </CursorFollow>
+        </CursorProvider>
+      </div>
+    </TooltipProvider>
+  </QueryClientProvider>
 );
 
 export default App;
