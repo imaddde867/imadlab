@@ -12,8 +12,12 @@ declare global {
 
 type Prefs = Pick<ConsentState, 'analytics' | 'marketing' | 'functional'>;
 
-const CookieConsent = () => {
-  const [open, setOpen] = useState(false);
+interface CookieConsentProps {
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+}
+
+const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
   const [showBanner, setShowBanner] = useState(false);
   const [prefs, setPrefs] = useState<Prefs>({ analytics: true, marketing: true, functional: true });
 
@@ -29,10 +33,10 @@ const CookieConsent = () => {
     // expose global opener for footer or settings link
     if (typeof window !== 'undefined') {
       window.imadlabOpenCookiePrefs = () => {
-        setOpen(true);
+        onOpenChange(true);
       };
     }
-  }, []);
+  }, [onOpenChange]);
 
   const handleAcceptAll = () => {
     acceptAll();
@@ -46,7 +50,7 @@ const CookieConsent = () => {
 
   const handleSavePrefs = () => {
     setConsent({ analytics: prefs.analytics, marketing: prefs.marketing, functional: prefs.functional });
-    setOpen(false);
+    onOpenChange(false);
     setShowBanner(false);
   };
 
@@ -90,7 +94,7 @@ const CookieConsent = () => {
                 </p>
               </div>
               <div className="flex gap-2 md:ml-4">
-                <Button variant="ghost" className="bg-white/10 hover:bg-white/20 text-white" onClick={() => setOpen(true)}>
+                <Button variant="ghost" className="bg-white/10 hover:bg-white/20 text-white" onClick={() => onOpenChange(true)}>
                   Manage
                 </Button>
                 <Button variant="ghost" className="bg-white/5 hover:bg-white/15 text-white" onClick={handleRejectAll}>
@@ -106,7 +110,7 @@ const CookieConsent = () => {
       )}
 
       {/* Preferences Modal */}
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent className="bg-black text-white border border-white/10">
           <DialogHeader>
             <DialogTitle>Cookie preferences</DialogTitle>
@@ -157,21 +161,6 @@ const CookieConsent = () => {
           </p>
         </DialogContent>
       </Dialog>
-
-      {/* Persistent manage button (only after a decision) */}
-      {!showBanner && decision && (
-        <div className="fixed left-4 bottom-4 z-40">
-          <Button
-            variant="ghost"
-            className="bg-white/5 hover:bg-white/15 text-white border border-white/10 rounded-full h-11 w-11 p-0 flex items-center justify-center"
-            onClick={() => setOpen(true)}
-            aria-label="Manage cookie preferences"
-            title="Manage cookies"
-          >
-            <CookieIcon className="w-5 h-5" />
-          </Button>
-        </div>
-      )}
     </>
   );
 };
