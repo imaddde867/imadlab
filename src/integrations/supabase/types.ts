@@ -147,6 +147,33 @@ export type Database = {
         }
         Relationships: []
       }
+      cursor_preferences: {
+        Row: {
+          id: string
+          session_id: string
+          cursor_name: string | null
+          user_agent: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          session_id: string
+          cursor_name?: string | null
+          user_agent?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          session_id?: string
+          cursor_name?: string | null
+          user_agent?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_analytics: {
         Row: {
           id: string
