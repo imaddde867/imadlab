@@ -1,4 +1,4 @@
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp, Github, Linkedin, MessageSquare, Mail } from 'lucide-react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -58,10 +58,10 @@ const Contact = () => {
   }
 
   const socialLinks = [
-    { name: 'GitHub', href: 'https://github.com/imaddde867', icon: '⚙️' },   
-    { name: 'LinkedIn', href: 'https://www.linkedin.com/in/imad-eddine-e-986741262', icon: '🌐' },
-    { name: 'Discord', href: 'https://discord.com/users/766969796579295232', icon: '👾' }, 
-    { name: 'Email', href: 'mailto:imadeddine200507@gmail.com', icon: '📡' } 
+    { name: 'GitHub', href: 'https://github.com/imaddde867', icon: Github },
+    { name: 'LinkedIn', href: 'https://www.linkedin.com/in/imad-eddine-e-986741262', icon: Linkedin },
+    { name: 'Discord', href: 'https://discord.com/users/766969796579295232', icon: MessageSquare },
+    { name: 'Email', href: 'mailto:imadeddine200507@gmail.com', icon: Mail }
   ];
 
   return (
@@ -169,7 +169,7 @@ const Contact = () => {
                     className="group relative p-4 bg-white/[0.02] border border-white/10 rounded-xl transition-all duration-300 hover:bg-white/[0.05] hover:border-white/30 hover:scale-105 focus-enhanced"
                   >
                     <div className="relative z-10 text-center">
-                      <div className="text-2xl mb-2">{social.icon}</div>
+                      <div className="text-2xl mb-2 text-primary drop-shadow-lg"><social.icon /></div>
                       <div className="text-body-small text-hierarchy-secondary">{social.name}</div>
                     </div>
                   </a>
