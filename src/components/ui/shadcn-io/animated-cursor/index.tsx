@@ -40,34 +40,56 @@ function CursorProvider({ ref, children, ...props }: CursorProviderProps) {
   const [isActive, setIsActive] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const cursorRef = React.useRef<HTMLDivElement>(null);
+  const lastEventRef = React.useRef<MouseEvent | null>(null);
   React.useImperativeHandle(ref, () => containerRef.current as HTMLDivElement);
- 
+
   React.useEffect(() => {
     if (!containerRef.current) return;
- 
+
     const parent = containerRef.current.parentElement;
     if (!parent) return;
  
     if (getComputedStyle(parent).position === 'static') {
       parent.style.position = 'relative';
     }
- 
-    const handleMouseMove = (e: MouseEvent) => {
+
+    const updatePosition = (event: MouseEvent) => {
       const rect = parent.getBoundingClientRect();
-      setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      setCursorPos({
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      });
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+      lastEventRef.current = event;
+      updatePosition(event);
       setIsActive(true);
     };
-    const handleMouseLeave = () => setIsActive(false);
- 
+    const handleMouseLeave = () => {
+      lastEventRef.current = null;
+      setIsActive(false);
+    };
+    const handleScrollOrResize = () => {
+      if (!lastEventRef.current) {
+        return;
+      }
+      updatePosition(lastEventRef.current);
+    };
+
     parent.addEventListener('mousemove', handleMouseMove);
     parent.addEventListener('mouseleave', handleMouseLeave);
- 
+    window.addEventListener('scroll', handleScrollOrResize, { passive: true });
+    window.addEventListener('resize', handleScrollOrResize);
+
     return () => {
       parent.removeEventListener('mousemove', handleMouseMove);
       parent.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener('scroll', handleScrollOrResize);
+      window.removeEventListener('resize', handleScrollOrResize);
     };
   }, []);
- 
+
   return (
     <CursorContext.Provider
       value={{ cursorPos, isActive, containerRef, cursorRef }}
