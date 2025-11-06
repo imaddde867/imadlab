@@ -243,18 +243,9 @@ All colors MUST be HSL.
 }
 
 @layer components {
-  .text-shadow-lg {
-    text-shadow: 0 4px 6px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3);
-  }
-
   /* Enhanced Typography Utility Classes */
   .text-display {
     @apply text-6xl md:text-8xl lg:text-9xl font-black leading-none tracking-tighter;
-    text-wrap: balance;
-  }
-
-  .text-hero {
-    @apply text-4xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight;
     text-wrap: balance;
   }
 
@@ -273,35 +264,14 @@ All colors MUST be HSL.
     text-wrap: pretty;
   }
 
-  .text-body {
-    @apply text-base leading-relaxed tracking-normal;
-    text-wrap: pretty;
-  }
-
   .text-body-small {
     @apply text-sm leading-relaxed tracking-wide;
     text-wrap: pretty;
   }
 
-  .text-caption {
-    @apply text-xs leading-normal tracking-wide uppercase font-medium;
-  }
-
-  .text-code {
-    @apply font-mono text-sm leading-normal tracking-normal;
-  }
-
   /* Reading Experience Enhancements */
-  .reading-width {
-    max-width: 65ch;
-  }
-
   .reading-width-wide {
     max-width: 75ch;
-  }
-
-  .reading-width-narrow {
-    max-width: 55ch;
   }
 
   /* Visual Hierarchy Helpers */
@@ -335,10 +305,6 @@ All colors MUST be HSL.
     @apply text-base font-semibold tracking-wide;
   }
 
-  .btn-text-secondary {
-    @apply text-sm font-medium tracking-wide;
-  }
-
   /* Enhanced Link Styles */
   .link-enhanced {
     color: hsla(0, 0%, 100%, 0.85);
@@ -350,23 +316,9 @@ All colors MUST be HSL.
   .link-enhanced:hover {
     color: hsla(0, 0%, 100%, 1);
   }
-
-  .link-subtle {
-    color: hsla(0, 0%, 100%, 0.65);
-    transition: color 0.2s ease-in-out;
-    font-weight: 400;
-  }
-
-  .link-subtle:hover {
-    color: hsla(0, 0%, 100%, 0.85);
-  }
 }
 
 @layer utilities {
-  .transition-all-ease {
-    transition: all 0.3s ease-in-out;
-  }
-
   /* Layout helpers */
   .container-site { @apply max-w-7xl mx-auto px-4; }
   .container-narrow { @apply max-w-4xl mx-auto px-4; }
@@ -376,37 +328,9 @@ All colors MUST be HSL.
   /* Brand gradient text */
   .text-brand-gradient { color: hsl(var(--foreground)); }
 
-  /* Glass panel utility */
-  .glass-panel {
-    background: linear-gradient(140deg, hsla(245, 65%, 20%, 0.75), hsla(248, 69%, 8%, 0.85));
-    border: 1px solid hsla(242, 63%, 68%, 0.28);
-    box-shadow: 0 24px 60px hsla(248, 69%, 6%, 0.45);
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
-  }
-
-  /* Slow spin utilities for decorative SVGs */
-  .animate-spin-slow {
-    animation: spin-slow 18s linear infinite;
-  }
-
-  .animate-spin-slow-reverse {
-    animation: spin-slow-reverse 24s linear infinite;
-  }
 }
 
-/* Spin animations */
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes spin-slow-reverse {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
-}
-
-/* Enhanced Loading Animations */
+/* Loading animation */
 @keyframes loading-slide {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
@@ -458,17 +382,6 @@ All colors MUST be HSL.
   }
 }
 
-@keyframes slide-in-right {
-  0% {
-    opacity: 0;
-    transform: translateX(50px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
 /* Professional hero animation utilities */
 .animate-fade-in-up {
   animation: fade-in-up 0.8s ease-out forwards;
@@ -480,50 +393,4 @@ All colors MUST be HSL.
 
 .animate-fade-in-scale {
   animation: fade-in-scale 0.8s ease-out forwards;
-}
-
-.animate-slide-in-right {
-  animation: slide-in-right 0.8s ease-out forwards;
-}
-
-/* Running page animations */
-@keyframes pulse-gentle {
-  0%, 100% {
-    opacity: 0.03;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.06;
-    transform: scale(1.05);
-  }
-}
-
-@keyframes slide-up-fade {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes chart-bar-grow {
-  from {
-    transform: scaleY(0);
-    transform-origin: bottom;
-  }
-  to {
-    transform: scaleY(1);
-    transform-origin: bottom;
-  }
-}
-
-.animate-pulse-gentle {
-  animation: pulse-gentle 4s ease-in-out infinite;
-}
-
-.animate-slide-up-fade {
-  animation: slide-up-fade 0.6s ease-out forwards;
 }

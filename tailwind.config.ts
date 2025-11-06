@@ -135,33 +135,23 @@ export default {
 					from: { opacity: '0' },
 					to: { opacity: '1' }
 				},
-				'spin-slow': {
-					from: { transform: 'rotate(0deg)' },
-					to: { transform: 'rotate(360deg)' }
+				'blink-purple': {
+					'0%, 100%': {
+						opacity: '0',
+						boxShadow: 'none'
+					},
+					'50%': {
+						opacity: '1',
+						backgroundColor: 'hsl(var(--primary))',
+						boxShadow: '0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary))'
+					}
 				},
-				'spin-slow-reverse': {
-					from: { transform: 'rotate(0deg)' },
-					to: { transform: 'rotate(-360deg)' }
-				},
-        'blink-purple': {
-          '0%, 100%': {
-            opacity: '0',
-            boxShadow: 'none',
-          },
-          '50%': {
-            opacity: '1',
-            backgroundColor: 'hsl(var(--primary))',
-            boxShadow: '0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary))',
-          },
-        },
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 1s ease-out forwards',
-				'spin-slow': 'spin 20s linear infinite',
-				'spin-slow-reverse': 'spin-slow-reverse 25s linear infinite',
-        'blink-purple': 'blink-purple 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+				'blink-purple': 'blink-purple 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
 			}
 		}
 	},
