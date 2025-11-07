@@ -9,9 +9,12 @@ interface RunningStatsGridProps {
 }
 
 const RunningStatsGrid = ({ stats }: RunningStatsGridProps) => {
-  const { elementRef: ytdRef, isVisible: ytdVisible } = useIntersectionObserver<HTMLDivElement>({ threshold: 0.2 });
-  const { elementRef: allTimeRef, isVisible: allTimeVisible } = useIntersectionObserver<HTMLDivElement>({ threshold: 0.2 });
-  
+  const { elementRef: ytdRef, isVisible: ytdVisible } = useIntersectionObserver<HTMLDivElement>({
+    threshold: 0.2,
+  });
+  const { elementRef: allTimeRef, isVisible: allTimeVisible } =
+    useIntersectionObserver<HTMLDivElement>({ threshold: 0.2 });
+
   if (!stats) return null;
 
   const ytdStats = stats.ytd_run_totals;
@@ -22,18 +25,33 @@ const RunningStatsGrid = ({ stats }: RunningStatsGridProps) => {
       {/* Year to Date - Featured Stats */}
       {ytdStats && ytdStats.count > 0 && (
         <div ref={ytdRef}>
-          <div className={`mb-8 transition-all duration-700 ${ytdVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <h3 className="text-2xl font-bold mb-2">
-              {new Date().getFullYear()} Progress
-            </h3>
+          <div
+            className={`mb-8 transition-all duration-700 ${ytdVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+          >
+            <h3 className="text-2xl font-bold mb-2">{new Date().getFullYear()} Progress</h3>
             <p className="text-white/60">My journey so far this year</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { icon: Activity, label: 'Total Runs', value: ytdStats.count, subtitle: 'activities completed' },
-              { icon: Zap, label: 'Distance', value: formatDistanceCompact(ytdStats.distance), subtitle: 'kilometers ran' },
-              { icon: Clock, label: 'Time', value: formatTime(ytdStats.moving_time).split(' ')[0], subtitle: 'hours in motion' }
+              {
+                icon: Activity,
+                label: 'Total Runs',
+                value: ytdStats.count,
+                subtitle: 'activities completed',
+              },
+              {
+                icon: Zap,
+                label: 'Distance',
+                value: formatDistanceCompact(ytdStats.distance),
+                subtitle: 'kilometers ran',
+              },
+              {
+                icon: Clock,
+                label: 'Time',
+                value: formatTime(ytdStats.moving_time).split(' ')[0],
+                subtitle: 'hours in motion',
+              },
             ].map((stat, idx) => (
               <div
                 key={stat.label}
@@ -65,14 +83,16 @@ const RunningStatsGrid = ({ stats }: RunningStatsGridProps) => {
       {/* All Time Stats */}
       {allTimeStats && allTimeStats.count > 0 && (
         <div ref={allTimeRef}>
-          <div className={`mb-8 transition-all duration-700 ${allTimeVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <h3 className="text-2xl font-bold mb-2">
-              Lifetime Achievements
-            </h3>
+          <div
+            className={`mb-8 transition-all duration-700 ${allTimeVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+          >
+            <h3 className="text-2xl font-bold mb-2">Lifetime Achievements</h3>
             <p className="text-white/60">The complete journey</p>
           </div>
 
-          <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-700 delay-100 ${allTimeVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <div
+            className={`grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-700 delay-100 ${allTimeVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+          >
             <div className="bg-white/5 border border-white/10 rounded-lg p-6 hover:bg-white/[0.08] transition-all duration-300 group">
               <div className="text-sm text-white/60 mb-2 flex items-center gap-2">
                 <Activity className="w-4 h-4" />
@@ -120,21 +140,23 @@ const RunningStatsGrid = ({ stats }: RunningStatsGridProps) => {
           </div>
 
           {/* Fun facts */}
-          <div className={`mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-700 delay-200 ${allTimeVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <div
+            className={`mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-700 delay-200 ${allTimeVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+          >
             <div className="bg-white/5 border border-white/10 rounded-lg p-4 text-center">
               <div className="text-2xl font-bold mb-1">
                 {(allTimeStats.distance / allTimeStats.count / 1000).toFixed(1)} km
               </div>
               <div className="text-sm text-white/60">Average Distance</div>
             </div>
-            
+
             <div className="bg-white/5 border border-white/10 rounded-lg p-4 text-center">
               <div className="text-2xl font-bold mb-1">
                 {Math.round(allTimeStats.elevation_gain / allTimeStats.count)} m
               </div>
               <div className="text-sm text-white/60">Avg Elevation per Run</div>
             </div>
-            
+
             <div className="bg-white/5 border border-white/10 rounded-lg p-4 text-center">
               <div className="text-2xl font-bold mb-1">
                 {Math.round(allTimeStats.distance / 42195)}

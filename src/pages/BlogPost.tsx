@@ -37,7 +37,11 @@ const buildMetaDescription = (excerpt?: string | null, body?: string | null) => 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  const { data: post, isLoading, error } = useQuery({
+  const {
+    data: post,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['post', slug],
     queryFn: async () => {
       if (!slug) throw new Error('No slug provided');
@@ -49,7 +53,7 @@ const BlogPost = () => {
       if (error) throw error;
       return data as unknown as Post | null;
     },
-    enabled: !!slug
+    enabled: !!slug,
   });
 
   // Calculate reading time if not provided
@@ -88,11 +92,8 @@ const BlogPost = () => {
     {
       '@context': 'https://schema.org',
       '@type': 'SpeakableSpecification',
-      xpath: [
-        "//*[@id='main']//h1",
-        "//*[@id='main']//p[1]"
-      ]
-    }
+      xpath: ["//*[@id='main']//h1", "//*[@id='main']//p[1]"],
+    },
   ];
 
   const body = post.body ?? '';
@@ -101,30 +102,38 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-black text-white pt-14">
-        <Seo 
-          title={post.title} 
-          description={metaDescription} 
-          keywords={articleTags.length ? articleTags.join(', ') : 'data engineering, machine learning, ai, programming'}
-          type="article"
-          publishedTime={post.published_date}
-          modifiedTime={post.updated_at ?? post.published_date}
-          image={post.image_url || undefined}
-          imageAlt={post.title}
-          tags={articleTags}
-          breadcrumbs={breadcrumbTrail}
-          additionalSchemas={speakableSchema}
-        />
+      <Seo
+        title={post.title}
+        description={metaDescription}
+        keywords={
+          articleTags.length
+            ? articleTags.join(', ')
+            : 'data engineering, machine learning, ai, programming'
+        }
+        type="article"
+        publishedTime={post.published_date}
+        modifiedTime={post.updated_at ?? post.published_date}
+        image={post.image_url || undefined}
+        imageAlt={post.title}
+        tags={articleTags}
+        breadcrumbs={breadcrumbTrail}
+        additionalSchemas={speakableSchema}
+      />
 
       <BackRow
         to="/blogs"
         label="Back to Blog"
-        icon={<ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />}
-        right={articleReadTime ? (
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4" />
-            {articleReadTime} min read
-          </div>
-        ) : undefined}
+        icon={
+          <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
+        }
+        right={
+          articleReadTime ? (
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              {articleReadTime} min read
+            </div>
+          ) : undefined
+        }
       />
       {/* Hero Section */}
       <header className="relative pt-8 md:pt-12 pb-10">
@@ -133,14 +142,18 @@ const BlogPost = () => {
           <div className="flex flex-wrap items-center gap-y-4 gap-x-6 mb-8">
             <div className="flex items-center text-sm text-white/70">
               <Calendar className="w-4 h-4 mr-2" />
-              {new Date(post.published_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              {new Date(post.published_date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
             </div>
-            {articleTags.length > 0 && (
-              <TagList tags={articleTags} label="Tags:" />
-            )}
+            {articleTags.length > 0 && <TagList tags={articleTags} label="Tags:" />}
           </div>
           {post.excerpt && (
-            <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-3xl">{post.excerpt}</p>
+            <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-3xl">
+              {post.excerpt}
+            </p>
           )}
         </div>
       </header>
@@ -176,7 +189,7 @@ const BlogPost = () => {
           </div>
         )}
       </main>
-      
+
       {/* Page footer removed; global Footer is used */}
     </div>
   );

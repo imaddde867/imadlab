@@ -14,7 +14,7 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
   const [status, setStatus] = useState<'idle' | 'success' | 'error' | 'already-subscribed'>('idle');
   const [validationError, setValidationError] = useState<string | null>(null);
   const { toast } = useToast();
-  
+
   // Refs for focus management
   const emailInputRef = useRef<HTMLInputElement>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
@@ -30,12 +30,12 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
     setEmail(newEmail);
-    
+
     // Clear validation error when user starts typing again
     if (validationError) {
       setValidationError(null);
     }
-    
+
     // Reset status when user changes input
     if (status !== 'idle') {
       setStatus('idle');
@@ -53,7 +53,7 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
   // Handle form submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     // Validate email
     if (!email.trim()) {
       setValidationError('Email is required');
@@ -61,42 +61,43 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
       emailInputRef.current?.focus();
       return;
     }
-    
+
     if (!validateEmail(email)) {
       setValidationError('Please enter a valid email address');
       // Focus on email input when validation fails
       emailInputRef.current?.focus();
       return;
     }
-    
+
     // Clear validation error
     setValidationError(null);
-    
+
     // Set submitting state
     setIsSubmitting(true);
-    
+
     try {
       // Attempt to insert the email into the newsletter_subscribers table
       const { error } = await supabase
         .from('newsletter_subscribers')
         .insert([{ email: email.trim() }]);
-      
+
       if (error) {
         // Check if the error is due to a unique constraint violation (already subscribed)
-        if (error.code === '23505') { // PostgreSQL unique constraint violation code
+        if (error.code === '23505') {
+          // PostgreSQL unique constraint violation code
           setStatus('already-subscribed');
           toast({
-            title: "Already subscribed",
-            description: "This email is already subscribed to the newsletter.",
-            variant: "default",
+            title: 'Already subscribed',
+            description: 'This email is already subscribed to the newsletter.',
+            variant: 'default',
           });
         } else {
           // Handle other errors
           setStatus('error');
           toast({
-            title: "Error",
-            description: "Failed to subscribe. Please try again.",
-            variant: "destructive",
+            title: 'Error',
+            description: 'Failed to subscribe. Please try again.',
+            variant: 'destructive',
           });
           console.error('Error subscribing:', error);
         }
@@ -104,7 +105,7 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
         // Success
         setStatus('success');
         toast({
-          title: "Success!",
+          title: 'Success!',
           description: "Thanks for subscribing! You'll receive updates on new content.",
         });
         setEmail(''); // Clear the input field
@@ -113,9 +114,9 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
       // Handle unexpected errors
       setStatus('error');
       toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+        variant: 'destructive',
       });
       console.error('Unexpected error:', err);
     } finally {
@@ -124,7 +125,7 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
   };
 
   return (
-    <section 
+    <section
       className={`py-8 sm:py-12 border-t border-white/10 mt-12 sm:mt-16 ${className}`}
       aria-labelledby="newsletter-heading"
     >
@@ -132,23 +133,27 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
         <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 items-start lg:items-center">
           {/* Left content - heading and description */}
           <div className="w-full lg:w-2/5 mb-6 lg:mb-0">
-            <h2 id="newsletter-heading" className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">Stay Updated</h2>
+            <h2 id="newsletter-heading" className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">
+              Stay Updated
+            </h2>
             <p className="text-white/60 text-sm sm:text-base max-w-md">
-              Get notified when new projects and blog posts are published.
-              Never miss out on the latest content.
+              Get notified when new projects and blog posts are published. Never miss out on the
+              latest content.
             </p>
           </div>
-          
+
           {/* Right content - form */}
           <div className="w-full lg:w-3/5">
-            <form 
-              onSubmit={handleSubmit} 
+            <form
+              onSubmit={handleSubmit}
               className="flex flex-col sm:flex-row gap-3 sm:gap-4"
               aria-describedby="newsletter-description"
               noValidate
             >
               <div className="flex-1">
-                <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+                <label htmlFor="newsletter-email" className="sr-only">
+                  Email address
+                </label>
                 <Input
                   id="newsletter-email"
                   ref={emailInputRef}
@@ -159,7 +164,7 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
                   required
                   aria-required="true"
                   aria-invalid={!!validationError}
-                  aria-describedby={validationError ? "email-error" : "newsletter-description"}
+                  aria-describedby={validationError ? 'email-error' : 'newsletter-description'}
                   className={`bg-zinc-900/80 border ${validationError ? 'border-red-400' : 'border-white/10'} text-white placeholder:text-white/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-white/30 focus:border-white/30 transition-all w-full`}
                   onKeyDown={(e) => {
                     // Allow submitting form with Enter key
@@ -175,7 +180,8 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
                   </p>
                 )}
                 <span id="newsletter-description" className="sr-only">
-                  Enter your email to subscribe to our newsletter and receive updates on new content.
+                  Enter your email to subscribe to our newsletter and receive updates on new
+                  content.
                 </span>
               </div>
               <Button
@@ -188,10 +194,10 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
                 {isSubmitting ? 'Subscribing...' : 'Subscribe'}
               </Button>
             </form>
-            
+
             {/* Status messages */}
-            <div 
-              className="min-h-[24px] mt-2" 
+            <div
+              className="min-h-[24px] mt-2"
               ref={statusMessageRef}
               tabIndex={status !== 'idle' ? -1 : undefined}
               role={status !== 'idle' ? 'status' : undefined}
@@ -202,13 +208,13 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
                   Thanks for subscribing! You'll receive updates on new content.
                 </p>
               )}
-              
+
               {status === 'error' && (
                 <p className="text-red-400 text-xs sm:text-sm">
                   Something went wrong. Please try again.
                 </p>
               )}
-              
+
               {status === 'already-subscribed' && (
                 <p className="text-yellow-400 text-xs sm:text-sm">
                   This email is already subscribed to the newsletter.

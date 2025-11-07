@@ -5,7 +5,7 @@ const RunningPageSkeleton = () => {
       <div className="space-y-8">
         {/* Header skeleton */}
         <div className="h-8 w-64 bg-white/5 rounded"></div>
-        
+
         {/* Featured stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (

@@ -7,13 +7,29 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Tag } from '@/components/ui/tag';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { ContentLoader } from '@/components/ui/LoadingStates';
 import { RefreshCw, Send, Eye, Users, Mail, TrendingUp, Trash2 } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
-type TagVariant = 'default' | 'subtle' | 'outline' | 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'info';
+type TagVariant =
+  | 'default'
+  | 'subtle'
+  | 'outline'
+  | 'neutral'
+  | 'accent'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info';
 
 type EmailQueueRow = Database['public']['Tables']['email_queue']['Row'];
 type NewsletterSubscriberRow = Database['public']['Tables']['newsletter_subscribers']['Row'];
@@ -114,7 +130,9 @@ const EmailDashboard = () => {
   const [previewTitle, setPreviewTitle] = useState<string>('');
   const [subscriberList, setSubscriberList] = useState<SubscriberSummary[]>([]);
   const [subscriberMetrics, setSubscriberMetrics] = useState<Record<string, SubscriberMetrics>>({});
-  const [subscriberFilter, setSubscriberFilter] = useState<'all' | 'active' | 'inactive' | 'unsubscribed'>('all');
+  const [subscriberFilter, setSubscriberFilter] = useState<
+    'all' | 'active' | 'inactive' | 'unsubscribed'
+  >('all');
   const [queueMetrics, setQueueMetrics] = useState<Record<string, QueueMetrics>>({});
   const [blogAutoSend, setBlogAutoSend] = useState(true);
   const [projectAutoSend, setProjectAutoSend] = useState(true);
@@ -122,7 +140,7 @@ const EmailDashboard = () => {
   const loadEmailData = useCallback(async () => {
     try {
       setLoading(true);
-      
+
       // Load email queue
       const { data: queueData, error: queueError } = await supabase
         .from('email_queue')
@@ -131,7 +149,7 @@ const EmailDashboard = () => {
         .limit(50);
 
       if (queueError) throw queueError;
-      
+
       // Normalize queue items
       const normalizedQueue: EmailQueueItem[] = (queueData ?? []).map((item) => ({
         ...item,
@@ -141,11 +159,11 @@ const EmailDashboard = () => {
 
       // Fetch titles for all queue items
       const blogIds = normalizedQueue
-        .filter(item => item.content_type === 'blog_post')
-        .map(item => item.content_id);
+        .filter((item) => item.content_type === 'blog_post')
+        .map((item) => item.content_id);
       const projectIds = normalizedQueue
-        .filter(item => item.content_type === 'project')
-        .map(item => item.content_id);
+        .filter((item) => item.content_type === 'project')
+        .map((item) => item.content_id);
 
       const [blogTitles, projectTitles] = await Promise.all([
         blogIds.length > 0
@@ -157,15 +175,16 @@ const EmailDashboard = () => {
       ]);
 
       // Create title lookup maps
-      const blogTitleMap = new Map((blogTitles.data || []).map(b => [b.id, b.title]));
-      const projectTitleMap = new Map((projectTitles.data || []).map(p => [p.id, p.title]));
+      const blogTitleMap = new Map((blogTitles.data || []).map((b) => [b.id, b.title]));
+      const projectTitleMap = new Map((projectTitles.data || []).map((p) => [p.id, p.title]));
 
       // Add titles to queue items
-      const queueWithTitles = normalizedQueue.map(item => ({
+      const queueWithTitles = normalizedQueue.map((item) => ({
         ...item,
-        content_title: item.content_type === 'blog_post'
-          ? blogTitleMap.get(item.content_id)
-          : projectTitleMap.get(item.content_id),
+        content_title:
+          item.content_type === 'blog_post'
+            ? blogTitleMap.get(item.content_id)
+            : projectTitleMap.get(item.content_id),
       }));
 
       setEmailQueue(queueWithTitles);
@@ -177,11 +196,15 @@ const EmailDashboard = () => {
       ]);
 
       if (subscriberRows && analyticsRows) {
-        const subscribers = subscriberRows as Array<Pick<NewsletterSubscriberRow, 'status' | 'email' | 'created_at' | 'updated_at'>>;
+        const subscribers = subscriberRows as Array<
+          Pick<NewsletterSubscriberRow, 'status' | 'email' | 'created_at' | 'updated_at'>
+        >;
         const analytics = analyticsRows as EmailAnalyticsRow[];
 
         const totalSubscribers = subscribers.length;
-        const activeSubscribers = subscribers.filter((subscriber) => !subscriber.status || subscriber.status === 'active').length;
+        const activeSubscribers = subscribers.filter(
+          (subscriber) => !subscriber.status || subscriber.status === 'active'
+        ).length;
         const totalEmailsSent = analytics.filter((entry) => entry.sent_at).length;
         const deliveredEmails = analytics.filter((entry) => entry.delivered_at).length;
         const openedEmails = analytics.filter((entry) => entry.opened_at).length;
@@ -195,7 +218,8 @@ const EmailDashboard = () => {
         }));
 
         const subscriberMetricsMap: Record<string, SubscriberMetrics> = {};
-        const queueAccumulator: Record<string, { metrics: QueueMetrics; recipients: Set<string> }> = {};
+        const queueAccumulator: Record<string, { metrics: QueueMetrics; recipients: Set<string> }> =
+          {};
 
         analytics.forEach((entry) => {
           const key = entry.subscriber_email;
@@ -231,7 +255,10 @@ const EmailDashboard = () => {
 
           if (timestamps.length) {
             const latest = Math.max(...timestamps);
-            if (!subscriberMetric.lastEvent || latest > new Date(subscriberMetric.lastEvent).getTime()) {
+            if (
+              !subscriberMetric.lastEvent ||
+              latest > new Date(subscriberMetric.lastEvent).getTime()
+            ) {
               subscriberMetric.lastEvent = new Date(latest).toISOString();
             }
           }
@@ -299,7 +326,11 @@ const EmailDashboard = () => {
       const { data } = await supabase.auth.getUser();
       if (!data.user) {
         navigate('/admin/login');
-        toast({ title: 'Unauthorized', description: 'Please log in to access the admin dashboard.', variant: 'destructive' });
+        toast({
+          title: 'Unauthorized',
+          description: 'Please log in to access the admin dashboard.',
+          variant: 'destructive',
+        });
         return;
       }
 
@@ -357,17 +388,13 @@ const EmailDashboard = () => {
     await processEmailQueue([queueId]);
   };
 
-
   const deleteQueueItem = async (queueId: string) => {
     if (!confirm('Delete this queue entry? This cannot be undone.')) {
       return;
     }
     try {
       setProcessing(true);
-      const { error } = await supabase
-        .from('email_queue')
-        .delete()
-        .eq('id', queueId);
+      const { error } = await supabase.from('email_queue').delete().eq('id', queueId);
 
       if (error) throw error;
 
@@ -375,7 +402,11 @@ const EmailDashboard = () => {
       await loadEmailData();
     } catch (error) {
       console.error(`Error deleting queue item ${queueId}:`, error);
-      toast({ title: 'Error', description: 'Failed to delete this queue item.', variant: 'destructive' });
+      toast({
+        title: 'Error',
+        description: 'Failed to delete this queue item.',
+        variant: 'destructive',
+      });
     } finally {
       setProcessing(false);
     }
@@ -383,13 +414,21 @@ const EmailDashboard = () => {
 
   const filteredSubscribers = useMemo(() => {
     if (subscriberFilter === 'all') return subscriberList;
-    return subscriberList.filter((subscriber) => (subscriber.status ?? 'active') === subscriberFilter);
+    return subscriberList.filter(
+      (subscriber) => (subscriber.status ?? 'active') === subscriberFilter
+    );
   }, [subscriberList, subscriberFilter]);
 
   const totalSubscribers = subscriberList.length;
-  const activeCount = subscriberList.filter((subscriber) => (subscriber.status ?? 'active') === 'active').length;
-  const inactiveCount = subscriberList.filter((subscriber) => subscriber.status === 'inactive').length;
-  const unsubscribedCount = subscriberList.filter((subscriber) => subscriber.status === 'unsubscribed').length;
+  const activeCount = subscriberList.filter(
+    (subscriber) => (subscriber.status ?? 'active') === 'active'
+  ).length;
+  const inactiveCount = subscriberList.filter(
+    (subscriber) => subscriber.status === 'inactive'
+  ).length;
+  const unsubscribedCount = subscriberList.filter(
+    (subscriber) => subscriber.status === 'unsubscribed'
+  ).length;
 
   const headerMeta = useMemo(
     () => [
@@ -414,7 +453,8 @@ const EmailDashboard = () => {
   );
 
   const overviewStats = useMemo(() => {
-    if (!emailStats) return [] as Array<{ label: string; value: string | number; icon: JSX.Element }>;
+    if (!emailStats)
+      return [] as Array<{ label: string; value: string | number; icon: JSX.Element }>;
     const formatPercent = (value: number) => `${value.toFixed(1)}%`;
     return [
       {
@@ -566,11 +606,14 @@ const EmailDashboard = () => {
 
   const generateBlogPreview = (data: BlogPreviewPayload) => {
     const { post } = data;
-    const publishedDate = new Date(post.published_date || post.created_at).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    const publishedDate = new Date(post.published_date || post.created_at).toLocaleDateString(
+      'en-US',
+      {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }
+    );
     return `
       <div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #000000; border: 1px solid #1a1a1a; border-radius: 12px; overflow: hidden;">
         <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 48px 32px; text-align: center; border-bottom: 1px solid #1a1a1a;">
@@ -618,12 +661,16 @@ const EmailDashboard = () => {
           <div style="color: #cccccc; font-size: 16px; line-height: 1.7; margin-bottom: 32px;">
             ${project.description || 'Explore this new project showcasing innovative solutions and modern development practices.'}
           </div>
-          ${techStack ? `
+          ${
+            techStack
+              ? `
           <div style="margin-bottom: 40px;">
             <div style="color: #ffffff; font-size: 14px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em;">Tech Stack</div>
             ${techStack}
           </div>
-          ` : ''}
+          `
+              : ''
+          }
           <div style="height: 1px; background: linear-gradient(90deg, transparent 0%, #333333 50%, transparent 100%); margin: 32px 0;"></div>
           <div style="display: flex; gap: 16px; flex-wrap: wrap;">
             <a href="#" style="display: inline-block; background-color: #ffffff; color: #000000; text-decoration: none; padding: 16px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; border: 2px solid #ffffff; flex: 1; min-width: 140px; text-align: center;">View Project</a>
@@ -670,11 +717,7 @@ const EmailDashboard = () => {
     };
     const variant = variantMap[value] ?? 'outline';
     return (
-      <Tag
-        variant={variant}
-        size="xs"
-        className="uppercase tracking-wide text-[11px]"
-      >
+      <Tag variant={variant} size="xs" className="uppercase tracking-wide text-[11px]">
         {label}
       </Tag>
     );
@@ -690,11 +733,7 @@ const EmailDashboard = () => {
   if (user === null || loading) {
     return (
       <div className="min-h-screen bg-black text-white">
-        <ContentLoader
-          className="min-h-screen"
-          text="Loading email dashboard..."
-          variant="orbit"
-        />
+        <ContentLoader className="min-h-screen" text="Loading email dashboard..." variant="orbit" />
       </div>
     );
   }
@@ -713,19 +752,11 @@ const EmailDashboard = () => {
           meta={headerMeta}
           actions={
             <div className="flex flex-wrap gap-3">
-              <Button
-                variant="soft"
-                onClick={loadEmailData}
-                disabled={loading}
-              >
+              <Button variant="soft" onClick={loadEmailData} disabled={loading}>
                 <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
                 Refresh
               </Button>
-              <Button
-                variant="inverted"
-                onClick={() => processEmailQueue()}
-                disabled={processing}
-              >
+              <Button variant="inverted" onClick={() => processEmailQueue()} disabled={processing}>
                 <Send className={`mr-2 h-4 w-4 ${processing ? 'animate-pulse' : ''}`} />
                 {processing ? 'Processing…' : 'Process Queue'}
               </Button>
@@ -778,7 +809,7 @@ const EmailDashboard = () => {
               Settings
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="queue" className="space-y-4">
             <Card className={SECTION_CARD_CLASS}>
               <CardHeader className={`${SECTION_HEADER_CLASS} space-y-1`}>
@@ -793,20 +824,21 @@ const EmailDashboard = () => {
                 ) : (
                   <div className="space-y-4">
                     {emailQueue.map((item) => {
-                      const metric =
-                        queueMetrics[item.id] ?? {
-                          sent: 0,
-                          delivered: 0,
-                          opened: 0,
-                          clicked: 0,
-                          bounced: 0,
-                          uniqueRecipients: 0,
-                        };
+                      const metric = queueMetrics[item.id] ?? {
+                        sent: 0,
+                        delivered: 0,
+                        opened: 0,
+                        clicked: 0,
+                        bounced: 0,
+                        uniqueRecipients: 0,
+                      };
                       const canSend = item.status === 'pending' || item.status === 'failed';
                       const buttonLabel = item.status === 'failed' ? 'Retry' : 'Send Now';
-                      const targetRecipients =
-                        canSend ? activeCount : (metric.uniqueRecipients || metric.sent || metric.delivered || 0);
-                      const contentLabel = item.content_type === 'blog_post' ? 'Blog Post' : 'Project';
+                      const targetRecipients = canSend
+                        ? activeCount
+                        : metric.uniqueRecipients || metric.sent || metric.delivered || 0;
+                      const contentLabel =
+                        item.content_type === 'blog_post' ? 'Blog Post' : 'Project';
                       const displayTitle = item.content_title || 'Untitled';
 
                       return (
@@ -867,7 +899,9 @@ const EmailDashboard = () => {
                                 variant="soft"
                                 size="sm"
                                 className={`border-emerald-400/40 bg-emerald-500/20 text-emerald-100 hover:bg-emerald-500/25 ${
-                                  !canSend ? 'opacity-50 cursor-not-allowed hover:bg-emerald-500/20' : ''
+                                  !canSend
+                                    ? 'opacity-50 cursor-not-allowed hover:bg-emerald-500/20'
+                                    : ''
                                 }`}
                                 disabled={processing || !canSend}
                                 title={
@@ -877,14 +911,16 @@ const EmailDashboard = () => {
                                 }
                                 onClick={() => processSpecificQueueItem(item.id)}
                               >
-                                <Send className={`w-4 h-4 mr-2 ${processing ? 'animate-pulse' : ''}`} />
+                                <Send
+                                  className={`w-4 h-4 mr-2 ${processing ? 'animate-pulse' : ''}`}
+                                />
                                 {canSend
                                   ? buttonLabel
                                   : item.status === 'sent'
-                                  ? 'Processed'
-                                  : item.status === 'processing'
-                                  ? 'Processing'
-                                  : 'Queued'}
+                                    ? 'Processed'
+                                    : item.status === 'processing'
+                                      ? 'Processing'
+                                      : 'Queued'}
                               </Button>
                               <Button
                                 variant="destructive"
@@ -901,27 +937,43 @@ const EmailDashboard = () => {
 
                           <div className="mt-4 grid grid-cols-2 md:grid-cols-6 gap-3 text-xs uppercase tracking-wide text-white/65">
                             <div>
-                              <p className="text-[11px] uppercase tracking-widest text-white/60">Recipients</p>
-                              <p className="text-base font-semibold text-white">{targetRecipients}</p>
+                              <p className="text-[11px] uppercase tracking-widest text-white/60">
+                                Recipients
+                              </p>
+                              <p className="text-base font-semibold text-white">
+                                {targetRecipients}
+                              </p>
                             </div>
                             <div>
-                              <p className="text-[11px] uppercase tracking-widest text-white/60">Sent</p>
+                              <p className="text-[11px] uppercase tracking-widest text-white/60">
+                                Sent
+                              </p>
                               <p className="text-base font-semibold text-white">{metric.sent}</p>
                             </div>
                             <div>
-                              <p className="text-[11px] uppercase tracking-widest text-white/60">Delivered</p>
-                              <p className="text-base font-semibold text-white">{metric.delivered}</p>
+                              <p className="text-[11px] uppercase tracking-widest text-white/60">
+                                Delivered
+                              </p>
+                              <p className="text-base font-semibold text-white">
+                                {metric.delivered}
+                              </p>
                             </div>
                             <div>
-                              <p className="text-[11px] uppercase tracking-widest text-white/60">Opened</p>
+                              <p className="text-[11px] uppercase tracking-widest text-white/60">
+                                Opened
+                              </p>
                               <p className="text-base font-semibold text-white">{metric.opened}</p>
                             </div>
                             <div>
-                              <p className="text-[11px] uppercase tracking-widest text-white/60">Clicked</p>
+                              <p className="text-[11px] uppercase tracking-widest text-white/60">
+                                Clicked
+                              </p>
                               <p className="text-base font-semibold text-white">{metric.clicked}</p>
                             </div>
                             <div>
-                              <p className="text-[11px] uppercase tracking-widest text-white/60">Bounced</p>
+                              <p className="text-[11px] uppercase tracking-widest text-white/60">
+                                Bounced
+                              </p>
                               <p className="text-base font-semibold text-white">{metric.bounced}</p>
                             </div>
                           </div>
@@ -956,7 +1008,8 @@ const EmailDashboard = () => {
                 <div className="flex flex-wrap gap-2">
                   {(['all', 'active', 'inactive', 'unsubscribed'] as const).map((filter) => {
                     const isActive = subscriberFilter === filter;
-                    const label = filter === 'all' ? 'All' : filter.charAt(0).toUpperCase() + filter.slice(1);
+                    const label =
+                      filter === 'all' ? 'All' : filter.charAt(0).toUpperCase() + filter.slice(1);
                     return (
                       <Button
                         key={filter}
@@ -1008,7 +1061,9 @@ const EmailDashboard = () => {
                             <tr key={subscriber.email} className="text-sm text-white/80">
                               <td className="px-4 py-3">
                                 <div className="flex flex-col">
-                                  <span className="text-base font-semibold text-white">{subscriber.email}</span>
+                                  <span className="text-base font-semibold text-white">
+                                    {subscriber.email}
+                                  </span>
                                   <span className="text-xs text-white/50">
                                     Last updated: {formatDate(subscriber.updated_at)}
                                   </span>
@@ -1045,8 +1100,12 @@ const EmailDashboard = () => {
                 <div className="flex flex-col gap-6">
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
-                      <h3 className="text-base font-semibold text-white">Auto-send Blog Post Emails</h3>
-                      <p className="text-sm text-white/60 mt-1">Automatically send emails when new blog posts are published</p>
+                      <h3 className="text-base font-semibold text-white">
+                        Auto-send Blog Post Emails
+                      </h3>
+                      <p className="text-sm text-white/60 mt-1">
+                        Automatically send emails when new blog posts are published
+                      </p>
                       <div className="mt-3 flex items-center gap-2">
                         <Switch
                           checked={blogAutoSend}
@@ -1061,10 +1120,12 @@ const EmailDashboard = () => {
                     <div className="flex items-center gap-2">
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button 
-                            variant="soft" 
+                          <Button
+                            variant="soft"
                             size="sm"
-                            onClick={() => openPreview({ mode: 'latest', contentType: 'blog_post' })}
+                            onClick={() =>
+                              openPreview({ mode: 'latest', contentType: 'blog_post' })
+                            }
                             disabled={previewLoading}
                             className="data-[state=open]:bg-white/15"
                           >
@@ -1076,7 +1137,8 @@ const EmailDashboard = () => {
                           <DialogHeader>
                             <DialogTitle>{previewTitle || 'Email Preview'}</DialogTitle>
                             <DialogDescription className="text-white/60">
-                              Preview of how blog post notification emails will appear to subscribers
+                              Preview of how blog post notification emails will appear to
+                              subscribers
                             </DialogDescription>
                           </DialogHeader>
                           {renderPreviewBody()}
@@ -1084,11 +1146,15 @@ const EmailDashboard = () => {
                       </Dialog>
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
-                      <h3 className="text-base font-semibold text-white">Auto-send Project Emails</h3>
-                      <p className="text-sm text-white/60 mt-1">Automatically send emails when new projects are published</p>
+                      <h3 className="text-base font-semibold text-white">
+                        Auto-send Project Emails
+                      </h3>
+                      <p className="text-sm text-white/60 mt-1">
+                        Automatically send emails when new projects are published
+                      </p>
                       <div className="mt-3 flex items-center gap-2">
                         <Switch
                           checked={projectAutoSend}
@@ -1103,8 +1169,8 @@ const EmailDashboard = () => {
                     <div className="flex items-center gap-2">
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button 
-                            variant="soft" 
+                          <Button
+                            variant="soft"
                             size="sm"
                             onClick={() => openPreview({ mode: 'latest', contentType: 'project' })}
                             disabled={previewLoading}
@@ -1126,7 +1192,6 @@ const EmailDashboard = () => {
                       </Dialog>
                     </div>
                   </div>
-
                 </div>
               </CardContent>
             </Card>

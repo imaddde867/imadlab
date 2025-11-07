@@ -13,10 +13,9 @@ let katexPromise: Promise<KatexModule> | null = null;
 
 const loadKatex = async () => {
   if (!katexPromise) {
-    katexPromise = Promise.all([
-      import('katex/dist/katex.min.css'),
-      import('katex'),
-    ]).then(([, katex]) => katex);
+    katexPromise = Promise.all([import('katex/dist/katex.min.css'), import('katex')]).then(
+      ([, katex]) => katex
+    );
   }
   return katexPromise;
 };
@@ -28,9 +27,10 @@ export const MathRenderer = ({ value, inline = false }: MathRendererProps) => {
 
   useEffect(() => {
     let cancelled = false;
-    if (!isIntersecting) return () => {
-      cancelled = true;
-    };
+    if (!isIntersecting)
+      return () => {
+        cancelled = true;
+      };
 
     (async () => {
       try {
@@ -89,4 +89,3 @@ export const MathRenderer = ({ value, inline = false }: MathRendererProps) => {
     </span>
   );
 };
-

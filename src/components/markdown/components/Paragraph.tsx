@@ -15,4 +15,3 @@ export const Paragraph = ({ className, children, ...props }: ParagraphProps) => 
     {children}
   </p>
 );
-

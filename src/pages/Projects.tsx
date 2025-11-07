@@ -23,9 +23,7 @@ interface Project {
 
 const Projects = () => {
   const initialProjects = useMemo(() => readPrerenderData<Project[]>('projects'), []);
-  const initialUpdatedAt = useRef<number | undefined>(
-    initialProjects ? Date.now() : undefined
-  );
+  const initialUpdatedAt = useRef<number | undefined>(initialProjects ? Date.now() : undefined);
 
   const {
     data: projects = [],
@@ -38,7 +36,7 @@ const Projects = () => {
         .from('projects')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as Project[];
     },
@@ -49,22 +47,25 @@ const Projects = () => {
 
   const isSkeletonVisible = isLoading && !projects.length && !isFetching;
 
-  const projectListSchema = projects.length > 0 ? [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'ItemList',
-      name: 'Projects list',
-      itemListOrder: 'Descending',
-      numberOfItems: projects.length,
-      itemListElement: projects.map((project, index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        url: `https://imadlab.me/projects/${project.id}`,
-        name: project.title,
-        description: project.description ?? undefined
-      }))
-    }
-  ] : undefined;
+  const projectListSchema =
+    projects.length > 0
+      ? [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            name: 'Projects list',
+            itemListOrder: 'Descending',
+            numberOfItems: projects.length,
+            itemListElement: projects.map((project, index) => ({
+              '@type': 'ListItem',
+              position: index + 1,
+              url: `https://imadlab.me/projects/${project.id}`,
+              name: project.title,
+              description: project.description ?? undefined,
+            })),
+          },
+        ]
+      : undefined;
 
   return (
     <div className="min-h-screen bg-black text-white section pt-14">
@@ -76,13 +77,16 @@ const Projects = () => {
         schemaType="CollectionPage"
         breadcrumbs={[
           { name: 'Home', path: '/' },
-          { name: 'Projects', path: '/projects' }
+          { name: 'Projects', path: '/projects' },
         ]}
         additionalSchemas={projectListSchema}
       />
       <div className="container-site">
         <div className="mb-8">
-          <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
+          <Link
+            to="/"
+            className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Link>
@@ -115,7 +119,7 @@ const Projects = () => {
             <div className="text-white/60 mb-4">No projects yet</div>
           </div>
         )}
-        
+
         <NewsletterSignup />
       </div>
     </div>

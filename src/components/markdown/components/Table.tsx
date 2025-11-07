@@ -8,9 +8,15 @@ import type {
 import clsx from 'clsx';
 
 type TableProps = DetailedHTMLProps<TableHTMLAttributes<HTMLTableElement>, HTMLTableElement>;
-type SectionProps = DetailedHTMLProps<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>;
+type SectionProps = DetailedHTMLProps<
+  HTMLAttributes<HTMLTableSectionElement>,
+  HTMLTableSectionElement
+>;
 type CellProps = DetailedHTMLProps<TdHTMLAttributes<HTMLTableCellElement>, HTMLTableCellElement>;
-type HeaderCellProps = DetailedHTMLProps<ThHTMLAttributes<HTMLTableCellElement>, HTMLTableCellElement>;
+type HeaderCellProps = DetailedHTMLProps<
+  ThHTMLAttributes<HTMLTableCellElement>,
+  HTMLTableCellElement
+>;
 
 export const Table = ({ className, children, ...props }: TableProps) => (
   <div

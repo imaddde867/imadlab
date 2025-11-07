@@ -22,7 +22,7 @@ export function useIntersectionObserver<T extends Element>(
 ): UseIntersectionObserverResult<T> {
   const { once = true, triggerOnce = once, ...observerOptions } = options;
   const { root, rootMargin, threshold } = observerOptions;
-  const thresholdKey = Array.isArray(threshold) ? threshold.join(',') : threshold ?? '0';
+  const thresholdKey = Array.isArray(threshold) ? threshold.join(',') : (threshold ?? '0');
   const ref = useRef<T | null>(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
 
@@ -38,26 +38,29 @@ export function useIntersectionObserver<T extends Element>(
       return;
     }
 
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setIsIntersecting(true);
-        if (triggerOnce) {
-          observer.disconnect();
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsIntersecting(true);
+          if (triggerOnce) {
+            observer.disconnect();
+          }
+        } else if (!triggerOnce) {
+          setIsIntersecting(false);
         }
-      } else if (!triggerOnce) {
-        setIsIntersecting(false);
-      }
-    }, { root, rootMargin, threshold });
+      },
+      { root, rootMargin, threshold }
+    );
 
     observer.observe(target);
 
     return () => observer.disconnect();
   }, [triggerOnce, root, rootMargin, thresholdKey, threshold]);
 
-  return { 
-    ref, 
+  return {
+    ref,
     elementRef: ref, // Alias for backward compatibility
     isIntersecting,
-    isVisible: isIntersecting // Alias for backward compatibility
+    isVisible: isIntersecting, // Alias for backward compatibility
   };
 }

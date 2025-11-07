@@ -34,8 +34,7 @@ const TagList = ({ tags, initialVisible = 3, label, variant = 'hash' }: TagListP
             </>
           ) : (
             <>
-              <ChevronDown className="w-3 h-3 mr-1" />
-              +{tags.length - initialVisible} more
+              <ChevronDown className="w-3 h-3 mr-1" />+{tags.length - initialVisible} more
             </>
           )}
         </button>

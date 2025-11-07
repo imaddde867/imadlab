@@ -39,4 +39,3 @@ export const ListItem = ({ checked, className, children, ...props }: ListItemPro
     </li>
   );
 };
-

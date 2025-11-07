@@ -34,8 +34,7 @@ const getCookie = (name: string): string | null => {
 };
 
 const encode = (obj: ConsentState) => encodeURIComponent(JSON.stringify(obj));
-const decode = (str: string): ConsentState =>
-  JSON.parse(decodeURIComponent(str)) as ConsentState;
+const decode = (str: string): ConsentState => JSON.parse(decodeURIComponent(str)) as ConsentState;
 
 export function getConsent(): ConsentState | null {
   try {
@@ -50,7 +49,9 @@ export function getConsent(): ConsentState | null {
   }
 }
 
-export function setConsent(next: Omit<ConsentState, 'version' | 'timestamp' | 'essential'> & { essential?: true }) {
+export function setConsent(
+  next: Omit<ConsentState, 'version' | 'timestamp' | 'essential'> & { essential?: true }
+) {
   const state: ConsentState = {
     version: CONSENT_VERSION,
     timestamp: Date.now(),
@@ -99,7 +100,11 @@ export function rejectAll() {
   setConsent({ analytics: false, marketing: false, functional: true });
 }
 
-export async function loadScriptIfConsented(category: ConsentCategory, src: string, attrs: Record<string, string> = {}) {
+export async function loadScriptIfConsented(
+  category: ConsentCategory,
+  src: string,
+  attrs: Record<string, string> = {}
+) {
   if (!isAllowed(category)) return null;
   return new Promise<HTMLScriptElement>((resolve, reject) => {
     const s = document.createElement('script');

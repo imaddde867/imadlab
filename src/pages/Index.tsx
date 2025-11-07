@@ -22,23 +22,23 @@ const Index = () => {
       <div className="my-24">
         <Marquee
           words={[
-            "Streaming",
-            "Orchestration",
-            "Data Modeling",
-            "Microservices",
-            "Real‑time Analytics",
-            "Feature Engineering",
-            "Training",
-            "Evaluation",
-            "MLOps",
-            "LLM Tooling",
-            "Privacy",
-            "Scalability",
+            'Streaming',
+            'Orchestration',
+            'Data Modeling',
+            'Microservices',
+            'Real‑time Analytics',
+            'Feature Engineering',
+            'Training',
+            'Evaluation',
+            'MLOps',
+            'LLM Tooling',
+            'Privacy',
+            'Scalability',
           ]}
           speed="normal"
         />
       </div>
-      
+
       <BlogFeed />
       <Contact />
     </div>

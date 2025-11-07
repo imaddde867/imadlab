@@ -99,17 +99,21 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
-  html, body {
+  html,
+  body {
     overscroll-behavior: none; /* Prevent rubber-banding/bounce scroll */
     overflow-x: hidden; /* Prevent horizontal scroll */
   }
 
-  body, #root {
+  body,
+  #root {
     @apply font-sans antialiased;
     color: hsl(var(--foreground));
     background-color: hsl(var(--background));
     background-attachment: fixed;
-    transition: background 0.4s ease, color 0.4s ease;
+    transition:
+      background 0.4s ease,
+      color 0.4s ease;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
@@ -126,19 +130,36 @@ All colors MUST be HSL.
   }
 
   /* Enhanced typography base styles */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-weight: 700;
     line-height: 1.2;
     letter-spacing: -0.025em;
     text-wrap: balance;
   }
 
-  h1 { @apply text-5xl md:text-6xl lg:text-7xl font-black; }
-  h2 { @apply text-4xl md:text-5xl lg:text-6xl font-bold; }
-  h3 { @apply text-3xl md:text-4xl font-bold; }
-  h4 { @apply text-2xl md:text-3xl font-semibold; }
-  h5 { @apply text-xl md:text-2xl font-semibold; }
-  h6 { @apply text-lg md:text-xl font-medium; }
+  h1 {
+    @apply text-5xl md:text-6xl lg:text-7xl font-black;
+  }
+  h2 {
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold;
+  }
+  h3 {
+    @apply text-3xl md:text-4xl font-bold;
+  }
+  h4 {
+    @apply text-2xl md:text-3xl font-semibold;
+  }
+  h5 {
+    @apply text-xl md:text-2xl font-semibold;
+  }
+  h6 {
+    @apply text-lg md:text-xl font-medium;
+  }
 
   p {
     @apply leading-relaxed;
@@ -155,14 +176,27 @@ All colors MUST be HSL.
     @apply text-white/80 leading-7 mb-6;
   }
 
-  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
     @apply text-white font-bold mb-4 mt-8;
   }
 
-  .prose h1 { @apply text-4xl; }
-  .prose h2 { @apply text-3xl; }
-  .prose h3 { @apply text-2xl; }
-  .prose h4 { @apply text-xl; }
+  .prose h1 {
+    @apply text-4xl;
+  }
+  .prose h2 {
+    @apply text-3xl;
+  }
+  .prose h3 {
+    @apply text-2xl;
+  }
+  .prose h4 {
+    @apply text-xl;
+  }
 
   /* Custom text selection styling */
   ::selection {
@@ -310,7 +344,10 @@ All colors MUST be HSL.
     display: inline-flex;
     align-items: center;
     color: hsl(var(--foreground) / 0.85);
-    transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
+    transition:
+      color 0.2s ease,
+      text-shadow 0.2s ease,
+      transform 0.2s ease;
     font-weight: 500;
     letter-spacing: 0.02em;
     text-decoration: none;
@@ -326,20 +363,33 @@ All colors MUST be HSL.
 
 @layer utilities {
   /* Layout helpers */
-  .container-site { @apply max-w-7xl mx-auto px-4; }
-  .container-narrow { @apply max-w-4xl mx-auto px-4; }
-  .section { @apply py-20 md:py-24; }
-  .grid-gap-default { @apply gap-8; }
+  .container-site {
+    @apply max-w-7xl mx-auto px-4;
+  }
+  .container-narrow {
+    @apply max-w-4xl mx-auto px-4;
+  }
+  .section {
+    @apply py-20 md:py-24;
+  }
+  .grid-gap-default {
+    @apply gap-8;
+  }
 
   /* Brand gradient text */
-  .text-brand-gradient { color: hsl(var(--foreground)); }
-
+  .text-brand-gradient {
+    color: hsl(var(--foreground));
+  }
 }
 
 /* Loading animation */
 @keyframes loading-slide {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 /* Respect reduced motion preferences */

@@ -26,7 +26,7 @@ export class StravaCache {
       if (!cached) return null;
 
       const data: CachedStravaData = JSON.parse(cached);
-      
+
       // Check if cache is too old
       const age = Date.now() - data.timestamp;
       if (age > MAX_CACHE_AGE) {
@@ -84,12 +84,12 @@ export class StravaCache {
 
     const timeSinceLastCall = Date.now() - cached.lastApiCall;
     const canCall = timeSinceLastCall >= MIN_API_INTERVAL;
-    
+
     if (!canCall) {
       const waitMinutes = Math.ceil((MIN_API_INTERVAL - timeSinceLastCall) / 60000);
       logger.debug(`Rate limit protection: wait ${waitMinutes} more minutes before next API call`);
     }
-    
+
     return canCall;
   }
 
