@@ -26,7 +26,11 @@ const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [showAllTags, setShowAllTags] = useState(false);
 
-  const { data: project, isLoading, error } = useQuery({
+  const {
+    data: project,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['project', id],
     queryFn: async () => {
       if (!id) throw new Error('No project ID provided');
@@ -38,7 +42,7 @@ const ProjectDetail = () => {
       if (error) throw error;
       return data as Project | null;
     },
-    enabled: !!id
+    enabled: !!id,
   });
 
   if (isLoading) {
@@ -62,7 +66,8 @@ const ProjectDetail = () => {
     );
   }
 
-  const projectTags = project.tech_tags?.filter((tag): tag is string => Boolean(tag && tag.trim())) ?? [];
+  const projectTags =
+    project.tech_tags?.filter((tag): tag is string => Boolean(tag && tag.trim())) ?? [];
   const fallbackDescription = project.full_description
     ? (() => {
         const plain = stripMarkdown(project.full_description ?? '');
@@ -75,7 +80,7 @@ const ProjectDetail = () => {
   const breadcrumbTrail = [
     { name: 'Home', path: '/' },
     { name: 'Projects', path: '/projects' },
-    { name: project.title, url: `https://imadlab.me/projects/${project.id}` }
+    { name: project.title, url: `https://imadlab.me/projects/${project.id}` },
   ];
   const projectSchemas = project.repo_url
     ? [
@@ -88,8 +93,8 @@ const ProjectDetail = () => {
           url: `https://imadlab.me/projects/${project.id}`,
           dateCreated: project.created_at,
           dateModified: project.updated_at ?? project.created_at,
-          programmingLanguage: projectTags
-        }
+          programmingLanguage: projectTags,
+        },
       ]
     : undefined;
 
@@ -99,10 +104,14 @@ const ProjectDetail = () => {
 
   return (
     <div className="min-h-screen bg-black text-white pt-14">
-      <Seo 
-        title={project.title} 
-        description={metaDescription} 
-        keywords={projectTags.length ? projectTags.join(', ') : 'data engineering, machine learning, ai, programming'}
+      <Seo
+        title={project.title}
+        description={metaDescription}
+        keywords={
+          projectTags.length
+            ? projectTags.join(', ')
+            : 'data engineering, machine learning, ai, programming'
+        }
         type="project"
         schemaType="CreativeWork"
         publishedTime={project.created_at}
@@ -117,29 +126,31 @@ const ProjectDetail = () => {
       <BackRow
         to="/projects"
         label="Back to Projects"
-        icon={<ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />}
-        right={project.repo_url ? (
-          <a
-            href={project.repo_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md text-white/90 hover:text-white transition-all duration-200 text-sm"
-          >
-            <Code className="w-4 h-4" />
-            View Code
-            <ExternalLink className="w-3 h-3" />
-          </a>
-        ) : undefined}
+        icon={
+          <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
+        }
+        right={
+          project.repo_url ? (
+            <a
+              href={project.repo_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md text-white/90 hover:text-white transition-all duration-200 text-sm"
+            >
+              <Code className="w-4 h-4" />
+              View Code
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          ) : undefined
+        }
       />
 
       {/* Hero Section - Simplified */}
       <header className="relative pt-8 md:pt-12 pb-10">
         <div className="container-narrow">
           {/* Project Title */}
-          <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
-            {project.title}
-          </h1>
-          
+          <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">{project.title}</h1>
+
           {/* Project Metadata */}
           <div className="flex flex-wrap items-center gap-y-4 gap-x-6 mb-8">
             <div className="flex items-center text-sm text-white/70">
@@ -147,10 +158,10 @@ const ProjectDetail = () => {
               {new Date(project.created_at).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric'
+                day: 'numeric',
               })}
             </div>
-            
+
             {projectTags.length > 0 && (
               <div className="flex flex-wrap gap-2 items-center">
                 <span className="text-sm text-white/70">Technologies:</span>
@@ -162,12 +173,12 @@ const ProjectDetail = () => {
                     {tag}
                   </span>
                 ))}
-                
+
                 {projectTags.length > 3 && (
                   <button
                     onClick={() => setShowAllTags(!showAllTags)}
                     className="text-xs text-blue-400 hover:text-blue-300 flex items-center"
-                    aria-label={showAllTags ? "Show fewer tags" : "Show all tags"}
+                    aria-label={showAllTags ? 'Show fewer tags' : 'Show all tags'}
                   >
                     {showAllTags ? (
                       <>
@@ -176,8 +187,7 @@ const ProjectDetail = () => {
                       </>
                     ) : (
                       <>
-                        <ChevronDown className="w-3 h-3 mr-1" />
-                        +{projectTags.length - 3} more
+                        <ChevronDown className="w-3 h-3 mr-1" />+{projectTags.length - 3} more
                       </>
                     )}
                   </button>
@@ -185,7 +195,7 @@ const ProjectDetail = () => {
               </div>
             )}
           </div>
-          
+
           {/* Project Description */}
           {project.description && (
             <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-3xl">
@@ -222,7 +232,9 @@ const ProjectDetail = () => {
           />
         ) : (
           <div className="text-center py-12">
-            <div className="text-white/60 mb-4">No detailed description available for this project.</div>
+            <div className="text-white/60 mb-4">
+              No detailed description available for this project.
+            </div>
             {project.repo_url && (
               <a
                 href={project.repo_url}
@@ -238,7 +250,7 @@ const ProjectDetail = () => {
           </div>
         )}
       </main>
-      
+
       {/* Page footer removed; global Footer is used */}
     </div>
   );

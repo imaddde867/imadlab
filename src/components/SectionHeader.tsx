@@ -21,10 +21,7 @@ const SectionHeader = ({
   const isCenter = align === 'center';
   return (
     <div className={cn('mb-16', isCenter ? 'text-center' : '', className)}>
-      <h2 className={cn(
-        'text-section-title text-hierarchy-primary',
-        isCenter ? '' : ''
-      )}>
+      <h2 className={cn('text-section-title text-hierarchy-primary', isCenter ? '' : '')}>
         {title}
         {subtitle && (
           <>
@@ -44,4 +41,3 @@ const SectionHeader = ({
 };
 
 export default SectionHeader;
-

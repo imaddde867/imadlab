@@ -1,19 +1,19 @@
 import { Toaster } from '@/components/ui/toaster';
 import NewsletterPopup from '@/components/NewsletterPopup';
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React, { Suspense } from "react";
-import { CursorProvider, Cursor, CursorFollow } from "@/components/ui/shadcn-io/animated-cursor";
-import ClickSpark from "@/components/ClickSpark";
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { Suspense } from 'react';
+import { CursorProvider, Cursor, CursorFollow } from '@/components/ui/shadcn-io/animated-cursor';
+import ClickSpark from '@/components/ClickSpark';
 import HomeBackground from '@/components/HomeBackground';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import ErrorBoundary from "@/components/ErrorBoundary";
-import CookieConsent from "@/components/CookieConsent";
+import ErrorBoundary from '@/components/ErrorBoundary';
+import CookieConsent from '@/components/CookieConsent';
 import UserSettings from '@/components/UserSettings';
-import { useAnalytics } from "@/hooks/useAnalytics";
-import { registerRoutePrefetch } from "@/lib/routePrefetch";
+import { useAnalytics } from '@/hooks/useAnalytics';
+import { registerRoutePrefetch } from '@/lib/routePrefetch';
 
 const getCustomCursorSupport = () => {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -26,59 +26,59 @@ const getCustomCursorSupport = () => {
 };
 
 // Lazy load all pages for better code splitting and register them for prefetching
-const loadIndex = () => import("./pages/Index");
+const loadIndex = () => import('./pages/Index');
 registerRoutePrefetch('/', loadIndex);
 const Index = React.lazy(loadIndex);
 
-const loadProjects = () => import("./pages/Projects");
+const loadProjects = () => import('./pages/Projects');
 registerRoutePrefetch('/projects', loadProjects);
 const Projects = React.lazy(loadProjects);
 
-const loadBlogs = () => import("./pages/Blog");
+const loadBlogs = () => import('./pages/Blog');
 registerRoutePrefetch('/blogs', loadBlogs);
 const Blogs = React.lazy(loadBlogs);
 
-const loadBlogPost = () => import("./pages/BlogPost");
+const loadBlogPost = () => import('./pages/BlogPost');
 registerRoutePrefetch('/blogs/:slug', loadBlogPost);
 const BlogPost = React.lazy(loadBlogPost);
 
-const loadProjectDetail = () => import("./pages/ProjectDetail");
+const loadProjectDetail = () => import('./pages/ProjectDetail');
 registerRoutePrefetch('/projects/:id', loadProjectDetail);
 const ProjectDetail = React.lazy(loadProjectDetail);
 
-const loadExtras = () => import("./pages/Extras");
+const loadExtras = () => import('./pages/Extras');
 registerRoutePrefetch('/extras', loadExtras);
 const Extras = React.lazy(loadExtras);
 
-const loadAdminLogin = () => import("./pages/AdminLogin");
+const loadAdminLogin = () => import('./pages/AdminLogin');
 registerRoutePrefetch('/admin/login', loadAdminLogin);
 const AdminLogin = React.lazy(loadAdminLogin);
 
-const loadAdminDashboard = () => import("./pages/AdminDashboard");
+const loadAdminDashboard = () => import('./pages/AdminDashboard');
 registerRoutePrefetch('/admin', loadAdminDashboard);
 const AdminDashboard = React.lazy(loadAdminDashboard);
 
-const loadManagePosts = () => import("./pages/ManagePosts");
+const loadManagePosts = () => import('./pages/ManagePosts');
 registerRoutePrefetch('/admin/posts', loadManagePosts);
 const ManagePosts = React.lazy(loadManagePosts);
 
-const loadManageProjects = () => import("./pages/ManageProjects");
+const loadManageProjects = () => import('./pages/ManageProjects');
 registerRoutePrefetch('/admin/projects', loadManageProjects);
 const ManageProjects = React.lazy(loadManageProjects);
 
-const loadEmailDashboard = () => import("./pages/EmailDashboard");
+const loadEmailDashboard = () => import('./pages/EmailDashboard');
 registerRoutePrefetch('/admin/emails', loadEmailDashboard);
 const EmailDashboard = React.lazy(loadEmailDashboard);
 
-const loadAnalyticsDashboard = () => import("./pages/AnalyticsDashboard");
+const loadAnalyticsDashboard = () => import('./pages/AnalyticsDashboard');
 registerRoutePrefetch('/admin/analytics', loadAnalyticsDashboard);
 const AnalyticsDashboard = React.lazy(loadAnalyticsDashboard);
 
-const loadNotFound = () => import("./pages/NotFound");
+const loadNotFound = () => import('./pages/NotFound');
 registerRoutePrefetch('*', loadNotFound);
 const NotFound = React.lazy(loadNotFound);
 
-const loadAbout = () => import("./pages/About");
+const loadAbout = () => import('./pages/About');
 registerRoutePrefetch('/about', loadAbout);
 const About = React.lazy(loadAbout);
 
@@ -103,7 +103,9 @@ const App = () => {
   const [userName, setUserName] = React.useState<string>('');
   const [showFollowingBadge, setShowFollowingBadge] = React.useState<boolean>(true);
   const [cookieConsentIsOpen, setCookieConsentIsOpen] = React.useState<boolean>(false);
-  const [supportsCustomCursor, setSupportsCustomCursor] = React.useState<boolean>(() => getCustomCursorSupport());
+  const [supportsCustomCursor, setSupportsCustomCursor] = React.useState<boolean>(() =>
+    getCustomCursorSupport()
+  );
 
   React.useEffect(() => {
     const storedName = localStorage.getItem('userName');
@@ -238,9 +240,16 @@ const App = () => {
           {supportsCustomCursor ? (
             <CursorProvider className="flex min-h-screen flex-col">
               {baseContent}
-              <UserSettings setUserName={setUserName} setShowFollowingBadge={setShowFollowingBadge} />
+              <UserSettings
+                setUserName={setUserName}
+                setShowFollowingBadge={setShowFollowingBadge}
+              />
               <Cursor>
-                <svg className="size-6 text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                <svg
+                  className="size-6 text-primary"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 40 40"
+                >
                   <path
                     fill="currentColor"
                     d="M1.8 4.4 7 36.2c.3 1.8 2.6 2.3 3.6.8l3.9-5.7c1.7-2.5 4.5-4.1 7.5-4.3l6.9-.5c1.8-.1 2.5-2.4 1.1-3.5L5 2.5c-1.4-1.1-3.5 0-3.3 1.9Z"
@@ -256,9 +265,7 @@ const App = () => {
               )}
             </CursorProvider>
           ) : (
-            <div className="flex min-h-screen flex-col">
-              {baseContent}
-            </div>
+            <div className="flex min-h-screen flex-col">{baseContent}</div>
           )}
         </div>
       </TooltipProvider>

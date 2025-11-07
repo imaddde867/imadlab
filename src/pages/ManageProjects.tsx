@@ -10,7 +10,17 @@ import { Tag as TagChip } from '@/components/ui/tag';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, Eye, Calendar, Code, ExternalLink, FolderOpen, Tag as TagIcon } from 'lucide-react';
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  Calendar,
+  Code,
+  ExternalLink,
+  FolderOpen,
+  Tag as TagIcon,
+} from 'lucide-react';
 
 interface Project {
   id: string;
@@ -46,34 +56,44 @@ const ManageProjects = () => {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [formData, setFormData] = useState<ProjectFormState>(createEmptyProjectForm);
   const [authChecked, setAuthChecked] = useState(false);
-  
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         navigate('/admin/login');
-        toast({ title: 'Unauthorized', description: 'Please log in to access this page.', variant: 'destructive' });
+        toast({
+          title: 'Unauthorized',
+          description: 'Please log in to access this page.',
+          variant: 'destructive',
+        });
       }
       setAuthChecked(true);
     };
     checkUser();
   }, [navigate, toast]);
 
-  const { data: projects, isLoading, isFetching } = useQuery({
+  const {
+    data: projects,
+    isLoading,
+    isFetching,
+  } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as Project[];
-    }
+    },
   });
 
   const projectsList = useMemo(() => projects ?? [], [projects]);
@@ -85,10 +105,7 @@ const ManageProjects = () => {
     const now = new Date();
     return projectsList.filter((project) => {
       const created = new Date(project.created_at);
-      return (
-        created.getMonth() === now.getMonth() &&
-        created.getFullYear() === now.getFullYear()
-      );
+      return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
     }).length;
   }, [projectsList]);
 
@@ -182,13 +199,15 @@ const ManageProjects = () => {
     mutationFn: async (newProject: Omit<Project, 'id' | 'created_at'>) => {
       const { data, error } = await supabase
         .from('projects')
-        .insert([{
-          ...newProject,
-          tech_tags: newProject.tech_tags?.length ? newProject.tech_tags : null
-        }])
+        .insert([
+          {
+            ...newProject,
+            tech_tags: newProject.tech_tags?.length ? newProject.tech_tags : null,
+          },
+        ])
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -199,7 +218,7 @@ const ManageProjects = () => {
     },
     onError: (error) => {
       toast({ title: 'Error adding project', description: error.message, variant: 'destructive' });
-    }
+    },
   });
 
   const updateProjectMutation = useMutation({
@@ -212,12 +231,12 @@ const ManageProjects = () => {
           full_description: updatedProject.full_description,
           image_url: updatedProject.image_url,
           tech_tags: updatedProject.tech_tags,
-          repo_url: updatedProject.repo_url
+          repo_url: updatedProject.repo_url,
         })
         .eq('id', updatedProject.id)
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -227,19 +246,20 @@ const ManageProjects = () => {
       toast({ title: 'Project updated successfully!' });
     },
     onError: (error) => {
-      toast({ title: 'Error updating project', description: error.message, variant: 'destructive' });
-    }
+      toast({
+        title: 'Error updating project',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
   });
 
   const isMutating = addProjectMutation.isPending || updateProjectMutation.isPending;
 
   const deleteProjectMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('projects')
-        .delete()
-        .eq('id', id);
-      
+      const { error } = await supabase.from('projects').delete().eq('id', id);
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -247,8 +267,12 @@ const ManageProjects = () => {
       toast({ title: 'Project deleted successfully!' });
     },
     onError: (error) => {
-      toast({ title: 'Error deleting project', description: error.message, variant: 'destructive' });
-    }
+      toast({
+        title: 'Error deleting project',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
   });
 
   const handleEditClick = (project: Project) => {
@@ -259,7 +283,7 @@ const ManageProjects = () => {
       full_description: project.full_description || '',
       image_url: project.image_url || '',
       tech_tags: project.tech_tags?.join(', ') || '',
-      repo_url: project.repo_url || ''
+      repo_url: project.repo_url || '',
     });
     setShowForm(true);
   };
@@ -276,8 +300,8 @@ const ManageProjects = () => {
 
     const techTagsArray = formData.tech_tags
       .split(',')
-      .map(tag => tag.trim())
-      .filter(tag => tag.length > 0);
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
 
     const projectData = {
       title: formData.title,
@@ -285,7 +309,7 @@ const ManageProjects = () => {
       full_description: formData.full_description || null,
       image_url: formData.image_url || null,
       tech_tags: techTagsArray.length > 0 ? techTagsArray : null,
-      repo_url: formData.repo_url || null
+      repo_url: formData.repo_url || null,
     };
 
     if (editingProject) {
@@ -350,9 +374,13 @@ const ManageProjects = () => {
         {showForm && (
           <Card className="rounded-3xl border border-white/10 bg-white/5 shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-md">
             <CardHeader>
-              <CardTitle className="text-white">{editingProject ? 'Edit Project' : 'Create New Project'}</CardTitle>
+              <CardTitle className="text-white">
+                {editingProject ? 'Edit Project' : 'Create New Project'}
+              </CardTitle>
               <CardDescription className="text-white/70">
-                {editingProject ? 'Update your project details' : 'Add a new project to your portfolio'}
+                {editingProject
+                  ? 'Update your project details'
+                  : 'Add a new project to your portfolio'}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -362,7 +390,7 @@ const ManageProjects = () => {
                   <Input
                     placeholder="Enter project title"
                     value={formData.title}
-                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                     required
                   />
@@ -373,7 +401,7 @@ const ManageProjects = () => {
                   <Textarea
                     placeholder="Brief description that appears on project cards"
                     value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                     rows={3}
                   />
@@ -384,7 +412,7 @@ const ManageProjects = () => {
                   <Textarea
                     placeholder="Detailed description for the project detail page"
                     value={formData.full_description}
-                    onChange={(e) => setFormData({...formData, full_description: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, full_description: e.target.value })}
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                     rows={6}
                   />
@@ -396,7 +424,7 @@ const ManageProjects = () => {
                     <Input
                       placeholder="https://example.com/project-image.jpg"
                       value={formData.image_url}
-                      onChange={(e) => setFormData({...formData, image_url: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                       className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                     />
                   </div>
@@ -405,7 +433,7 @@ const ManageProjects = () => {
                     <Input
                       placeholder="https://github.com/username/project"
                       value={formData.repo_url}
-                      onChange={(e) => setFormData({...formData, repo_url: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, repo_url: e.target.value })}
                       className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                     />
                   </div>
@@ -416,27 +444,22 @@ const ManageProjects = () => {
                   <Input
                     placeholder="React, TypeScript, Node.js, PostgreSQL"
                     value={formData.tech_tags}
-                    onChange={(e) => setFormData({...formData, tech_tags: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, tech_tags: e.target.value })}
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                   />
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  <Button 
-                    type="submit" 
-                    variant="inverted"
-                    disabled={isMutating}
-                  >
-                    {editingProject 
-                      ? (updateProjectMutation.isPending ? 'Updating...' : 'Update Project')
-                      : (addProjectMutation.isPending ? 'Creating...' : 'Create Project')
-                    }
+                  <Button type="submit" variant="inverted" disabled={isMutating}>
+                    {editingProject
+                      ? updateProjectMutation.isPending
+                        ? 'Updating...'
+                        : 'Update Project'
+                      : addProjectMutation.isPending
+                        ? 'Creating...'
+                        : 'Create Project'}
                   </Button>
-                  <Button 
-                    type="button" 
-                    variant="ghost"
-                    onClick={closeForm}
-                  >
+                  <Button type="button" variant="ghost" onClick={closeForm}>
                     Cancel
                   </Button>
                 </div>
@@ -479,19 +502,12 @@ const ManageProjects = () => {
               </div>
             ) : !hasProjects ? (
               <div className="py-12 text-center">
-                <FolderOpen
-                  className="mx-auto mb-4 h-12 w-12 text-white/20"
-                  aria-hidden="true"
-                />
+                <FolderOpen className="mx-auto mb-4 h-12 w-12 text-white/20" aria-hidden="true" />
                 <h3 className="text-lg font-semibold text-white">No projects yet</h3>
                 <p className="mt-3 text-sm text-white/70">
                   Create your first project to showcase your work.
                 </p>
-                <Button
-                  className="mt-6"
-                  variant="inverted"
-                  onClick={openCreateForm}
-                >
+                <Button className="mt-6" variant="inverted" onClick={openCreateForm}>
                   <Plus className="mr-2 h-4 w-4" />
                   Create First Project
                 </Button>
@@ -527,18 +543,21 @@ const ManageProjects = () => {
                             </div>
                           )}
                         </div>
-                        
+
                         <p className="text-sm text-white/70 line-clamp-2">
                           {project.description || 'No description available'}
                         </p>
-                        
+
                         <div className="flex flex-wrap gap-4 text-xs text-white/60">
                           <div className="flex items-center gap-1.5">
                             <Calendar className="h-3.5 w-3.5 text-white/50" aria-hidden="true" />
                             {new Date(project.created_at).toLocaleDateString()}
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <ExternalLink className="h-3.5 w-3.5 text-white/50" aria-hidden="true" />
+                            <ExternalLink
+                              className="h-3.5 w-3.5 text-white/50"
+                              aria-hidden="true"
+                            />
                             /projects/{project.id}
                           </div>
                           {project.repo_url && (
@@ -549,23 +568,19 @@ const ManageProjects = () => {
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="flex flex-wrap items-center gap-2">
-                        <Button
-                          asChild
-                          variant="soft"
-                          size="sm"
-                        >
-                          <Link to={`/projects/${project.id}`} target="_blank" rel="noopener noreferrer">
+                        <Button asChild variant="soft" size="sm">
+                          <Link
+                            to={`/projects/${project.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <Eye className="mr-2 h-4 w-4" />
                             Preview
                           </Link>
                         </Button>
-                        <Button
-                          variant="soft"
-                          size="sm"
-                          onClick={() => handleEditClick(project)}
-                        >
+                        <Button variant="soft" size="sm" onClick={() => handleEditClick(project)}>
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </Button>

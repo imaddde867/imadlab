@@ -12,7 +12,7 @@ const Spinner = ({ size = 'md', variant = 'default', text }: SpinnerProps) => {
   const sizeClasses = {
     sm: 'w-8 h-8',
     md: 'w-12 h-12',
-    lg: 'w-16 h-16'
+    lg: 'w-16 h-16',
   };
 
   const renderSpinner = () => {
@@ -37,12 +37,15 @@ const Spinner = ({ size = 'md', variant = 'default', text }: SpinnerProps) => {
           </div>
         );
       case 'pulse':
-        return (
-          <div className={cn(sizeClasses[size], 'bg-white rounded-full animate-pulse')} />
-        );
+        return <div className={cn(sizeClasses[size], 'bg-white rounded-full animate-pulse')} />;
       default:
         return (
-          <div className={cn(sizeClasses[size], 'border-4 border-white/20 border-t-white rounded-full animate-spin')} />
+          <div
+            className={cn(
+              sizeClasses[size],
+              'border-4 border-white/20 border-t-white rounded-full animate-spin'
+            )}
+          />
         );
     }
   };
@@ -60,27 +63,27 @@ export const CardSkeleton = ({ className }: { className?: string }) => (
   <div className={cn('space-y-4', className)}>
     {/* Image placeholder */}
     <Skeleton className="w-full aspect-[16/9]" />
-    
+
     {/* Title and subtitle */}
     <div className="space-y-2">
       <Skeleton className="h-6 w-3/4" />
       <Skeleton className="h-4 w-1/2" />
     </div>
-    
+
     {/* Tags */}
     <div className="flex gap-2">
       <Skeleton className="h-6 w-16 rounded-full" />
       <Skeleton className="h-6 w-20 rounded-full" />
       <Skeleton className="h-6 w-14 rounded-full" />
     </div>
-    
+
     {/* Description */}
     <div className="space-y-2">
       <Skeleton className="h-4 w-full" />
       <Skeleton className="h-4 w-4/5" />
       <Skeleton className="h-4 w-3/5" />
     </div>
-    
+
     {/* Button */}
     <div className="flex justify-end pt-4">
       <Skeleton className="h-10 w-24 rounded-lg" />
@@ -109,7 +112,11 @@ interface ContentLoaderProps {
 }
 
 // Content area loader
-export const ContentLoader = ({ text = 'Loading content...', variant = 'pulse', className }: ContentLoaderProps) => (
+export const ContentLoader = ({
+  text = 'Loading content...',
+  variant = 'pulse',
+  className,
+}: ContentLoaderProps) => (
   <div className={cn('flex items-center justify-center py-16', className)}>
     <div className="relative flex w-full max-w-md flex-col items-center gap-4 rounded-2xl border border-white/10 bg-white/10 px-10 py-12 text-center shadow-[0_18px_60px_rgba(15,23,42,0.45)] backdrop-blur-xl">
       <Spinner size="md" variant={variant} />
@@ -129,14 +136,16 @@ interface GridSkeletonProps {
 
 // Grid skeleton for multiple cards
 export const GridSkeleton = ({ count = 6, columns = 3, className }: GridSkeletonProps) => (
-  <div className={cn(
-    'grid gap-6',
-    columns === 1 && 'grid-cols-1',
-    columns === 2 && 'grid-cols-1 md:grid-cols-2',
-    columns === 3 && 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
-    columns === 4 && 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-    className
-  )}>
+  <div
+    className={cn(
+      'grid gap-6',
+      columns === 1 && 'grid-cols-1',
+      columns === 2 && 'grid-cols-1 md:grid-cols-2',
+      columns === 3 && 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+      columns === 4 && 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+      className
+    )}
+  >
     {Array.from({ length: count }).map((_, i) => (
       <CardSkeleton key={i} />
     ))}
@@ -153,7 +162,7 @@ export const ButtonLoader = ({ size = 'md', className }: ButtonLoaderProps) => {
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-5 h-5',
-    lg: 'w-6 h-6'
+    lg: 'w-6 h-6',
   };
 
   return (
@@ -162,4 +171,3 @@ export const ButtonLoader = ({ size = 'md', className }: ButtonLoaderProps) => {
     </div>
   );
 };
-

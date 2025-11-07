@@ -10,14 +10,14 @@ export type TrafficSource = 'direct' | 'search' | 'social' | 'referral' | 'email
  */
 export const getBrowserInfo = (userAgent: string): string => {
   const ua = userAgent.toLowerCase();
-  
+
   if (ua.includes('edg/')) return 'Edge';
   if (ua.includes('chrome/') && !ua.includes('edg/')) return 'Chrome';
   if (ua.includes('safari/') && !ua.includes('chrome/')) return 'Safari';
   if (ua.includes('firefox/')) return 'Firefox';
   if (ua.includes('opera/') || ua.includes('opr/')) return 'Opera';
   if (ua.includes('trident/')) return 'IE';
-  
+
   return 'Other';
 };
 
@@ -26,13 +26,13 @@ export const getBrowserInfo = (userAgent: string): string => {
  */
 export const getOSInfo = (userAgent: string): string => {
   const ua = userAgent.toLowerCase();
-  
+
   if (ua.includes('windows nt 10')) return 'Windows 10/11';
   if (ua.includes('windows nt 6.3')) return 'Windows 8.1';
   if (ua.includes('windows nt 6.2')) return 'Windows 8';
   if (ua.includes('windows nt 6.1')) return 'Windows 7';
   if (ua.includes('windows')) return 'Windows';
-  
+
   if (ua.includes('mac os x')) {
     const match = ua.match(/mac os x ([\d_]+)/);
     if (match) {
@@ -41,12 +41,12 @@ export const getOSInfo = (userAgent: string): string => {
     }
     return 'macOS';
   }
-  
+
   if (ua.includes('iphone') || ua.includes('ipad')) return 'iOS';
   if (ua.includes('android')) return 'Android';
   if (ua.includes('linux')) return 'Linux';
   if (ua.includes('cros')) return 'Chrome OS';
-  
+
   return 'Other';
 };
 
@@ -55,22 +55,22 @@ export const getOSInfo = (userAgent: string): string => {
  */
 export const getDeviceType = (userAgent: string, screenWidth?: number): DeviceType => {
   const ua = userAgent.toLowerCase();
-  
+
   // Check user agent first
-  if (ua.includes('mobile') || ua.includes('android') && !ua.includes('tablet')) {
+  if (ua.includes('mobile') || (ua.includes('android') && !ua.includes('tablet'))) {
     return 'mobile';
   }
-  
+
   if (ua.includes('tablet') || ua.includes('ipad')) {
     return 'tablet';
   }
-  
+
   // Use screen width as fallback
   if (screenWidth) {
     if (screenWidth < 768) return 'mobile';
     if (screenWidth < 1024) return 'tablet';
   }
-  
+
   return 'desktop';
 };
 
@@ -80,7 +80,7 @@ export const getDeviceType = (userAgent: string, screenWidth?: number): DeviceTy
 export const extractUTMParams = (url: string) => {
   const urlObj = new URL(url, window.location.origin);
   const params = urlObj.searchParams;
-  
+
   return {
     utm_source: params.get('utm_source') || undefined,
     utm_medium: params.get('utm_medium') || undefined,
@@ -97,11 +97,22 @@ export const getTrafficSource = (referrer: string | null, utmSource?: string): T
   // Check UTM source first
   if (utmSource) {
     const source = utmSource.toLowerCase();
-    if (source.includes('google') || source.includes('bing') || source.includes('yahoo') || source.includes('duckduckgo')) {
+    if (
+      source.includes('google') ||
+      source.includes('bing') ||
+      source.includes('yahoo') ||
+      source.includes('duckduckgo')
+    ) {
       return 'search';
     }
-    if (source.includes('facebook') || source.includes('twitter') || source.includes('linkedin') || 
-        source.includes('instagram') || source.includes('tiktok') || source.includes('reddit')) {
+    if (
+      source.includes('facebook') ||
+      source.includes('twitter') ||
+      source.includes('linkedin') ||
+      source.includes('instagram') ||
+      source.includes('tiktok') ||
+      source.includes('reddit')
+    ) {
       return 'social';
     }
     if (source.includes('email') || source.includes('newsletter')) {
@@ -111,43 +122,54 @@ export const getTrafficSource = (referrer: string | null, utmSource?: string): T
       return 'paid';
     }
   }
-  
+
   // No referrer means direct traffic
   if (!referrer || referrer === '') {
     return 'direct';
   }
-  
+
   // Parse referrer domain
   try {
     const referrerUrl = new URL(referrer);
     const domain = referrerUrl.hostname.toLowerCase();
-    
+
     // Remove www. prefix
     const cleanDomain = domain.replace(/^www\./, '');
-    
+
     // Check if it's the same domain (internal link)
     if (cleanDomain === window.location.hostname.replace(/^www\./, '')) {
       return 'direct';
     }
-    
+
     // Search engines
     const searchEngines = ['google', 'bing', 'yahoo', 'duckduckgo', 'baidu', 'yandex', 'ask'];
-    if (searchEngines.some(engine => domain.includes(engine))) {
+    if (searchEngines.some((engine) => domain.includes(engine))) {
       return 'search';
     }
-    
+
     // Social media
-    const socialPlatforms = ['facebook', 'twitter', 'linkedin', 'instagram', 'tiktok', 'reddit', 
-                             'pinterest', 'youtube', 'snapchat', 'whatsapp', 't.co'];
-    if (socialPlatforms.some(platform => domain.includes(platform))) {
+    const socialPlatforms = [
+      'facebook',
+      'twitter',
+      'linkedin',
+      'instagram',
+      'tiktok',
+      'reddit',
+      'pinterest',
+      'youtube',
+      'snapchat',
+      'whatsapp',
+      't.co',
+    ];
+    if (socialPlatforms.some((platform) => domain.includes(platform))) {
       return 'social';
     }
-    
+
     // Email clients
     if (domain.includes('mail') || domain.includes('outlook') || domain.includes('gmail')) {
       return 'email';
     }
-    
+
     // Everything else is referral
     return 'referral';
   } catch {
@@ -166,7 +188,11 @@ export const getScreenResolution = (): string => {
  * Get browser language
  */
 export const getBrowserLanguage = (): string => {
-  return navigator.language || (navigator as Navigator & { userLanguage?: string }).userLanguage || 'en-US';
+  return (
+    navigator.language ||
+    (navigator as Navigator & { userLanguage?: string }).userLanguage ||
+    'en-US'
+  );
 };
 
 /**
@@ -186,7 +212,7 @@ export const getGeolocation = (): Promise<{ latitude: number; longitude: number 
       resolve(null);
       return;
     }
-    
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         resolve({
@@ -211,7 +237,7 @@ export const getGeolocation = (): Promise<{ latitude: number; longitude: number 
 export const getAnalyticsMetadata = async () => {
   const userAgent = navigator.userAgent;
   const screenWidth = window.screen.width;
-  
+
   const metadata = {
     device_type: getDeviceType(userAgent, screenWidth),
     browser: getBrowserInfo(userAgent),
@@ -221,6 +247,6 @@ export const getAnalyticsMetadata = async () => {
     timezone: getTimezone(),
     user_agent: userAgent,
   };
-  
+
   return metadata;
 };

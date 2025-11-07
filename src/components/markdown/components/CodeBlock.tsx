@@ -95,9 +95,10 @@ export const CodeBlock = ({ code, language, meta }: CodeBlockProps) => {
 
   useEffect(() => {
     let cancelled = false;
-    if (!isIntersecting) return () => {
-      cancelled = true;
-    };
+    if (!isIntersecting)
+      return () => {
+        cancelled = true;
+      };
 
     const shouldHighlight = Boolean(language && normalizedCode.length < 200000);
     if (!shouldHighlight) {

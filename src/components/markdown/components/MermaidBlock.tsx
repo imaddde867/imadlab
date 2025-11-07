@@ -36,13 +36,15 @@ export const MermaidBlock = ({ code, maxDiagramSizeKB }: MermaidBlockProps) => {
 
   useEffect(() => {
     let cancelled = false;
-    if (!isIntersecting) return () => {
-      cancelled = true;
-    };
+    if (!isIntersecting)
+      return () => {
+        cancelled = true;
+      };
 
-    const sizeInKb = typeof TextEncoder !== 'undefined'
-      ? new TextEncoder().encode(code).length / 1024
-      : code.length / 1024;
+    const sizeInKb =
+      typeof TextEncoder !== 'undefined'
+        ? new TextEncoder().encode(code).length / 1024
+        : code.length / 1024;
     if (sizeInKb > maxDiagramSizeKB) {
       setError(`Diagram exceeds the ${maxDiagramSizeKB} KB limit (${sizeInKb.toFixed(1)} KB).`);
       return undefined;

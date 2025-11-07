@@ -22,21 +22,20 @@ const Extras = () => {
       setError(null);
       const hadCacheBeforeFetch = StravaCache.hasFreshCache();
       const cacheAgeBeforeFetch = StravaCache.getCacheAge();
-      
+
       const [statsData, activitiesData] = await Promise.all([
         stravaClient.getAthleteStats(),
         stravaClient.getRecentActivities(5),
       ]);
-      
+
       setStats(statsData);
       setActivities(activitiesData);
-      
+
       // Check if we're using cached data
       const cacheAgeAfterFetch = StravaCache.getCacheAge();
       const usedCache = hadCacheBeforeFetch && cacheAgeBeforeFetch === cacheAgeAfterFetch;
       setIsUsingCache(usedCache);
       setCacheAge(cacheAgeAfterFetch);
-      
     } catch (err) {
       // Even if there's an error, try to load from cache
       const cachedData = StravaCache.get();
@@ -61,13 +60,14 @@ const Extras = () => {
   return (
     <div className="min-h-screen bg-black text-white relative pt-14">
       {/* Background gradient */}
-      <div 
+      <div
         className="fixed inset-0 pointer-events-none opacity-30"
         style={{
-          background: 'radial-gradient(1200px circle at 50% 10%, rgba(255,255,255,0.05), transparent 60%)',
+          background:
+            'radial-gradient(1200px circle at 50% 10%, rgba(255,255,255,0.05), transparent 60%)',
         }}
       />
-      
+
       <Seo
         title="Running Journey"
         description="Follow my running journey - every mile, every achievement, every step forward"
@@ -78,10 +78,7 @@ const Extras = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-24 relative z-10">
         <div className="flex items-start justify-between gap-4">
-          <SectionHeader
-            title="Beyond Code"
-            subtitle={<>I LOVE running</>}
-          />
+          <SectionHeader title="Beyond Code" subtitle={<>I LOVE running</>} />
           <a
             href="https://www.strava.com/athletes/124531733"
             target="_blank"
@@ -89,7 +86,7 @@ const Extras = () => {
             className="flex items-center gap-2.5 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/20 hover:border-[#FC4C02]/40 rounded-lg transition-all font-medium text-sm group"
           >
             <svg className="w-5 h-5 text-[#FC4C02]" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+              <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" />
             </svg>
             <span>View on Strava</span>
             <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -110,7 +107,7 @@ const Extras = () => {
             </span>
           </div>
         )}
-        
+
         {loading ? (
           <div className="mt-12">
             <RunningPageSkeleton />
@@ -164,4 +161,3 @@ const Extras = () => {
 };
 
 export default Extras;
-

@@ -5,7 +5,17 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ContentLoader } from '@/components/ui/LoadingStates';
-import { Eye, Users, Clock, TrendingUp, RefreshCw, Globe, Smartphone, Chrome, MapPin } from 'lucide-react';
+import {
+  Eye,
+  Users,
+  Clock,
+  TrendingUp,
+  RefreshCw,
+  Globe,
+  Smartphone,
+  Chrome,
+  MapPin,
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 type PageView = {
@@ -83,7 +93,7 @@ const AnalyticsDashboard = () => {
     setLoading(true);
     setCursorError(null);
     setTotalViewCount(null);
-    
+
     const now = new Date();
     const timeRanges = {
       '24h': new Date(now.getTime() - 24 * 60 * 60 * 1000),
@@ -144,7 +154,9 @@ const AnalyticsDashboard = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         navigate('/admin/login');
         toast({
@@ -165,35 +177,43 @@ const AnalyticsDashboard = () => {
   }, [timeRange]);
 
   const totalViews = totalViewCount ?? pageViews.length;
-  const uniqueVisitors = new Set(pageViews.map(v => v.session_id)).size;
+  const uniqueVisitors = new Set(pageViews.map((v) => v.session_id)).size;
   const avgDuration = useMemo(() => {
-    const withDuration = pageViews.filter(v => v.duration);
-    return withDuration.length ? withDuration.reduce((acc, v) => acc + (v.duration || 0), 0) / withDuration.length : 0;
+    const withDuration = pageViews.filter((v) => v.duration);
+    return withDuration.length
+      ? withDuration.reduce((acc, v) => acc + (v.duration || 0), 0) / withDuration.length
+      : 0;
   }, [pageViews]);
 
   // Calculate bounce rate (sessions with only 1 page view)
   const bounceRate = useMemo(() => {
-    const sessionViewCounts = pageViews.reduce((acc, view) => {
-      if (view.session_id) {
-        acc[view.session_id] = (acc[view.session_id] || 0) + 1;
-      }
-      return acc;
-    }, {} as Record<string, number>);
-    
+    const sessionViewCounts = pageViews.reduce(
+      (acc, view) => {
+        if (view.session_id) {
+          acc[view.session_id] = (acc[view.session_id] || 0) + 1;
+        }
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
     const totalSessions = Object.keys(sessionViewCounts).length;
-    const bouncedSessions = Object.values(sessionViewCounts).filter(count => count === 1).length;
-    
+    const bouncedSessions = Object.values(sessionViewCounts).filter((count) => count === 1).length;
+
     return totalSessions > 0 ? (bouncedSessions / totalSessions) * 100 : 0;
   }, [pageViews]);
 
   // Traffic source breakdown
   const trafficSourceStats = useMemo(() => {
-    const sources = pageViews.reduce((acc, view) => {
-      const source = view.traffic_source || 'unknown';
-      acc[source] = (acc[source] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
+    const sources = pageViews.reduce(
+      (acc, view) => {
+        const source = view.traffic_source || 'unknown';
+        acc[source] = (acc[source] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
     return Object.entries(sources)
       .map(([source, count]) => ({ source, count }))
       .sort((a, b) => b.count - a.count);
@@ -201,12 +221,15 @@ const AnalyticsDashboard = () => {
 
   // Device type breakdown
   const deviceStats = useMemo(() => {
-    const devices = pageViews.reduce((acc, view) => {
-      const device = view.device_type || 'unknown';
-      acc[device] = (acc[device] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
+    const devices = pageViews.reduce(
+      (acc, view) => {
+        const device = view.device_type || 'unknown';
+        acc[device] = (acc[device] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
     return Object.entries(devices)
       .map(([device, count]) => ({ device, count }))
       .sort((a, b) => b.count - a.count);
@@ -214,12 +237,15 @@ const AnalyticsDashboard = () => {
 
   // Browser breakdown
   const browserStats = useMemo(() => {
-    const browsers = pageViews.reduce((acc, view) => {
-      const browser = view.browser || 'unknown';
-      acc[browser] = (acc[browser] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
+    const browsers = pageViews.reduce(
+      (acc, view) => {
+        const browser = view.browser || 'unknown';
+        acc[browser] = (acc[browser] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
     return Object.entries(browsers)
       .map(([browser, count]) => ({ browser, count }))
       .sort((a, b) => b.count - a.count);
@@ -227,12 +253,15 @@ const AnalyticsDashboard = () => {
 
   // OS breakdown
   const osStats = useMemo(() => {
-    const systems = pageViews.reduce((acc, view) => {
-      const os = view.os || 'unknown';
-      acc[os] = (acc[os] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
+    const systems = pageViews.reduce(
+      (acc, view) => {
+        const os = view.os || 'unknown';
+        acc[os] = (acc[os] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
     return Object.entries(systems)
       .map(([os, count]) => ({ os, count }))
       .sort((a, b) => b.count - a.count);
@@ -240,12 +269,15 @@ const AnalyticsDashboard = () => {
 
   // Geographic breakdown (country)
   const countryStats = useMemo(() => {
-    const countries = pageViews.reduce((acc, view) => {
-      const country = view.country || 'unknown';
-      acc[country] = (acc[country] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
+    const countries = pageViews.reduce(
+      (acc, view) => {
+        const country = view.country || 'unknown';
+        acc[country] = (acc[country] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
     return Object.entries(countries)
       .map(([country, count]) => ({ country, count }))
       .sort((a, b) => b.count - a.count);
@@ -254,18 +286,21 @@ const AnalyticsDashboard = () => {
   // Top referrers
   const referrerStats = useMemo(() => {
     const referrers = pageViews
-      .filter(view => view.referrer && view.referrer !== '')
-      .reduce((acc, view) => {
-        try {
-          const url = new URL(view.referrer!);
-          const domain = url.hostname.replace(/^www\./, '');
-          acc[domain] = (acc[domain] || 0) + 1;
-        } catch {
-          acc['unknown'] = (acc['unknown'] || 0) + 1;
-        }
-        return acc;
-      }, {} as Record<string, number>);
-    
+      .filter((view) => view.referrer && view.referrer !== '')
+      .reduce(
+        (acc, view) => {
+          try {
+            const url = new URL(view.referrer!);
+            const domain = url.hostname.replace(/^www\./, '');
+            acc[domain] = (acc[domain] || 0) + 1;
+          } catch {
+            acc['unknown'] = (acc['unknown'] || 0) + 1;
+          }
+          return acc;
+        },
+        {} as Record<string, number>
+      );
+
     return Object.entries(referrers)
       .map(([referrer, count]) => ({ referrer, count }))
       .sort((a, b) => b.count - a.count)
@@ -275,43 +310,53 @@ const AnalyticsDashboard = () => {
   // UTM Campaign performance
   const campaignStats = useMemo(() => {
     const campaigns = pageViews
-      .filter(view => view.utm_campaign)
-      .reduce((acc, view) => {
-        const campaign = view.utm_campaign!;
-        if (!acc[campaign]) {
-          acc[campaign] = { views: 0, sessions: new Set() };
-        }
-        acc[campaign].views++;
-        if (view.session_id) acc[campaign].sessions.add(view.session_id);
-        return acc;
-      }, {} as Record<string, { views: number; sessions: Set<string> }>);
-    
+      .filter((view) => view.utm_campaign)
+      .reduce(
+        (acc, view) => {
+          const campaign = view.utm_campaign!;
+          if (!acc[campaign]) {
+            acc[campaign] = { views: 0, sessions: new Set() };
+          }
+          acc[campaign].views++;
+          if (view.session_id) acc[campaign].sessions.add(view.session_id);
+          return acc;
+        },
+        {} as Record<string, { views: number; sessions: Set<string> }>
+      );
+
     return Object.entries(campaigns)
-      .map(([campaign, data]) => ({ 
-        campaign, 
+      .map(([campaign, data]) => ({
+        campaign,
         views: data.views,
-        visitors: data.sessions.size 
+        visitors: data.sessions.size,
       }))
       .sort((a, b) => b.views - a.views);
   }, [pageViews]);
 
   const pathStats: PathStats[] = useMemo(() => {
     return Object.entries(
-      pageViews.reduce((acc, view) => {
-        if (!acc[view.path]) {
-          acc[view.path] = { views: 0, sessions: new Set(), durations: [] };
-        }
-        acc[view.path].views++;
-        if (view.session_id) acc[view.path].sessions.add(view.session_id);
-        if (view.duration) acc[view.path].durations.push(view.duration);
-        return acc;
-      }, {} as Record<string, { views: number; sessions: Set<string>; durations: number[] }>)
-    ).map(([path, data]) => ({
-      path,
-      views: data.views,
-      uniqueVisitors: data.sessions.size,
-      avgDuration: data.durations.length ? data.durations.reduce((a, b) => a + b, 0) / data.durations.length : 0,
-    })).sort((a, b) => b.views - a.views);
+      pageViews.reduce(
+        (acc, view) => {
+          if (!acc[view.path]) {
+            acc[view.path] = { views: 0, sessions: new Set(), durations: [] };
+          }
+          acc[view.path].views++;
+          if (view.session_id) acc[view.path].sessions.add(view.session_id);
+          if (view.duration) acc[view.path].durations.push(view.duration);
+          return acc;
+        },
+        {} as Record<string, { views: number; sessions: Set<string>; durations: number[] }>
+      )
+    )
+      .map(([path, data]) => ({
+        path,
+        views: data.views,
+        uniqueVisitors: data.sessions.size,
+        avgDuration: data.durations.length
+          ? data.durations.reduce((a, b) => a + b, 0) / data.durations.length
+          : 0,
+      }))
+      .sort((a, b) => b.views - a.views);
   }, [pageViews]);
 
   const formatDuration = (seconds: number) => {
@@ -321,14 +366,34 @@ const AnalyticsDashboard = () => {
   };
 
   const overviewStats = [
-    { label: 'Total Views', value: totalViews.toLocaleString(), icon: <Eye className="h-5 w-5 text-white/60" /> },
-    { label: 'Unique Visitors', value: uniqueVisitors.toLocaleString(), icon: <Users className="h-5 w-5 text-white/60" /> },
-    { label: 'Avg. Duration', value: formatDuration(avgDuration), icon: <Clock className="h-5 w-5 text-white/60" /> },
-    { label: 'Bounce Rate', value: `${bounceRate.toFixed(1)}%`, icon: <TrendingUp className="h-5 w-5 text-white/60" /> },
+    {
+      label: 'Total Views',
+      value: totalViews.toLocaleString(),
+      icon: <Eye className="h-5 w-5 text-white/60" />,
+    },
+    {
+      label: 'Unique Visitors',
+      value: uniqueVisitors.toLocaleString(),
+      icon: <Users className="h-5 w-5 text-white/60" />,
+    },
+    {
+      label: 'Avg. Duration',
+      value: formatDuration(avgDuration),
+      icon: <Clock className="h-5 w-5 text-white/60" />,
+    },
+    {
+      label: 'Bounce Rate',
+      value: `${bounceRate.toFixed(1)}%`,
+      icon: <TrendingUp className="h-5 w-5 text-white/60" />,
+    },
   ];
 
   const headerMeta = [
-    { label: 'Time Range', value: timeRange === '24h' ? 'Last 24 Hours' : timeRange === '7d' ? 'Last 7 Days' : 'Last 30 Days' },
+    {
+      label: 'Time Range',
+      value:
+        timeRange === '24h' ? 'Last 24 Hours' : timeRange === '7d' ? 'Last 7 Days' : 'Last 30 Days',
+    },
     { label: 'Page Views', value: totalViews.toLocaleString() },
   ];
 
@@ -345,11 +410,7 @@ const AnalyticsDashboard = () => {
           ]}
           meta={headerMeta}
           actions={
-            <Button
-              variant="soft"
-              onClick={fetchAnalytics}
-              disabled={loading}
-            >
+            <Button variant="soft" onClick={fetchAnalytics} disabled={loading}>
               <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
@@ -427,14 +488,16 @@ const AnalyticsDashboard = () => {
                                 {source}
                               </span>
                               <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div 
+                                <div
                                   className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all"
                                   style={{ width: `${percentage}%` }}
                                 />
                               </div>
                             </div>
                             <div className="flex items-center gap-3 ml-4">
-                              <span className="text-sm text-white/70 min-w-12 text-right">{percentage}%</span>
+                              <span className="text-sm text-white/70 min-w-12 text-right">
+                                {percentage}%
+                              </span>
                               <span className="text-sm font-semibold text-white min-w-12 text-right">
                                 {count.toLocaleString()}
                               </span>
@@ -474,14 +537,16 @@ const AnalyticsDashboard = () => {
                                 {device}
                               </span>
                               <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div 
+                                <div
                                   className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all"
                                   style={{ width: `${percentage}%` }}
                                 />
                               </div>
                             </div>
                             <div className="flex items-center gap-3 ml-4">
-                              <span className="text-sm text-white/70 min-w-12 text-right">{percentage}%</span>
+                              <span className="text-sm text-white/70 min-w-12 text-right">
+                                {percentage}%
+                              </span>
                               <span className="text-sm font-semibold text-white min-w-12 text-right">
                                 {count.toLocaleString()}
                               </span>
@@ -523,14 +588,16 @@ const AnalyticsDashboard = () => {
                                 {browser}
                               </span>
                               <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div 
+                                <div
                                   className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all"
                                   style={{ width: `${percentage}%` }}
                                 />
                               </div>
                             </div>
                             <div className="flex items-center gap-3 ml-4">
-                              <span className="text-sm text-white/70 min-w-12 text-right">{percentage}%</span>
+                              <span className="text-sm text-white/70 min-w-12 text-right">
+                                {percentage}%
+                              </span>
                               <span className="text-sm font-semibold text-white min-w-12 text-right">
                                 {count.toLocaleString()}
                               </span>
@@ -545,9 +612,7 @@ const AnalyticsDashboard = () => {
 
               <Card className={SECTION_CARD_CLASS}>
                 <CardHeader className={`${SECTION_HEADER_CLASS} space-y-1`}>
-                  <CardTitle className={SECTION_TITLE_CLASS}>
-                    Operating Systems
-                  </CardTitle>
+                  <CardTitle className={SECTION_TITLE_CLASS}>Operating Systems</CardTitle>
                   <CardDescription className={SECTION_DESCRIPTION_CLASS}>
                     OS distribution
                   </CardDescription>
@@ -566,14 +631,16 @@ const AnalyticsDashboard = () => {
                                 {os}
                               </span>
                               <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div 
+                                <div
                                   className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full transition-all"
                                   style={{ width: `${percentage}%` }}
                                 />
                               </div>
                             </div>
                             <div className="flex items-center gap-3 ml-4">
-                              <span className="text-sm text-white/70 min-w-12 text-right">{percentage}%</span>
+                              <span className="text-sm text-white/70 min-w-12 text-right">
+                                {percentage}%
+                              </span>
                               <span className="text-sm font-semibold text-white min-w-12 text-right">
                                 {count.toLocaleString()}
                               </span>
@@ -588,7 +655,7 @@ const AnalyticsDashboard = () => {
             </div>
 
             {/* Geographic Distribution */}
-            {countryStats.filter(s => s.country !== 'unknown').length > 0 && (
+            {countryStats.filter((s) => s.country !== 'unknown').length > 0 && (
               <Card className={SECTION_CARD_CLASS}>
                 <CardHeader className={`${SECTION_HEADER_CLASS} space-y-1`}>
                   <CardTitle className={SECTION_TITLE_CLASS}>
@@ -603,20 +670,26 @@ const AnalyticsDashboard = () => {
                 </CardHeader>
                 <CardContent className={`${SECTION_CONTENT_CLASS} pt-4`}>
                   <div className="grid gap-3 md:grid-cols-2">
-                    {countryStats.filter(s => s.country !== 'unknown').slice(0, 10).map(({ country, count }) => {
-                      const percentage = ((count / totalViews) * 100).toFixed(1);
-                      return (
-                        <div key={country} className="flex items-center justify-between p-3 rounded-lg bg-white/5">
-                          <span className="text-sm font-medium text-white/90">{country}</span>
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm text-white/70">{percentage}%</span>
-                            <span className="text-sm font-semibold text-white min-w-12 text-right">
-                              {count.toLocaleString()}
-                            </span>
+                    {countryStats
+                      .filter((s) => s.country !== 'unknown')
+                      .slice(0, 10)
+                      .map(({ country, count }) => {
+                        const percentage = ((count / totalViews) * 100).toFixed(1);
+                        return (
+                          <div
+                            key={country}
+                            className="flex items-center justify-between p-3 rounded-lg bg-white/5"
+                          >
+                            <span className="text-sm font-medium text-white/90">{country}</span>
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm text-white/70">{percentage}%</span>
+                              <span className="text-sm font-semibold text-white min-w-12 text-right">
+                                {count.toLocaleString()}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
                   </div>
                 </CardContent>
               </Card>
@@ -634,7 +707,10 @@ const AnalyticsDashboard = () => {
                 <CardContent className={`${SECTION_CONTENT_CLASS} pt-4`}>
                   <div className="grid gap-3 md:grid-cols-2">
                     {referrerStats.map(({ referrer, count }) => (
-                      <div key={referrer} className="flex items-center justify-between p-3 rounded-lg bg-white/5">
+                      <div
+                        key={referrer}
+                        className="flex items-center justify-between p-3 rounded-lg bg-white/5"
+                      >
                         <span className="text-sm font-mono text-white/90 truncate max-w-[200px]">
                           {referrer}
                         </span>
@@ -669,10 +745,17 @@ const AnalyticsDashboard = () => {
                       </thead>
                       <tbody>
                         {campaignStats.map(({ campaign, views, visitors }) => (
-                          <tr key={campaign} className="border-b border-white/5 hover:bg-white/5 transition">
+                          <tr
+                            key={campaign}
+                            className="border-b border-white/5 hover:bg-white/5 transition"
+                          >
                             <td className="py-3 px-4 text-sm text-white/90">{campaign}</td>
-                            <td className="py-3 px-4 text-right text-white/90">{views.toLocaleString()}</td>
-                            <td className="py-3 px-4 text-right text-white/90">{visitors.toLocaleString()}</td>
+                            <td className="py-3 px-4 text-right text-white/90">
+                              {views.toLocaleString()}
+                            </td>
+                            <td className="py-3 px-4 text-right text-white/90">
+                              {visitors.toLocaleString()}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -706,11 +789,22 @@ const AnalyticsDashboard = () => {
                       </thead>
                       <tbody>
                         {pathStats.map((stat) => (
-                          <tr key={stat.path} className="border-b border-white/5 hover:bg-white/5 transition">
-                            <td className="py-3 px-4 font-mono text-sm text-white/90">{stat.path}</td>
-                            <td className="py-3 px-4 text-right text-white/90">{stat.views.toLocaleString()}</td>
-                            <td className="py-3 px-4 text-right text-white/90">{stat.uniqueVisitors.toLocaleString()}</td>
-                            <td className="py-3 px-4 text-right text-white/70">{formatDuration(stat.avgDuration)}</td>
+                          <tr
+                            key={stat.path}
+                            className="border-b border-white/5 hover:bg-white/5 transition"
+                          >
+                            <td className="py-3 px-4 font-mono text-sm text-white/90">
+                              {stat.path}
+                            </td>
+                            <td className="py-3 px-4 text-right text-white/90">
+                              {stat.views.toLocaleString()}
+                            </td>
+                            <td className="py-3 px-4 text-right text-white/90">
+                              {stat.uniqueVisitors.toLocaleString()}
+                            </td>
+                            <td className="py-3 px-4 text-right text-white/70">
+                              {formatDuration(stat.avgDuration)}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -760,14 +854,21 @@ const AnalyticsDashboard = () => {
                         <thead>
                           <tr className="text-xs uppercase tracking-widest text-white/70 border-b border-white/10">
                             <th className="text-left py-3 px-4 font-semibold">Cursor Name</th>
-                            <th className="text-left py-3 px-4 font-semibold hidden md:table-cell">Session ID</th>
-                            <th className="text-left py-3 px-4 font-semibold hidden lg:table-cell">User Agent</th>
+                            <th className="text-left py-3 px-4 font-semibold hidden md:table-cell">
+                              Session ID
+                            </th>
+                            <th className="text-left py-3 px-4 font-semibold hidden lg:table-cell">
+                              User Agent
+                            </th>
                             <th className="text-left py-3 px-4 font-semibold">Updated</th>
                           </tr>
                         </thead>
                         <tbody>
                           {cursorEntries.map((entry) => (
-                            <tr key={entry.session_id} className="border-b border-white/5 hover:bg-white/5 transition">
+                            <tr
+                              key={entry.session_id}
+                              className="border-b border-white/5 hover:bg-white/5 transition"
+                            >
                               <td className="py-3 px-4 text-white/90">
                                 {entry.cursor_name && entry.cursor_name.trim().length > 0 ? (
                                   entry.cursor_name

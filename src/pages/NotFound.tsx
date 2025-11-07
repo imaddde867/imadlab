@@ -11,7 +11,7 @@ const NotFound = () => (
       schemaType="WebPage"
       breadcrumbs={[
         { name: 'Home', path: '/' },
-        { name: '404', path: '/404' }
+        { name: '404', path: '/404' },
       ]}
     />
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8 pt-14">

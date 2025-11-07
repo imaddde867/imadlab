@@ -23,4 +23,3 @@ const BackRow = ({ to, label, icon, right }: BackRowProps) => {
 };
 
 export default BackRow;
-

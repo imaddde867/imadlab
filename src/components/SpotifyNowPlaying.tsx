@@ -18,7 +18,9 @@ const SpotifyNowPlaying: React.FC = () => {
   useEffect(() => {
     const fetchSpotifyData = async () => {
       try {
-        const response = await fetch('https://mpkgugcasxpanhrkpkhs.supabase.co/functions/v1/spotify-now-playing');
+        const response = await fetch(
+          'https://mpkgugcasxpanhrkpkhs.supabase.co/functions/v1/spotify-now-playing'
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

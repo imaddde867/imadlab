@@ -3,16 +3,12 @@ import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { isAllowed } from '@/lib/consent';
 import { logger } from '@/lib/logger';
-import { 
-  getAnalyticsMetadata, 
-  extractUTMParams, 
-  getTrafficSource 
-} from '@/lib/analytics-utils';
+import { getAnalyticsMetadata, extractUTMParams, getTrafficSource } from '@/lib/analytics-utils';
 
 const generateSessionId = (): string => {
   const stored = sessionStorage.getItem('analytics_session_id');
   if (stored) return stored;
-  
+
   const newId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   sessionStorage.setItem('analytics_session_id', newId);
   return newId;
@@ -32,12 +28,11 @@ export const useAnalytics = () => {
     // Create or update session
     const initSession = async () => {
       const metadata = await getAnalyticsMetadata();
-      
+
       logger.debug('📊 Analytics metadata collected:', metadata);
-      
-      const { error } = await supabase
-        .from('visitor_sessions')
-        .upsert({
+
+      const { error } = await supabase.from('visitor_sessions').upsert(
+        {
           session_id: sessionId,
           last_activity: new Date().toISOString(),
           user_agent: metadata.user_agent,
@@ -47,20 +42,25 @@ export const useAnalytics = () => {
           screen_resolution: metadata.screen_resolution,
           language: metadata.language,
           timezone: metadata.timezone,
-        }, { onConflict: 'session_id' });
+        },
+        { onConflict: 'session_id' }
+      );
 
       if (error) {
         logger.error('❌ Analytics session error:', error);
       } else {
         logger.debug('✅ Analytics session created/updated:', sessionId);
         sessionInitialized.current = true;
-        
+
         // Call geolocation edge function to enrich session with location data
         try {
-          const { data: functionData, error: functionError } = await supabase.functions.invoke('geolocation', {
-            body: { session_id: sessionId }
-          });
-          
+          const { data: functionData, error: functionError } = await supabase.functions.invoke(
+            'geolocation',
+            {
+              body: { session_id: sessionId },
+            }
+          );
+
           if (functionError) {
             logger.warn('⚠️ Geolocation function error:', functionError);
           } else if (functionData?.location) {
@@ -87,16 +87,16 @@ export const useAnalytics = () => {
       // Wait for session to be initialized if not ready yet
       let attempts = 0;
       while (!sessionInitialized.current && attempts < 10) {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         attempts++;
       }
 
       // Get analytics metadata
       const metadata = await getAnalyticsMetadata();
-      
+
       // Extract UTM parameters from current URL
       const utmParams = extractUTMParams(window.location.href);
-      
+
       // Determine traffic source
       const referrer = document.referrer || null;
       const trafficSource = getTrafficSource(referrer, utmParams.utm_source);
@@ -108,25 +108,23 @@ export const useAnalytics = () => {
         browser: metadata.browser,
         os: metadata.os,
         referrer,
-        ...utmParams
+        ...utmParams,
       });
 
-      const { error } = await supabase
-        .from('page_views')
-        .insert({
-          session_id: sessionId,
-          path: location.pathname,
-          referrer: referrer,
-          traffic_source: trafficSource,
-          utm_source: utmParams.utm_source || null,
-          utm_medium: utmParams.utm_medium || null,
-          utm_campaign: utmParams.utm_campaign || null,
-          utm_term: utmParams.utm_term || null,
-          utm_content: utmParams.utm_content || null,
-          device_type: metadata.device_type,
-          browser: metadata.browser,
-          os: metadata.os,
-        });
+      const { error } = await supabase.from('page_views').insert({
+        session_id: sessionId,
+        path: location.pathname,
+        referrer: referrer,
+        traffic_source: trafficSource,
+        utm_source: utmParams.utm_source || null,
+        utm_medium: utmParams.utm_medium || null,
+        utm_campaign: utmParams.utm_campaign || null,
+        utm_term: utmParams.utm_term || null,
+        utm_content: utmParams.utm_content || null,
+        device_type: metadata.device_type,
+        browser: metadata.browser,
+        os: metadata.os,
+      });
 
       if (error) {
         logger.error('❌ Analytics page view error:', error);

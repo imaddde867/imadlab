@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\"",
+    "analyze": "ANALYZE=true vite build",
     "prebuild": "node scripts/generate-sitemap.js && node scripts/generate-feed.js",
     "build": "vite build && cp dist/index.html dist/404.html",
     "postbuild": "node scripts/prerender.js",
@@ -64,6 +67,8 @@
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
     "postcss": "^8.4.47",
+    "prettier": "^3.6.2",
+    "rollup-plugin-visualizer": "^5.14.0",
     "tailwindcss": "^3.4.11",
     "terser": "^5.44.0",
     "typescript": "^5.5.3",

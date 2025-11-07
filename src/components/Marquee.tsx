@@ -44,10 +44,7 @@ const Marquee = ({ words, speed = 'normal' }: MarqueeProps) => {
           will-change: transform;
         }
       `}</style>
-      <div
-        className="flex whitespace-nowrap animate-marquee"
-        style={{ animationDelay }}
-      >
+      <div className="flex whitespace-nowrap animate-marquee" style={{ animationDelay }}>
         {/* Duplicate content to create seamless loop */}
         {[...shuffledWords, ...shuffledWords].map((word, index) => (
           <span

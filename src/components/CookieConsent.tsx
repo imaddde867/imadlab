@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { acceptAll, rejectAll, setConsent, getConsent, ConsentState } from '@/lib/consent';
 
 declare global {
@@ -27,7 +33,11 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
       // Set all to true by default when no decision has been made
       setPrefs({ analytics: true, marketing: true, functional: true });
     } else {
-      setPrefs({ analytics: current.analytics, marketing: current.marketing, functional: current.functional });
+      setPrefs({
+        analytics: current.analytics,
+        marketing: current.marketing,
+        functional: current.functional,
+      });
     }
     // expose global opener for footer or settings link
     if (typeof window !== 'undefined') {
@@ -48,15 +58,35 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
   };
 
   const handleSavePrefs = () => {
-    setConsent({ analytics: prefs.analytics, marketing: prefs.marketing, functional: prefs.functional });
+    setConsent({
+      analytics: prefs.analytics,
+      marketing: prefs.marketing,
+      functional: prefs.functional,
+    });
     onOpenChange(false);
     setShowBanner(false);
   };
 
-  const Toggle = ({ id, label, desc, disabled, checked, onChange }: { id: string; label: string; desc: string; disabled?: boolean; checked: boolean; onChange: (v: boolean) => void }) => (
+  const Toggle = ({
+    id,
+    label,
+    desc,
+    disabled,
+    checked,
+    onChange,
+  }: {
+    id: string;
+    label: string;
+    desc: string;
+    disabled?: boolean;
+    checked: boolean;
+    onChange: (v: boolean) => void;
+  }) => (
     <div className="flex items-start justify-between gap-4 py-3">
       <div>
-        <label htmlFor={id} className="font-medium text-white">{label}</label>
+        <label htmlFor={id} className="font-medium text-white">
+          {label}
+        </label>
         <p className="text-white/60 text-sm mt-1">{desc}</p>
       </div>
       <button
@@ -67,7 +97,11 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
         disabled={!!disabled}
         onClick={() => onChange(!checked)}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-enhanced border ${
-          disabled ? 'bg-white/10 border-white/10 cursor-not-allowed' : checked ? 'bg-white/80 border-white/80' : 'bg-white/20 border-white/20'
+          disabled
+            ? 'bg-white/10 border-white/10 cursor-not-allowed'
+            : checked
+              ? 'bg-white/80 border-white/80'
+              : 'bg-white/20 border-white/20'
         }`}
       >
         <span
@@ -87,14 +121,24 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
               <div className="flex-1">
                 <p className="text-white font-semibold mb-1">We value your privacy</p>
                 <p className="text-white/70 text-sm leading-relaxed">
-                  We use cookies to enhance your browsing experience, provide basic functionality, and to understand traffic. You can accept all, reject non-essential, or manage preferences.
+                  We use cookies to enhance your browsing experience, provide basic functionality,
+                  and to understand traffic. You can accept all, reject non-essential, or manage
+                  preferences.
                 </p>
               </div>
               <div className="flex gap-2 md:ml-4">
-                <Button variant="ghost" className="bg-white/10 hover:bg-white/20 text-white" onClick={() => onOpenChange(true)}>
+                <Button
+                  variant="ghost"
+                  className="bg-white/10 hover:bg-white/20 text-white"
+                  onClick={() => onOpenChange(true)}
+                >
                   Manage
                 </Button>
-                <Button variant="ghost" className="bg-white/5 hover:bg-white/15 text-white" onClick={handleRejectAll}>
+                <Button
+                  variant="ghost"
+                  className="bg-white/5 hover:bg-white/15 text-white"
+                  onClick={handleRejectAll}
+                >
                   Reject
                 </Button>
                 <Button className="bg-white text-black hover:bg-white/90" onClick={handleAcceptAll}>
@@ -149,8 +193,16 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
           </div>
 
           <div className="mt-6 flex justify-end gap-2">
-            <Button variant="ghost" className="bg-white/5 hover:bg-white/15 text-white" onClick={handleRejectAll}>Reject all</Button>
-            <Button className="bg-white text-black hover:bg-white/90" onClick={handleSavePrefs}>Save preferences</Button>
+            <Button
+              variant="ghost"
+              className="bg-white/5 hover:bg-white/15 text-white"
+              onClick={handleRejectAll}
+            >
+              Reject all
+            </Button>
+            <Button className="bg-white text-black hover:bg-white/90" onClick={handleSavePrefs}>
+              Save preferences
+            </Button>
           </div>
 
           <p className="mt-3 text-xs text-white/50">

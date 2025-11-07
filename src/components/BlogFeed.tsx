@@ -21,21 +21,23 @@ interface Post {
 
 const BlogFeed = () => {
   const initialPosts = useMemo(() => readPrerenderData<Post[]>('posts'), []);
-  const initialUpdatedAt = useRef<number | undefined>(
-    initialPosts ? Date.now() : undefined
-  );
+  const initialUpdatedAt = useRef<number | undefined>(initialPosts ? Date.now() : undefined);
   const { ref: sectionRef, isIntersecting } = useIntersectionObserver<HTMLDivElement>({
     rootMargin: '200px',
   });
 
-  const { data: posts = initialPosts ?? [], isLoading, isFetching } = useQuery({
+  const {
+    data: posts = initialPosts ?? [],
+    isLoading,
+    isFetching,
+  } = useQuery({
     queryKey: ['posts'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
         .select('id, title, slug, excerpt, tags, published_date, read_time, image_url')
         .order('published_date', { ascending: false });
-      
+
       if (error) throw error;
       return data as Post[];
     },
@@ -44,55 +46,53 @@ const BlogFeed = () => {
     staleTime: 1000 * 60,
     enabled: isIntersecting,
   });
-  const showSkeleton = isIntersecting && (isLoading || isFetching) && (!posts || posts.length === 0);
+  const showSkeleton =
+    isIntersecting && (isLoading || isFetching) && (!posts || posts.length === 0);
 
-	return (
-		<section ref={sectionRef} className="section relative">
-			{/* Background elements */}
-			<div className="absolute inset-0 opacity-5">
-				<div className="absolute top-1/4 left-0 w-2/3 h-px bg-white"></div>
-				<div className="absolute bottom-1/3 right-1/4 w-1/2 h-px bg-white"></div>
-				<div className="absolute right-1/3 top-0 w-px h-full bg-white"></div>
-			</div>
+  return (
+    <section ref={sectionRef} className="section relative">
+      {/* Background elements */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-1/4 left-0 w-2/3 h-px bg-white"></div>
+        <div className="absolute bottom-1/3 right-1/4 w-1/2 h-px bg-white"></div>
+        <div className="absolute right-1/3 top-0 w-px h-full bg-white"></div>
+      </div>
 
-			<div className="container-site">
-				{/* Section header */}
-				<div className="mb-20 flex items-center justify-between">
-					<div className="w-full max-w-xl">
-						<SectionHeader title={"Latest"} subtitle={"Insights"} />
-					</div>
-					<Link
-						to="/blogs"
-						className="link-enhanced focus-enhanced z-10"
-					>
-						View all posts
-					</Link>
-				</div>
+      <div className="container-site">
+        {/* Section header */}
+        <div className="mb-20 flex items-center justify-between">
+          <div className="w-full max-w-xl">
+            <SectionHeader title={'Latest'} subtitle={'Insights'} />
+          </div>
+          <Link to="/blogs" className="link-enhanced focus-enhanced z-10">
+            View all posts
+          </Link>
+        </div>
 
-				{/* 4-column grid layout for blogs, matching Latest Projects */}
-				{showSkeleton ? (
-					<GridSkeleton count={3} columns={3} />
-				) : (
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 grid-gap-default">
-						{posts?.slice(0, 3).map((post) => (
-							<CardItem
-								key={post.id}
-								title={post.title}
-								tags={post.tags || []}
-								date={new Date(post.published_date).toLocaleDateString()}
-								excerpt={post.excerpt || ''}
-								linkTo={`/blogs/${post.slug}`}
-								linkLabel={`Read ${post.title}`}
-								readTime={post.read_time || undefined}
-								isBlog={true}
-								image_url={post.image_url || undefined}
-							/>
-						))}
-					</div>
-				)}
-			</div>
-		</section>
-	);
+        {/* 4-column grid layout for blogs, matching Latest Projects */}
+        {showSkeleton ? (
+          <GridSkeleton count={3} columns={3} />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 grid-gap-default">
+            {posts?.slice(0, 3).map((post) => (
+              <CardItem
+                key={post.id}
+                title={post.title}
+                tags={post.tags || []}
+                date={new Date(post.published_date).toLocaleDateString()}
+                excerpt={post.excerpt || ''}
+                linkTo={`/blogs/${post.slug}`}
+                linkLabel={`Read ${post.title}`}
+                readTime={post.read_time || undefined}
+                isBlog={true}
+                image_url={post.image_url || undefined}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
 };
 
 export default BlogFeed;
