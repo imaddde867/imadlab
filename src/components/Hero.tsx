@@ -39,7 +39,8 @@ const Hero = () => {
                 className="text-body-large text-hierarchy-tertiary leading-relaxed animate-fade-in-up opacity-0"
                 style={{ animationDelay: '0.5s' }}
               >
-                I build end-to-end data and AI systems—from streaming pipelines to deployed models—that turn raw signals into reliable decisions!
+                I build end-to-end data and AI systems—from streaming pipelines to deployed
+                models—that turn raw signals into reliable decisions!
               </p>
             </div>
             <Button

@@ -34,13 +34,7 @@ import { CodeBlock } from './components/CodeBlock';
 import { InlineCode } from './components/InlineCode';
 import { Paragraph } from './components/Paragraph';
 import { Blockquote } from './components/Blockquote';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-} from './components/Table';
+import { Table, TableBody, TableCell, TableHead, TableHeaderCell } from './components/Table';
 import { ListItem } from './components/ListItem';
 import { ThematicBreak } from './components/ThematicBreak';
 import { MathRenderer } from './components/MathRenderer';
@@ -106,11 +100,7 @@ const mathSchemaExtensions: Schema = {
       'height',
       'width',
     ],
-    source: [
-      ...(defaultSchema.attributes?.source ?? []),
-      'src',
-      'type',
-    ],
+    source: [...(defaultSchema.attributes?.source ?? []), 'src', 'type'],
     audio: [
       ...(defaultSchema.attributes?.audio ?? []),
       'controls',
@@ -188,7 +178,9 @@ const extractTextFromChildren = (children: ReactNode): string => {
       if (child === null || child === undefined) return '';
       if (typeof child === 'boolean') return '';
       if (child && typeof child === 'object' && 'props' in child) {
-        return extractTextFromChildren((child as { props?: { children?: ReactNode } }).props?.children);
+        return extractTextFromChildren(
+          (child as { props?: { children?: ReactNode } }).props?.children
+        );
       }
       return '';
     })
@@ -223,7 +215,7 @@ const HeadingRenderer = ({
   node?: Heading;
   children: ReactNode;
 }) => {
-  const Tag = (`h${level}` as const);
+  const Tag = `h${level}` as const;
   const slugger = useSlugger();
   const { registerHeading, tocDepth } = useHeadingRegistry();
   const text = node ? getNodeText(node) : extractTextFromChildren(children);
@@ -244,11 +236,7 @@ const HeadingRenderer = ({
   );
 };
 
-const LinkRenderer = ({
-  href,
-  children,
-  ...props
-}: AnchorHTMLAttributes<HTMLAnchorElement>) => {
+const LinkRenderer = ({ href, children, ...props }: AnchorHTMLAttributes<HTMLAnchorElement>) => {
   const { resolveUrl } = useAssetContext();
   const resolved = resolveUrl(href);
   const origin =
@@ -269,12 +257,7 @@ const LinkRenderer = ({
   );
 };
 
-const ImageRenderer = ({
-  alt,
-  src,
-  title,
-  ...props
-}: ImgHTMLAttributes<HTMLImageElement>) => {
+const ImageRenderer = ({ alt, src, title, ...props }: ImgHTMLAttributes<HTMLImageElement>) => {
   const { resolveUrl } = useAssetContext();
   const resolved = resolveUrl(src);
 
@@ -293,9 +276,7 @@ const ImageRenderer = ({
         />
       </div>
       {(alt || title) && (
-        <figcaption className="mt-3 text-center text-sm text-white/60">
-          {title ?? alt}
-        </figcaption>
+        <figcaption className="mt-3 text-center text-sm text-white/60">{title ?? alt}</figcaption>
       )}
     </figure>
   );
@@ -333,9 +314,7 @@ const VideoRenderer = ({
   );
 };
 
-const FootnoteReferenceRenderer = ({
-  identifier,
-}: FootnoteReference & { children: ReactNode }) => (
+const FootnoteReferenceRenderer = ({ identifier }: FootnoteReference & { children: ReactNode }) => (
   <sup id={`fnref-${identifier}`}>
     <a
       href={`#fn-${identifier}`}
@@ -350,10 +329,7 @@ const FootnoteDefinitionRenderer = ({
   identifier,
   children,
 }: FootnoteDefinition & { children: ReactNode }) => (
-  <li
-    id={`fn-${identifier}`}
-    className="mb-3 text-sm text-white/70"
-  >
+  <li id={`fn-${identifier}`} className="mb-3 text-sm text-white/70">
     <div className="flex gap-2">
       <span className="font-semibold text-white/50">{identifier}.</span>
       <div className="flex-1">{children}</div>
@@ -389,7 +365,12 @@ const resolveMediaType = (src?: string | null) => {
   return 'image';
 };
 
-const OrderedList = ({ className, children, start, ...props }: OlHTMLAttributes<HTMLOListElement>) => (
+const OrderedList = ({
+  className,
+  children,
+  start,
+  ...props
+}: OlHTMLAttributes<HTMLOListElement>) => (
   <ol
     className={clsx(
       'mb-6 ml-6 list-decimal space-y-2 text-base leading-7 text-white/80 marker:text-white/40',
@@ -402,11 +383,7 @@ const OrderedList = ({ className, children, start, ...props }: OlHTMLAttributes<
   </ol>
 );
 
-const UnorderedList = ({
-  className,
-  children,
-  ...props
-}: HTMLAttributes<HTMLUListElement>) => (
+const UnorderedList = ({ className, children, ...props }: HTMLAttributes<HTMLUListElement>) => (
   <ul
     className={clsx(
       'mb-6 ml-6 list-disc space-y-2 text-base leading-7 text-white/80 marker:text-white/40',
@@ -453,24 +430,20 @@ const useActiveHeading = (headings: HeadingEntry[]) => {
   return activeId;
 };
 
-const Toc = ({
-  headings,
-  activeId,
-}: {
-  headings: HeadingEntry[];
-  activeId: string | null;
-}) => (
+const Toc = ({ headings, activeId }: { headings: HeadingEntry[]; activeId: string | null }) => (
   <nav
     aria-label="Table of contents"
     className="sticky top-24 hidden max-h-[70vh] min-w-[220px] overflow-y-auto rounded-lg border border-white/10 bg-white/5 p-4 lg:block"
   >
-    <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/60">On this page</h2>
+    <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/60">
+      On this page
+    </h2>
     <ul className="space-y-2 text-sm">
       {headings.map((heading) => (
-        <li key={heading.id} className={clsx(
-          heading.level === 3 && 'pl-4',
-          heading.level === 4 && 'pl-6'
-        )}>
+        <li
+          key={heading.id}
+          className={clsx(heading.level === 3 && 'pl-4', heading.level === 4 && 'pl-6')}
+        >
           <a
             href={`#${heading.id}`}
             className={clsx(
@@ -582,9 +555,7 @@ export const GfmMarkdown = ({
 
   const filteredHeadings = useMemo(
     () =>
-      headings.filter(
-        (heading) => heading.level >= 2 && heading.level <= mergedConfig.tocDepth
-      ),
+      headings.filter((heading) => heading.level >= 2 && heading.level <= mergedConfig.tocDepth),
     [headings, mergedConfig.tocDepth]
   );
 
@@ -621,7 +592,8 @@ export const GfmMarkdown = ({
           return <InlineCode>{children}</InlineCode>;
         }
         const language = className?.replace(/language-/, '') ?? '';
-        const meta = (node && 'data' in node && (node.data as { meta?: string })?.meta) || undefined;
+        const meta =
+          (node && 'data' in node && (node.data as { meta?: string })?.meta) || undefined;
         const codeString = String(children ?? '');
 
         if (mergedConfig.enableMermaid && language === 'mermaid') {
@@ -642,7 +614,11 @@ export const GfmMarkdown = ({
       math: ({ value }) =>
         mergedConfig.enableMath ? <MathRenderer value={value ?? ''} /> : <code>{value}</code>,
       inlineMath: ({ value }) =>
-        mergedConfig.enableMath ? <MathRenderer value={value ?? ''} inline /> : <code>{value}</code>,
+        mergedConfig.enableMath ? (
+          <MathRenderer value={value ?? ''} inline />
+        ) : (
+          <code>{value}</code>
+        ),
       footnoteReference: (props) => <FootnoteReferenceRenderer {...props} />,
       footnoteDefinition: (props) => <FootnoteDefinitionRenderer {...props} />,
       footnoteLabel: ({ children }) => (
@@ -662,11 +638,7 @@ export const GfmMarkdown = ({
     } as Components;
 
     return mapping;
-  }, [
-    mergedConfig.enableMath,
-    mergedConfig.enableMermaid,
-    mergedConfig.maxDiagramSizeKB,
-  ]);
+  }, [mergedConfig.enableMath, mergedConfig.enableMermaid, mergedConfig.maxDiagramSizeKB]);
 
   const content = (
     <section className={clsx('prose prose-invert max-w-none', className)}>

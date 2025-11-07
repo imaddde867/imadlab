@@ -11,20 +11,32 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         navigate('/admin/login');
-        toast({ title: 'Unauthorized', description: 'Please log in to access the admin dashboard.', variant: 'destructive' });
+        toast({
+          title: 'Unauthorized',
+          description: 'Please log in to access the admin dashboard.',
+          variant: 'destructive',
+        });
       } else {
         setUser({ email: user.email });
       }
     };
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session?.user) {
         navigate('/admin/login');
-        toast({ title: 'Logged out', description: 'Your session has ended.', variant: 'destructive' });
+        toast({
+          title: 'Logged out',
+          description: 'Your session has ended.',
+          variant: 'destructive',
+        });
       } else {
         setUser(session.user ? { email: session.user.email } : null);
       }
@@ -57,8 +69,20 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-black text-white pt-14">
       <div className="container-site max-w-4xl">
         <div className="mb-8">
-          <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+          <Link
+            to="/"
+            className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors"
+          >
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"></path>
+            </svg>
             Back to Home
           </Link>
         </div>
@@ -92,7 +116,6 @@ const AdminDashboard = () => {
             </Button>
           </Link>
         </div>
-
       </div>
     </div>
   );

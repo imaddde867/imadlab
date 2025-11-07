@@ -91,8 +91,10 @@ class StravaClient {
     // If we have cached data and can't call API yet, use cache
     if (cachedData && !canCallApi) {
       const minutesRemaining = Math.ceil(StravaCache.timeUntilNextCall() / 60000);
-      console.log(`Using cached data (rate limit protection: ${minutesRemaining}m until next call allowed)`);
-      
+      console.log(
+        `Using cached data (rate limit protection: ${minutesRemaining}m until next call allowed)`
+      );
+
       const data: StravaData = {
         stats: cachedData.stats,
         activities: cachedData.activities,
@@ -110,16 +112,16 @@ class StravaClient {
         console.error('Strava Edge Function error:', {
           message: response.error.message,
           status: response.error.status,
-          context: response.error.context
+          context: response.error.context,
         });
-        
+
         const errorMsg = response.error.message || 'Edge Function returned a non-2xx status code';
-        
+
         // If rate limited and we have cached data, use it
         if (errorMsg.includes('429') && cachedData) {
           console.log('Rate limited but cached data available, using cache');
           StravaCache.updateLastApiCall(); // Update timestamp to prevent rapid retries
-          
+
           const data: StravaData = {
             stats: cachedData.stats,
             activities: cachedData.activities,
@@ -127,16 +129,16 @@ class StravaClient {
           this.memoryCache = { data, timestamp: Date.now() };
           return data;
         }
-        
+
         // No cached data available, throw error with helpful message
         if (errorMsg.includes('429')) {
           throw new Error('Strava API rate limit exceeded. Please try again in 15 minutes.');
         }
-        
+
         if (errorMsg.includes('401') || errorMsg.includes('refresh')) {
           throw new Error('Strava authentication failed. Please check your API credentials.');
         }
-        
+
         throw new Error(`Failed to fetch Strava data: ${errorMsg}`);
       }
 
@@ -170,10 +172,10 @@ class StravaClient {
 
       // Save to persistent cache
       StravaCache.set(stats, activities);
-      
+
       // Save to memory cache
       this.memoryCache = { data, timestamp: Date.now() };
-      
+
       console.log('Fresh data fetched and cached successfully');
       return data;
     } catch (err) {
@@ -187,7 +189,7 @@ class StravaClient {
         this.memoryCache = { data, timestamp: Date.now() };
         return data;
       }
-      
+
       // No cached data, propagate error
       console.error('Strava client error:', err);
       throw err;

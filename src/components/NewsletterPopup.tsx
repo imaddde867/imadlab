@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,21 +33,19 @@ const NewsletterPopup: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const { error } = await supabase
-      .from('newsletter_subscribers')
-      .insert([{ email }]);
+    const { error } = await supabase.from('newsletter_subscribers').insert([{ email }]);
 
     if (error) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to subscribe. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: error.message || 'Failed to subscribe. Please try again.',
+        variant: 'destructive',
       });
       console.error('Error subscribing:', error);
     } else {
       toast({
-        title: "Success!",
-        description: "Thanks for subscribing!",
+        title: 'Success!',
+        description: 'Thanks for subscribing!',
       });
       setEmail('');
       setIsOpen(false);
@@ -64,7 +68,9 @@ const NewsletterPopup: React.FC = () => {
               <X className="w-5 h-5" />
             </button>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white mb-1">Stay Updated!</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-white mb-1">
+                Stay Updated!
+              </DialogTitle>
               <DialogDescription className="text-white/60 mb-4">
                 Subscribe to my newsletter to get email updates on new projects and blog posts.
               </DialogDescription>

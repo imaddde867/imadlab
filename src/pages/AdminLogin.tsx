@@ -32,7 +32,10 @@ const AdminLogin = () => {
     <div className="min-h-screen text-white flex flex-col items-center justify-center p-4 pt-14">
       <div className="w-full max-w-md">
         <div className="mb-8">
-          <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
+          <Link
+            to="/"
+            className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Link>
@@ -56,7 +59,11 @@ const AdminLogin = () => {
               className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
               required
             />
-            <Button type="submit" className="w-full bg-white text-black hover:bg-white/90" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full bg-white text-black hover:bg-white/90"
+              disabled={loading}
+            >
               {loading ? 'Logging in...' : 'Login'}
             </Button>
           </form>

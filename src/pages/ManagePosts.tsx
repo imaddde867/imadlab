@@ -1,21 +1,15 @@
-import { useState, useEffect, useMemo } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { PageHeader } from "@/components/ui/page-header";
-import { Tag as TagChip } from "@/components/ui/tag";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/hooks/use-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
+import { Tag as TagChip } from '@/components/ui/tag';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Plus,
   Edit,
@@ -25,7 +19,7 @@ import {
   Clock,
   Tag as TagIcon,
   ExternalLink,
-} from "lucide-react";
+} from 'lucide-react';
 
 interface Post {
   id: string;
@@ -50,12 +44,12 @@ type PostFormState = {
 };
 
 const createEmptyPostForm = (): PostFormState => ({
-  title: "",
-  slug: "",
-  body: "",
-  excerpt: "",
-  tags: "",
-  image_url: "",
+  title: '',
+  slug: '',
+  body: '',
+  excerpt: '',
+  tags: '',
+  image_url: '',
 });
 
 const ManagePosts = () => {
@@ -68,18 +62,17 @@ const ManagePosts = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const checkUser = async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) {
-        navigate("/admin/login");
+        navigate('/admin/login');
         toast({
-          title: "Unauthorized",
-          description: "Please log in to access this page.",
-          variant: "destructive",
+          title: 'Unauthorized',
+          description: 'Please log in to access this page.',
+          variant: 'destructive',
         });
       }
       setAuthChecked(true);
@@ -88,22 +81,20 @@ const ManagePosts = () => {
   }, [navigate, toast]);
 
   const { data: posts, isLoading } = useQuery({
-    queryKey: ["posts"],
+    queryKey: ['posts'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .order("published_date", { ascending: false });
+        .from('posts')
+        .select('*')
+        .order('published_date', { ascending: false });
 
       if (error) throw error;
       // Ensure all required fields exist for Post type
-      return (data as { read_time?: number; image_url?: string | null }[]).map(
-        (item) => ({
-          ...item,
-          read_time: item.read_time ?? 0,
-          image_url: item.image_url ?? null,
-        })
-      ) as Post[];
+      return (data as { read_time?: number; image_url?: string | null }[]).map((item) => ({
+        ...item,
+        read_time: item.read_time ?? 0,
+        image_url: item.image_url ?? null,
+      })) as Post[];
     },
   });
 
@@ -115,19 +106,13 @@ const ManagePosts = () => {
     const now = new Date();
     return postsList.filter((post) => {
       const postDate = new Date(post.created_at);
-      return (
-        postDate.getMonth() === now.getMonth() &&
-        postDate.getFullYear() === now.getFullYear()
-      );
+      return postDate.getMonth() === now.getMonth() && postDate.getFullYear() === now.getFullYear();
     }).length;
   }, [postsList]);
 
   const averageReadTime = useMemo(() => {
     if (!postsList.length) return 0;
-    const total = postsList.reduce(
-      (accumulator, post) => accumulator + (post.read_time || 0),
-      0
-    );
+    const total = postsList.reduce((accumulator, post) => accumulator + (post.read_time || 0), 0);
     return Math.round(total / postsList.length);
   }, [postsList]);
 
@@ -141,22 +126,22 @@ const ManagePosts = () => {
       {
         label: `${totalPosts} total posts`,
         icon: <Eye className="h-3.5 w-3.5" aria-hidden="true" />,
-        variant: "neutral" as const,
+        variant: 'neutral' as const,
       },
       {
         label: `${postsThisMonth} this month`,
         icon: <Calendar className="h-3.5 w-3.5" aria-hidden="true" />,
-        variant: "subtle" as const,
+        variant: 'subtle' as const,
       },
       {
         label: `${totalTags} unique tags`,
         icon: <TagIcon className="h-3.5 w-3.5" aria-hidden="true" />,
-        variant: "outline" as const,
+        variant: 'outline' as const,
       },
       {
         label: `${averageReadTime || 0} min avg read`,
         icon: <Clock className="h-3.5 w-3.5" aria-hidden="true" />,
-        variant: "subtle" as const,
+        variant: 'subtle' as const,
       },
     ],
     [averageReadTime, postsThisMonth, totalPosts, totalTags]
@@ -165,22 +150,22 @@ const ManagePosts = () => {
   const overviewStats = useMemo(
     () => [
       {
-        label: "Total posts",
+        label: 'Total posts',
         value: totalPosts,
         icon: <Eye className="h-4 w-4 text-white/80" aria-hidden="true" />,
       },
       {
-        label: "Published this month",
+        label: 'Published this month',
         value: postsThisMonth,
         icon: <Calendar className="h-4 w-4 text-emerald-300" aria-hidden="true" />,
       },
       {
-        label: "Average read time",
+        label: 'Average read time',
         value: `${averageReadTime || 0}m`,
         icon: <Clock className="h-4 w-4 text-sky-300" aria-hidden="true" />,
       },
       {
-        label: "Unique tags",
+        label: 'Unique tags',
         value: totalTags,
         icon: <TagIcon className="h-4 w-4 text-amber-300" aria-hidden="true" />,
       },
@@ -191,9 +176,9 @@ const ManagePosts = () => {
   const isPostsLoading = isLoading;
 
   const addPostMutation = useMutation({
-    mutationFn: async (newPost: Omit<Post, "id" | "created_at">) => {
+    mutationFn: async (newPost: Omit<Post, 'id' | 'created_at'>) => {
       const { data, error } = await supabase
-        .from("posts")
+        .from('posts')
         .insert([
           {
             ...newPost,
@@ -207,15 +192,15 @@ const ManagePosts = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
       closeForm();
-      toast({ title: "Post added successfully!" });
+      toast({ title: 'Post added successfully!' });
     },
     onError: (error) => {
       toast({
-        title: "Error adding post",
+        title: 'Error adding post',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -223,7 +208,7 @@ const ManagePosts = () => {
   const updatePostMutation = useMutation({
     mutationFn: async (updatedPost: Post) => {
       const { data, error } = await supabase
-        .from("posts")
+        .from('posts')
         .update({
           title: updatedPost.title,
           slug: updatedPost.slug,
@@ -234,7 +219,7 @@ const ManagePosts = () => {
           read_time: updatedPost.read_time,
           image_url: updatedPost.image_url,
         })
-        .eq("id", updatedPost.id)
+        .eq('id', updatedPost.id)
         .select()
         .single();
 
@@ -242,15 +227,15 @@ const ManagePosts = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
       closeForm();
-      toast({ title: "Post updated successfully!" });
+      toast({ title: 'Post updated successfully!' });
     },
     onError: (error) => {
       toast({
-        title: "Error updating post",
+        title: 'Error updating post',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -259,19 +244,19 @@ const ManagePosts = () => {
 
   const deletePostMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("posts").delete().eq("id", id);
+      const { error } = await supabase.from('posts').delete().eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-      toast({ title: "Post deleted successfully!" });
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      toast({ title: 'Post deleted successfully!' });
     },
     onError: (error) => {
       toast({
-        title: "Error deleting post",
+        title: 'Error deleting post',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -279,8 +264,8 @@ const ManagePosts = () => {
   const generateSlug = (title: string) => {
     return title
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
   };
 
   const calculateReadTime = (text: string | null) => {
@@ -325,16 +310,16 @@ const ManagePosts = () => {
     setFormData({
       title: post.title,
       slug: post.slug,
-      body: post.body || "",
-      excerpt: post.excerpt || "",
-      tags: post.tags?.join(", ") || "",
-      image_url: post.image_url || "",
+      body: post.body || '',
+      excerpt: post.excerpt || '',
+      tags: post.tags?.join(', ') || '',
+      image_url: post.image_url || '',
     });
     setShowForm(true);
   };
 
   const handleDeleteClick = (id: string) => {
-    if (confirm("Are you sure you want to delete this post?")) {
+    if (confirm('Are you sure you want to delete this post?')) {
       deletePostMutation.mutate(id);
     }
   };
@@ -344,7 +329,7 @@ const ManagePosts = () => {
     if (!formData.title.trim() || !formData.slug.trim()) return;
 
     const tagsArray = formData.tags
-      .split(",")
+      .split(',')
       .map((tag) => tag.trim())
       .filter((tag) => tag.length > 0);
 
@@ -392,19 +377,19 @@ const ManagePosts = () => {
           title="Blog Posts"
           description="Craft, edit, and publish articles across imadlab while keeping tabs on performance."
           breadcrumbs={[
-            { label: "Admin", href: "/admin" },
-            { label: "Posts", href: "/admin/posts" },
+            { label: 'Admin', href: '/admin' },
+            { label: 'Posts', href: '/admin/posts' },
           ]}
           meta={headerMeta}
           actions={
             <Button
-              variant={showForm ? "outline" : "inverted"}
+              variant={showForm ? 'outline' : 'inverted'}
               size="lg"
               onClick={handleToggleForm}
               disabled={isMutating}
             >
               <Plus className="h-4 w-4 mr-2" />
-              {showForm ? "Cancel" : "New Post"}
+              {showForm ? 'Cancel' : 'New Post'}
             </Button>
           }
         >
@@ -432,21 +417,19 @@ const ManagePosts = () => {
           <Card className="rounded-3xl border border-white/10 bg-white/5 shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-md">
             <CardHeader>
               <CardTitle className="text-white">
-                {editingPost ? "Edit Post" : "Create New Post"}
+                {editingPost ? 'Edit Post' : 'Create New Post'}
               </CardTitle>
               <CardDescription className="text-white/70">
                 {editingPost
-                  ? "Update your blog post details"
-                  : "Add a new blog post to your collection"}
+                  ? 'Update your blog post details'
+                  : 'Add a new blog post to your collection'}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/80">
-                      Title
-                    </label>
+                    <label className="text-sm font-medium text-white/80">Title</label>
                     <Input
                       placeholder="Enter post title"
                       value={formData.title}
@@ -456,15 +439,11 @@ const ManagePosts = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/80">
-                      Slug
-                    </label>
+                    <label className="text-sm font-medium text-white/80">Slug</label>
                     <Input
                       placeholder="url-friendly-slug"
                       value={formData.slug}
-                      onChange={(e) =>
-                        setFormData({ ...formData, slug: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                       className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                       required
                     />
@@ -472,30 +451,22 @@ const ManagePosts = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-white/80">
-                    Excerpt
-                  </label>
+                  <label className="text-sm font-medium text-white/80">Excerpt</label>
                   <Textarea
                     placeholder="Brief summary of your post"
                     value={formData.excerpt}
-                    onChange={(e) =>
-                      setFormData({ ...formData, excerpt: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                     rows={3}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-white/80">
-                    Content
-                  </label>
+                  <label className="text-sm font-medium text-white/80">Content</label>
                   <Textarea
                     placeholder="Write your post content here..."
                     value={formData.body}
-                    onChange={(e) =>
-                      setFormData({ ...formData, body: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, body: e.target.value })}
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                     rows={12}
                   />
@@ -503,52 +474,36 @@ const ManagePosts = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/80">
-                      Featured Image URL
-                    </label>
+                    <label className="text-sm font-medium text-white/80">Featured Image URL</label>
                     <Input
                       placeholder="https://example.com/image.jpg"
                       value={formData.image_url}
-                      onChange={(e) =>
-                        setFormData({ ...formData, image_url: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                       className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/80">
-                      Tags
-                    </label>
+                    <label className="text-sm font-medium text-white/80">Tags</label>
                     <Input
                       placeholder="react, typescript, web development"
                       value={formData.tags}
-                      onChange={(e) =>
-                        setFormData({ ...formData, tags: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                       className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                     />
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  <Button
-                    type="submit"
-                    variant="inverted"
-                    disabled={isMutating}
-                  >
+                  <Button type="submit" variant="inverted" disabled={isMutating}>
                     {editingPost
                       ? updatePostMutation.isPending
-                        ? "Updating..."
-                        : "Update Post"
+                        ? 'Updating...'
+                        : 'Update Post'
                       : addPostMutation.isPending
-                      ? "Creating..."
-                      : "Create Post"}
+                        ? 'Creating...'
+                        : 'Create Post'}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={closeForm}
-                  >
+                  <Button type="button" variant="ghost" onClick={closeForm}>
                     Cancel
                   </Button>
                 </div>
@@ -591,21 +546,12 @@ const ManagePosts = () => {
               </div>
             ) : !hasPosts ? (
               <div className="py-12 text-center">
-                <Eye
-                  className="mx-auto mb-4 h-12 w-12 text-white/20"
-                  aria-hidden="true"
-                />
-                <h3 className="text-lg font-semibold text-white">
-                  No posts yet
-                </h3>
+                <Eye className="mx-auto mb-4 h-12 w-12 text-white/20" aria-hidden="true" />
+                <h3 className="text-lg font-semibold text-white">No posts yet</h3>
                 <p className="mt-3 text-sm text-white/70">
                   Create your first blog post to get started.
                 </p>
-                <Button
-                  className="mt-6"
-                  variant="inverted"
-                  onClick={openCreateForm}
-                >
+                <Button className="mt-6" variant="inverted" onClick={openCreateForm}>
                   <Plus className="mr-2 h-4 w-4" />
                   Create First Post
                 </Button>
@@ -620,9 +566,7 @@ const ManagePosts = () => {
                     <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                       <div className="flex-1 space-y-3">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                          <h3 className="text-xl font-semibold text-white">
-                            {post.title}
-                          </h3>
+                          <h3 className="text-xl font-semibold text-white">{post.title}</h3>
                           {post.tags && post.tags.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                               {post.tags.slice(0, 3).map((tag, index) => (
@@ -636,11 +580,7 @@ const ManagePosts = () => {
                                 </TagChip>
                               ))}
                               {post.tags.length > 3 && (
-                                <TagChip
-                                  size="xs"
-                                  variant="subtle"
-                                  className="text-white/80"
-                                >
+                                <TagChip size="xs" variant="subtle" className="text-white/80">
                                   +{post.tags.length - 3}
                                 </TagChip>
                               )}
@@ -648,21 +588,15 @@ const ManagePosts = () => {
                           )}
                         </div>
                         <p className="text-sm text-white/70 line-clamp-2">
-                          {post.excerpt || "No excerpt available"}
+                          {post.excerpt || 'No excerpt available'}
                         </p>
                         <div className="flex flex-wrap gap-4 text-xs text-white/60">
                           <div className="flex items-center gap-1.5">
-                            <Calendar
-                              className="h-3.5 w-3.5 text-white/50"
-                              aria-hidden="true"
-                            />
+                            <Calendar className="h-3.5 w-3.5 text-white/50" aria-hidden="true" />
                             {new Date(post.published_date).toLocaleDateString()}
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <Clock
-                              className="h-3.5 w-3.5 text-white/50"
-                              aria-hidden="true"
-                            />
+                            <Clock className="h-3.5 w-3.5 text-white/50" aria-hidden="true" />
                             {post.read_time || 0} min read
                           </div>
                           <div className="flex items-center gap-1.5">
@@ -685,11 +619,7 @@ const ManagePosts = () => {
                             Preview
                           </Link>
                         </Button>
-                        <Button
-                          variant="soft"
-                          size="sm"
-                          onClick={() => handleEditClick(post)}
-                        >
+                        <Button variant="soft" size="sm" onClick={() => handleEditClick(post)}>
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </Button>

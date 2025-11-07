@@ -33,7 +33,8 @@ const SITE_URL = 'https://imadlab.me';
 const SITE_NAME = 'Imadlab';
 const DEFAULT_IMAGE = `${SITE_URL}/opengraph-image.png`;
 const DEFAULT_AUTHOR = 'Imad Eddine El Mouss';
-const DEFAULT_KEYWORDS = 'imadlab, imad eddine elmouss, data engineer, ai ml professional, machine learning, data science, portfolio, blog, projects, python, react, typescript';
+const DEFAULT_KEYWORDS =
+  'imadlab, imad eddine elmouss, data engineer, ai ml professional, machine learning, data science, portfolio, blog, projects, python, react, typescript';
 
 const toAbsoluteUrl = (url: string) => {
   if (!url) return DEFAULT_IMAGE;
@@ -74,17 +75,17 @@ const Seo = ({
   const ogImage = toAbsoluteUrl(image || DEFAULT_IMAGE);
 
   const keywordsContent = keywords ? `${keywords}, ${DEFAULT_KEYWORDS}` : DEFAULT_KEYWORDS;
-  const robotsDirectives = noindex ? 'noindex, nofollow' : nofollow ? 'index, nofollow' : 'index, follow';
+  const robotsDirectives = noindex
+    ? 'noindex, nofollow'
+    : nofollow
+      ? 'index, nofollow'
+      : 'index, follow';
   const isoPublished = normaliseDate(publishedTime);
   const isoModified = normaliseDate(modifiedTime) || isoPublished;
 
   const baseSchemaType =
     schemaType ||
-    (type === 'article'
-      ? 'BlogPosting'
-      : type === 'project'
-      ? 'CreativeWork'
-      : 'WebPage');
+    (type === 'article' ? 'BlogPosting' : type === 'project' ? 'CreativeWork' : 'WebPage');
 
   const schemas = useMemo(() => {
     const baseSchema: Record<string, unknown> = {
@@ -102,9 +103,9 @@ const Seo = ({
         url: `${SITE_URL}/about`,
         sameAs: [
           'https://github.com/imaddde867',
-          'https://www.linkedin.com/in/imad-eddine-e-986741262'
-        ]
-      }
+          'https://www.linkedin.com/in/imad-eddine-e-986741262',
+        ],
+      },
     };
 
     if (type === 'article') {
@@ -118,8 +119,8 @@ const Seo = ({
         url: `${SITE_URL}/about`,
         sameAs: [
           'https://github.com/imaddde867',
-          'https://www.linkedin.com/in/imad-eddine-e-986741262'
-        ]
+          'https://www.linkedin.com/in/imad-eddine-e-986741262',
+        ],
       };
       if (tags && tags.length) {
         baseSchema.keywords = tags.join(', ');
@@ -137,7 +138,7 @@ const Seo = ({
       baseSchema.isPartOf = {
         '@type': 'WebSite',
         name: SITE_NAME,
-        url: SITE_URL
+        url: SITE_URL,
       };
     }
 
@@ -154,9 +155,9 @@ const Seo = ({
           item: {
             '@type': 'SiteNavigationElement',
             name: item.label,
-            url: getAbsoluteNavUrl(SITE_URL, item.path)
-          }
-        }))
+            url: getAbsoluteNavUrl(SITE_URL, item.path),
+          },
+        })),
       });
     }
 
@@ -170,8 +171,8 @@ const Seo = ({
           name: crumb.name,
           item: crumb.url
             ? crumb.url
-            : `${SITE_URL}${crumb.path && crumb.path.startsWith('/') ? crumb.path : `/${crumb.path ?? ''}`}`
-        }))
+            : `${SITE_URL}${crumb.path && crumb.path.startsWith('/') ? crumb.path : `/${crumb.path ?? ''}`}`,
+        })),
       });
     }
 
@@ -190,7 +191,7 @@ const Seo = ({
     tags,
     type,
     isoModified,
-    isoPublished
+    isoPublished,
   ]);
 
   return (
@@ -201,8 +202,18 @@ const Seo = ({
       <meta name="author" content={author} />
       <meta name="robots" content={robotsDirectives} />
       <link rel="canonical" href={canonicalUrl} />
-      <link rel="alternate" type="application/rss+xml" title="Imadlab Blog RSS Feed" href={`${SITE_URL}/feed.xml`} />
-      <link rel="alternate" type="application/feed+json" title="Imadlab Blog JSON Feed" href={`${SITE_URL}/feed.json`} />
+      <link
+        rel="alternate"
+        type="application/rss+xml"
+        title="Imadlab Blog RSS Feed"
+        href={`${SITE_URL}/feed.xml`}
+      />
+      <link
+        rel="alternate"
+        type="application/feed+json"
+        title="Imadlab Blog JSON Feed"
+        href={`${SITE_URL}/feed.json`}
+      />
       <link rel="manifest" href="/site.webmanifest" />
 
       <meta property="og:title" content={fullTitle} />

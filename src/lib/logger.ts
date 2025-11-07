@@ -10,20 +10,20 @@ export const logger = {
   log: (...args: unknown[]) => {
     if (ENABLE_LOGS) console.log(...args);
   },
-  
+
   warn: (...args: unknown[]) => {
     if (ENABLE_LOGS) console.warn(...args);
   },
-  
+
   error: (...args: unknown[]) => {
     // Always log errors, even in production
     console.error(...args);
   },
-  
+
   info: (...args: unknown[]) => {
     if (ENABLE_LOGS) console.info(...args);
   },
-  
+
   debug: (...args: unknown[]) => {
     if (ENABLE_LOGS) console.debug(...args);
   },

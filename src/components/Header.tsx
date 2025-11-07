@@ -45,14 +45,18 @@ const Header = () => {
     <>
       <header
         className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 ${
-          scrolled ? 'backdrop-blur-xl bg-black/40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]' : 'backdrop-blur-sm bg-black/20'
+          scrolled
+            ? 'backdrop-blur-xl bg-black/40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]'
+            : 'backdrop-blur-sm bg-black/20'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           {/* Brand */}
           <Link to="/" className="flex items-center gap-2 focus-enhanced">
             <span className="inline-block w-2 h-2 rounded-full bg-primary mr-1 animate-blink-purple" />
-            <span className="font-semibold tracking-wide text-white/90 hover:text-white transition-colors">imadlab</span>
+            <span className="font-semibold tracking-wide text-white/90 hover:text-white transition-colors">
+              imadlab
+            </span>
           </Link>
 
           {/* Desktop Nav */}
@@ -122,13 +126,13 @@ const Header = () => {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-30 sm:hidden">
           {/* Backdrop */}
-          <div 
+          <div
             className="absolute inset-0 bg-black/80 backdrop-blur-md"
             onClick={() => setMobileMenuOpen(false)}
           />
-          
+
           {/* Menu Content */}
-          <nav 
+          <nav
             className="relative top-14 bg-black/95 border-b border-white/10 shadow-2xl"
             aria-label="Mobile navigation"
           >

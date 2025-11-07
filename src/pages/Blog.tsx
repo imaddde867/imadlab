@@ -22,9 +22,7 @@ interface Post {
 
 const Blogs = () => {
   const initialPosts = useMemo(() => readPrerenderData<Post[]>('posts'), []);
-  const initialUpdatedAt = useRef<number | undefined>(
-    initialPosts ? Date.now() : undefined
-  );
+  const initialUpdatedAt = useRef<number | undefined>(initialPosts ? Date.now() : undefined);
 
   const {
     data: posts = [],
@@ -37,7 +35,7 @@ const Blogs = () => {
         .from('posts')
         .select('id, title, slug, excerpt, tags, published_date, read_time, image_url')
         .order('published_date', { ascending: false });
-      
+
       if (error) throw error;
       return data as Post[];
     },
@@ -48,22 +46,25 @@ const Blogs = () => {
 
   const isSkeletonVisible = isLoading && !posts.length && !isFetching;
 
-  const postListSchema = posts.length > 0 ? [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'ItemList',
-      name: 'Latest blog posts',
-      itemListOrder: 'Descending',
-      numberOfItems: posts.length,
-      itemListElement: posts.map((post, index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        url: `https://imadlab.me/blogs/${post.slug}`,
-        name: post.title,
-        description: post.excerpt ?? undefined
-      }))
-    }
-  ] : undefined;
+  const postListSchema =
+    posts.length > 0
+      ? [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            name: 'Latest blog posts',
+            itemListOrder: 'Descending',
+            numberOfItems: posts.length,
+            itemListElement: posts.map((post, index) => ({
+              '@type': 'ListItem',
+              position: index + 1,
+              url: `https://imadlab.me/blogs/${post.slug}`,
+              name: post.title,
+              description: post.excerpt ?? undefined,
+            })),
+          },
+        ]
+      : undefined;
 
   return (
     <div className="min-h-screen bg-black text-white section pt-14">
@@ -75,13 +76,16 @@ const Blogs = () => {
         schemaType="CollectionPage"
         breadcrumbs={[
           { name: 'Home', path: '/' },
-          { name: 'Blog', path: '/blogs' }
+          { name: 'Blog', path: '/blogs' },
         ]}
         additionalSchemas={postListSchema}
       />
       <div className="container-site">
         <div className="mb-8">
-          <Link to="/" className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors">
+          <Link
+            to="/"
+            className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Link>
@@ -119,7 +123,7 @@ const Blogs = () => {
           </div>
         )}
       </div>
-      
+
       {/* Newsletter signup component */}
       <NewsletterSignup />
     </div>

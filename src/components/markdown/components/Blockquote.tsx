@@ -16,4 +16,3 @@ export const Blockquote = ({ className, children, ...props }: BlockquoteProps) =
     <div className="pl-5">{children}</div>
   </blockquote>
 );
-
