@@ -31,7 +31,7 @@ type SeoProps = {
 
 const SITE_URL = 'https://imadlab.me';
 const SITE_NAME = 'Imadlab';
-const DEFAULT_IMAGE = `${SITE_URL}/opengraph-image.png`;
+const DEFAULT_IMAGE = `${SITE_URL}/images/hero-moon.png`;
 const DEFAULT_AUTHOR = 'Imad Eddine El Mouss';
 const DEFAULT_KEYWORDS =
   'imadlab, imad eddine elmouss, data engineer, ai ml professional, machine learning, data science, portfolio, blog, projects, python, react, typescript';

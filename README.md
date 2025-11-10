@@ -57,7 +57,7 @@ graph TD
     Q --> T[Mermaid]
     
     U[DevOps] --> V[GitHub Actions]
-    U --> W[Vercel/Netlify Deploy]
+    U --> W[GitHub Pages]
     U --> X[Sitemap & RSS Automation]
 ```
 
