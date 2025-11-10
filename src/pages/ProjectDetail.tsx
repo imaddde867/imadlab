@@ -135,6 +135,11 @@ const ProjectDetail = () => {
               href={project.repo_url}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => {
+                import('@/lib/events').then(({ logEvent }) =>
+                  logEvent('repo_click', { project_id: project.id, repo_url: project.repo_url })
+                ).catch(() => {});
+              }}
               className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md text-white/90 hover:text-white transition-all duration-200 text-sm"
             >
               <Code className="w-4 h-4" />

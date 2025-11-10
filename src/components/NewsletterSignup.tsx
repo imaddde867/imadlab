@@ -108,6 +108,8 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
           title: 'Success!',
           description: "Thanks for subscribing! You'll receive updates on new content.",
         });
+        // Log event (best-effort)
+        import('@/lib/events').then(({ logEvent }) => logEvent('newsletter_subscribed', { email: email.trim() })).catch(() => {});
         setEmail(''); // Clear the input field
       }
     } catch (err) {
