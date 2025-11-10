@@ -8,7 +8,6 @@ import Seo from '@/components/Seo';
 import SectionHeader from '@/components/SectionHeader';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { readPrerenderData } from '@/lib/prerender-data';
-import { Link } from 'react-router-dom';
 import { tagToUrl } from '@/lib/tags';
 
 interface Post {
