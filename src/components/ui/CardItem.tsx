@@ -154,16 +154,17 @@ const CardItem = ({
             <div className="flex flex-wrap items-center gap-2 min-h-[1.5rem]">
               {tags &&
                 tags.slice(0, 4).map((tag, i) => (
-                  <span
+                  <Link
                     key={i}
+                    to={`/tags/${encodeURIComponent(tag)}`}
                     className={`px-3 py-1 text-xs font-medium rounded-full transition-all duration-200 ${
                       isCardHovered
                         ? 'bg-white/20 text-white shadow-lg'
                         : 'bg-white/10 text-white/80'
-                    }`}
+                    } hover:bg-white/20`}
                   >
                     {isBlog ? `#${tag}` : tag}
-                  </span>
+                  </Link>
                 ))}
               {tags && tags.length > 4 && (
                 <span className="px-3 py-1 text-xs font-medium bg-white/5 text-white/60 rounded-full">

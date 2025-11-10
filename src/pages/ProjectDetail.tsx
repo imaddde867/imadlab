@@ -171,12 +171,13 @@ const ProjectDetail = () => {
               <div className="flex flex-wrap gap-2 items-center">
                 <span className="text-sm text-white/70">Technologies:</span>
                 {(showAllTags ? projectTags : projectTags.slice(0, 3)).map((tag, index) => (
-                  <span
+                  <Link
                     key={index}
-                    className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90"
+                    to={`/tags/${encodeURIComponent(tag)}`}
+                    className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90 hover:bg-white/20"
                   >
                     {tag}
-                  </span>
+                  </Link>
                 ))}
 
                 {projectTags.length > 3 && (
