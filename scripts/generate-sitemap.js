@@ -49,6 +49,9 @@ async function generateSitemap() {
   for (const p of posts ?? []) {
     if (Array.isArray(p.tags)) for (const t of p.tags) if (t && typeof t === 'string') tagSet.add(slugify(t));
   }
+  for (const pr of projects ?? []) {
+    if (Array.isArray(pr.tech_tags)) for (const t of pr.tech_tags) if (t && typeof t === 'string') tagSet.add(slugify(t));
+  }
   const tagUrls = Array.from(tagSet).map((slug) => ({
     url: `/tags/${encodeURIComponent(slug)}`,
     priority: '0.6',
