@@ -69,6 +69,8 @@ const Tag = () => {
   });
 
   const isSkeletonVisible = isLoading && !posts.length && !isFetching;
+  const hasPosts = posts.length > 0;
+  const hasProjects = projects.length > 0;
 
   return (
     <div className="min-h-screen bg-black text-white section pt-14">
@@ -101,7 +103,7 @@ const Tag = () => {
           <div className="text-center py-12">
             <div className="text-white/60">Loading posts...</div>
           </div>
-        ) : posts.length > 0 ? (
+        ) : hasPosts ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
             {posts.map((post) => (
               <CardItem
@@ -118,36 +120,39 @@ const Tag = () => {
               />
             ))}
           </div>
-        ) : (
-          <div className="text-center py-12">
-            <div className="text-white/60">No posts for this tag yet.</div>
+        ) : null}
+
+        {/* Projects with this tag */}
+        {(loadingProjects || hasProjects) && (
+          <div className="mt-12">
+            <SectionHeader title={<span className="text-brand-gradient">Projects</span>} />
+            {loadingProjects ? (
+              <div className="text-center py-8 text-white/60">Loading projects...</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
+                {projects.map((project) => (
+                  <CardItem
+                    key={project.id}
+                    title={project.title}
+                    tags={project.tech_tags || []}
+                    description={project.description || ''}
+                    linkTo={`/projects/${project.id}`}
+                    linkLabel="View Project"
+                    githubUrl={project.repo_url || undefined}
+                    image_url={project.image_url || undefined}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
 
-        {/* Projects with this tag */}
-        <div className="mt-12">
-          <SectionHeader title={<span className="text-brand-gradient">Projects</span>} />
-          {loadingProjects ? (
-            <div className="text-center py-8 text-white/60">Loading projects...</div>
-          ) : projects.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
-              {projects.map((project) => (
-                <CardItem
-                  key={project.id}
-                  title={project.title}
-                  tags={project.tech_tags || []}
-                  description={project.description || ''}
-                  linkTo={`/projects/${project.id}`}
-                  linkLabel="View Project"
-                  githubUrl={project.repo_url || undefined}
-                  image_url={project.image_url || undefined}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-white/60">No projects for this tag yet.</div>
-          )}
-        </div>
+        {/* Empty state only if no posts and no projects */}
+        {!isSkeletonVisible && !loadingProjects && !hasPosts && !hasProjects && (
+          <div className="text-center py-12">
+            <div className="text-white/60">No posts or projects for this tag yet.</div>
+          </div>
+        )}
       </div>
     </div>
   );
