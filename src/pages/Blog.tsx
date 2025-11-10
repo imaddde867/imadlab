@@ -113,7 +113,13 @@ const Blogs = () => {
 
         {popularTags.length > 0 && (
           <div className="mb-8">
-            <h3 className="text-sm text-white/60 mb-3">Popular tags</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm text-white/60">Popular tags</h3>
+              <div className="flex items-center gap-3 text-xs">
+                <Link to="/tags" className="text-white/60 hover:text-white">All tags</Link>
+                <Link to="/search" className="text-white/60 hover:text-white">Search</Link>
+              </div>
+            </div>
             <div className="flex flex-wrap gap-2">
               {popularTags.map((tag) => (
                 <Link
