@@ -87,6 +87,10 @@ const loadTag = () => import('./pages/Tag');
 registerRoutePrefetch('/tags/:tag', loadTag);
 const Tag = React.lazy(loadTag);
 
+const loadTagsIndex = () => import('./pages/TagsIndex');
+registerRoutePrefetch('/tags', loadTagsIndex);
+const TagsIndex = React.lazy(loadTagsIndex);
+
 // Optimize QueryClient for better performance
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -226,6 +230,7 @@ const App = () => {
                     <Route path="/projects/:id" element={<ProjectDetail />} />
                     <Route path="/extras" element={<Extras />} />
                     <Route path="/about" element={<About />} />
+                    <Route path="/tags" element={<TagsIndex />} />
                     <Route path="/tags/:tag" element={<Tag />} />
                     <Route path="/admin/login" element={<AdminLogin />} />
                     <Route path="/admin" element={<AdminDashboard />} />
