@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import Seo from '@/components/Seo';
@@ -32,6 +32,7 @@ interface Project {
 
 const Tag = () => {
   const { tag } = useParams<{ tag: string }>();
+  const navigate = useNavigate();
   const decodedTag = useMemo(() => decodeURIComponent(tag ?? ''), [tag]);
   const initialPosts = useMemo(() => readPrerenderData<Post[]>(`tag:${decodedTag}`), [decodedTag]);
   const initialUpdatedAt = useRef<number | undefined>(initialPosts ? Date.now() : undefined);
@@ -88,13 +89,22 @@ const Tag = () => {
 
       <div className="container-site">
         <div className="mb-8">
-          <Link
-            to="/blogs"
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              const ref = document.referrer;
+              const sameOrigin = ref && ref.startsWith(window.location.origin);
+              if (sameOrigin) {
+                navigate(-1);
+              } else {
+                navigate('/');
+              }
+            }}
             className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Blog
-          </Link>
+            Back
+          </button>
         </div>
 
         <SectionHeader title={<span className="text-brand-gradient">#{decodedTag}</span>} />
