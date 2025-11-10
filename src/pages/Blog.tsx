@@ -8,6 +8,8 @@ import Seo from '@/components/Seo';
 import SectionHeader from '@/components/SectionHeader';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { readPrerenderData } from '@/lib/prerender-data';
+import { Link } from 'react-router-dom';
+import { tagToUrl } from '@/lib/tags';
 
 interface Post {
   id: string;
@@ -45,6 +47,22 @@ const Blogs = () => {
   });
 
   const isSkeletonVisible = isLoading && !posts.length && !isFetching;
+
+  // Derive popular tags from posts (top 12)
+  const popularTags = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const p of posts) {
+      if (Array.isArray(p.tags)) for (const t of p.tags) {
+        const key = t.trim();
+        if (!key) continue;
+        counts.set(key, (counts.get(key) || 0) + 1);
+      }
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 12)
+      .map(([tag]) => tag);
+  }, [posts]);
 
   const postListSchema =
     posts.length > 0
@@ -93,6 +111,23 @@ const Blogs = () => {
         <div>
           <SectionHeader title={<span className="text-brand-gradient">Blog</span>} />
         </div>
+
+        {popularTags.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-sm text-white/60 mb-3">Popular tags</h3>
+            <div className="flex flex-wrap gap-2">
+              {popularTags.map((tag) => (
+                <Link
+                  key={tag}
+                  to={tagToUrl(tag)}
+                  className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90 hover:bg-white/20"
+                >
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {isSkeletonVisible ? (
           <div className="text-center py-12">

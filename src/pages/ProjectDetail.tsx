@@ -8,6 +8,7 @@ import Seo from '@/components/Seo';
 import { PageLoader } from '@/components/ui/LoadingStates';
 import BackRow from '@/components/BackRow';
 import { stripMarkdown } from '@/lib/markdown-utils';
+import { tagToUrl } from '@/lib/tags';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
 
 interface Project {
@@ -21,6 +22,47 @@ interface Project {
   created_at: string;
   updated_at?: string | null;
 }
+
+const RelatedProjects = ({ currentId, tags }: { currentId: string; tags: string[] }) => {
+  const { data: related = [] } = useQuery({
+    queryKey: ['related-projects', currentId, tags.sort().join(',')],
+    enabled: tags.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id,title,description,image_url,tech_tags,repo_url,created_at')
+        .overlaps('tech_tags', tags)
+        .neq('id', currentId)
+        .order('created_at', { ascending: false })
+        .limit(3);
+      if (error) throw error;
+      return data as Project[];
+    },
+    staleTime: 60_000,
+  });
+
+  if (!related.length) return null;
+
+  return (
+    <section className="mt-12 border-t border-white/10 pt-8">
+      <h2 className="text-xl font-semibold mb-6">Related projects</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {related.map((p) => (
+          <CardItem
+            key={p.id}
+            title={p.title}
+            tags={p.tech_tags || []}
+            description={p.description}
+            linkTo={`/projects/${p.id}`}
+            linkLabel="View Project"
+            githubUrl={p.repo_url || undefined}
+            image_url={p.image_url || undefined}
+          />
+        ))}
+      </div>
+    </section>
+  );
+};
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -173,7 +215,7 @@ const ProjectDetail = () => {
                 {(showAllTags ? projectTags : projectTags.slice(0, 3)).map((tag, index) => (
                   <Link
                     key={index}
-                    to={`/tags/${encodeURIComponent(tag)}`}
+to={tagToUrl(tag)}
                     className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90 hover:bg-white/20"
                   >
                     {tag}
@@ -255,6 +297,8 @@ const ProjectDetail = () => {
             )}
           </div>
         )}
+        {/* Related Projects */}
+        <RelatedProjects currentId={project.id} tags={projectTags} />
       </main>
 
       {/* Page footer removed; global Footer is used */}
