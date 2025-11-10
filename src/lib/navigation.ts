@@ -6,6 +6,8 @@ export type NavigationItem = {
 export const PRIMARY_NAV_ITEMS: NavigationItem[] = [
   { path: '/projects', label: 'Projects' },
   { path: '/blogs', label: 'Blogs' },
+  { path: '/tags', label: 'Tags' },
+  { path: '/search', label: 'Search' },
   { path: '/extras', label: 'Extras' },
   { path: '/about', label: 'About' },
 ];

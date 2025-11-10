@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { tagToUrl } from '@/lib/tags';
+import { prefetchRoute } from '@/lib/routePrefetch';
 
 interface TagListProps {
   tags: string[];
@@ -23,6 +24,7 @@ const TagList = ({ tags, initialVisible = 3, label, variant = 'hash' }: TagListP
           key={i}
           to={tagToUrl(tag)}
           onClick={() => { import('@/lib/events').then(({ logEvent }) => logEvent('tag_click', { tag })).catch(() => {}); }}
+          onPointerEnter={() => prefetchRoute('/tags/:tag')}
           className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90 hover:bg-white/20 transition-colors"
         >
           {variant === 'hash' ? `#${tag}` : tag}
