@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { tagToUrl } from '@/lib/tags';
 import { Github, ExternalLink } from 'lucide-react';
 import SpotlightCard from '../SpotlightCard';
 
@@ -156,7 +157,7 @@ const CardItem = ({
                 tags.slice(0, 4).map((tag, i) => (
                   <Link
                     key={i}
-                    to={`/tags/${encodeURIComponent(tag)}`}
+to={tagToUrl(tag)}
                     className={`px-3 py-1 text-xs font-medium rounded-full transition-all duration-200 ${
                       isCardHovered
                         ? 'bg-white/20 text-white shadow-lg'

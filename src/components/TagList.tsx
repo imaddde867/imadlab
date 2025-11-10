@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { tagToUrl } from '@/lib/tags';
 
 interface TagListProps {
   tags: string[];
@@ -20,7 +21,7 @@ const TagList = ({ tags, initialVisible = 3, label, variant = 'hash' }: TagListP
       {visible.map((tag, i) => (
         <Link
           key={i}
-          to={`/tags/${encodeURIComponent(tag)}`}
+to={tagToUrl(tag)}
           className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90 hover:bg-white/20 transition-colors"
         >
           {variant === 'hash' ? `#${tag}` : tag}
