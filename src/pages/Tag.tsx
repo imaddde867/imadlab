@@ -19,6 +19,17 @@ interface Post {
   image_url: string | null;
 }
 
+interface Project {
+  id: string;
+  title: string;
+  description: string | null;
+  full_description: string | null;
+  image_url: string | null;
+  tech_tags: string[] | null;
+  repo_url: string | null;
+  created_at: string;
+}
+
 const Tag = () => {
   const { tag } = useParams<{ tag: string }>();
   const decodedTag = useMemo(() => decodeURIComponent(tag ?? ''), [tag]);
@@ -39,6 +50,21 @@ const Tag = () => {
     },
     initialData: initialPosts,
     initialDataUpdatedAt: initialUpdatedAt.current,
+    staleTime: 60_000,
+  });
+
+  const { data: projects = [], isLoading: loadingProjects } = useQuery({
+    queryKey: ['tag-projects', decodedTag],
+    enabled: Boolean(decodedTag),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id,title,description,full_description,image_url,tech_tags,repo_url,created_at')
+        .contains('tech_tags', [decodedTag])
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data as Project[];
+    },
     staleTime: 60_000,
   });
 
@@ -97,6 +123,31 @@ const Tag = () => {
             <div className="text-white/60">No posts for this tag yet.</div>
           </div>
         )}
+
+        {/* Projects with this tag */}
+        <div className="mt-12">
+          <SectionHeader title={<span className="text-brand-gradient">Projects</span>} />
+          {loadingProjects ? (
+            <div className="text-center py-8 text-white/60">Loading projects...</div>
+          ) : projects.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
+              {projects.map((project) => (
+                <CardItem
+                  key={project.id}
+                  title={project.title}
+                  tags={project.tech_tags || []}
+                  description={project.description || ''}
+                  linkTo={`/projects/${project.id}`}
+                  linkLabel="View Project"
+                  githubUrl={project.repo_url || undefined}
+                  image_url={project.image_url || undefined}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-white/60">No projects for this tag yet.</div>
+          )}
+        </div>
       </div>
     </div>
   );
