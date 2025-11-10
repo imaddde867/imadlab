@@ -54,6 +54,7 @@ const Contact = () => {
 
       if (response.ok) {
         toast({ title: 'Message sent successfully!' });
+        import('@/lib/events').then(({ logEvent }) => logEvent('contact_submitted', { name: values.name, email: values.email })).catch(() => {});
         form.reset();
       } else {
         const data = await response.json();
@@ -61,6 +62,7 @@ const Contact = () => {
       }
     } catch {
       toast({ title: 'An error occurred.', variant: 'destructive' });
+      import('@/lib/events').then(({ logEvent }) => logEvent('contact_failed', {})).catch(() => {});
     }
   }
 

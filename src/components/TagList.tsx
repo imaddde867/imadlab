@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface TagListProps {
   tags: string[];
@@ -17,9 +18,13 @@ const TagList = ({ tags, initialVisible = 3, label, variant = 'hash' }: TagListP
     <div className="flex flex-wrap gap-2 items-center">
       {label && <span className="text-sm text-white/70">{label}</span>}
       {visible.map((tag, i) => (
-        <span key={i} className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90">
+        <Link
+          key={i}
+          to={`/tags/${encodeURIComponent(tag)}`}
+          className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90 hover:bg-white/20 transition-colors"
+        >
           {variant === 'hash' ? `#${tag}` : tag}
-        </span>
+        </Link>
       ))}
       {tags.length > initialVisible && (
         <button

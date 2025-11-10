@@ -42,11 +42,23 @@ async function generateSitemap() {
     { url: '/extras', priority: '0.7', changefreq: 'monthly', lastmod: today }
   ];
 
+  // Derive unique tags from posts
+  const tagSet = new Set();
+  for (const p of posts ?? []) {
+    if (Array.isArray(p.tags)) for (const t of p.tags) if (t && typeof t === 'string') tagSet.add(t);
+  }
+  const tagUrls = Array.from(tagSet).map((t) => ({
+    url: `/tags/${encodeURIComponent(t)}`,
+    priority: '0.6',
+    changefreq: 'weekly',
+    lastmod: today,
+  }));
+
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
-${staticPages
+${[...staticPages, ...tagUrls]
   .map(
     (page) => `  <url>
     <loc>${SITE_URL}${page.url}</loc>

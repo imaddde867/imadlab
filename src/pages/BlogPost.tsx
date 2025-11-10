@@ -9,6 +9,8 @@ import { PageLoader } from '@/components/ui/LoadingStates';
 import BackRow from '@/components/BackRow';
 import TagList from '@/components/TagList';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
+import { useQuery } from '@tanstack/react-query';
+import CardItem from '@/components/ui/CardItem';
 
 interface Post {
   id: string;
@@ -22,6 +24,49 @@ interface Post {
   image_url?: string | null;
   updated_at?: string | null;
 }
+
+const RelatedPosts = ({ currentSlug, tags }: { currentSlug: string; tags: string[] }) => {
+  const { data: related = [] } = useQuery({
+    queryKey: ['related-posts', currentSlug, tags.sort().join(',')],
+    enabled: tags.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('id,title,slug,excerpt,tags,published_date,read_time,image_url')
+        .overlaps('tags', tags)
+        .neq('slug', currentSlug)
+        .order('published_date', { ascending: false })
+        .limit(3);
+      if (error) throw error;
+      return data as Post[];
+    },
+    staleTime: 60_000,
+  });
+
+  if (!related.length) return null;
+
+  return (
+    <section className="mt-12 border-t border-white/10 pt-8">
+      <h2 className="text-xl font-semibold mb-6">Related articles</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {related.map((p) => (
+          <CardItem
+            key={p.id}
+            title={p.title}
+            tags={p.tags || []}
+            date={new Date(p.published_date).toLocaleDateString('en-US')}
+            excerpt={p.excerpt || ''}
+            linkTo={`/blogs/${p.slug}`}
+            linkLabel={`Read ${p.title}`}
+            readTime={p.read_time || undefined}
+            isBlog
+            image_url={p.image_url || undefined}
+          />
+        ))}
+      </div>
+    </section>
+  );
+};
 
 const buildMetaDescription = (excerpt?: string | null, body?: string | null) => {
   if (excerpt && excerpt.trim().length > 60) {
@@ -188,6 +233,10 @@ const BlogPost = () => {
             <div className="text-white/60 mb-4">No content available for this article.</div>
           </div>
         )}
+
+        {articleTags.length > 0 && (
+          <RelatedPosts currentSlug={post.slug} tags={articleTags} />)
+        }
       </main>
 
       {/* Page footer removed; global Footer is used */}
