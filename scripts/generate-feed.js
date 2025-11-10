@@ -1,14 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
-
-const SUPABASE_URL = 'https://mpkgugcasxpanhrkpkhs.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1wa2d1Z2Nhc3hwYW5ocmtwa2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3OTU4NTEsImV4cCI6MjA2NzM3MTg1MX0.sn9HyUjNlKHrTGEpD-33bl0NfTwVz02ljAtR92YP3hI';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
 
 const SITE_URL = 'https://imadlab.me';
 const FEED_PATH_RSS = './public/feed.xml';
 const FEED_PATH_JSON = './public/feed.json';
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const stripMarkdown = (value = '') =>
   value

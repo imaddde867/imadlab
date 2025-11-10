@@ -14,6 +14,7 @@ import CookieConsent from '@/components/CookieConsent';
 import UserSettings from '@/components/UserSettings';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { registerRoutePrefetch } from '@/lib/routePrefetch';
+import { loadScriptIfConsented } from '@/lib/consent';
 
 const getCustomCursorSupport = () => {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -116,6 +117,19 @@ const App = () => {
     if (storedBadgePreference !== null) {
       setShowFollowingBadge(JSON.parse(storedBadgePreference));
     }
+  }, []);
+
+  // Load Cloudflare Analytics only when user has consented to analytics
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.location.hostname !== 'imadlab.me') return;
+
+    loadScriptIfConsented('analytics', 'https://static.cloudflareinsights.com/beacon.min.js', {
+      'data-cf-beacon': '{"token": "e8df18bc2d9d4512835bc2f9798f4b24"}',
+      defer: 'true',
+    }).catch(() => {
+      // ignore failures silently
+    });
   }, []);
 
   React.useEffect(() => {

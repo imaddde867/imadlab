@@ -19,6 +19,7 @@ export const useAnalytics = () => {
   const sessionIdRef = useRef<string>(generateSessionId());
   const pageStartTime = useRef<number>(Date.now());
   const sessionInitialized = useRef<boolean>(false);
+  const pageViewIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!isAllowed('analytics')) return;
@@ -81,6 +82,7 @@ export const useAnalytics = () => {
     const sessionId = sessionIdRef.current;
     const startTime = Date.now();
     pageStartTime.current = startTime;
+    pageViewIdRef.current = null;
 
     // Track page view - ensure session exists first
     const trackPageView = async () => {
@@ -111,24 +113,29 @@ export const useAnalytics = () => {
         ...utmParams,
       });
 
-      const { error } = await supabase.from('page_views').insert({
-        session_id: sessionId,
-        path: location.pathname,
-        referrer: referrer,
-        traffic_source: trafficSource,
-        utm_source: utmParams.utm_source || null,
-        utm_medium: utmParams.utm_medium || null,
-        utm_campaign: utmParams.utm_campaign || null,
-        utm_term: utmParams.utm_term || null,
-        utm_content: utmParams.utm_content || null,
-        device_type: metadata.device_type,
-        browser: metadata.browser,
-        os: metadata.os,
-      });
+      const { data: inserted, error } = await supabase
+        .from('page_views')
+        .insert({
+          session_id: sessionId,
+          path: location.pathname,
+          referrer: referrer,
+          traffic_source: trafficSource,
+          utm_source: utmParams.utm_source || null,
+          utm_medium: utmParams.utm_medium || null,
+          utm_campaign: utmParams.utm_campaign || null,
+          utm_term: utmParams.utm_term || null,
+          utm_content: utmParams.utm_content || null,
+          device_type: metadata.device_type,
+          browser: metadata.browser,
+          os: metadata.os,
+        })
+        .select('id')
+        .single();
 
       if (error) {
         logger.error('❌ Analytics page view error:', error);
       } else {
+        pageViewIdRef.current = inserted?.id ?? null;
         logger.debug('✅ Page view tracked:', location.pathname, { trafficSource, ...utmParams });
       }
     };
@@ -137,14 +144,11 @@ export const useAnalytics = () => {
 
     return () => {
       const duration = Math.floor((Date.now() - startTime) / 1000);
-      if (duration > 0 && isAllowed('analytics')) {
+      if (duration > 0 && isAllowed('analytics') && pageViewIdRef.current) {
         supabase
           .from('page_views')
           .update({ duration })
-          .eq('session_id', sessionId)
-          .eq('path', location.pathname)
-          .order('viewed_at', { ascending: false })
-          .limit(1)
+          .eq('id', pageViewIdRef.current)
           .then(({ error }) => {
             if (error) {
               logger.error('❌ Duration update error:', error);
