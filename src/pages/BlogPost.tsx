@@ -9,7 +9,6 @@ import { PageLoader } from '@/components/ui/LoadingStates';
 import BackRow from '@/components/BackRow';
 import TagList from '@/components/TagList';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
-import { useQuery } from '@tanstack/react-query';
 import CardItem from '@/components/ui/CardItem';
 
 interface Post {
