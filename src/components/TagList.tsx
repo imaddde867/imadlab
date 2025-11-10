@@ -21,7 +21,8 @@ const TagList = ({ tags, initialVisible = 3, label, variant = 'hash' }: TagListP
       {visible.map((tag, i) => (
         <Link
           key={i}
-to={tagToUrl(tag)}
+          to={tagToUrl(tag)}
+          onClick={() => { import('@/lib/events').then(({ logEvent }) => logEvent('tag_click', { tag })).catch(() => {}); }}
           className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90 hover:bg-white/20 transition-colors"
         >
           {variant === 'hash' ? `#${tag}` : tag}

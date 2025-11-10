@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { tagToUrl } from '@/lib/tags';
 import { Github, ExternalLink } from 'lucide-react';
 import SpotlightCard from '../SpotlightCard';
+import { prefetchRoute } from '@/lib/routePrefetch';
 
 interface CardItemProps {
   title: string;
@@ -210,6 +211,9 @@ to={tagToUrl(tag)}
                     {linkTo ? (
                       <Link
                         to={linkTo}
+                        onPointerEnter={() => {
+                          if (isBlog) prefetchRoute('/blogs/:slug'); else prefetchRoute('/projects/:id');
+                        }}
                         className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 group"
                       >
                         {linkLabel}

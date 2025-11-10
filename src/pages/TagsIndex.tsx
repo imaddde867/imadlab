@@ -5,6 +5,7 @@ import Seo from '@/components/Seo';
 import SectionHeader from '@/components/SectionHeader';
 import { tagSlug, tagToUrl } from '@/lib/tags';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 
 interface Post { tags: string[] | null }
 interface Project { tech_tags: string[] | null }
@@ -68,6 +69,27 @@ const TagsIndex = () => {
     return Array.from(map.values()).sort((a, b) => b.total - a.total);
   }, [posts, projects]);
 
+  // Log view
+  useEffect(() => {
+    import('@/lib/events').then(({ logEvent }) => logEvent('tags_index_view', {})).catch(() => {});
+  }, []);
+
+  // ItemList schema for tags
+  const tagsSchema = tags.length
+    ? [{
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: 'All tags',
+        numberOfItems: tags.length,
+        itemListElement: tags.map((t, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: t.label,
+          url: `https://imadlab.me${tagToUrl(t.label)}`,
+        })),
+      }]
+    : undefined;
+
   return (
     <div className="min-h-screen bg-black text-white section pt-14">
       <Seo
@@ -79,6 +101,7 @@ const TagsIndex = () => {
           { name: 'Home', path: '/' },
           { name: 'Tags', path: '/tags' },
         ]}
+        additionalSchemas={tagsSchema}
       />
 
       <div className="container-site">
@@ -91,6 +114,7 @@ const TagsIndex = () => {
               <Link
                 key={t.slug}
                 to={tagToUrl(t.label)}
+                onClick={() => { import('@/lib/events').then(({ logEvent }) => logEvent('tag_click', { tag: t.label })).catch(() => {}); }}
                 className="flex items-center justify-between rounded-md border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10 transition"
               >
                 <span className="text-white/90">#{t.label}</span>

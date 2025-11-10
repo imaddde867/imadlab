@@ -10,6 +10,7 @@ import BackRow from '@/components/BackRow';
 import TagList from '@/components/TagList';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
 import CardItem from '@/components/ui/CardItem';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 interface Post {
   id: string;
@@ -25,9 +26,10 @@ interface Post {
 }
 
 const RelatedPosts = ({ currentSlug, tags }: { currentSlug: string; tags: string[] }) => {
+  const { ref, isIntersecting } = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px' });
   const { data: related = [] } = useQuery({
     queryKey: ['related-posts', currentSlug, tags.sort().join(',')],
-    enabled: tags.length > 0,
+    enabled: tags.length > 0 && isIntersecting,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
@@ -42,10 +44,10 @@ const RelatedPosts = ({ currentSlug, tags }: { currentSlug: string; tags: string
     staleTime: 60_000,
   });
 
-  if (!related.length) return null;
+  if (!related.length && !isIntersecting) return null;
 
   return (
-    <section className="mt-12 border-t border-white/10 pt-8">
+    <section ref={ref} className="mt-12 border-t border-white/10 pt-8">
       <h2 className="text-xl font-semibold mb-6">Related articles</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {related.map((p) => (
