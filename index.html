@@ -65,25 +65,5 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Cloudflare Web Analytics - Only load in production (deferred for performance) -->
-    <script>
-      // Only load Cloudflare Analytics in production (not on localhost or dev environments)
-      if (window.location.hostname === 'imadlab.me' && !window.location.port) {
-        // Use requestIdleCallback to defer loading until browser is idle
-        const loadAnalytics = () => {
-          const script = document.createElement('script');
-          script.defer = true;
-          script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
-          script.setAttribute('data-cf-beacon', '{"token": "e8df18bc2d9d4512835bc2f9798f4b24"}');
-          document.body.appendChild(script);
-        };
-        
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(loadAnalytics, { timeout: 2000 });
-        } else {
-          setTimeout(loadAnalytics, 1000);
-        }
-      }
-    </script>
   </body>
 </html>
