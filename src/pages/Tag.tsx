@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,7 +6,7 @@ import Seo from '@/components/Seo';
 import SectionHeader from '@/components/SectionHeader';
 import CardItem from '@/components/ui/CardItem';
 import { ArrowLeft } from 'lucide-react';
-import { readPrerenderData } from '@/lib/prerender-data';
+import { tagMatchesSlug } from '@/lib/tags';
 
 interface Post {
   id: string;
@@ -31,59 +31,72 @@ interface Project {
 }
 
 const Tag = () => {
-  const { tag } = useParams<{ tag: string }>();
+  const { tag: slug } = useParams<{ tag: string }>();
   const navigate = useNavigate();
-  const decodedTag = useMemo(() => decodeURIComponent(tag ?? ''), [tag]);
-  const initialPosts = useMemo(() => readPrerenderData<Post[]>(`tag:${decodedTag}`), [decodedTag]);
-  const initialUpdatedAt = useRef<number | undefined>(initialPosts ? Date.now() : undefined);
+  const tagSlugParam = slug ?? '';
 
-  const { data: posts = [], isLoading, isFetching } = useQuery({
-    queryKey: ['tag-posts', decodedTag],
-    enabled: Boolean(decodedTag),
+  const { data: allPosts = [], isLoading, isFetching } = useQuery({
+    queryKey: ['tag-posts', tagSlugParam],
+    enabled: Boolean(tagSlugParam),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
         .select('id,title,slug,excerpt,tags,published_date,read_time,image_url')
-        .contains('tags', [decodedTag])
         .order('published_date', { ascending: false });
       if (error) throw error;
-      return data as Post[];
+      return (data as Post[]) ?? [];
     },
-    initialData: initialPosts,
-    initialDataUpdatedAt: initialUpdatedAt.current,
     staleTime: 60_000,
   });
 
-  const { data: projects = [], isLoading: loadingProjects } = useQuery({
-    queryKey: ['tag-projects', decodedTag],
-    enabled: Boolean(decodedTag),
+  const posts = useMemo(
+    () => allPosts.filter((p) => (p.tags || []).some((t) => tagMatchesSlug(t, tagSlugParam))),
+    [allPosts, tagSlugParam]
+  );
+
+  const { data: allProjects = [], isLoading: loadingProjects } = useQuery({
+    queryKey: ['tag-projects', tagSlugParam],
+    enabled: Boolean(tagSlugParam),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
         .select('id,title,description,full_description,image_url,tech_tags,repo_url,created_at')
-        .contains('tech_tags', [decodedTag])
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data as Project[];
+      return (data as Project[]) ?? [];
     },
     staleTime: 60_000,
   });
+
+  const projects = useMemo(
+    () => allProjects.filter((p) => (p.tech_tags || []).some((t) => tagMatchesSlug(t, tagSlugParam))),
+    [allProjects, tagSlugParam]
+  );
 
   const isSkeletonVisible = isLoading && !posts.length && !isFetching;
   const hasPosts = posts.length > 0;
   const hasProjects = projects.length > 0;
 
+  const displayTag = useMemo(() => {
+    const fromPosts = allPosts.find((p) => (p.tags || []).some((t) => tagMatchesSlug(t, tagSlugParam)))?.tags?.find((t) => tagMatchesSlug(t, tagSlugParam));
+    if (fromPosts) return fromPosts;
+    const fromProjects = allProjects.find((p) => (p.tech_tags || []).some((t) => tagMatchesSlug(t, tagSlugParam)))?.tech_tags?.find((t) => tagMatchesSlug(t, tagSlugParam));
+    if (fromProjects) return fromProjects;
+    // fallback: de-slug to title-ish
+    return tagSlugParam.replace(/-/g, ' ');
+  }, [allPosts, allProjects, tagSlugParam]);
+
   return (
     <div className="min-h-screen bg-black text-white section pt-14">
       <Seo
-        title={`Tag: ${decodedTag}`}
-        description={`Articles tagged with ${decodedTag}.`}
+        title={`Tag: ${displayTag}`}
+        description={`Content tagged with ${displayTag}.`}
         type="website"
         schemaType="CollectionPage"
         breadcrumbs={[
           { name: 'Home', path: '/' },
           { name: 'Blog', path: '/blogs' },
-          { name: `Tag: ${decodedTag}`, url: `https://imadlab.me/tags/${encodeURIComponent(decodedTag)}` },
+          { name: `Tag: ${displayTag}`, url: `https://imadlab.me/tags/${encodeURIComponent(tagSlugParam)}` },
         ]}
       />
 

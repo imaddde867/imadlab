@@ -39,16 +39,18 @@ async function generateSitemap() {
     { url: '/about', priority: '0.9', changefreq: 'monthly', lastmod: today },
     { url: '/projects', priority: '0.8', changefreq: 'weekly', lastmod: today },
     { url: '/blogs', priority: '0.8', changefreq: 'weekly', lastmod: today },
+    { url: '/tags', priority: '0.7', changefreq: 'weekly', lastmod: today },
     { url: '/extras', priority: '0.7', changefreq: 'monthly', lastmod: today }
   ];
 
+  const slugify = (s) => s.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   // Derive unique tags from posts
   const tagSet = new Set();
   for (const p of posts ?? []) {
-    if (Array.isArray(p.tags)) for (const t of p.tags) if (t && typeof t === 'string') tagSet.add(t);
+    if (Array.isArray(p.tags)) for (const t of p.tags) if (t && typeof t === 'string') tagSet.add(slugify(t));
   }
-  const tagUrls = Array.from(tagSet).map((t) => ({
-    url: `/tags/${encodeURIComponent(t)}`,
+  const tagUrls = Array.from(tagSet).map((slug) => ({
+    url: `/tags/${encodeURIComponent(slug)}`,
     priority: '0.6',
     changefreq: 'weekly',
     lastmod: today,
