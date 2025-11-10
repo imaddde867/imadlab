@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -82,9 +82,39 @@ const Tag = () => {
     if (fromPosts) return fromPosts;
     const fromProjects = allProjects.find((p) => (p.tech_tags || []).some((t) => tagMatchesSlug(t, tagSlugParam)))?.tech_tags?.find((t) => tagMatchesSlug(t, tagSlugParam));
     if (fromProjects) return fromProjects;
-    // fallback: de-slug to title-ish
     return tagSlugParam.replace(/-/g, ' ');
   }, [allPosts, allProjects, tagSlugParam]);
+
+  useEffect(() => {
+    import('@/lib/events').then(({ logEvent }) => logEvent('tag_view', { slug: tagSlugParam, tag: displayTag })).catch(() => {});
+  }, [tagSlugParam, displayTag]);
+
+  const breadcrumbTrail = [
+    { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blogs' },
+    { name: `Tag: ${displayTag}`, url: `https://imadlab.me/tags/${encodeURIComponent(tagSlugParam)}` },
+  ];
+
+  const additionalSchemas = [
+    hasPosts
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: `Posts tagged ${displayTag}`,
+          numberOfItems: posts.length,
+          itemListElement: posts.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.title, url: `https://imadlab.me/blogs/${p.slug}` })),
+        }
+      : undefined,
+    hasProjects
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: `Projects tagged ${displayTag}`,
+          numberOfItems: projects.length,
+          itemListElement: projects.map((pr, i) => ({ '@type': 'ListItem', position: i + 1, name: pr.title, url: `https://imadlab.me/projects/${pr.id}` })),
+        }
+      : undefined,
+  ].filter(Boolean) as Array<Record<string, unknown>>;
 
   return (
     <div className="min-h-screen bg-black text-white section pt-14">
@@ -93,11 +123,8 @@ const Tag = () => {
         description={`Content tagged with ${displayTag}.`}
         type="website"
         schemaType="CollectionPage"
-        breadcrumbs={[
-          { name: 'Home', path: '/' },
-          { name: 'Blog', path: '/blogs' },
-          { name: `Tag: ${displayTag}`, url: `https://imadlab.me/tags/${encodeURIComponent(tagSlugParam)}` },
-        ]}
+        breadcrumbs={breadcrumbTrail}
+        additionalSchemas={additionalSchemas}
       />
 
       <div className="container-site">
@@ -120,7 +147,7 @@ const Tag = () => {
           </button>
         </div>
 
-        <SectionHeader title={<span className="text-brand-gradient">#{decodedTag}</span>} />
+        <SectionHeader title={<span className="text-brand-gradient">#{displayTag}</span>} />
 
         {isSkeletonVisible ? (
           <div className="text-center py-12">
@@ -145,7 +172,6 @@ const Tag = () => {
           </div>
         ) : null}
 
-        {/* Projects with this tag */}
         {(loadingProjects || hasProjects) && (
           <div className="mt-12">
             <SectionHeader title={<span className="text-brand-gradient">Projects</span>} />
@@ -170,7 +196,6 @@ const Tag = () => {
           </div>
         )}
 
-        {/* Empty state only if no posts and no projects */}
         {!isSkeletonVisible && !loadingProjects && !hasPosts && !hasProjects && (
           <div className="text-center py-12">
             <div className="text-white/60">No posts or projects for this tag yet.</div>
