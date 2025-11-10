@@ -10,6 +10,7 @@ import BackRow from '@/components/BackRow';
 import { stripMarkdown } from '@/lib/markdown-utils';
 import { tagToUrl } from '@/lib/tags';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
+import CardItem from '@/components/ui/CardItem';
 
 interface Project {
   id: string;
