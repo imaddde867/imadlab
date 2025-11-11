@@ -400,6 +400,8 @@ const TechStack = () => {
   const tooltipRef = useRef<HTMLDivElement>(null);
 
   const ADDITIONAL_CATEGORY = 'Additional Tools';
+  const COLLAPSE_THRESHOLD = 24;
+  const [expanded, setExpanded] = useState(false);
 
   const filteredTechStack = useMemo(
     () =>
@@ -409,10 +411,16 @@ const TechStack = () => {
     [selectedCategory]
   );
 
+  const displayedTechStack = useMemo(
+    () => (expanded ? filteredTechStack : filteredTechStack.slice(0, COLLAPSE_THRESHOLD)),
+    [filteredTechStack, expanded]
+  );
+
   useEffect(() => {
     // When the filtered tech stack changes (category toggled),
     // immediately show all filtered techs (no animation reset)
     setVisibleTechs(new Set(filteredTechStack.map((tech) => tech.name)));
+    setExpanded(false);
   }, [filteredTechStack]);
 
   const handleMouseEnter = (tech: TechItem, event: React.MouseEvent) => {
@@ -471,40 +479,66 @@ const TechStack = () => {
         />
 
         {/* Category filter */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                selectedCategory === category
-                  ? 'bg-white/20 text-white shadow-lg scale-105'
-                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white/90'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+        <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-12">
+          {categories.map((category) => {
+            const isActive = selectedCategory === category;
+            return (
+              <button
+                key={category}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => setSelectedCategory(category)}
+                className={`inline-flex items-center gap-2 rounded-full border backdrop-blur-sm px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
+                  isActive
+                    ? 'bg-white text-black border-white/90 shadow-[0_8px_24px_rgba(255,255,255,0.15)]'
+                    : 'bg-white/5 text-white/80 border-white/15 hover:bg-white/10 hover:text-white hover:border-white/25'
+                }`}
+              >
+                {category}
+              </button>
+            );
+          })}
         </div>
 
         {/* Tech grid */}
         <div className="flex justify-center">
           <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-3 md:gap-4 max-w-5xl">
-            {filteredTechStack.map((tech, index) => renderTechCard(tech, index))}
+            {displayedTechStack.map((tech, index) => renderTechCard(tech, index))}
           </div>
         </div>
+
+        {/* Show more/less for long lists */}
+        {filteredTechStack.length > COLLAPSE_THRESHOLD && (
+          <div className="mt-8 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              className="group flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            >
+              <span className="text-sm font-medium text-white/80 group-hover:text-white">
+                {expanded ? 'Show less' : 'Show more'}
+              </span>
+              {expanded ? (
+                <ChevronUp className="w-4 h-4 text-white/70 group-hover:text-white" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-white/70 group-hover:text-white" />
+              )}
+            </button>
+          </div>
+        )}
 
         {/* Additional Tools Section - Show toggle when viewing "All" */}
         {selectedCategory === 'All' && (
           <div className="mt-12 flex justify-center">
             <button
+              type="button"
               onClick={() => setSelectedCategory(ADDITIONAL_CATEGORY)}
-              className="group flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300"
+              className="group flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
             >
-              <span className="text-sm font-medium text-white/70 group-hover:text-white/90">
+              <span className="text-sm font-medium text-white/80 group-hover:text-white">
                 View Additional Tools
               </span>
-              <ChevronDown className="w-4 h-4 text-white/70 group-hover:text-white/90" />
+              <ChevronDown className="w-4 h-4 text-white/70 group-hover:text-white" />
             </button>
           </div>
         )}
@@ -513,13 +547,14 @@ const TechStack = () => {
         {selectedCategory === ADDITIONAL_CATEGORY && (
           <div className="mt-12 flex justify-center">
             <button
+              type="button"
               onClick={() => setSelectedCategory('All')}
-              className="group flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300"
+              className="group flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
             >
-              <span className="text-sm font-medium text-white/70 group-hover:text-white/90">
+              <span className="text-sm font-medium text-white/80 group-hover:text-white">
                 Back to Core Stack
               </span>
-              <ChevronUp className="w-4 h-4 text-white/70 group-hover:text-white/90" />
+              <ChevronUp className="w-4 h-4 text-white/70 group-hover:text-white" />
             </button>
           </div>
         )}
