@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
 import { ArrowLeft } from 'lucide-react';
-import Seo from '@/components/Seo';
+import SEO from '@/components/SEO';
 import SectionHeader from '@/components/SectionHeader';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { readPrerenderData } from '@/lib/prerender-data';
@@ -85,7 +85,7 @@ const Blogs = () => {
 
   return (
     <div className="min-h-screen bg-black text-white section pt-14">
-      <Seo
+      <SEO
         title="Blog"
         description="Read articles and tutorials on data engineering, AI, machine learning, and more. Stay up-to-date with the latest trends and technologies."
         keywords="data engineering blog, machine learning tutorials, ai articles, python tutorials, tech blog, data science articles, programming tutorials"

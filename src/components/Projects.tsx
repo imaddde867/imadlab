@@ -114,8 +114,8 @@ const Projects = () => {
         <div className="ml-8 lg:ml-16 flex items-center justify-between">
           <div className="w-full max-w-xl">
             <SectionHeader
-              title={<span className="ml-0">Latest</span>}
-              subtitle={<span className="ml-8">Projects</span>}
+              eyebrow="Latest"
+              title={<span className="ml-0">Projects</span>}
             />
           </div>
           <a

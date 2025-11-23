@@ -1,4 +1,4 @@
-import Seo from '@/components/Seo';
+import SEO from '@/components/SEO';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Github, Linkedin, FileText } from 'lucide-react';
 import Stars from '@/components/Stars';
@@ -11,7 +11,7 @@ const About = () => {
     <div className="relative min-h-screen bg-black text-white section pt-14">
       <Stars />
       <div className="absolute inset-0 opacity-10 animate-subtle-flicker" />
-      <Seo
+      <SEO
         title="About Imad Eddine"
         description="Learn more about Imad Eddine El Mouss, a Data Engineer and AI enthusiast."
         keywords="about imadlab, imad eddine biography, data engineer experience, ai professional background"
