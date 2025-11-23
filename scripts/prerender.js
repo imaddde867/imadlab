@@ -129,9 +129,13 @@ const renderPostsMarkup = (posts) => {
         ? new Date(post.published_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
         : '';
       const tags = Array.isArray(post.tags) ? post.tags.filter(Boolean).slice(0, 5) : [];
+      const cover = post.image_url
+        ? `<div class="prerender-image"><img src="${escapeHtml(post.image_url)}" alt="${escapeHtml(post.title)}" loading="lazy" decoding="async" /></div>`
+        : '';
 
       return `
     <article class="prerender-card">
+      ${cover}
       <h2 class="prerender-title">${escapeHtml(post.title)}</h2>
       ${published ? `<p class="prerender-meta">Published ${escapeHtml(published)}</p>` : ''}
       ${tags.length ? `<p class="prerender-tags">Tags: ${escapeHtml(tags.join(', '))}</p>` : ''}
@@ -217,7 +221,7 @@ async function fetchProjects() {
 async function fetchPosts() {
   const { data, error } = await supabase
     .from('posts')
-    .select('id,title,slug,excerpt,body,tags,published_date,read_time')
+    .select('id,title,slug,excerpt,body,tags,published_date,read_time,image_url')
     .order('published_date', { ascending: false })
     .limit(30);
 
