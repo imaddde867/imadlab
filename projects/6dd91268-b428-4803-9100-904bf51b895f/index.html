@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Meta tags dynamically injected by <Seo /> component via react-helmet-async -->
+    <!-- Static fallbacks only for crawlers that don't execute JS -->
+    <title>Imadlab | Data Engineer & AI/ML Portfolio</title>
+    <meta name="description" content="Portfolio of Imad Eddine El Mouss - Data Engineer & AI/ML professional" />
+
+    <!-- Favicon and Theme Color -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Font Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Load fonts with font-display: swap for better performance -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </noscript>
+    
+    <!-- DNS prefetch for Supabase and Cloudflare Analytics -->
+    <link rel="dns-prefetch" href="https://mpkgugcasxpanhrkpkhs.supabase.co">
+    <link rel="preconnect" href="https://mpkgugcasxpanhrkpkhs.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://static.cloudflareinsights.com">
+    <link rel="preconnect" href="https://static.cloudflareinsights.com" crossorigin>
+    
+    <!-- RSS/JSON Feeds -->
+    <link rel="alternate" type="application/rss+xml" title="Imadlab Blog RSS Feed" href="/feed.xml" />
+    <link rel="alternate" type="application/feed+json" title="Imadlab Blog JSON Feed" href="/feed.json" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://imadlab.me",
+      "name": "Imadlab",
+      "description": "Portfolio and writing by Imad Eddine El Mouss covering data engineering, AI/ML, and software projects.",
+      "publisher": {
+        "@type": "Person",
+        "name": "Imad Eddine El Mouss",
+        "url": "https://imadlab.me/about",
+        "sameAs": [
+          "https://github.com/imaddde867",
+          "https://www.linkedin.com/in/imad-eddine-e-986741262"
+        ]
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://duckduckgo.com/?q=site%3Aimadlab.me+{search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="module" crossorigin src="/assets/js/index-DTzUt9d2.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-83wnhTa5.css">
+  </head>
+
+  <body>
+    <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Imadlab | Data Engineer & AI/ML Portfolio</h1>
+    <div id="root">
+<main data-prerender="true" class="prerender-shell">
+  <article class="prerender-article">
+    <p class="prerender-meta text-sm text-white/60">October 30, 2025</p>
+    <h1 class="text-3xl font-bold mb-4">Security in Federated Learning</h1>
+    <p class="prerender-tags">Tech: Python, Federated Learning, Homomorphic Encryption, CKKS, BFV, Differential Privacy</p>
+    <div class="prerender-image"><img src="https://www.researchgate.net/publication/356220574/figure/fig5/AS:1154725290475527@1652319371354/Poisoning-attack-in-a-federated-learning-environment.png" alt="Security in Federated Learning" loading="lazy" decoding="async" /></div>
+    <p class="prerender-summary leading-relaxed">This project delivers a compact, configurable Federated Learning (FL) runner with optional homomorphic encryption (HE) and differential privacy (DP) hooks. It focuses on CIFAR‑100 with ResNet‑18, selective layer encryption via TenSEAL (CKKS/BFV) or a fast mock adapter, and utilities to export per‑client updates for downstream attack analysis.
+
+### Why this matters
+- Protects client updates during aggregation with ...</p>
+    <p class="prerender-meta mt-4">Source: <a class="prerender-link inline" href="https://github.com/imaddde867/Sec_Federated_Learning" rel="noopener">View repository</a></p>
+    <a class="prerender-link mt-6 inline-flex" href="/projects/6dd91268-b428-4803-9100-904bf51b895f">Continue exploring</a>
+  </article>
+</main>
+</div>
+    
+  <script>window.__PRERENDERED_DATA__ = window.__PRERENDERED_DATA__ || {}; window.__PRERENDERED_DATA__["project:6dd91268-b428-4803-9100-904bf51b895f"] = {"id":"6dd91268-b428-4803-9100-904bf51b895f","title":"Security in Federated Learning","description":"Secure federated learning on CIFAR‑100 with selective HE (CKKS/BFV) and DP hooks, featuring chunked weighted aggregation and exportable client updates for attack analysis.","full_description":"This project delivers a compact, configurable Federated Learning (FL) runner with optional homomorphic encryption (HE) and differential privacy (DP) hooks. It focuses on CIFAR‑100 with ResNet‑18, selective layer encryption via TenSEAL (CKKS/BFV) or a fast mock adapter, and utilities to export per‑client updates for downstream attack analysis.\n\n### Why this matters\n- Protects client updates during aggregation with HE while keeping training practical.\n- Supports selective encryption of sensitive layers to trade off privacy vs. speed.\n- Provides DP hooks (clip + Gaussian noise) for attack resilience studies.\n- Exports plaintext client deltas for controlled red‑team evaluation.\n\n### Core components\n- FL runner (`FLRunner`): non‑IID Dirichlet split, FedAvg, weighted aggregation, CIFAR‑100 + ResNet‑18, GPU‑aware.\n- HE adapters:\n  - CKKS (approximate) and BFV (exact) via TenSEAL with automatic chunking and weighted homomorphic addition.\n  - Mock adapter for development without crypto cost.\n- Selective encryption:\n  - Per‑parameter filtering by name (e.g., `fc`, `layer1`), optional gradient/update/communication encryption.\n  - Metadata‑preserving wire format with timing/throughput metrics.\n- DP hooks:\n  - In‑place gradient clipping and additive Gaussian noise on updates (plug‑in accountant later).\n\n### What’s new (current status)\n- TenSEAL‑backed CKKS/BFV adapters with chunked vectors and weighted homomorphic aggregation.\n- Deterministic mock adapter for fast pipelines and CI.\n- End‑to‑end selective encryption path for client updates with unwrap/aggregate/decrypt in the server.\n- Clean CLI: run experiments and emit JSON metrics; export per‑client deltas for attack utilities.\n- Minimal, redundancy‑free orchestration; ready to layer on Opacus or advanced accounting.\n\n### Usage\n\nRun a quick experiment (mock HE):\n\npython src/core-safe/run_experiment.py \\\n  --rounds 1 --clients 10 --cpr 5 --epochs 1 --batch 32 --alpha 0.1 \\\n  --enc --method mock --layers fc --out reports/example_metrics.json- Flags:\n  - `--enc`: enable encryption; `--method mock|ckks|bfv` selects adapter.\n  - `--layers`: only encrypt layers matching names (e.g., `fc`).\n  - `--dp`, `--clip`, `--noise`: DP hooks (clip norm, Gaussian noise).\n  - `--out`: write metrics JSON; CIFAR‑100 auto‑downloads to `./data`.\n\nTenSEAL is required for `ckks`/`bfv`. Without TenSEAL, those modes raise an explicit error.\n\n### Artifacts and metrics\n- Per‑round: wall‑time, test accuracy/loss, HE metrics (`encryption_time`, `decryption_time`, bytes).\n- Optional: plaintext client deltas saved per round for attack scripts (`export_client_updates=True`).\n\n### Implementation notes\n- Weighted FedAvg over non‑IID partitions; server applies aggregated delta to the global model.\n- CKKS/BFV adapters support chunking to respect polynomial slot limits; BFV integer‑scales floats.\n- De/serialization includes shape/dtype metadata; plaintext can be dropped when encrypted.\n- Strong typing and deterministic seeds for replicability; CUDA if available.\n\n### What’s next\n- Integrate a formal DP accountant (e.g., Opacus) and tighter budget tracking.\n- Systematic benchmarks of selective layer subsets (e.g., only classifier vs. full model).\n- Plug in attack suites on exported updates (inversion/membership) with privacy‑utility curves.","tech_tags":["Python","Federated Learning","Homomorphic Encryption","CKKS","BFV","Differential Privacy","PyTorch","CIFAR‑100","ResNet‑18","TenSEAL"],"created_at":"2025-10-30T05:35:48.326677+00:00","updated_at":"2025-10-30T05:35:48.326677+00:00","image_url":"https://www.researchgate.net/publication/356220574/figure/fig5/AS:1154725290475527@1652319371354/Poisoning-attack-in-a-federated-learning-environment.png","repo_url":"https://github.com/imaddde867/Sec_Federated_Learning"};</script>
+</body>
+</html>

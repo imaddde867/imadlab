@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Meta tags dynamically injected by <Seo /> component via react-helmet-async -->
+    <!-- Static fallbacks only for crawlers that don't execute JS -->
+    <title>Imadlab | Data Engineer & AI/ML Portfolio</title>
+    <meta name="description" content="Portfolio of Imad Eddine El Mouss - Data Engineer & AI/ML professional" />
+
+    <!-- Favicon and Theme Color -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Font Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Load fonts with font-display: swap for better performance -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </noscript>
+    
+    <!-- DNS prefetch for Supabase and Cloudflare Analytics -->
+    <link rel="dns-prefetch" href="https://mpkgugcasxpanhrkpkhs.supabase.co">
+    <link rel="preconnect" href="https://mpkgugcasxpanhrkpkhs.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://static.cloudflareinsights.com">
+    <link rel="preconnect" href="https://static.cloudflareinsights.com" crossorigin>
+    
+    <!-- RSS/JSON Feeds -->
+    <link rel="alternate" type="application/rss+xml" title="Imadlab Blog RSS Feed" href="/feed.xml" />
+    <link rel="alternate" type="application/feed+json" title="Imadlab Blog JSON Feed" href="/feed.json" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://imadlab.me",
+      "name": "Imadlab",
+      "description": "Portfolio and writing by Imad Eddine El Mouss covering data engineering, AI/ML, and software projects.",
+      "publisher": {
+        "@type": "Person",
+        "name": "Imad Eddine El Mouss",
+        "url": "https://imadlab.me/about",
+        "sameAs": [
+          "https://github.com/imaddde867",
+          "https://www.linkedin.com/in/imad-eddine-e-986741262"
+        ]
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://duckduckgo.com/?q=site%3Aimadlab.me+{search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="module" crossorigin src="/assets/js/index-DTzUt9d2.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-83wnhTa5.css">
+  </head>
+
+  <body>
+    <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Imadlab | Data Engineer & AI/ML Portfolio</h1>
+    <div id="root">
+<main data-prerender="true" class="prerender-shell">
+  <article class="prerender-article">
+    <p class="prerender-meta text-sm text-white/60">October 30, 2025</p>
+    <h1 class="text-3xl font-bold mb-4">InfiniteChessAI : Self-Improving Chess Opponent</h1>
+    <p class="prerender-tags">Tech: Swift, Python, Flask, SwiftUI, python-chess</p>
+    <div class="prerender-image"><img src="https://www.mathsisfun.com/games/images/chess-castle-2.gif" alt="InfiniteChessAI : Self-Improving Chess Opponent" loading="lazy" decoding="async" /></div>
+    <p class="prerender-summary leading-relaxed">## Vision
+
+I set out to build an end-to-end chess experience that blends a polished SwiftUI client with a learning-first backend. The long-term goal is a self-improving engine that ingests my own Chess.com history, trains on that data, and challenges me in a native iOS app. InfiniteChessAI exists to explore that full loop: board UX, data collection, move prediction, and, eventually, reinforcement learning.
+
+## Wha...</p>
+    <p class="prerender-meta mt-4">Source: <a class="prerender-link inline" href="https://github.com/imaddde867/InfiniteChessAI" rel="noopener">View repository</a></p>
+    <a class="prerender-link mt-6 inline-flex" href="/projects/674332e4-f4aa-48ef-9d51-e66ffd0b7f04">Continue exploring</a>
+  </article>
+</main>
+</div>
+    
+  <script>window.__PRERENDERED_DATA__ = window.__PRERENDERED_DATA__ || {}; window.__PRERENDERED_DATA__["project:674332e4-f4aa-48ef-9d51-e66ffd0b7f04"] = {"id":"674332e4-f4aa-48ef-9d51-e66ffd0b7f04","title":"InfiniteChessAI : Self-Improving Chess Opponent ","description":"Building a SwiftUI mobile chess app that learns from my own games and grows alongside me.","full_description":"## Vision\n\nI set out to build an end-to-end chess experience that blends a polished SwiftUI client with a learning-first backend. The long-term goal is a self-improving engine that ingests my own Chess.com history, trains on that data, and challenges me in a native iOS app. InfiniteChessAI exists to explore that full loop: board UX, data collection, move prediction, and, eventually, reinforcement learning.\n\n## What’s Built So Far\n\n- **SwiftUI board ('ChessAI/')** – Native iOS front-end featuring legal move generation, SAN parsing, animated piece interactions, and a resilient AI integration that now surfaces server errors instead of executing impossible moves.\n- **Mock inference server ('server/mock_ai_server.py')** – A lightweight Flask API backed by 'python-chess' that returns random legal moves, letting the client exercise real HTTP flows while the true engine bakes.\n- **Data tooling ('scripts/generate_chess_sft_dataset.py')** – Reproducible pipeline that downloads Chess.com archives, normalizes SAN histories for either color, and emits JSONL pairs primed for supervised fine-tuning. The helper tests under 'tests/' lock down history alignment.\n- **Sample dataset ('sft_data.jsonl')** – Representative output from the pipeline, demonstrating the prompt/completion format that will feed the forthcoming models.\n- **Developer ergonomics** – Fresh docs in 'README.md', a 'requirements-dev.txt' for full Python tooling, and a living 'todo.md' that tracks the roadmap.\n\n## Progress Highlights\n\n- Hardened the SAN parser so black’s perspective lines up correctly and the UI refuses illegal captures.\n- Added pytest coverage to the dataset builder, catching regressions before they taint future fine-tuning runs.\n- Improved AI service telemetry: the app now displays connection health and error states, enabling faster iteration on the backend.\n- Documented the workflow end-to-end, making onboarding (and future automation) straightforward.\n\n## What’s Next\n\n1. **Engine upgrade** – Replace the mocked policy with a deterministic engine that understands castling, en passant, checks, and mates.\n2. **Ruleset completeness** – Extend the Swift rules layer to cover the remaining SAN edge cases and add checkmate/stalemate detection.\n3. **Training loop automation** – Schedule archive refreshes, version generated datasets/models, and stand up evaluation harnesses for regression testing.\n4. **Experience polish** – Layer in move annotations, game history, and richer feedback to make the app feel like a true chess companion.\n\nInfiniteChessAI is already validating the core idea: an opinionated chess stack that connects data to gameplay. The next milestones will graduate it from a prototype into a self-improving sparring partner. Stay tuned—the real engine is on the way.\n","tech_tags":["Swift","Python","Flask","SwiftUI","python-chess"],"created_at":"2025-10-30T05:37:33.083863+00:00","updated_at":"2025-10-30T05:37:33.083863+00:00","image_url":"https://www.mathsisfun.com/games/images/chess-castle-2.gif","repo_url":"https://github.com/imaddde867/InfiniteChessAI"};</script>
+</body>
+</html>
