@@ -10,6 +10,11 @@ const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SEO_TITLE_MAP = {
+  Explainium: 'Explainium: Local LLM Procedural Knowledge Extraction',
+  InfiniteChessAI: 'InfiniteChessAI: Self-Improving Chess Engine in SwiftUI',
+  'Spiral Untangler ANN': 'Neural Network for Nonlinear Classification (NumPy)',
+};
 
 const escapeHtml = (value = '') =>
   value
@@ -20,6 +25,11 @@ const escapeHtml = (value = '') =>
     .replace(/'/g, '&#39;');
 
 const serialise = (data) => JSON.stringify(data).replace(/</g, '\\u003C');
+const getSeoTitle = (title) => {
+  if (!title || typeof title !== 'string') return title;
+  const trimmed = title.trim();
+  return SEO_TITLE_MAP[trimmed] || trimmed;
+};
 
 const renderProjectsMarkup = (projects) => {
   if (!projects.length) {
@@ -54,6 +64,51 @@ const renderProjectsMarkup = (projects) => {
   <section class="prerender-grid">
 ${items}
   </section>
+</main>`;
+};
+
+const renderProjectDetailMarkup = (project) => {
+  const descriptiveTitle = escapeHtml(getSeoTitle(project.title));
+  const detailSource = project.full_description || project.description || '';
+  const summary =
+    detailSource.length > 420 ? `${detailSource.slice(0, 417)}...` : detailSource;
+  const safeSummary = escapeHtml(summary);
+  const tags = Array.isArray(project.tech_tags)
+    ? project.tech_tags.filter(Boolean).slice(0, 6)
+    : [];
+  const published = project.created_at
+    ? new Date(project.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : '';
+
+  return `
+<main data-prerender="true" class="prerender-shell">
+  <article class="prerender-article">
+    <p class="prerender-meta text-sm text-white/60">${escapeHtml(published)}</p>
+    <h1 class="text-3xl font-bold mb-4">${descriptiveTitle}</h1>
+    ${tags.length ? `<p class="prerender-tags">Tech: ${escapeHtml(tags.join(', '))}</p>` : ''}
+    ${
+      project.image_url
+        ? `<div class="prerender-image"><img src="${escapeHtml(
+            project.image_url
+          )}" alt="${descriptiveTitle}" loading="lazy" decoding="async" /></div>`
+        : ''
+    }
+    ${
+      safeSummary
+        ? `<p class="prerender-summary leading-relaxed">${safeSummary}</p>`
+        : '<p class="prerender-summary">Full project details will load after hydration.</p>'
+    }
+    ${
+      project.repo_url
+        ? `<p class="prerender-meta mt-4">Source: <a class="prerender-link inline" href="${escapeHtml(project.repo_url)}" rel="noopener">View repository</a></p>`
+        : ''
+    }
+    <a class="prerender-link mt-6 inline-flex" href="/projects/${project.id}">Continue exploring</a>
+  </article>
 </main>`;
 };
 
@@ -147,7 +202,7 @@ const ensureDistExists = async () => {
 async function fetchProjects() {
   const { data, error } = await supabase
     .from('projects')
-    .select('id,title,description,full_description,tech_tags,created_at')
+    .select('id,title,description,full_description,tech_tags,created_at,updated_at,image_url,repo_url')
     .order('created_at', { ascending: false })
     .limit(30);
 
@@ -206,6 +261,17 @@ async function main() {
     data: posts,
     baseHtml,
   });
+
+  for (const project of projects) {
+    if (!project?.id) continue;
+    await injectIntoPage({
+      route: path.join('projects', project.id),
+      markup: renderProjectDetailMarkup(project),
+      dataKey: `project:${project.id}`,
+      data: project,
+      baseHtml,
+    });
+  }
 
   console.log('✨ Prerender completed.');
 }

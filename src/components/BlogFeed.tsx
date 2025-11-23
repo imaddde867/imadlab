@@ -62,7 +62,7 @@ const BlogFeed = () => {
         {/* Section header */}
         <div className="mb-20 flex items-center justify-between">
           <div className="w-full max-w-xl">
-            <SectionHeader title={'Latest'} subtitle={'Insights'} />
+            <SectionHeader title={<span className="text-brand-gradient">Latest Insights</span>} />
           </div>
           <Link to="/blogs" className="link-enhanced focus-enhanced z-10">
             View all posts

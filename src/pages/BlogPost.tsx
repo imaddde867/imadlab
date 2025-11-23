@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Seo from '@/components/Seo';
+import SEO from '@/components/SEO';
 import { calculateReadingTime, stripMarkdown } from '@/lib/markdown-utils';
 import { PageLoader } from '@/components/ui/LoadingStates';
 import BackRow from '@/components/BackRow';
@@ -148,7 +148,7 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-black text-white pt-14">
-      <Seo
+      <SEO
         title={post.title}
         description={metaDescription}
         keywords={

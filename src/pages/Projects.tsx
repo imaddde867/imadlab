@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import CardItem from '@/components/ui/CardItem';
 import { ArrowLeft } from 'lucide-react';
-import Seo from '@/components/Seo';
+import SEO from '@/components/SEO';
 import { GridSkeleton } from '@/components/ui/LoadingStates';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { readPrerenderData } from '@/lib/prerender-data';
@@ -86,7 +86,7 @@ const Projects = () => {
 
   return (
     <div className="min-h-screen bg-black text-white section pt-14">
-      <Seo
+      <SEO
         title="Projects"
         description="Explore a collection of my projects in data engineering, AI, and machine learning. See live demos and browse the source code."
         keywords="data engineering projects, machine learning projects, ai projects, python projects, react projects, open source, github projects, portfolio projects"

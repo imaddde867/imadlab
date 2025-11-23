@@ -9,6 +9,7 @@ interface SectionHeaderProps {
   description?: ReactNode;
   align?: Align;
   className?: string;
+  eyebrow?: ReactNode;
 }
 
 const SectionHeader = ({
@@ -17,10 +18,21 @@ const SectionHeader = ({
   description,
   align = 'left',
   className = '',
+  eyebrow,
 }: SectionHeaderProps) => {
   const isCenter = align === 'center';
   return (
     <div className={cn('mb-16', isCenter ? 'text-center' : '', className)}>
+      {eyebrow && (
+        <p
+          className={cn(
+            'text-sm uppercase tracking-[0.2em] text-white/60 mb-3',
+            isCenter ? 'justify-center flex' : ''
+          )}
+        >
+          <span>{eyebrow}</span>
+        </p>
+      )}
       <h2 className={cn('text-section-title text-hierarchy-primary', isCenter ? '' : '')}>
         {title}
         {subtitle && (

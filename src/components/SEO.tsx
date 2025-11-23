@@ -9,12 +9,15 @@ type Breadcrumb = {
   url?: string;
 };
 
-type SeoProps = {
+type JsonLd = Record<string, unknown>;
+
+type SEOProps = {
   title: string;
   description: string;
   keywords?: string;
   image?: string;
   imageAlt?: string;
+  url?: string;
   type?: 'website' | 'article' | 'project';
   schemaType?: string;
   publishedTime?: string;
@@ -26,20 +29,23 @@ type SeoProps = {
   tags?: string[];
   locale?: string;
   breadcrumbs?: Breadcrumb[];
-  additionalSchemas?: Array<Record<string, unknown>>;
+  structuredData?: JsonLd | JsonLd[];
+  additionalSchemas?: JsonLd[];
+  twitterHandle?: string;
 };
 
 const SITE_URL = 'https://imadlab.me';
 const SITE_NAME = 'Imadlab';
 const DEFAULT_IMAGE = `${SITE_URL}/images/hero-moon.png`;
 const DEFAULT_AUTHOR = 'Imad Eddine El Mouss';
+const DEFAULT_TWITTER = '@imadlab';
 const DEFAULT_KEYWORDS =
   'imadlab, imad eddine elmouss, data engineer, ai ml professional, machine learning, data science, portfolio, blog, projects, python, react, typescript';
 
-const toAbsoluteUrl = (url: string) => {
-  if (!url) return DEFAULT_IMAGE;
-  if (url.startsWith('http://') || url.startsWith('https://')) return url;
-  return `${SITE_URL}${url.startsWith('/') ? url : `/${url}`}`;
+const toAbsoluteUrl = (value?: string) => {
+  if (!value) return DEFAULT_IMAGE;
+  if (value.startsWith('http://') || value.startsWith('https://')) return value;
+  return `${SITE_URL}${value.startsWith('/') ? value : `/${value}`}`;
 };
 
 const normaliseDate = (value?: string) => {
@@ -48,12 +54,13 @@ const normaliseDate = (value?: string) => {
   return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
 };
 
-const Seo = ({
+const SEO = ({
   title,
   description,
   keywords,
   image,
   imageAlt,
+  url,
   type = 'website',
   schemaType,
   publishedTime,
@@ -65,14 +72,17 @@ const Seo = ({
   tags,
   locale = 'en_US',
   breadcrumbs,
+  structuredData,
   additionalSchemas = [],
-}: SeoProps) => {
+  twitterHandle,
+}: SEOProps) => {
   const location = useLocation();
   const defaultTitle = `${SITE_NAME} | Data Engineer & AI/ML Portfolio`;
   const fullTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
   const currentUrl = `${SITE_URL}${location.pathname}${location.search || ''}`;
-  const canonicalUrl = canonical || currentUrl;
-  const ogImage = toAbsoluteUrl(image || DEFAULT_IMAGE);
+  const canonicalUrl = url || canonical || currentUrl;
+  const ogImage = toAbsoluteUrl(image);
+  const twitter = twitterHandle || DEFAULT_TWITTER;
 
   const keywordsContent = keywords ? `${keywords}, ${DEFAULT_KEYWORDS}` : DEFAULT_KEYWORDS;
   const robotsDirectives = noindex
@@ -88,7 +98,7 @@ const Seo = ({
     (type === 'article' ? 'BlogPosting' : type === 'project' ? 'CreativeWork' : 'WebPage');
 
   const schemas = useMemo(() => {
-    const baseSchema: Record<string, unknown> = {
+    const baseSchema: JsonLd = {
       '@context': 'https://schema.org',
       '@type': baseSchemaType,
       name: fullTitle,
@@ -142,7 +152,7 @@ const Seo = ({
       };
     }
 
-    const schemaList: Array<Record<string, unknown>> = [baseSchema];
+    const schemaList: JsonLd[] = [baseSchema];
 
     if (PRIMARY_NAV_ITEMS.length) {
       schemaList.push({
@@ -176,7 +186,13 @@ const Seo = ({
       });
     }
 
-    return [...schemaList, ...additionalSchemas];
+    const normalizedStructuredData: JsonLd[] = structuredData
+      ? Array.isArray(structuredData)
+        ? structuredData
+        : [structuredData]
+      : [];
+
+    return [...schemaList, ...normalizedStructuredData, ...additionalSchemas];
   }, [
     additionalSchemas,
     author,
@@ -188,6 +204,7 @@ const Seo = ({
     locale,
     ogImage,
     schemaType,
+    structuredData,
     tags,
     type,
     isoModified,
@@ -218,7 +235,10 @@ const Seo = ({
 
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
-      <meta property="og:type" content={type === 'article' ? 'article' : 'website'} />
+      <meta
+        property="og:type"
+        content={type === 'article' ? 'article' : type === 'project' ? 'website' : type}
+      />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:image:secure_url" content={ogImage} />
@@ -233,8 +253,8 @@ const Seo = ({
       ))}
 
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@imadlab" />
-      <meta name="twitter:creator" content="@imadlab" />
+      <meta name="twitter:site" content={twitter} />
+      <meta name="twitter:creator" content={twitter} />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
@@ -251,4 +271,4 @@ const Seo = ({
   );
 };
 
-export default Seo;
+export default SEO;

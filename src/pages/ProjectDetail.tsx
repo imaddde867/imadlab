@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Calendar, Code, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Seo from '@/components/Seo';
+import SEO from '@/components/SEO';
 import { PageLoader } from '@/components/ui/LoadingStates';
 import BackRow from '@/components/BackRow';
 import { stripMarkdown } from '@/lib/markdown-utils';
@@ -12,6 +12,7 @@ import { tagToUrl } from '@/lib/tags';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
 import CardItem from '@/components/ui/CardItem';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { getSeoTitle } from '@/lib/seo-utils';
 
 interface Project {
   id: string;
@@ -127,21 +128,35 @@ const ProjectDetail = () => {
     { name: 'Projects', path: '/projects' },
     { name: project.title, url: `https://imadlab.me/projects/${project.id}` },
   ];
-  const projectSchemas = project.repo_url
-    ? [
-        {
-          '@context': 'https://schema.org',
-          '@type': 'SoftwareSourceCode',
-          name: project.title,
-          description: metaDescription,
-          codeRepository: project.repo_url,
-          url: `https://imadlab.me/projects/${project.id}`,
-          dateCreated: project.created_at,
-          dateModified: project.updated_at ?? project.created_at,
-          programmingLanguage: projectTags,
-        },
-      ]
-    : undefined;
+  const seoTitle = getSeoTitle(project.title);
+  const projectUrl = `https://imadlab.me/projects/${project.id}`;
+  const projectStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': project.repo_url ? 'SoftwareApplication' : 'TechArticle',
+    name: seoTitle,
+    headline: seoTitle,
+    description: metaDescription,
+    url: projectUrl,
+    image: project.image_url || undefined,
+    keywords: projectTags.length ? projectTags.join(', ') : undefined,
+    datePublished: project.created_at,
+    dateModified: project.updated_at ?? project.created_at,
+    author: {
+      '@type': 'Person',
+      name: 'Imad Eddine',
+      url: 'https://imadlab.me',
+    },
+    applicationCategory: project.repo_url ? 'DeveloperApplication' : undefined,
+    operatingSystem: project.repo_url ? 'Cross-platform' : undefined,
+    offers: project.repo_url
+      ? {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'USD',
+        }
+      : undefined,
+    codeRepository: project.repo_url || undefined,
+  };
 
   const longForm = project.full_description ?? '';
   const enableMermaid = longForm.includes('```mermaid');
@@ -149,8 +164,8 @@ const ProjectDetail = () => {
 
   return (
     <div className="min-h-screen bg-black text-white pt-14">
-      <Seo
-        title={project.title}
+      <SEO
+        title={seoTitle}
         description={metaDescription}
         keywords={
           projectTags.length
@@ -162,10 +177,11 @@ const ProjectDetail = () => {
         publishedTime={project.created_at}
         modifiedTime={project.updated_at ?? project.created_at}
         image={project.image_url || undefined}
-        imageAlt={project.title}
+        imageAlt={seoTitle}
         tags={projectTags}
         breadcrumbs={breadcrumbTrail}
-        additionalSchemas={projectSchemas}
+        structuredData={projectStructuredData}
+        url={projectUrl}
       />
 
       <BackRow
@@ -199,7 +215,7 @@ const ProjectDetail = () => {
       <header className="relative pt-8 md:pt-12 pb-10">
         <div className="container-narrow">
           {/* Project Title */}
-          <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">{project.title}</h1>
+          <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">{seoTitle}</h1>
 
           {/* Project Metadata */}
           <div className="flex flex-wrap items-center gap-y-4 gap-x-6 mb-8">

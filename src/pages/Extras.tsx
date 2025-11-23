@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import Seo from '@/components/Seo';
+import SEO from '@/components/SEO';
 import SectionHeader from '@/components/SectionHeader';
 import RunningStatsGrid from '@/components/running/RunningStatsGrid';
 import YearInMotion from '@/components/running/YearInMotion';
@@ -68,7 +68,7 @@ const Extras = () => {
         }}
       />
 
-      <Seo
+      <SEO
         title="Running Journey"
         description="Follow my running journey - every mile, every achievement, every step forward"
         keywords="strava, running, fitness, marathon, athletics, training"
