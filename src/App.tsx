@@ -15,6 +15,7 @@ import UserSettings from '@/components/UserSettings';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { registerRoutePrefetch } from '@/lib/routePrefetch';
 import { loadScriptIfConsented } from '@/lib/consent';
+import { HelmetProvider } from 'react-helmet-async';
 
 const getCustomCursorSupport = () => {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -263,42 +264,44 @@ const App = () => {
     : {};
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="relative min-h-screen" {...cursorRootProps}>
-          {supportsCustomCursor ? (
-            <CursorProvider className="flex min-h-screen flex-col">
-              {baseContent}
-              <UserSettings
-                setUserName={setUserName}
-                setShowFollowingBadge={setShowFollowingBadge}
-              />
-              <Cursor>
-                <svg
-                  className="size-6 text-primary"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 40 40"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M1.8 4.4 7 36.2c.3 1.8 2.6 2.3 3.6.8l3.9-5.7c1.7-2.5 4.5-4.1 7.5-4.3l6.9-.5c1.8-.1 2.5-2.4 1.1-3.5L5 2.5c-1.4-1.1-3.5 0-3.3 1.9Z"
-                  />
-                </svg>
-              </Cursor>
-              {showFollowingBadge && (
-                <CursorFollow>
-                  <div className="bg-primary text-primary-foreground px-2 py-1 rounded-lg text-sm shadow-lg">
-                    {displayTag}
-                  </div>
-                </CursorFollow>
-              )}
-            </CursorProvider>
-          ) : (
-            <div className="flex min-h-screen flex-col">{baseContent}</div>
-          )}
-        </div>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <div className="relative min-h-screen" {...cursorRootProps}>
+            {supportsCustomCursor ? (
+              <CursorProvider className="flex min-h-screen flex-col">
+                {baseContent}
+                <UserSettings
+                  setUserName={setUserName}
+                  setShowFollowingBadge={setShowFollowingBadge}
+                />
+                <Cursor>
+                  <svg
+                    className="size-6 text-primary"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 40 40"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M1.8 4.4 7 36.2c.3 1.8 2.6 2.3 3.6.8l3.9-5.7c1.7-2.5 4.5-4.1 7.5-4.3l6.9-.5c1.8-.1 2.5-2.4 1.1-3.5L5 2.5c-1.4-1.1-3.5 0-3.3 1.9Z"
+                    />
+                  </svg>
+                </Cursor>
+                {showFollowingBadge && (
+                  <CursorFollow>
+                    <div className="bg-primary text-primary-foreground px-2 py-1 rounded-lg text-sm shadow-lg">
+                      {displayTag}
+                    </div>
+                  </CursorFollow>
+                )}
+              </CursorProvider>
+            ) : (
+              <div className="flex min-h-screen flex-col">{baseContent}</div>
+            )}
+          </div>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 };
 

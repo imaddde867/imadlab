@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import Seo from '@/components/Seo';
+import SEO from '@/components/SEO';
 import SectionHeader from '@/components/SectionHeader';
 import CardItem from '@/components/ui/CardItem';
 
@@ -84,7 +84,7 @@ const Search = () => {
 
   return (
     <div className="min-h-screen bg-black text-white section pt-14">
-      <Seo
+      <SEO
         title="Search"
         description="Search posts and projects"
         type="website"

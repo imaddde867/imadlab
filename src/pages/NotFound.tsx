@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import Seo from '@/components/Seo';
+import SEO from '@/components/SEO';
 
 const NotFound = () => (
   <>
-    <Seo
+    <SEO
       title="404"
       description="This page could not be found. Explore Imadlab for projects, writing, and data engineering resources."
       noindex

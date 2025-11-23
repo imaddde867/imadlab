@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import Seo from '@/components/Seo';
+import SEO from '@/components/SEO';
 import SectionHeader from '@/components/SectionHeader';
 import { tagSlug, tagToUrl } from '@/lib/tags';
 import { Link } from 'react-router-dom';
@@ -92,7 +92,7 @@ const TagsIndex = () => {
 
   return (
     <div className="min-h-screen bg-black text-white section pt-14">
-      <Seo
+      <SEO
         title="Tags"
         description="Browse all tags across posts and projects."
         type="website"
