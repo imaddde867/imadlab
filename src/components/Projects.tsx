@@ -1,23 +1,42 @@
-import { useState, useEffect, useMemo, type CSSProperties } from 'react';
+import { useMemo, useRef, type CSSProperties } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import CardItem from '@/components/ui/CardItem';
 import SectionHeader from '@/components/SectionHeader';
+import { GridSkeleton } from '@/components/ui/LoadingStates';
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer';
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { readPrerenderData } from '@/lib/prerender-data';
 import { PROJECT_LIST_SELECT } from '@/lib/content-selects';
 import type { ProjectSummary } from '@/types/content';
 
 const Projects = () => {
-  const initialProjects = useMemo(() => readPrerenderData<ProjectSummary[]>('projects'), []);
-  const [projects, setProjects] = useState<ProjectSummary[]>(() =>
-    (initialProjects ?? []).slice(0, 3)
+  const initialProjects = useMemo(
+    () => readPrerenderData<ProjectSummary[]>('projects')?.slice(0, 3),
+    []
   );
+  const initialUpdatedAt = useRef<number | undefined>(initialProjects ? Date.now() : undefined);
   const isCoarsePointer = useIsCoarsePointer();
-  const { ref: sectionRef, isIntersecting } = useIntersectionObserver<HTMLDivElement>({
-    rootMargin: '200px',
+  const {
+    data: projects = [],
+    isLoading,
+    isFetching,
+  } = useQuery({
+    queryKey: ['projects', 'latest'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select(PROJECT_LIST_SELECT)
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+      return data as ProjectSummary[];
+    },
+    initialData: initialProjects,
+    initialDataUpdatedAt: initialUpdatedAt.current,
+    staleTime: 1000 * 60,
   });
-  const [hasFetched, setHasFetched] = useState(false);
+  const showSkeleton = (isLoading || isFetching) && projects.length === 0;
   const dots = useMemo(() => {
     const count = isCoarsePointer ? 15 : 50;
     return Array.from({ length: count }, () => {
@@ -42,37 +61,8 @@ const Projects = () => {
     });
   }, [isCoarsePointer]);
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      const includeShort = import.meta.env.VITE_INCLUDE_PROJECT_SHORT_DESC === 'true';
-      const { data, error } = await supabase
-        .from('projects')
-        .select(PROJECT_LIST_SELECT)
-        .order('created_at', { ascending: false })
-        .limit(3);
-
-      if (!error && data) {
-        setProjects(
-          (data as ProjectSummary[]).map((project) =>
-            includeShort ? project : { ...project, short_description: null }
-          )
-        );
-      } else if (error) {
-        console.error('Failed to load featured projects', error);
-      }
-    };
-    if (!hasFetched && isIntersecting) {
-      setHasFetched(true);
-      fetchProjects();
-    }
-  }, [hasFetched, isIntersecting]);
-
   return (
-    <section
-      ref={sectionRef}
-      id="projects"
-      className="section relative overflow-hidden scroll-mt-20"
-    >
+    <section id="projects" className="section relative overflow-hidden scroll-mt-20">
       {/* Modern background inspired by Hero */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         {/* Animated background glow (stronger) */}
@@ -117,20 +107,26 @@ const Projects = () => {
         </div>
 
         {/* 4-column grid layout for projects, matching /projects page */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project) => (
-            <CardItem
-              key={project.id}
-              title={project.title}
-              tags={project.tech_tags || []}
-              description={project.short_description || project.description || ''}
-              linkTo={`/projects/${project.id}`}
-              linkLabel="View Project"
-              githubUrl={project.repo_url || undefined}
-              image_url={project.image_url || undefined}
-            />
-          ))}
-        </div>
+        {showSkeleton ? (
+          <GridSkeleton count={3} columns={3} className="gap-8" />
+        ) : projects.length ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {projects.map((project) => (
+              <CardItem
+                key={project.id}
+                title={project.title}
+                tags={project.tech_tags || []}
+                description={project.description || ''}
+                linkTo={`/projects/${project.id}`}
+                linkLabel="View Project"
+                githubUrl={project.repo_url || undefined}
+                image_url={project.image_url || undefined}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="py-12 text-center text-white/60">No projects yet.</div>
+        )}
       </div>
     </section>
   );

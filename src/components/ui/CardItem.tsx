@@ -48,6 +48,7 @@ const CardItem = ({
   const resolvedImageUrl = resolveImageUrl(image_url);
   const showCover = Boolean(resolvedImageUrl) || isBlog;
   const showImage = Boolean(resolvedImageUrl) && !imageError;
+  const placeholderLabel = isBlog ? 'Blog Post' : 'No Preview';
 
   useEffect(() => {
     if (titleRef.current && containerRef.current) {
@@ -131,7 +132,7 @@ const CardItem = ({
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-white/10 via-white/5 to-transparent">
                 <span className="text-xs uppercase tracking-[0.25em] text-white/60">
-                  No Preview
+                  {placeholderLabel}
                 </span>
               </div>
             )}
