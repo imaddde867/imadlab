@@ -4,6 +4,9 @@ export const resolveImageUrl = (value?: string | null): string | null => {
   if (!value) return null;
   const trimmed = value.trim();
   if (!trimmed) return null;
+  if (/^\/?public\//.test(trimmed)) {
+    return `/${trimmed.replace(/^\/?public\//, '')}`;
+  }
   if (ABSOLUTE_PREFIXES.some((prefix) => trimmed.startsWith(prefix))) {
     return trimmed;
   }
