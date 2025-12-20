@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { isAllowed } from '@/lib/consent';
@@ -9,7 +9,7 @@ const generateSessionId = (): string => {
   const stored = sessionStorage.getItem('analytics_session_id');
   if (stored) return stored;
 
-  const newId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const newId = `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
   sessionStorage.setItem('analytics_session_id', newId);
   return newId;
 };
@@ -17,9 +17,16 @@ const generateSessionId = (): string => {
 export const useAnalytics = () => {
   const location = useLocation();
   const sessionIdRef = useRef<string>(generateSessionId());
-  const pageStartTime = useRef<number>(Date.now());
   const sessionInitialized = useRef<boolean>(false);
   const pageViewIdRef = useRef<string | null>(null);
+  const metadataRef = useRef<Awaited<ReturnType<typeof getAnalyticsMetadata>> | null>(null);
+
+  const getMetadata = useCallback(async () => {
+    if (metadataRef.current) return metadataRef.current;
+    const metadata = await getAnalyticsMetadata();
+    metadataRef.current = metadata;
+    return metadata;
+  }, []);
 
   useEffect(() => {
     if (!isAllowed('analytics')) return;
@@ -28,7 +35,7 @@ export const useAnalytics = () => {
 
     // Create or update session
     const initSession = async () => {
-      const metadata = await getAnalyticsMetadata();
+      const metadata = await getMetadata();
 
       logger.debug('📊 Analytics metadata collected:', metadata);
 
@@ -74,14 +81,13 @@ export const useAnalytics = () => {
     };
 
     initSession();
-  }, []);
+  }, [getMetadata]);
 
   useEffect(() => {
     if (!isAllowed('analytics')) return;
 
     const sessionId = sessionIdRef.current;
     const startTime = Date.now();
-    pageStartTime.current = startTime;
     pageViewIdRef.current = null;
 
     // Track page view - ensure session exists first
@@ -94,7 +100,7 @@ export const useAnalytics = () => {
       }
 
       // Get analytics metadata
-      const metadata = await getAnalyticsMetadata();
+      const metadata = await getMetadata();
 
       // Extract UTM parameters from current URL
       const utmParams = extractUTMParams(window.location.href);
@@ -158,5 +164,5 @@ export const useAnalytics = () => {
           });
       }
     };
-  }, [location.pathname]);
+  }, [getMetadata, location.pathname]);
 };
