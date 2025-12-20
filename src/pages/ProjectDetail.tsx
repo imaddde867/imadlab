@@ -13,6 +13,7 @@ import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
 import CardItem from '@/components/ui/CardItem';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { getSeoTitle } from '@/lib/seo-utils';
+import { resolveImageUrl } from '@/lib/image-utils';
 
 interface Project {
   id: string;
@@ -129,6 +130,7 @@ const ProjectDetail = () => {
     { name: project.title, url: `https://imadlab.me/projects/${project.id}` },
   ];
   const seoTitle = getSeoTitle(project.title);
+  const coverImage = resolveImageUrl(project.image_url);
   const projectUrl = `https://imadlab.me/projects/${project.id}`;
   const projectStructuredData = {
     '@context': 'https://schema.org',
@@ -137,7 +139,7 @@ const ProjectDetail = () => {
     headline: seoTitle,
     description: metaDescription,
     url: projectUrl,
-    image: project.image_url || undefined,
+    image: coverImage || undefined,
     keywords: projectTags.length ? projectTags.join(', ') : undefined,
     datePublished: project.created_at,
     dateModified: project.updated_at ?? project.created_at,
@@ -176,7 +178,7 @@ const ProjectDetail = () => {
         schemaType="CreativeWork"
         publishedTime={project.created_at}
         modifiedTime={project.updated_at ?? project.created_at}
-        image={project.image_url || undefined}
+        image={coverImage || undefined}
         imageAlt={seoTitle}
         tags={projectTags}
         breadcrumbs={breadcrumbTrail}
@@ -273,11 +275,11 @@ to={tagToUrl(tag)}
       </header>
 
       {/* Featured Image */}
-      {project.image_url && (
+      {coverImage && (
         <div className="w-full container-narrow mb-12">
           <div className="aspect-video w-full overflow-hidden rounded-lg shadow-xl">
             <img
-              src={project.image_url}
+              src={coverImage}
               alt={project.title}
               width="1200"
               height="675"
