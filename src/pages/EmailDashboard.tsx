@@ -19,6 +19,7 @@ import { Switch } from '@/components/ui/switch';
 import { ContentLoader } from '@/components/ui/LoadingStates';
 import { RefreshCw, Send, Eye, Users, Mail, TrendingUp, Trash2 } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
+import { POST_TITLE_SELECT, PROJECT_TITLE_SELECT } from '@/lib/content-selects';
 
 type TagVariant =
   | 'default'
@@ -167,10 +168,10 @@ const EmailDashboard = () => {
 
       const [blogTitles, projectTitles] = await Promise.all([
         blogIds.length > 0
-          ? supabase.from('posts').select('id, title').in('id', blogIds)
+          ? supabase.from('posts').select(POST_TITLE_SELECT).in('id', blogIds)
           : Promise.resolve({ data: [] as Array<{ id: string; title: string }> }),
         projectIds.length > 0
-          ? supabase.from('projects').select('id, title').in('id', projectIds)
+          ? supabase.from('projects').select(PROJECT_TITLE_SELECT).in('id', projectIds)
           : Promise.resolve({ data: [] as Array<{ id: string; title: string }> }),
       ]);
 

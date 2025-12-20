@@ -7,20 +7,11 @@ import { GridSkeleton } from '@/components/ui/LoadingStates';
 import SectionHeader from '@/components/SectionHeader';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { readPrerenderData } from '@/lib/prerender-data';
-
-interface Post {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string | null;
-  tags: string[] | null;
-  published_date: string;
-  read_time: number | null;
-  image_url: string | null;
-}
+import { POST_SUMMARY_SELECT } from '@/lib/content-selects';
+import type { PostSummary } from '@/types/content';
 
 const BlogFeed = () => {
-  const initialPosts = useMemo(() => readPrerenderData<Post[]>('posts'), []);
+  const initialPosts = useMemo(() => readPrerenderData<PostSummary[]>('posts'), []);
   const initialUpdatedAt = useRef<number | undefined>(initialPosts ? Date.now() : undefined);
   const { ref: sectionRef, isIntersecting } = useIntersectionObserver<HTMLDivElement>({
     rootMargin: '200px',
@@ -35,11 +26,11 @@ const BlogFeed = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select('id, title, slug, excerpt, tags, published_date, read_time, image_url')
+        .select(POST_SUMMARY_SELECT)
         .order('published_date', { ascending: false });
 
       if (error) throw error;
-      return data as Post[];
+      return data as PostSummary[];
     },
     initialData: initialPosts,
     initialDataUpdatedAt: initialUpdatedAt.current,

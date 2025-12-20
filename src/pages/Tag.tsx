@@ -7,28 +7,27 @@ import SectionHeader from '@/components/SectionHeader';
 import CardItem from '@/components/ui/CardItem';
 import { ArrowLeft } from 'lucide-react';
 import { tagMatchesSlug } from '@/lib/tags';
+import { POST_SUMMARY_SELECT, PROJECT_LIST_SELECT } from '@/lib/content-selects';
+import type { PostSummary, ProjectSummary } from '@/types/content';
 
-interface Post {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string | null;
-  tags: string[] | null;
-  published_date: string;
-  read_time: number | null;
-  image_url: string | null;
-}
+const findMatchingTag = <T,>(
+  items: T[],
+  extractTags: (item: T) => string[] | null | undefined,
+  slug: string
+) => {
+  for (const item of items) {
+    const tags = extractTags(item) ?? [];
+    const match = tags.find((tag) => tagMatchesSlug(tag, slug));
+    if (match) return match;
+  }
+  return null;
+};
 
-interface Project {
-  id: string;
-  title: string;
-  description: string | null;
-  full_description: string | null;
-  image_url: string | null;
-  tech_tags: string[] | null;
-  repo_url: string | null;
-  created_at: string;
-}
+const logTagView = (slug: string, tag: string) => {
+  import('@/lib/events')
+    .then(({ logEvent }) => logEvent('tag_view', { slug, tag }))
+    .catch(() => {});
+};
 
 const Tag = () => {
   const { tag: slug } = useParams<{ tag: string }>();
@@ -41,10 +40,10 @@ const Tag = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select('id,title,slug,excerpt,tags,published_date,read_time,image_url')
+        .select(POST_SUMMARY_SELECT)
         .order('published_date', { ascending: false });
       if (error) throw error;
-      return (data as Post[]) ?? [];
+      return (data as PostSummary[]) ?? [];
     },
     staleTime: 60_000,
   });
@@ -60,10 +59,10 @@ const Tag = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
-        .select('id,title,description,full_description,image_url,tech_tags,repo_url,created_at')
+        .select(PROJECT_LIST_SELECT)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return (data as Project[]) ?? [];
+      return (data as ProjectSummary[]) ?? [];
     },
     staleTime: 60_000,
   });
@@ -78,21 +77,24 @@ const Tag = () => {
   const hasProjects = projects.length > 0;
 
   const displayTag = useMemo(() => {
-    const fromPosts = allPosts.find((p) => (p.tags || []).some((t) => tagMatchesSlug(t, tagSlugParam)))?.tags?.find((t) => tagMatchesSlug(t, tagSlugParam));
-    if (fromPosts) return fromPosts;
-    const fromProjects = allProjects.find((p) => (p.tech_tags || []).some((t) => tagMatchesSlug(t, tagSlugParam)))?.tech_tags?.find((t) => tagMatchesSlug(t, tagSlugParam));
-    if (fromProjects) return fromProjects;
-    return tagSlugParam.replace(/-/g, ' ');
+    return (
+      findMatchingTag(allPosts, (post) => post.tags, tagSlugParam) ??
+      findMatchingTag(allProjects, (project) => project.tech_tags, tagSlugParam) ??
+      tagSlugParam.replace(/-/g, ' ')
+    );
   }, [allPosts, allProjects, tagSlugParam]);
 
   useEffect(() => {
-    import('@/lib/events').then(({ logEvent }) => logEvent('tag_view', { slug: tagSlugParam, tag: displayTag })).catch(() => {});
+    logTagView(tagSlugParam, displayTag);
   }, [tagSlugParam, displayTag]);
 
   const breadcrumbTrail = [
     { name: 'Home', path: '/' },
     { name: 'Blog', path: '/blogs' },
-    { name: `Tag: ${displayTag}`, url: `https://imadlab.me/tags/${encodeURIComponent(tagSlugParam)}` },
+    {
+      name: `Tag: ${displayTag}`,
+      url: `https://imadlab.me/tags/${encodeURIComponent(tagSlugParam)}`,
+    },
   ];
 
   const additionalSchemas = [
@@ -102,7 +104,12 @@ const Tag = () => {
           '@type': 'ItemList',
           name: `Posts tagged ${displayTag}`,
           numberOfItems: posts.length,
-          itemListElement: posts.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.title, url: `https://imadlab.me/blogs/${p.slug}` })),
+          itemListElement: posts.map((post, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: post.title,
+            url: `https://imadlab.me/blogs/${post.slug}`,
+          })),
         }
       : undefined,
     hasProjects
@@ -111,7 +118,12 @@ const Tag = () => {
           '@type': 'ItemList',
           name: `Projects tagged ${displayTag}`,
           numberOfItems: projects.length,
-          itemListElement: projects.map((pr, i) => ({ '@type': 'ListItem', position: i + 1, name: pr.title, url: `https://imadlab.me/projects/${pr.id}` })),
+          itemListElement: projects.map((project, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: project.title,
+            url: `https://imadlab.me/projects/${project.id}`,
+          })),
         }
       : undefined,
   ].filter(Boolean) as Array<Record<string, unknown>>;

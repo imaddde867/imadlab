@@ -21,17 +21,8 @@ import {
   FolderOpen,
   Tag as TagIcon,
 } from 'lucide-react';
-
-interface Project {
-  id: string;
-  title: string;
-  description: string | null;
-  full_description: string | null;
-  image_url: string | null;
-  tech_tags: string[] | null;
-  repo_url: string | null;
-  created_at: string;
-}
+import { PROJECT_ADMIN_SELECT } from '@/lib/content-selects';
+import type { ProjectDetail as ProjectAdmin } from '@/types/content';
 
 type ProjectFormState = {
   title: string;
@@ -53,7 +44,7 @@ const createEmptyProjectForm = (): ProjectFormState => ({
 
 const ManageProjects = () => {
   const [showForm, setShowForm] = useState(false);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [editingProject, setEditingProject] = useState<ProjectAdmin | null>(null);
   const [formData, setFormData] = useState<ProjectFormState>(createEmptyProjectForm);
   const [authChecked, setAuthChecked] = useState(false);
 
@@ -88,11 +79,11 @@ const ManageProjects = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
-        .select('*')
+        .select(PROJECT_ADMIN_SELECT)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as Project[];
+      return data as ProjectAdmin[];
     },
   });
 
@@ -196,7 +187,7 @@ const ManageProjects = () => {
   const isProjectsLoading = isLoading || isFetching;
 
   const addProjectMutation = useMutation({
-    mutationFn: async (newProject: Omit<Project, 'id' | 'created_at'>) => {
+    mutationFn: async (newProject: Omit<ProjectAdmin, 'id' | 'created_at'>) => {
       const { data, error } = await supabase
         .from('projects')
         .insert([
@@ -222,7 +213,7 @@ const ManageProjects = () => {
   });
 
   const updateProjectMutation = useMutation({
-    mutationFn: async (updatedProject: Project) => {
+    mutationFn: async (updatedProject: ProjectAdmin) => {
       const { data, error } = await supabase
         .from('projects')
         .update({
@@ -275,7 +266,7 @@ const ManageProjects = () => {
     },
   });
 
-  const handleEditClick = (project: Project) => {
+  const handleEditClick = (project: ProjectAdmin) => {
     setEditingProject(project);
     setFormData({
       title: project.title,

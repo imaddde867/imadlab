@@ -1,426 +1,504 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.2.3 (519615d)"
+  }
   public: {
     Tables: {
-      posts: {
+      cursor_preferences: {
         Row: {
-          body: string | null;
-          created_at: string;
-          excerpt: string | null;
-          id: string;
-          published_date: string;
-          slug: string;
-          tags: string[] | null;
-          title: string;
-          updated_at: string;
-        };
+          created_at: string | null
+          cursor_name: string | null
+          id: string
+          session_id: string
+          updated_at: string | null
+          user_agent: string | null
+        }
         Insert: {
-          body?: string | null;
-          created_at?: string;
-          excerpt?: string | null;
-          id?: string;
-          published_date?: string;
-          slug: string;
-          tags?: string[] | null;
-          title: string;
-          updated_at?: string;
-        };
+          created_at?: string | null
+          cursor_name?: string | null
+          id?: string
+          session_id: string
+          updated_at?: string | null
+          user_agent?: string | null
+        }
         Update: {
-          body?: string | null;
-          created_at?: string;
-          excerpt?: string | null;
-          id?: string;
-          published_date?: string;
-          slug?: string;
-          tags?: string[] | null;
-          title?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-      projects: {
-        Row: {
-          created_at: string;
-          description: string | null;
-          full_description: string | null;
-          id: string;
-          image_url: string | null;
-          repo_url: string | null;
-          short_description: string | null;
-          tech_tags: string[] | null;
-          title: string;
-          updated_at: string;
-        };
-        Insert: {
-          created_at?: string;
-          description?: string | null;
-          full_description?: string | null;
-          id?: string;
-          image_url?: string | null;
-          repo_url?: string | null;
-          short_description?: string | null;
-          tech_tags?: string[] | null;
-          title: string;
-          updated_at?: string;
-        };
-        Update: {
-          created_at?: string;
-          description?: string | null;
-          full_description?: string | null;
-          id?: string;
-          image_url?: string | null;
-          repo_url?: string | null;
-          short_description?: string | null;
-          tech_tags?: string[] | null;
-          title?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-      newsletter_subscribers: {
-        Row: {
-          created_at: string;
-          email: string;
-          id: string;
-          status: string;
-          unsubscribe_token: string;
-          updated_at: string;
-        };
-        Insert: {
-          created_at?: string;
-          email: string;
-          id?: string;
-          status?: string;
-          unsubscribe_token?: string;
-          updated_at?: string;
-        };
-        Update: {
-          created_at?: string;
-          email?: string;
-          id?: string;
-          status?: string;
-          unsubscribe_token?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-      email_queue: {
-        Row: {
-          id: string;
-          content_type: string;
-          content_id: string;
-          status: string;
-          scheduled_at: string;
-          sent_at: string | null;
-          error_message: string | null;
-          retry_count: number;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          content_type: string;
-          content_id: string;
-          status?: string;
-          scheduled_at?: string;
-          sent_at?: string | null;
-          error_message?: string | null;
-          retry_count?: number;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          content_type?: string;
-          content_id?: string;
-          status?: string;
-          scheduled_at?: string;
-          sent_at?: string | null;
-          error_message?: string | null;
-          retry_count?: number;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
+          created_at?: string | null
+          cursor_name?: string | null
+          id?: string
+          session_id?: string
+          updated_at?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       email_analytics: {
         Row: {
-          id: string;
-          email_queue_id: string;
-          subscriber_email: string;
-          sent_at: string | null;
-          delivered_at: string | null;
-          opened_at: string | null;
-          clicked_at: string | null;
-          bounced_at: string | null;
-          unsubscribed_at: string | null;
-          created_at: string;
-        };
+          bounced_at: string | null
+          clicked_at: string | null
+          created_at: string | null
+          delivered_at: string | null
+          email_queue_id: string | null
+          id: string
+          opened_at: string | null
+          sent_at: string | null
+          subscriber_email: string
+          unsubscribed_at: string | null
+        }
         Insert: {
-          id?: string;
-          email_queue_id: string;
-          subscriber_email: string;
-          sent_at?: string | null;
-          delivered_at?: string | null;
-          opened_at?: string | null;
-          clicked_at?: string | null;
-          bounced_at?: string | null;
-          unsubscribed_at?: string | null;
-          created_at?: string;
-        };
+          bounced_at?: string | null
+          clicked_at?: string | null
+          created_at?: string | null
+          delivered_at?: string | null
+          email_queue_id?: string | null
+          id?: string
+          opened_at?: string | null
+          sent_at?: string | null
+          subscriber_email: string
+          unsubscribed_at?: string | null
+        }
         Update: {
-          id?: string;
-          email_queue_id?: string;
-          subscriber_email?: string;
-          sent_at?: string | null;
-          delivered_at?: string | null;
-          opened_at?: string | null;
-          clicked_at?: string | null;
-          bounced_at?: string | null;
-          unsubscribed_at?: string | null;
-          created_at?: string;
-        };
+          bounced_at?: string | null
+          clicked_at?: string | null
+          created_at?: string | null
+          delivered_at?: string | null
+          email_queue_id?: string | null
+          id?: string
+          opened_at?: string | null
+          sent_at?: string | null
+          subscriber_email?: string
+          unsubscribed_at?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'email_analytics_email_queue_id_fkey';
-            columns: ['email_queue_id'];
-            isOneToOne: false;
-            referencedRelation: 'email_queue';
-            referencedColumns: ['id'];
+            foreignKeyName: "email_analytics_email_queue_id_fkey"
+            columns: ["email_queue_id"]
+            isOneToOne: false
+            referencedRelation: "email_queue"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      visitor_sessions: {
+        ]
+      }
+      email_queue: {
         Row: {
-          id: string;
-          session_id: string;
-          created_at: string;
-          last_activity: string;
-          user_agent: string | null;
-          device_type: string | null;
-          browser: string | null;
-          os: string | null;
-          screen_resolution: string | null;
-          language: string | null;
-          timezone: string | null;
-          country: string | null;
-          region: string | null;
-          city: string | null;
-        };
+          content_id: string
+          content_type: string
+          created_at: string | null
+          error_message: string | null
+          id: string
+          retry_count: number | null
+          scheduled_at: string | null
+          sent_at: string | null
+          status: string
+        }
         Insert: {
-          id?: string;
-          session_id: string;
-          created_at?: string;
-          last_activity?: string;
-          user_agent?: string | null;
-          device_type?: string | null;
-          browser?: string | null;
-          os?: string | null;
-          screen_resolution?: string | null;
-          language?: string | null;
-          timezone?: string | null;
-          country?: string | null;
-          region?: string | null;
-          city?: string | null;
-        };
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          retry_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string
+        }
         Update: {
-          id?: string;
-          session_id?: string;
-          created_at?: string;
-          last_activity?: string;
-          user_agent?: string | null;
-          device_type?: string | null;
-          browser?: string | null;
-          os?: string | null;
-          screen_resolution?: string | null;
-          language?: string | null;
-          timezone?: string | null;
-          country?: string | null;
-          region?: string | null;
-          city?: string | null;
-        };
-        Relationships: [];
-      };
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          retry_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      newsletter_subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          status: string | null
+          unsubscribe_token: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          status?: string | null
+          unsubscribe_token?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          status?: string | null
+          unsubscribe_token?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
-          id: string;
-          session_id: string | null;
-          path: string;
-          referrer: string | null;
-          viewed_at: string;
-          duration: number | null;
-          traffic_source: string | null;
-          utm_source: string | null;
-          utm_medium: string | null;
-          utm_campaign: string | null;
-          utm_term: string | null;
-          utm_content: string | null;
-          device_type: string | null;
-          browser: string | null;
-          os: string | null;
-          country: string | null;
-          region: string | null;
-          city: string | null;
-        };
+          browser: string | null
+          city: string | null
+          country: string | null
+          device_type: string | null
+          duration: number | null
+          id: string
+          os: string | null
+          path: string
+          referrer: string | null
+          region: string | null
+          session_id: string | null
+          traffic_source: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+          viewed_at: string | null
+        }
         Insert: {
-          id?: string;
-          session_id?: string | null;
-          path: string;
-          referrer?: string | null;
-          viewed_at?: string;
-          duration?: number | null;
-          traffic_source?: string | null;
-          utm_source?: string | null;
-          utm_medium?: string | null;
-          utm_campaign?: string | null;
-          utm_term?: string | null;
-          utm_content?: string | null;
-          device_type?: string | null;
-          browser?: string | null;
-          os?: string | null;
-          country?: string | null;
-          region?: string | null;
-          city?: string | null;
-        };
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          device_type?: string | null
+          duration?: number | null
+          id?: string
+          os?: string | null
+          path: string
+          referrer?: string | null
+          region?: string | null
+          session_id?: string | null
+          traffic_source?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          viewed_at?: string | null
+        }
         Update: {
-          id?: string;
-          session_id?: string | null;
-          path?: string;
-          referrer?: string | null;
-          viewed_at?: string;
-          duration?: number | null;
-          traffic_source?: string | null;
-          utm_source?: string | null;
-          utm_medium?: string | null;
-          utm_campaign?: string | null;
-          utm_term?: string | null;
-          utm_content?: string | null;
-          device_type?: string | null;
-          browser?: string | null;
-          os?: string | null;
-          country?: string | null;
-          region?: string | null;
-          city?: string | null;
-        };
-        Relationships: [];
-      };
-    };
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          device_type?: string | null
+          duration?: number | null
+          id?: string
+          os?: string | null
+          path?: string
+          referrer?: string | null
+          region?: string | null
+          session_id?: string | null
+          traffic_source?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "page_views_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "visitor_sessions"
+            referencedColumns: ["session_id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          body: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          image_url: string | null
+          published_date: string
+          read_time: number | null
+          slug: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          published_date?: string
+          read_time?: number | null
+          slug: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          published_date?: string
+          read_time?: number | null
+          slug?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          created_at: string
+          description: string | null
+          full_description: string | null
+          id: string
+          image_url: string | null
+          repo_url: string | null
+          tech_tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          full_description?: string | null
+          id?: string
+          image_url?: string | null
+          repo_url?: string | null
+          tech_tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          full_description?: string | null
+          id?: string
+          image_url?: string | null
+          repo_url?: string | null
+          tech_tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      visitor_sessions: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string | null
+          device_type: string | null
+          id: string
+          language: string | null
+          last_activity: string | null
+          os: string | null
+          region: string | null
+          screen_resolution: string | null
+          session_id: string
+          timezone: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          id?: string
+          language?: string | null
+          last_activity?: string | null
+          os?: string | null
+          region?: string | null
+          screen_resolution?: string | null
+          session_id: string
+          timezone?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          id?: string
+          language?: string | null
+          last_activity?: string | null
+          os?: string | null
+          region?: string | null
+          screen_resolution?: string | null
+          session_id?: string
+          timezone?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+    }
     Views: {
-      [_ in never]: never;
-    };
+      analytics_summary: {
+        Row: {
+          avg_duration: number | null
+          date: string | null
+          direct_visitors: number | null
+          referral_visitors: number | null
+          search_visitors: number | null
+          social_visitors: number | null
+          total_views: number | null
+          unique_pages: number | null
+          unique_visitors: number | null
+        }
+        Relationships: []
+      }
+    }
     Functions: {
-      [_ in never]: never;
-    };
+      cleanup_old_email_analytics: { Args: never; Returns: undefined }
+    }
     Enums: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-};
+      [_ in never]: never
+    }
+  }
+}
 
-type DefaultSchema = Database[Extract<keyof Database, 'public'>];
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    | { schema: keyof Database },
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
-      Row: infer R;
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R;
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
       }
       ? R
       : never
-    : never;
+    : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
-    | { schema: keyof Database },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Insert: infer I;
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I;
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
       }
       ? I
       : never
-    : never;
+    : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
-    | { schema: keyof Database },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Update: infer U;
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U;
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
       }
       ? U
       : never
-    : never;
+    : never
 
 export type Enums<
-  DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums'] | { schema: keyof Database },
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
-    : never;
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
-    | { schema: keyof Database },
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
-    : never;
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
 export const Constants = {
   public: {
     Enums: {},
   },
-} as const;
+} as const

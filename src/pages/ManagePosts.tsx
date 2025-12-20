@@ -20,19 +20,9 @@ import {
   Tag as TagIcon,
   ExternalLink,
 } from 'lucide-react';
-
-interface Post {
-  id: string;
-  title: string;
-  slug: string;
-  body: string | null;
-  excerpt: string | null;
-  tags: string[] | null;
-  published_date: string;
-  created_at: string;
-  read_time: number | null;
-  image_url: string | null;
-}
+import { calculateReadingTime } from '@/lib/markdown-utils';
+import { POST_ADMIN_SELECT } from '@/lib/content-selects';
+import type { PostAdmin } from '@/types/content';
 
 type PostFormState = {
   title: string;
@@ -54,7 +44,7 @@ const createEmptyPostForm = (): PostFormState => ({
 
 const ManagePosts = () => {
   const [showForm, setShowForm] = useState(false);
-  const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [editingPost, setEditingPost] = useState<PostAdmin | null>(null);
   const [formData, setFormData] = useState<PostFormState>(createEmptyPostForm);
   const [authChecked, setAuthChecked] = useState(false);
 
@@ -85,16 +75,11 @@ const ManagePosts = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select('*')
+        .select(POST_ADMIN_SELECT)
         .order('published_date', { ascending: false });
 
       if (error) throw error;
-      // Ensure all required fields exist for Post type
-      return (data as { read_time?: number; image_url?: string | null }[]).map((item) => ({
-        ...item,
-        read_time: item.read_time ?? 0,
-        image_url: item.image_url ?? null,
-      })) as Post[];
+      return data as PostAdmin[];
     },
   });
 
@@ -176,7 +161,7 @@ const ManagePosts = () => {
   const isPostsLoading = isLoading;
 
   const addPostMutation = useMutation({
-    mutationFn: async (newPost: Omit<Post, 'id' | 'created_at'>) => {
+    mutationFn: async (newPost: Omit<PostAdmin, 'id' | 'created_at'>) => {
       const { data, error } = await supabase
         .from('posts')
         .insert([
@@ -206,7 +191,7 @@ const ManagePosts = () => {
   });
 
   const updatePostMutation = useMutation({
-    mutationFn: async (updatedPost: Post) => {
+    mutationFn: async (updatedPost: PostAdmin) => {
       const { data, error } = await supabase
         .from('posts')
         .update({
@@ -268,13 +253,6 @@ const ManagePosts = () => {
       .replace(/(^-|-$)/g, '');
   };
 
-  const calculateReadTime = (text: string | null) => {
-    if (!text) return 0;
-    const wordsPerMinute = 200;
-    const words = text.split(/\s+/).filter((word) => word.length > 0).length;
-    return Math.ceil(words / wordsPerMinute);
-  };
-
   const resetForm = () => setFormData(createEmptyPostForm());
 
   const closeForm = () => {
@@ -305,7 +283,7 @@ const ManagePosts = () => {
     });
   };
 
-  const handleEditClick = (post: Post) => {
+  const handleEditClick = (post: PostAdmin) => {
     setEditingPost(post);
     setFormData({
       title: post.title,
@@ -340,7 +318,7 @@ const ManagePosts = () => {
       excerpt: formData.excerpt || null,
       tags: tagsArray.length > 0 ? tagsArray : null,
       published_date: editingPost?.published_date || new Date().toISOString(),
-      read_time: calculateReadTime(formData.body),
+      read_time: formData.body ? calculateReadingTime(formData.body) : 0,
       image_url: formData.image_url || null,
     };
 

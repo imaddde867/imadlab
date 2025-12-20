@@ -14,18 +14,8 @@ import CardItem from '@/components/ui/CardItem';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { getSeoTitle } from '@/lib/seo-utils';
 import { resolveImageUrl } from '@/lib/image-utils';
-
-interface Project {
-  id: string;
-  title: string;
-  description: string | null;
-  full_description: string | null;
-  image_url: string | null;
-  tech_tags: string[] | null;
-  repo_url: string | null;
-  created_at: string;
-  updated_at?: string | null;
-}
+import { PROJECT_DETAIL_SELECT, PROJECT_LIST_SELECT } from '@/lib/content-selects';
+import type { ProjectDetail as ProjectDetailType, ProjectSummary } from '@/types/content';
 
 const RelatedProjects = ({ currentId, tags }: { currentId: string; tags: string[] }) => {
   const { ref, isIntersecting } = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px' });
@@ -35,13 +25,13 @@ const RelatedProjects = ({ currentId, tags }: { currentId: string; tags: string[
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
-        .select('id,title,description,image_url,tech_tags,repo_url,created_at')
+        .select(PROJECT_LIST_SELECT)
         .overlaps('tech_tags', tags)
         .neq('id', currentId)
         .order('created_at', { ascending: false })
         .limit(3);
       if (error) throw error;
-      return data as Project[];
+      return data as ProjectSummary[];
     },
     staleTime: 60_000,
   });
@@ -83,11 +73,11 @@ const ProjectDetail = () => {
       if (!id) throw new Error('No project ID provided');
       const { data, error } = await supabase
         .from('projects')
-        .select('*, full_description, image_url')
+        .select(PROJECT_DETAIL_SELECT)
         .eq('id', id)
         .maybeSingle();
       if (error) throw error;
-      return data as Project | null;
+      return data as ProjectDetailType | null;
     },
     enabled: !!id,
   });
