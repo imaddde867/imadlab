@@ -8,21 +8,12 @@ import SEO from '@/components/SEO';
 import SectionHeader from '@/components/SectionHeader';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { readPrerenderData } from '@/lib/prerender-data';
-import { tagToUrl } from '@/lib/tags';
-
-interface Post {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string | null;
-  tags: string[] | null;
-  published_date: string;
-  read_time: number | null;
-  image_url: string | null;
-}
+import { getTopTags, tagToUrl } from '@/lib/tags';
+import { POST_SUMMARY_SELECT } from '@/lib/content-selects';
+import type { PostSummary } from '@/types/content';
 
 const Blogs = () => {
-  const initialPosts = useMemo(() => readPrerenderData<Post[]>('posts'), []);
+  const initialPosts = useMemo(() => readPrerenderData<PostSummary[]>('posts'), []);
   const initialUpdatedAt = useRef<number | undefined>(initialPosts ? Date.now() : undefined);
 
   const {
@@ -34,11 +25,11 @@ const Blogs = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select('id, title, slug, excerpt, tags, published_date, read_time, image_url')
+        .select(POST_SUMMARY_SELECT)
         .order('published_date', { ascending: false });
 
       if (error) throw error;
-      return data as Post[];
+      return data as PostSummary[];
     },
     initialData: initialPosts,
     initialDataUpdatedAt: initialUpdatedAt.current,
@@ -48,20 +39,7 @@ const Blogs = () => {
   const isSkeletonVisible = isLoading && !posts.length && !isFetching;
 
   // Derive popular tags from posts (top 12)
-  const popularTags = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const p of posts) {
-      if (Array.isArray(p.tags)) for (const t of p.tags) {
-        const key = t.trim();
-        if (!key) continue;
-        counts.set(key, (counts.get(key) || 0) + 1);
-      }
-    }
-    return Array.from(counts.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 12)
-      .map(([tag]) => tag);
-  }, [posts]);
+  const popularTags = useMemo(() => getTopTags(posts, (post) => post.tags), [posts]);
 
   const postListSchema =
     posts.length > 0

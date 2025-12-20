@@ -9,21 +9,12 @@ import { GridSkeleton } from '@/components/ui/LoadingStates';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { readPrerenderData } from '@/lib/prerender-data';
 import SectionHeader from '@/components/SectionHeader';
-import { tagToUrl } from '@/lib/tags';
-
-interface Project {
-  id: string;
-  title: string;
-  description: string | null;
-  full_description: string | null;
-  image_url: string | null;
-  tech_tags: string[] | null;
-  repo_url: string | null;
-  created_at: string;
-}
+import { getTopTags, tagToUrl } from '@/lib/tags';
+import { PROJECT_LIST_SELECT } from '@/lib/content-selects';
+import type { ProjectSummary } from '@/types/content';
 
 const Projects = () => {
-  const initialProjects = useMemo(() => readPrerenderData<Project[]>('projects'), []);
+  const initialProjects = useMemo(() => readPrerenderData<ProjectSummary[]>('projects'), []);
   const initialUpdatedAt = useRef<number | undefined>(initialProjects ? Date.now() : undefined);
 
   const {
@@ -35,11 +26,11 @@ const Projects = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
-        .select('*')
+        .select(PROJECT_LIST_SELECT)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as Project[];
+      return data as ProjectSummary[];
     },
     initialData: initialProjects,
     initialDataUpdatedAt: initialUpdatedAt.current,
@@ -49,20 +40,7 @@ const Projects = () => {
   const isSkeletonVisible = isLoading && !projects.length && !isFetching;
 
   // Popular project tags (top 12)
-  const popularTags = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const p of projects) {
-      if (Array.isArray(p.tech_tags)) for (const t of p.tech_tags) {
-        const key = t.trim();
-        if (!key) continue;
-        counts.set(key, (counts.get(key) || 0) + 1);
-      }
-    }
-    return Array.from(counts.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 12)
-      .map(([tag]) => tag);
-  }, [projects]);
+  const popularTags = useMemo(() => getTopTags(projects, (project) => project.tech_tags), [projects]);
 
   const projectListSchema =
     projects.length > 0

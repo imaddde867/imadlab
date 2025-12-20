@@ -1,14 +1,14 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
 import SectionHeader from '@/components/SectionHeader';
 import { tagSlug, tagToUrl } from '@/lib/tags';
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import type { PostSummary, ProjectSummary } from '@/types/content';
 
-interface Post { tags: string[] | null }
-interface Project { tech_tags: string[] | null }
+type TaggablePost = Pick<PostSummary, 'tags'>;
+type TaggableProject = Pick<ProjectSummary, 'tech_tags'>;
 
 type TagCount = {
   slug: string;
@@ -24,7 +24,7 @@ const TagsIndex = () => {
     queryFn: async () => {
       const { data, error } = await supabase.from('posts').select('tags');
       if (error) throw error;
-      return (data as Post[]) ?? [];
+      return (data as TaggablePost[]) ?? [];
     },
     staleTime: 60_000,
   });
@@ -34,7 +34,7 @@ const TagsIndex = () => {
     queryFn: async () => {
       const { data, error } = await supabase.from('projects').select('tech_tags');
       if (error) throw error;
-      return (data as Project[]) ?? [];
+      return (data as TaggableProject[]) ?? [];
     },
     staleTime: 60_000,
   });

@@ -5,20 +5,14 @@ import SectionHeader from '@/components/SectionHeader';
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { readPrerenderData } from '@/lib/prerender-data';
-
-interface Project {
-  id: string;
-  title: string;
-  tech_tags: string[] | null;
-  description: string | null;
-  short_description?: string | null;
-  repo_url: string | null;
-  image_url: string | null;
-}
+import { PROJECT_LIST_SELECT } from '@/lib/content-selects';
+import type { ProjectSummary } from '@/types/content';
 
 const Projects = () => {
-  const initialProjects = useMemo(() => readPrerenderData<Project[]>('projects'), []);
-  const [projects, setProjects] = useState<Project[]>(() => (initialProjects ?? []).slice(0, 3));
+  const initialProjects = useMemo(() => readPrerenderData<ProjectSummary[]>('projects'), []);
+  const [projects, setProjects] = useState<ProjectSummary[]>(() =>
+    (initialProjects ?? []).slice(0, 3)
+  );
   const isCoarsePointer = useIsCoarsePointer();
   const { ref: sectionRef, isIntersecting } = useIntersectionObserver<HTMLDivElement>({
     rootMargin: '200px',
@@ -51,19 +45,15 @@ const Projects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       const includeShort = import.meta.env.VITE_INCLUDE_PROJECT_SHORT_DESC === 'true';
-      const columns = includeShort
-        ? 'id,title,tech_tags,description,short_description,repo_url,image_url'
-        : 'id,title,tech_tags,description,repo_url,image_url';
-
       const { data, error } = await supabase
         .from('projects')
-        .select(columns)
+        .select(PROJECT_LIST_SELECT)
         .order('created_at', { ascending: false })
         .limit(3);
 
       if (!error && data) {
         setProjects(
-          (data as Project[]).map((project) =>
+          (data as ProjectSummary[]).map((project) =>
             includeShort ? project : { ...project, short_description: null }
           )
         );

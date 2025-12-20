@@ -4,32 +4,12 @@ import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
 import SectionHeader from '@/components/SectionHeader';
 import CardItem from '@/components/ui/CardItem';
+import { POST_SEARCH_SELECT, PROJECT_SEARCH_SELECT } from '@/lib/content-selects';
+import type { PostDetail, ProjectDetail } from '@/types/content';
 
-interface Post {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string | null;
-  body?: string | null;
-  tags: string[] | null;
-  published_date: string;
-  read_time: number | null;
-  image_url: string | null;
-}
-
-interface Project {
-  id: string;
-  title: string;
-  description: string | null;
-  full_description?: string | null;
-  image_url: string | null;
-  tech_tags: string[] | null;
-  repo_url: string | null;
-  created_at: string;
-}
-
-const normalize = (s: string) => s.toLowerCase();
-const includes = (text: string, q: string) => normalize(text).includes(normalize(q));
+const normalize = (value: string) => value.toLowerCase();
+const includesNormalized = (text: string, normalizedQuery: string) =>
+  normalize(text).includes(normalizedQuery);
 
 const Search = () => {
   const [q, setQ] = useState('');
@@ -45,10 +25,10 @@ const Search = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select('id,title,slug,excerpt,body,tags,published_date,read_time,image_url')
+        .select(POST_SEARCH_SELECT)
         .order('published_date', { ascending: false });
       if (error) throw error;
-      return (data as Post[]) ?? [];
+      return (data as PostDetail[]) ?? [];
     },
     staleTime: 60_000,
   });
@@ -58,23 +38,31 @@ const Search = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
-        .select('id,title,description,full_description,tech_tags,image_url,repo_url,created_at')
+        .select(PROJECT_SEARCH_SELECT)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return (data as Project[]) ?? [];
+      return (data as ProjectDetail[]) ?? [];
     },
     staleTime: 60_000,
   });
 
   const results = useMemo(() => {
     if (!debounced) return { posts: [], projects: [] };
-    const term = debounced;
-    const postHits = posts.filter((p) =>
-      includes(p.title, term) || includes(p.excerpt || '', term) || (p.tags || []).some((t) => includes(t, term))
-    );
-    const projectHits = projects.filter((p) =>
-      includes(p.title, term) || includes(p.description || '', term) || (p.tech_tags || []).some((t) => includes(t, term))
-    );
+    const term = normalize(debounced);
+    const postHits = posts.filter((p) => {
+      const haystack = [p.title, p.excerpt ?? '', p.body ?? ''];
+      return (
+        haystack.some((value) => includesNormalized(value, term)) ||
+        (p.tags || []).some((t) => includesNormalized(t, term))
+      );
+    });
+    const projectHits = projects.filter((p) => {
+      const haystack = [p.title, p.description ?? '', p.full_description ?? ''];
+      return (
+        haystack.some((value) => includesNormalized(value, term)) ||
+        (p.tech_tags || []).some((t) => includesNormalized(t, term))
+      );
+    });
     return { posts: postHits, projects: projectHits };
   }, [debounced, posts, projects]);
 
