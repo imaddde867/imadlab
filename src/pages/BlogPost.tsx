@@ -12,19 +12,8 @@ import TagList from '@/components/TagList';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
 import CardItem from '@/components/ui/CardItem';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
-
-interface Post {
-  id: string;
-  title: string;
-  slug: string;
-  body: string | null;
-  excerpt: string | null;
-  tags: string[] | null;
-  published_date: string;
-  read_time?: number | null;
-  image_url?: string | null;
-  updated_at?: string | null;
-}
+import { POST_DETAIL_SELECT, POST_SUMMARY_SELECT } from '@/lib/content-selects';
+import type { PostDetail, PostSummary } from '@/types/content';
 
 const RelatedPosts = ({ currentSlug, tags }: { currentSlug: string; tags: string[] }) => {
   const { ref, isIntersecting } = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px' });
@@ -34,13 +23,13 @@ const RelatedPosts = ({ currentSlug, tags }: { currentSlug: string; tags: string
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select('id,title,slug,excerpt,tags,published_date,read_time,image_url')
+        .select(POST_SUMMARY_SELECT)
         .overlaps('tags', tags)
         .neq('slug', currentSlug)
         .order('published_date', { ascending: false })
         .limit(3);
       if (error) throw error;
-      return data as Post[];
+      return data as PostSummary[];
     },
     staleTime: 60_000,
   });
@@ -94,11 +83,11 @@ const BlogPost = () => {
       if (!slug) throw new Error('No slug provided');
       const { data, error } = await supabase
         .from('posts')
-        .select('id,title,slug,body,excerpt,tags,published_date,updated_at,read_time,image_url')
+        .select(POST_DETAIL_SELECT)
         .eq('slug', slug)
         .maybeSingle();
       if (error) throw error;
-      return data as unknown as Post | null;
+      return data as PostDetail | null;
     },
     enabled: !!slug,
   });

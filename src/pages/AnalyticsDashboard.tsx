@@ -39,22 +39,6 @@ type PageView = {
   city: string | null;
 };
 
-type VisitorSession = {
-  id: string;
-  session_id: string;
-  created_at: string;
-  last_activity: string;
-  user_agent: string | null;
-  device_type: string | null;
-  browser: string | null;
-  os: string | null;
-  screen_resolution: string | null;
-  language: string | null;
-  timezone: string | null;
-  country: string | null;
-  region: string | null;
-  city: string | null;
-};
 
 type PathStats = {
   path: string;
@@ -77,7 +61,6 @@ const AnalyticsDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
   const [totalViewCount, setTotalViewCount] = useState<number | null>(null);
-  const [_sessions, setSessions] = useState<VisitorSession[]>([]);
   const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d'>('7d');
 
   const fetchAnalytics = useCallback(async () => {
@@ -92,18 +75,11 @@ const AnalyticsDashboard = () => {
     };
     const startDate = timeRanges[timeRange].toISOString();
 
-    const [viewsRes, sessionsRes] = await Promise.all([
-      supabase
-        .from('page_views')
-        .select('*', { count: 'exact' })
-        .gte('viewed_at', startDate)
-        .order('viewed_at', { ascending: false }),
-      supabase
-        .from('visitor_sessions')
-        .select('*')
-        .gte('created_at', startDate)
-        .order('created_at', { ascending: false }),
-    ]);
+    const viewsRes = await supabase
+      .from('page_views')
+      .select('*', { count: 'exact' })
+      .gte('viewed_at', startDate)
+      .order('viewed_at', { ascending: false });
 
     if (viewsRes.error) {
       toast({
@@ -126,7 +102,6 @@ const AnalyticsDashboard = () => {
     } else {
       setTotalViewCount(0);
     }
-    if (sessionsRes.data) setSessions(sessionsRes.data as VisitorSession[]);
     setLoading(false);
   }, [timeRange, toast]);
 
