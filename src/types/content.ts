@@ -22,7 +22,6 @@ export type ProjectSummary = {
   id: string;
   title: string;
   description: string | null;
-  short_description?: string | null;
   full_description?: string | null;
   image_url: string | null;
   tech_tags: string[] | null;
