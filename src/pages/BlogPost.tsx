@@ -5,6 +5,7 @@ import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SEO from '@/components/SEO';
 import { calculateReadingTime, stripMarkdown } from '@/lib/markdown-utils';
+import { resolveImageUrl } from '@/lib/image-utils';
 import { PageLoader } from '@/components/ui/LoadingStates';
 import BackRow from '@/components/BackRow';
 import TagList from '@/components/TagList';
@@ -145,6 +146,7 @@ const BlogPost = () => {
   const body = post.body ?? '';
   const enableMermaid = body.includes('```mermaid');
   const enableMath = /\$\$|\\\(|\\\[/.test(body);
+  const coverImage = resolveImageUrl(post.image_url);
 
   return (
     <div className="min-h-screen bg-black text-white pt-14">
@@ -159,7 +161,7 @@ const BlogPost = () => {
         type="article"
         publishedTime={post.published_date}
         modifiedTime={post.updated_at ?? post.published_date}
-        image={post.image_url || undefined}
+        image={coverImage || undefined}
         imageAlt={post.title}
         tags={articleTags}
         breadcrumbs={breadcrumbTrail}
@@ -205,11 +207,11 @@ const BlogPost = () => {
       </header>
 
       {/* Featured Image */}
-      {post.image_url && (
+      {coverImage && (
         <div className="w-full container-narrow mb-12">
           <div className="aspect-video w-full overflow-hidden rounded-lg shadow-xl">
             <img
-              src={post.image_url}
+              src={coverImage}
               alt={post.title}
               width="1200"
               height="675"
