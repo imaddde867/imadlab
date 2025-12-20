@@ -4,6 +4,7 @@ import { tagToUrl } from '@/lib/tags';
 import { Github, ExternalLink } from 'lucide-react';
 import SpotlightCard from '../SpotlightCard';
 import { prefetchRoute } from '@/lib/routePrefetch';
+import { resolveImageUrl } from '@/lib/image-utils';
 
 interface CardItemProps {
   title: string;
@@ -37,12 +38,16 @@ const CardItem = ({
   // Enhanced state management for interactions
   const titleRef = useRef<HTMLSpanElement>(null);
   const containerRef = useRef<HTMLHeadingElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const [shouldMarquee, setShouldMarquee] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isCardHovered, setIsCardHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const prefetchPath = isBlog ? '/blogs/:slug' : '/projects/:id';
+  const resolvedImageUrl = resolveImageUrl(image_url);
+  const showCover = Boolean(resolvedImageUrl) || isBlog;
+  const showImage = Boolean(resolvedImageUrl) && !imageError;
 
   useEffect(() => {
     if (titleRef.current && containerRef.current) {
@@ -51,6 +56,19 @@ const CardItem = ({
       setShouldMarquee(titleWidth > containerWidth);
     }
   }, [title]);
+
+  useEffect(() => {
+    setImageLoaded(false);
+    setImageError(false);
+  }, [resolvedImageUrl]);
+
+  useEffect(() => {
+    const img = imageRef.current;
+    if (!img) return;
+    if (img.complete && img.naturalWidth > 0) {
+      setImageLoaded(true);
+    }
+  }, [resolvedImageUrl]);
 
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -68,44 +86,55 @@ const CardItem = ({
         className="h-full flex flex-col"
       >
         {/* Enhanced image section with better aspect ratio and loading states */}
-        {image_url && !imageError && (
+        {showCover && (
           <div className="relative w-full aspect-[16/9] overflow-hidden bg-white/5">
-            {/* Loading placeholder */}
-            {!imageLoaded && (
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 animate-pulse flex items-center justify-center">
-                <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin"></div>
+            {showImage ? (
+              <>
+                {/* Loading placeholder */}
+                {!imageLoaded && (
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 animate-pulse flex items-center justify-center">
+                    <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin"></div>
+                  </div>
+                )}
+
+                {/* Optimized image with responsive sizes and enhanced hover effects */}
+                <img
+                  ref={imageRef}
+                  src={resolvedImageUrl ?? undefined}
+                  alt={title}
+                  width="640"
+                  height="360"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className={`w-full h-full object-cover transition-all duration-500 ease-out ${
+                    imageLoaded ? 'opacity-100' : 'opacity-0'
+                  } ${isCardHovered ? 'scale-110' : 'scale-100'}`}
+                  onLoad={handleImageLoad}
+                  onError={handleImageError}
+                  loading="lazy"
+                  decoding="async"
+                />
+
+                {/* Gradient overlay for better text readability */}
+                <div
+                  className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-300 ${
+                    isCardHovered ? 'opacity-80' : 'opacity-40'
+                  }`}
+                />
+
+                {/* Hover overlay with subtle animation */}
+                <div
+                  className={`absolute inset-0 bg-white/10 transition-opacity duration-300 ${
+                    isCardHovered ? 'opacity-100' : 'opacity-0'
+                  }`}
+                />
+              </>
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-white/10 via-white/5 to-transparent">
+                <span className="text-xs uppercase tracking-[0.25em] text-white/60">
+                  No Preview
+                </span>
               </div>
             )}
-
-            {/* Optimized image with responsive sizes and enhanced hover effects */}
-            <img
-              src={image_url}
-              alt={title}
-              width="640"
-              height="360"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className={`w-full h-full object-cover transition-all duration-500 ease-out ${
-                imageLoaded ? 'opacity-100' : 'opacity-0'
-              } ${isCardHovered ? 'scale-110' : 'scale-100'}`}
-              onLoad={handleImageLoad}
-              onError={handleImageError}
-              loading="lazy"
-              decoding="async"
-            />
-
-            {/* Gradient overlay for better text readability */}
-            <div
-              className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-300 ${
-                isCardHovered ? 'opacity-80' : 'opacity-40'
-              }`}
-            />
-
-            {/* Hover overlay with subtle animation */}
-            <div
-              className={`absolute inset-0 bg-white/10 transition-opacity duration-300 ${
-                isCardHovered ? 'opacity-100' : 'opacity-0'
-              }`}
-            />
           </div>
         )}
 

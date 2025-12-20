@@ -54,7 +54,7 @@ const normaliseDate = (value?: string) => {
   return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
 };
 
-const SEO = ({
+const Seo = ({
   title,
   description,
   keywords,
@@ -271,4 +271,4 @@ const SEO = ({
   );
 };
 
-export default SEO;
+export default Seo;
