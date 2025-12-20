@@ -37,12 +37,12 @@ const CardItem = ({
   // Enhanced state management for interactions
   const titleRef = useRef<HTMLSpanElement>(null);
   const containerRef = useRef<HTMLHeadingElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
   const [shouldMarquee, setShouldMarquee] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isCardHovered, setIsCardHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const prefetchPath = isBlog ? '/blogs/:slug' : '/projects/:id';
 
   useEffect(() => {
     if (titleRef.current && containerRef.current) {
@@ -79,7 +79,6 @@ const CardItem = ({
 
             {/* Optimized image with responsive sizes and enhanced hover effects */}
             <img
-              ref={imageRef}
               src={image_url}
               alt={title}
               width="640"
@@ -158,7 +157,7 @@ const CardItem = ({
                 tags.slice(0, 4).map((tag, i) => (
                   <Link
                     key={i}
-to={tagToUrl(tag)}
+                    to={tagToUrl(tag)}
                     className={`px-3 py-1 text-xs font-medium rounded-full transition-all duration-200 ${
                       isCardHovered
                         ? 'bg-white/20 text-white shadow-lg'
@@ -211,9 +210,7 @@ to={tagToUrl(tag)}
                     {linkTo ? (
                       <Link
                         to={linkTo}
-                        onPointerEnter={() => {
-                          if (isBlog) prefetchRoute('/blogs/:slug'); else prefetchRoute('/projects/:id');
-                        }}
+                        onPointerEnter={() => prefetchRoute(prefetchPath)}
                         className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 group"
                       >
                         {linkLabel}

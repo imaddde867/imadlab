@@ -210,16 +210,6 @@ All colors MUST be HSL.
     -ms-overflow-style: none; /* IE and Edge */
   }
 
-  [data-custom-cursor-root],
-  [data-custom-cursor-root] * {
-    cursor: none !important;
-  }
-
-  [data-custom-cursor-root] input,
-  [data-custom-cursor-root] textarea {
-    cursor: text !important;
-  }
-
   *::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
   }

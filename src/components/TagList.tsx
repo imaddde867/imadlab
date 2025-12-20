@@ -15,6 +15,11 @@ const TagList = ({ tags, initialVisible = 3, label, variant = 'hash' }: TagListP
   const [expanded, setExpanded] = useState(false);
   if (!tags || tags.length === 0) return null;
   const visible = expanded ? tags : tags.slice(0, initialVisible);
+  const handleTagClick = (tag: string) => {
+    import('@/lib/events')
+      .then(({ logEvent }) => logEvent('tag_click', { tag }))
+      .catch(() => {});
+  };
 
   return (
     <div className="flex flex-wrap gap-2 items-center">
@@ -23,7 +28,7 @@ const TagList = ({ tags, initialVisible = 3, label, variant = 'hash' }: TagListP
         <Link
           key={i}
           to={tagToUrl(tag)}
-          onClick={() => { import('@/lib/events').then(({ logEvent }) => logEvent('tag_click', { tag })).catch(() => {}); }}
+          onClick={() => handleTagClick(tag)}
           onPointerEnter={() => prefetchRoute('/tags/:tag')}
           className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90 hover:bg-white/20 transition-colors"
         >

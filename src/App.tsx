@@ -4,97 +4,46 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import React, { Suspense } from 'react';
-import { CursorProvider, Cursor, CursorFollow } from '@/components/ui/shadcn-io/animated-cursor';
 import ClickSpark from '@/components/ClickSpark';
 import HomeBackground from '@/components/HomeBackground';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import CookieConsent from '@/components/CookieConsent';
-import UserSettings from '@/components/UserSettings';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { registerRoutePrefetch } from '@/lib/routePrefetch';
 import { loadScriptIfConsented } from '@/lib/consent';
 import { HelmetProvider } from 'react-helmet-async';
 
-const getCustomCursorSupport = () => {
-  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-    return false;
-  }
-
-  const finePointerQuery = window.matchMedia('(pointer: fine)');
-  const hoverQuery = window.matchMedia('(hover: hover)');
-  return finePointerQuery.matches && hoverQuery.matches;
+const lazyWithPrefetch = <T extends React.ComponentType<unknown>>(
+  path: string,
+  loader: () => Promise<{ default: T }>
+) => {
+  registerRoutePrefetch(path, loader);
+  return React.lazy(loader);
 };
 
 // Lazy load all pages for better code splitting and register them for prefetching
-const loadIndex = () => import('./pages/Index');
-registerRoutePrefetch('/', loadIndex);
-const Index = React.lazy(loadIndex);
-
-const loadProjects = () => import('./pages/Projects');
-registerRoutePrefetch('/projects', loadProjects);
-const Projects = React.lazy(loadProjects);
-
-const loadBlogs = () => import('./pages/Blog');
-registerRoutePrefetch('/blogs', loadBlogs);
-const Blogs = React.lazy(loadBlogs);
-
-const loadBlogPost = () => import('./pages/BlogPost');
-registerRoutePrefetch('/blogs/:slug', loadBlogPost);
-const BlogPost = React.lazy(loadBlogPost);
-
-const loadProjectDetail = () => import('./pages/ProjectDetail');
-registerRoutePrefetch('/projects/:id', loadProjectDetail);
-const ProjectDetail = React.lazy(loadProjectDetail);
-
-const loadExtras = () => import('./pages/Extras');
-registerRoutePrefetch('/extras', loadExtras);
-const Extras = React.lazy(loadExtras);
-
-const loadAdminLogin = () => import('./pages/AdminLogin');
-registerRoutePrefetch('/admin/login', loadAdminLogin);
-const AdminLogin = React.lazy(loadAdminLogin);
-
-const loadAdminDashboard = () => import('./pages/AdminDashboard');
-registerRoutePrefetch('/admin', loadAdminDashboard);
-const AdminDashboard = React.lazy(loadAdminDashboard);
-
-const loadManagePosts = () => import('./pages/ManagePosts');
-registerRoutePrefetch('/admin/posts', loadManagePosts);
-const ManagePosts = React.lazy(loadManagePosts);
-
-const loadManageProjects = () => import('./pages/ManageProjects');
-registerRoutePrefetch('/admin/projects', loadManageProjects);
-const ManageProjects = React.lazy(loadManageProjects);
-
-const loadEmailDashboard = () => import('./pages/EmailDashboard');
-registerRoutePrefetch('/admin/emails', loadEmailDashboard);
-const EmailDashboard = React.lazy(loadEmailDashboard);
-
-const loadAnalyticsDashboard = () => import('./pages/AnalyticsDashboard');
-registerRoutePrefetch('/admin/analytics', loadAnalyticsDashboard);
-const AnalyticsDashboard = React.lazy(loadAnalyticsDashboard);
-
-const loadNotFound = () => import('./pages/NotFound');
-registerRoutePrefetch('*', loadNotFound);
-const NotFound = React.lazy(loadNotFound);
-
-const loadAbout = () => import('./pages/About');
-registerRoutePrefetch('/about', loadAbout);
-const About = React.lazy(loadAbout);
-
-const loadTag = () => import('./pages/Tag');
-registerRoutePrefetch('/tags/:tag', loadTag);
-const Tag = React.lazy(loadTag);
-
-const loadTagsIndex = () => import('./pages/TagsIndex');
-registerRoutePrefetch('/tags', loadTagsIndex);
-const TagsIndex = React.lazy(loadTagsIndex);
-
-const loadSearch = () => import('./pages/Search');
-registerRoutePrefetch('/search', loadSearch);
-const Search = React.lazy(loadSearch);
+const Index = lazyWithPrefetch('/', () => import('./pages/Index'));
+const Projects = lazyWithPrefetch('/projects', () => import('./pages/Projects'));
+const Blogs = lazyWithPrefetch('/blogs', () => import('./pages/Blog'));
+const BlogPost = lazyWithPrefetch('/blogs/:slug', () => import('./pages/BlogPost'));
+const ProjectDetail = lazyWithPrefetch('/projects/:id', () => import('./pages/ProjectDetail'));
+const Extras = lazyWithPrefetch('/extras', () => import('./pages/Extras'));
+const AdminLogin = lazyWithPrefetch('/admin/login', () => import('./pages/AdminLogin'));
+const AdminDashboard = lazyWithPrefetch('/admin', () => import('./pages/AdminDashboard'));
+const ManagePosts = lazyWithPrefetch('/admin/posts', () => import('./pages/ManagePosts'));
+const ManageProjects = lazyWithPrefetch('/admin/projects', () => import('./pages/ManageProjects'));
+const EmailDashboard = lazyWithPrefetch('/admin/emails', () => import('./pages/EmailDashboard'));
+const AnalyticsDashboard = lazyWithPrefetch(
+  '/admin/analytics',
+  () => import('./pages/AnalyticsDashboard')
+);
+const NotFound = lazyWithPrefetch('*', () => import('./pages/NotFound'));
+const About = lazyWithPrefetch('/about', () => import('./pages/About'));
+const Tag = lazyWithPrefetch('/tags/:tag', () => import('./pages/Tag'));
+const TagsIndex = lazyWithPrefetch('/tags', () => import('./pages/TagsIndex'));
+const Search = lazyWithPrefetch('/search', () => import('./pages/Search'));
 
 // Optimize QueryClient for better performance
 const queryClient = new QueryClient({
@@ -114,23 +63,7 @@ const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => {
-  const [userName, setUserName] = React.useState<string>('');
-  const [showFollowingBadge, setShowFollowingBadge] = React.useState<boolean>(true);
   const [cookieConsentIsOpen, setCookieConsentIsOpen] = React.useState<boolean>(false);
-  const [supportsCustomCursor, setSupportsCustomCursor] = React.useState<boolean>(() =>
-    getCustomCursorSupport()
-  );
-
-  React.useEffect(() => {
-    const storedName = localStorage.getItem('userName');
-    if (storedName) {
-      setUserName(storedName);
-    }
-    const storedBadgePreference = localStorage.getItem('showFollowingBadge');
-    if (storedBadgePreference !== null) {
-      setShowFollowingBadge(JSON.parse(storedBadgePreference));
-    }
-  }, []);
 
   // Load Cloudflare Analytics only when user has consented to analytics
   React.useEffect(() => {
@@ -144,51 +77,6 @@ const App = () => {
       // ignore failures silently
     });
   }, []);
-
-  React.useEffect(() => {
-    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-      return;
-    }
-
-    const finePointerQuery = window.matchMedia('(pointer: fine)');
-    const hoverQuery = window.matchMedia('(hover: hover)');
-    const updateSupport = () => {
-      setSupportsCustomCursor(finePointerQuery.matches && hoverQuery.matches);
-    };
-
-    updateSupport();
-
-    const attachListener = (query: MediaQueryList) => {
-      const handler = () => updateSupport();
-
-      if (typeof query.addEventListener === 'function') {
-        query.addEventListener('change', handler);
-        return () => query.removeEventListener('change', handler);
-      }
-
-      if (typeof query.addListener === 'function') {
-        query.addListener(handler);
-        return () => query.removeListener(handler);
-      }
-
-      return () => {};
-    };
-
-    const detachFinePointer = attachListener(finePointerQuery);
-    const detachHover = attachListener(hoverQuery);
-
-    return () => {
-      detachFinePointer();
-      detachHover();
-    };
-  }, []);
-
-  const visitorTag = React.useMemo(() => {
-    const randomNumber = Math.floor(Math.random() * 900) + 100;
-    return `Visitor_${randomNumber}`;
-  }, []);
-
-  const displayTag = userName || visitorTag;
 
   const baseContent = (
     <>
@@ -259,46 +147,11 @@ const App = () => {
     </>
   );
 
-  const cursorRootProps: React.HTMLAttributes<HTMLDivElement> = supportsCustomCursor
-    ? { 'data-custom-cursor-root': 'true' }
-    : {};
-
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <div className="relative min-h-screen" {...cursorRootProps}>
-            {supportsCustomCursor ? (
-              <CursorProvider className="flex min-h-screen flex-col">
-                {baseContent}
-                <UserSettings
-                  setUserName={setUserName}
-                  setShowFollowingBadge={setShowFollowingBadge}
-                />
-                <Cursor>
-                  <svg
-                    className="size-6 text-primary"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 40 40"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M1.8 4.4 7 36.2c.3 1.8 2.6 2.3 3.6.8l3.9-5.7c1.7-2.5 4.5-4.1 7.5-4.3l6.9-.5c1.8-.1 2.5-2.4 1.1-3.5L5 2.5c-1.4-1.1-3.5 0-3.3 1.9Z"
-                    />
-                  </svg>
-                </Cursor>
-                {showFollowingBadge && (
-                  <CursorFollow>
-                    <div className="bg-primary text-primary-foreground px-2 py-1 rounded-lg text-sm shadow-lg">
-                      {displayTag}
-                    </div>
-                  </CursorFollow>
-                )}
-              </CursorProvider>
-            ) : (
-              <div className="flex min-h-screen flex-col">{baseContent}</div>
-            )}
-          </div>
+          <div className="flex min-h-screen flex-col">{baseContent}</div>
         </TooltipProvider>
       </QueryClientProvider>
     </HelmetProvider>
