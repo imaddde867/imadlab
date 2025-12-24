@@ -333,12 +333,17 @@ const ManageProjects = () => {
         const topics = Array.isArray(repo.topics) ? repo.topics.filter(Boolean) : [];
         const techTags = Array.from(new Set([...language, ...topics]));
 
-        const description = repo.description?.trim().length ? repo.description.trim() : null;
+        const description =
+          repo.description?.trim().length
+            ? repo.description.trim()
+            : repo.language?.trim()
+              ? `A ${repo.language.trim()} project by Imad Eddine.`
+              : 'A project by Imad Eddine.';
         const demoUrl = normalizeUrl(repo.homepage);
         const title = buildProjectTitleFromRepo(repo.name);
         const featured = importAutoFeatured ? repo.stargazers_count >= 3 : false;
 
-        const fullDescription = `## Overview\n${description ?? ''}\n\n## Links\n- Repo: ${repo.html_url}${
+        const fullDescription = `## Overview\n${description}\n\n## Links\n- Repo: ${repo.html_url}${
           demoUrl ? `\n- Demo: ${demoUrl}` : ''
         }\n\n## Highlights\n- \n\n## Tech\n${techTags.length ? techTags.map((t) => `- ${t}`).join('\n') : '- '}\n`;
 

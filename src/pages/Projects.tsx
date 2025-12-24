@@ -15,7 +15,9 @@ import ProjectCard from '@/components/ProjectCard';
 
 const Projects = () => {
   const initialProjects = useMemo(() => readPrerenderData<ProjectSummary[]>('projects'), []);
-  const initialUpdatedAt = useRef<number | undefined>(initialProjects ? Date.now() : undefined);
+  const initialUpdatedAt = useRef<number | undefined>(
+    initialProjects?.length ? Date.now() : undefined
+  );
 
   const {
     data: projects = [],
@@ -33,7 +35,7 @@ const Projects = () => {
       if (error) throw error;
       return data as ProjectSummary[];
     },
-    initialData: initialProjects,
+    initialData: initialProjects?.length ? initialProjects : undefined,
     initialDataUpdatedAt: initialUpdatedAt.current,
     staleTime: 1000 * 60,
   });
