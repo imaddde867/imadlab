@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { PROJECT_ADMIN_SELECT } from '@/lib/content-selects';
 import type { ProjectDetail as ProjectAdmin } from '@/types/content';
+import { Switch } from '@/components/ui/switch';
 
 type ProjectFormState = {
   title: string;
@@ -31,6 +32,8 @@ type ProjectFormState = {
   image_url: string;
   tech_tags: string;
   repo_url: string;
+  demo_url: string;
+  featured: boolean;
 };
 
 const createEmptyProjectForm = (): ProjectFormState => ({
@@ -40,6 +43,8 @@ const createEmptyProjectForm = (): ProjectFormState => ({
   image_url: '',
   tech_tags: '',
   repo_url: '',
+  demo_url: '',
+  featured: false,
 });
 
 const ManageProjects = () => {
@@ -80,6 +85,7 @@ const ManageProjects = () => {
       const { data, error } = await supabase
         .from('projects')
         .select(PROJECT_ADMIN_SELECT)
+        .order('featured', { ascending: false })
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -223,6 +229,8 @@ const ManageProjects = () => {
           image_url: updatedProject.image_url,
           tech_tags: updatedProject.tech_tags,
           repo_url: updatedProject.repo_url,
+          demo_url: updatedProject.demo_url,
+          featured: updatedProject.featured,
         })
         .eq('id', updatedProject.id)
         .select()
@@ -275,6 +283,8 @@ const ManageProjects = () => {
       image_url: project.image_url || '',
       tech_tags: project.tech_tags?.join(', ') || '',
       repo_url: project.repo_url || '',
+      demo_url: project.demo_url || '',
+      featured: Boolean(project.featured),
     });
     setShowForm(true);
   };
@@ -301,6 +311,8 @@ const ManageProjects = () => {
       image_url: formData.image_url || null,
       tech_tags: techTagsArray.length > 0 ? techTagsArray : null,
       repo_url: formData.repo_url || null,
+      demo_url: formData.demo_url || null,
+      featured: formData.featured,
     };
 
     if (editingProject) {
@@ -430,6 +442,28 @@ const ManageProjects = () => {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-white/80">Live Demo URL</label>
+                    <Input
+                      placeholder="https://your-demo.com"
+                      value={formData.demo_url}
+                      onChange={(e) => setFormData({ ...formData, demo_url: e.target.value })}
+                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                    <div>
+                      <div className="text-sm font-medium text-white/80">Featured</div>
+                      <div className="text-xs text-white/60">Pin this project to the top</div>
+                    </div>
+                    <Switch
+                      checked={formData.featured}
+                      onCheckedChange={(checked) => setFormData({ ...formData, featured: checked })}
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-white/80">Technologies Used</label>
                   <Input
@@ -551,10 +585,25 @@ const ManageProjects = () => {
                             />
                             /projects/{project.id}
                           </div>
+                          {project.featured && (
+                            <div className="flex items-center gap-1.5">
+                              <span className="inline-flex h-1.5 w-1.5 rounded-full bg-amber-300" />
+                              Featured
+                            </div>
+                          )}
                           {project.repo_url && (
                             <div className="flex items-center gap-1.5">
                               <Code className="h-3.5 w-3.5 text-white/50" aria-hidden="true" />
                               Repository available
+                            </div>
+                          )}
+                          {project.demo_url && (
+                            <div className="flex items-center gap-1.5">
+                              <ExternalLink
+                                className="h-3.5 w-3.5 text-white/50"
+                                aria-hidden="true"
+                              />
+                              Demo available
                             </div>
                           )}
                         </div>

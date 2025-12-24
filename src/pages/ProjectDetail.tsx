@@ -1,8 +1,17 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Calendar, Code, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  ArrowLeft,
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  Code,
+  ExternalLink,
+  GitFork,
+  Star,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SEO from '@/components/SEO';
 import { PageLoader } from '@/components/ui/LoadingStates';
@@ -11,23 +20,29 @@ import { stripMarkdown } from '@/lib/markdown-utils';
 import { tagToUrl } from '@/lib/tags';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
 import CardItem from '@/components/ui/CardItem';
+import ProjectCard from '@/components/ProjectCard';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { getSeoTitle } from '@/lib/seo-utils';
 import { resolveImageUrl } from '@/lib/image-utils';
-import { PROJECT_DETAIL_SELECT, PROJECT_LIST_SELECT } from '@/lib/content-selects';
-import type { ProjectDetail as ProjectDetailType, ProjectSummary } from '@/types/content';
+import { POST_SUMMARY_SELECT, PROJECT_DETAIL_SELECT, PROJECT_LIST_SELECT } from '@/lib/content-selects';
+import type { PostSummary, ProjectDetail as ProjectDetailType, ProjectSummary } from '@/types/content';
+import { parseGithubRepo } from '@/lib/github';
+import { useGithubRepoInfo } from '@/hooks/useGithubRepoInfo';
+import { expandTagVariants } from '@/lib/tag-variants';
 
 const RelatedProjects = ({ currentId, tags }: { currentId: string; tags: string[] }) => {
+  const queryTags = useMemo(() => expandTagVariants(tags), [tags]);
   const { ref, isIntersecting } = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px' });
   const { data: related = [] } = useQuery({
-    queryKey: ['related-projects', currentId, tags.sort().join(',')],
+    queryKey: ['related-projects', currentId, queryTags.slice().sort().join(',')],
     enabled: tags.length > 0 && isIntersecting,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
         .select(PROJECT_LIST_SELECT)
-        .overlaps('tech_tags', tags)
+        .overlaps('tech_tags', queryTags)
         .neq('id', currentId)
+        .order('featured', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(3);
       if (error) throw error;
@@ -43,14 +58,54 @@ const RelatedProjects = ({ currentId, tags }: { currentId: string; tags: string[
       <h2 className="text-xl font-semibold mb-6">Related projects</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {related.map((p) => (
+          <ProjectCard
+            key={p.id}
+            project={p}
+            linkTo={`/projects/${p.id}`}
+            linkLabel="View Project"
+          />
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const RelatedPosts = ({ currentId, tags }: { currentId: string; tags: string[] }) => {
+  const queryTags = useMemo(() => expandTagVariants(tags), [tags]);
+  const { ref, isIntersecting } = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px' });
+  const { data: related = [] } = useQuery({
+    queryKey: ['related-posts', currentId, queryTags.slice().sort().join(',')],
+    enabled: tags.length > 0 && isIntersecting,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('posts')
+        .select(POST_SUMMARY_SELECT)
+        .overlaps('tags', queryTags)
+        .order('published_date', { ascending: false })
+        .limit(3);
+      if (error) throw error;
+      return data as PostSummary[];
+    },
+    staleTime: 60_000,
+  });
+
+  if (!related.length && !isIntersecting) return null;
+
+  return (
+    <section ref={ref} className="mt-12 border-t border-white/10 pt-8">
+      <h2 className="text-xl font-semibold mb-6">Related articles</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {related.map((p) => (
           <CardItem
             key={p.id}
             title={p.title}
-            tags={p.tech_tags || []}
-            description={p.description}
-            linkTo={`/projects/${p.id}`}
-            linkLabel="View Project"
-            githubUrl={p.repo_url || undefined}
+            tags={p.tags || []}
+            date={new Date(p.published_date).toLocaleDateString('en-US')}
+            excerpt={p.excerpt || ''}
+            linkTo={`/blogs/${p.slug}`}
+            linkLabel="Read"
+            readTime={p.read_time || undefined}
+            isBlog
             image_url={p.image_url || undefined}
           />
         ))}
@@ -81,6 +136,8 @@ const ProjectDetail = () => {
     },
     enabled: !!id,
   });
+
+  const { data: repoInfo } = useGithubRepoInfo(project?.repo_url);
 
   if (isLoading) {
     return <PageLoader text="Loading project..." variant="orbit" />;
@@ -138,6 +195,7 @@ const ProjectDetail = () => {
       name: 'Imad Eddine',
       url: 'https://imadlab.me',
     },
+    sameAs: [project.repo_url, project.demo_url].filter(Boolean),
     applicationCategory: project.repo_url ? 'DeveloperApplication' : undefined,
     operatingSystem: project.repo_url ? 'Cross-platform' : undefined,
     offers: project.repo_url
@@ -153,6 +211,15 @@ const ProjectDetail = () => {
   const longForm = project.full_description ?? '';
   const enableMermaid = longForm.includes('```mermaid');
   const enableMath = /\$\$|\\\(|\\\[/.test(longForm);
+  const repoRef = parseGithubRepo(project.repo_url);
+  const repository = repoRef ? { owner: repoRef.owner, name: repoRef.repo } : undefined;
+  const repoUpdatedAt = repoInfo?.pushed_at ?? repoInfo?.updated_at ?? null;
+  const repoUpdatedLabel = (() => {
+    if (!repoUpdatedAt) return null;
+    const dateObj = new Date(repoUpdatedAt);
+    if (Number.isNaN(dateObj.getTime())) return null;
+    return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  })();
 
   return (
     <div className="min-h-screen bg-black text-white pt-14">
@@ -183,22 +250,46 @@ const ProjectDetail = () => {
           <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
         }
         right={
-          project.repo_url ? (
-            <a
-              href={project.repo_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => {
-                import('@/lib/events').then(({ logEvent }) =>
-                  logEvent('repo_click', { project_id: project.id, repo_url: project.repo_url })
-                ).catch(() => {});
-              }}
-              className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md text-white/90 hover:text-white transition-all duration-200 text-sm"
-            >
-              <Code className="w-4 h-4" />
-              View Code
-              <ExternalLink className="w-3 h-3" />
-            </a>
+          project.repo_url || project.demo_url ? (
+            <div className="flex items-center gap-2">
+              {project.demo_url && (
+                <a
+                  href={project.demo_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    import('@/lib/events')
+                      .then(({ logEvent }) =>
+                        logEvent('demo_click', { project_id: project.id, demo_url: project.demo_url })
+                      )
+                      .catch(() => {});
+                  }}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md text-white/90 hover:text-white transition-all duration-200 text-sm"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Live Demo
+                </a>
+              )}
+              {project.repo_url && (
+                <a
+                  href={project.repo_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    import('@/lib/events')
+                      .then(({ logEvent }) =>
+                        logEvent('repo_click', { project_id: project.id, repo_url: project.repo_url })
+                      )
+                      .catch(() => {});
+                  }}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md text-white/90 hover:text-white transition-all duration-200 text-sm"
+                >
+                  <Code className="w-4 h-4" />
+                  View Code
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+            </div>
           ) : undefined
         }
       />
@@ -220,13 +311,39 @@ const ProjectDetail = () => {
               })}
             </div>
 
+            {project.featured && (
+              <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/15 px-3 py-1 text-sm text-amber-200">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-300" />
+                Featured
+              </div>
+            )}
+
+            {repoInfo && (
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/70">
+                <div className="flex items-center gap-1.5">
+                  <Star className="w-4 h-4 text-white/50" />
+                  {repoInfo.stargazers_count}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <GitFork className="w-4 h-4 text-white/50" />
+                  {repoInfo.forks_count}
+                </div>
+                {repoUpdatedLabel && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-white/50">Updated</span>
+                    {repoUpdatedLabel}
+                  </div>
+                )}
+              </div>
+            )}
+
             {projectTags.length > 0 && (
               <div className="flex flex-wrap gap-2 items-center">
                 <span className="text-sm text-white/70">Technologies:</span>
                 {(showAllTags ? projectTags : projectTags.slice(0, 3)).map((tag, index) => (
                   <Link
                     key={index}
-to={tagToUrl(tag)}
+                    to={tagToUrl(tag)}
                     className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90 hover:bg-white/20"
                   >
                     {tag}
@@ -287,29 +404,46 @@ to={tagToUrl(tag)}
           <GfmMarkdown
             source={project.full_description}
             className="prose-lg"
-            config={{ enableMermaid, enableMath }}
+            repository={repository}
+            config={{ enableMermaid, enableMath, showToc: true }}
           />
         ) : (
           <div className="text-center py-12">
             <div className="text-white/60 mb-4">
               No detailed description available for this project.
             </div>
-            {project.repo_url && (
-              <a
-                href={project.repo_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-200"
-              >
-                <Code className="w-4 h-4" />
-                View Source Code
-                <ExternalLink className="w-4 h-4" />
-              </a>
+            {(project.repo_url || project.demo_url) && (
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {project.demo_url && (
+                  <a
+                    href={project.demo_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-200"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Live Demo
+                  </a>
+                )}
+                {project.repo_url && (
+                  <a
+                    href={project.repo_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-200"
+                  >
+                    <Code className="w-4 h-4" />
+                    View Source Code
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                )}
+              </div>
             )}
           </div>
         )}
         {/* Related Projects */}
         <RelatedProjects currentId={project.id} tags={projectTags} />
+        <RelatedPosts currentId={project.id} tags={projectTags} />
       </main>
 
       {/* Page footer removed; global Footer is used */}

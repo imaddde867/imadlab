@@ -119,19 +119,19 @@ const Blogs = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
             {posts.map((post) => (
-              <CardItem
-                key={post.id}
-                title={post.title}
-                tags={post.tags || []}
-                date={new Date(post.published_date).toLocaleDateString()}
-                excerpt={post.excerpt || ''}
-                linkTo={`/blogs/${post.slug}`}
-                linkLabel={`Read ${post.title}`}
-                isBlog={true}
-                readTime={post.read_time || undefined}
-                image_url={post.image_url || undefined}
-              />
-            ))}
+                <CardItem
+                  key={post.id}
+                  title={post.title}
+                  tags={post.tags || []}
+                  date={new Date(post.published_date).toLocaleDateString()}
+                  excerpt={post.excerpt || ''}
+                  linkTo={`/blogs/${post.slug}`}
+                  linkLabel="Read"
+                  isBlog={true}
+                  readTime={post.read_time || undefined}
+                  image_url={post.image_url || undefined}
+                />
+              ))}
           </div>
         )}
 

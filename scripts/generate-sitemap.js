@@ -23,7 +23,8 @@ async function generateSitemap() {
   // Fetch projects with updated_at for better lastmod
   const { data: projects, error: projectsError } = await supabase
     .from('projects')
-    .select('id, created_at, updated_at')
+    .select('id, created_at, updated_at, tech_tags')
+    .order('featured', { ascending: false })
     .order('created_at', { ascending: false });
 
   if (projectsError) {

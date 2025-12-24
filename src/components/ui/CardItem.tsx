@@ -16,9 +16,13 @@ interface CardItemProps {
   linkLabel?: string;
   linkTo?: string;
   githubUrl?: string;
+  demoUrl?: string;
   readTime?: number | null;
   isBlog?: boolean;
   image_url?: string | null;
+  repoStars?: number | null;
+  repoLanguage?: string | null;
+  repoUpdatedAt?: string | null;
 }
 
 const CardItem = ({
@@ -31,9 +35,13 @@ const CardItem = ({
   linkLabel = 'View',
   linkTo,
   githubUrl,
+  demoUrl,
   readTime,
   isBlog = false,
   image_url,
+  repoStars,
+  repoLanguage,
+  repoUpdatedAt,
 }: CardItemProps) => {
   // Enhanced state management for interactions
   const titleRef = useRef<HTMLSpanElement>(null);
@@ -49,6 +57,15 @@ const CardItem = ({
   const showCover = Boolean(resolvedImageUrl) || isBlog;
   const showImage = Boolean(resolvedImageUrl) && !imageError;
   const placeholderLabel = isBlog ? 'Blog Post' : 'No Preview';
+  const showRepoMeta =
+    repoStars !== null && repoStars !== undefined ? true : Boolean(repoLanguage || repoUpdatedAt);
+
+  const repoUpdatedLabel = (() => {
+    if (!repoUpdatedAt) return null;
+    const dateObj = new Date(repoUpdatedAt);
+    if (Number.isNaN(dateObj.getTime())) return null;
+    return `Updated ${dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}`;
+  })();
 
   useEffect(() => {
     if (titleRef.current && containerRef.current) {
@@ -214,11 +231,22 @@ const CardItem = ({
           )}
 
           {/* Enhanced action section with better visual feedback */}
-          {(readTime || githubUrl || linkTo || link) && (
+          {(readTime || githubUrl || demoUrl || linkTo || link || showRepoMeta) && (
             <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/10">
               <div className="flex items-center gap-3">
                 {readTime && (
                   <span className="text-xs text-white/50 font-mono">{readTime} min read</span>
+                )}
+                {repoStars !== null && repoStars !== undefined && (
+                  <span className="text-xs text-white/50 font-mono">★{repoStars}</span>
+                )}
+                {repoLanguage && (
+                  <span className="text-xs text-white/50 font-mono">{repoLanguage}</span>
+                )}
+                {repoUpdatedLabel && (
+                  <span className="text-xs text-white/50 font-mono hidden sm:inline">
+                    {repoUpdatedLabel}
+                  </span>
                 )}
               </div>
 
@@ -232,6 +260,18 @@ const CardItem = ({
                     aria-label="View source code"
                   >
                     <Github className="w-4 h-4" />
+                  </a>
+                )}
+
+                {demoUrl && (
+                  <a
+                    href={demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20"
+                    aria-label="Open live demo"
+                  >
+                    <ExternalLink className="w-4 h-4" />
                   </a>
                 )}
 
