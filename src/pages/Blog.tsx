@@ -14,7 +14,7 @@ import type { PostSummary } from '@/types/content';
 
 const Blogs = () => {
   const initialPosts = useMemo(() => readPrerenderData<PostSummary[]>('posts'), []);
-  const initialUpdatedAt = useRef<number | undefined>(initialPosts ? Date.now() : undefined);
+  const initialUpdatedAt = useRef<number | undefined>(initialPosts?.length ? Date.now() : undefined);
 
   const {
     data: posts = [],
@@ -31,7 +31,7 @@ const Blogs = () => {
       if (error) throw error;
       return data as PostSummary[];
     },
-    initialData: initialPosts,
+    initialData: initialPosts?.length ? initialPosts : undefined,
     initialDataUpdatedAt: initialUpdatedAt.current,
     staleTime: 1000 * 60,
   });

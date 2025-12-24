@@ -12,13 +12,13 @@ import type { PostSummary } from '@/types/content';
 
 const BlogFeed = () => {
   const initialPosts = useMemo(() => readPrerenderData<PostSummary[]>('posts'), []);
-  const initialUpdatedAt = useRef<number | undefined>(initialPosts ? Date.now() : undefined);
+  const initialUpdatedAt = useRef<number | undefined>(initialPosts?.length ? Date.now() : undefined);
   const { ref: sectionRef, isIntersecting } = useIntersectionObserver<HTMLDivElement>({
     rootMargin: '200px',
   });
 
   const {
-    data: posts = initialPosts ?? [],
+    data: posts = [],
     isLoading,
     isFetching,
   } = useQuery({
@@ -32,7 +32,7 @@ const BlogFeed = () => {
       if (error) throw error;
       return data as PostSummary[];
     },
-    initialData: initialPosts,
+    initialData: initialPosts?.length ? initialPosts : undefined,
     initialDataUpdatedAt: initialUpdatedAt.current,
     staleTime: 1000 * 60,
     enabled: isIntersecting,
