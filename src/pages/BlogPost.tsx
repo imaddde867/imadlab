@@ -261,7 +261,7 @@ const BlogPost = () => {
           <GfmMarkdown
             source={post.body}
             className="prose-lg"
-            config={{ enableMermaid, enableMath, showToc: true }}
+            config={{ enableMermaid, enableMath }}
           />
         ) : (
           <div className="text-center py-12">
