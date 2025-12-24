@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
 import SectionHeader from '@/components/SectionHeader';
 import CardItem from '@/components/ui/CardItem';
+import ProjectCard from '@/components/ProjectCard';
 import { ArrowLeft } from 'lucide-react';
 import { tagMatchesSlug } from '@/lib/tags';
 import { POST_SUMMARY_SELECT, PROJECT_LIST_SELECT } from '@/lib/content-selects';
@@ -60,6 +61,7 @@ const Tag = () => {
       const { data, error } = await supabase
         .from('projects')
         .select(PROJECT_LIST_SELECT)
+        .order('featured', { ascending: false })
         .order('created_at', { ascending: false });
       if (error) throw error;
       return (data as ProjectSummary[]) ?? [];
@@ -175,7 +177,7 @@ const Tag = () => {
                 date={new Date(post.published_date).toLocaleDateString()}
                 excerpt={post.excerpt || ''}
                 linkTo={`/blogs/${post.slug}`}
-                linkLabel={`Read ${post.title}`}
+                linkLabel="Read"
                 readTime={post.read_time || undefined}
                 isBlog={true}
                 image_url={post.image_url || undefined}
@@ -192,15 +194,11 @@ const Tag = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
                 {projects.map((project) => (
-                  <CardItem
+                  <ProjectCard
                     key={project.id}
-                    title={project.title}
-                    tags={project.tech_tags || []}
-                    description={project.description || ''}
                     linkTo={`/projects/${project.id}`}
                     linkLabel="View Project"
-                    githubUrl={project.repo_url || undefined}
-                    image_url={project.image_url || undefined}
+                    project={project}
                   />
                 ))}
               </div>

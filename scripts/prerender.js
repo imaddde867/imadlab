@@ -206,7 +206,10 @@ const ensureDistExists = async () => {
 async function fetchProjects() {
   const { data, error } = await supabase
     .from('projects')
-    .select('id,title,description,full_description,tech_tags,created_at,updated_at,image_url,repo_url')
+    .select(
+      'id,title,description,full_description,tech_tags,created_at,updated_at,image_url,repo_url,demo_url,featured'
+    )
+    .order('featured', { ascending: false })
     .order('created_at', { ascending: false })
     .limit(30);
 
