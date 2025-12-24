@@ -26,7 +26,10 @@ export type ProjectSummary = {
   image_url: string | null;
   tech_tags: string[] | null;
   repo_url: string | null;
+  demo_url?: string | null;
+  featured?: boolean | null;
   created_at: string;
+  updated_at?: string | null;
 };
 
 export type ProjectDetail = ProjectSummary & {

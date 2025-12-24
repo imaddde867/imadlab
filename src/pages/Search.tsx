@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
 import SectionHeader from '@/components/SectionHeader';
 import CardItem from '@/components/ui/CardItem';
+import ProjectCard from '@/components/ProjectCard';
 import { POST_SEARCH_SELECT, PROJECT_SEARCH_SELECT } from '@/lib/content-selects';
 import type { PostDetail, ProjectDetail } from '@/types/content';
 
@@ -39,6 +40,7 @@ const Search = () => {
       const { data, error } = await supabase
         .from('projects')
         .select(PROJECT_SEARCH_SELECT)
+        .order('featured', { ascending: false })
         .order('created_at', { ascending: false });
       if (error) throw error;
       return (data as ProjectDetail[]) ?? [];
@@ -108,7 +110,7 @@ const Search = () => {
                     date={new Date(post.published_date).toLocaleDateString()}
                     excerpt={post.excerpt || ''}
                     linkTo={`/blogs/${post.slug}`}
-                    linkLabel={`Read ${post.title}`}
+                    linkLabel="Read"
                     readTime={post.read_time || undefined}
                     isBlog={true}
                     image_url={post.image_url || undefined}
@@ -123,15 +125,11 @@ const Search = () => {
             {results.projects.length ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
                 {results.projects.map((p) => (
-                  <CardItem
+                  <ProjectCard
                     key={p.id}
-                    title={p.title}
-                    tags={p.tech_tags || []}
-                    description={p.description || ''}
+                    project={p}
                     linkTo={`/projects/${p.id}`}
                     linkLabel="View Project"
-                    githubUrl={p.repo_url || undefined}
-                    image_url={p.image_url || undefined}
                   />
                 ))}
               </div>

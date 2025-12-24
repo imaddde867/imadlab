@@ -5,7 +5,6 @@ ALTER TABLE visitor_sessions ADD COLUMN IF NOT EXISTS os TEXT;
 ALTER TABLE visitor_sessions ADD COLUMN IF NOT EXISTS screen_resolution TEXT;
 ALTER TABLE visitor_sessions ADD COLUMN IF NOT EXISTS language TEXT;
 ALTER TABLE visitor_sessions ADD COLUMN IF NOT EXISTS timezone TEXT;
-
 -- Add new columns to page_views table for traffic source tracking
 ALTER TABLE page_views ADD COLUMN IF NOT EXISTS traffic_source TEXT;
 ALTER TABLE page_views ADD COLUMN IF NOT EXISTS utm_source TEXT;
@@ -19,7 +18,6 @@ ALTER TABLE page_views ADD COLUMN IF NOT EXISTS os TEXT;
 ALTER TABLE page_views ADD COLUMN IF NOT EXISTS country TEXT;
 ALTER TABLE page_views ADD COLUMN IF NOT EXISTS region TEXT;
 ALTER TABLE page_views ADD COLUMN IF NOT EXISTS city TEXT;
-
 -- Create indexes for new columns to improve query performance
 CREATE INDEX IF NOT EXISTS idx_page_views_traffic_source ON page_views(traffic_source);
 CREATE INDEX IF NOT EXISTS idx_page_views_utm_source ON page_views(utm_source);
@@ -29,7 +27,6 @@ CREATE INDEX IF NOT EXISTS idx_page_views_browser ON page_views(browser);
 CREATE INDEX IF NOT EXISTS idx_page_views_country ON page_views(country);
 CREATE INDEX IF NOT EXISTS idx_visitor_sessions_device_type ON visitor_sessions(device_type);
 CREATE INDEX IF NOT EXISTS idx_visitor_sessions_country ON visitor_sessions(country);
-
 -- Create a view for aggregated analytics
 CREATE OR REPLACE VIEW analytics_summary AS
 SELECT 

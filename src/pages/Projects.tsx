@@ -2,7 +2,6 @@ import { useMemo, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
-import CardItem from '@/components/ui/CardItem';
 import { ArrowLeft } from 'lucide-react';
 import SEO from '@/components/SEO';
 import { GridSkeleton } from '@/components/ui/LoadingStates';
@@ -12,6 +11,7 @@ import SectionHeader from '@/components/SectionHeader';
 import { getTopTags, tagToUrl } from '@/lib/tags';
 import { PROJECT_LIST_SELECT } from '@/lib/content-selects';
 import type { ProjectSummary } from '@/types/content';
+import ProjectCard from '@/components/ProjectCard';
 
 const Projects = () => {
   const initialProjects = useMemo(() => readPrerenderData<ProjectSummary[]>('projects'), []);
@@ -27,6 +27,7 @@ const Projects = () => {
       const { data, error } = await supabase
         .from('projects')
         .select(PROJECT_LIST_SELECT)
+        .order('featured', { ascending: false })
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -114,15 +115,11 @@ const Projects = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
             {projects.map((project) => (
-              <CardItem
+              <ProjectCard
                 key={project.id}
-                title={project.title}
-                tags={project.tech_tags || []}
-                description={project.description || ''}
+                project={project}
                 linkTo={`/projects/${project.id}`}
                 linkLabel="View Project"
-                githubUrl={project.repo_url || undefined}
-                image_url={project.image_url || undefined}
               />
             ))}
           </div>
