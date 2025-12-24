@@ -5,7 +5,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
   type ReactNode,
 } from 'react';
 import type {
@@ -48,8 +47,6 @@ type RepositoryContext = {
 };
 
 type MarkdownConfig = {
-  showToc?: boolean;
-  tocDepth?: 2 | 3 | 4;
   enableMath?: boolean;
   enableMermaid?: boolean;
   sanitizeHtml?: boolean;
@@ -64,16 +61,7 @@ type GfmMarkdownProps = {
   config?: MarkdownConfig;
 };
 
-type HeadingEntry = {
-  id: string;
-  text: string;
-  level: number;
-  position: number;
-};
-
 const defaultConfig: Required<MarkdownConfig> = {
-  showToc: false,
-  tocDepth: 3,
   enableMath: true,
   enableMermaid: true,
   sanitizeHtml: true,
@@ -133,13 +121,6 @@ const mathSchemaExtensions: Schema = {
 };
 
 const SluggerContext = createContext<GithubSlugger | null>(null);
-const HeadingContext = createContext<{
-  registerHeading: (heading: HeadingEntry) => void;
-  tocDepth: number;
-}>({
-  registerHeading: () => {},
-  tocDepth: 3,
-});
 
 const AssetContext = createContext<{
   resolveUrl: (href?: string | null) => string | undefined;
@@ -155,7 +136,6 @@ const useSlugger = () => {
   return context;
 };
 
-const useHeadingRegistry = () => useContext(HeadingContext);
 const useAssetContext = () => useContext(AssetContext);
 
 const getNodeText = (node?: Parent | Literal): string => {
@@ -217,16 +197,8 @@ const HeadingRenderer = ({
 }) => {
   const Tag = `h${level}` as const;
   const slugger = useSlugger();
-  const { registerHeading, tocDepth } = useHeadingRegistry();
   const text = node ? getNodeText(node) : extractTextFromChildren(children);
   const id = slugger.slug(text);
-  const position = node?.position?.start?.offset ?? Number.MAX_SAFE_INTEGER;
-
-  useEffect(() => {
-    if (level <= (tocDepth ?? 6)) {
-      registerHeading({ id, level, text, position });
-    }
-  }, [id, level, position, registerHeading, text, tocDepth]);
 
   return (
     <Tag id={id} className={clsx('group relative scroll-mt-24', headingStyles[level])}>
@@ -405,7 +377,6 @@ export const GfmMarkdown = ({
   config,
 }: GfmMarkdownProps) => {
   const mergedConfig = { ...defaultConfig, ...(config ?? {}) };
-  const [_headings, setHeadings] = useState<HeadingEntry[]>([]);
 
   const slugger = useMemo(() => new GithubSlugger(), []);
 
@@ -457,18 +428,6 @@ export const GfmMarkdown = ({
     }
     return plugins;
   }, [mergedConfig.sanitizeHtml]);
-
-  const registerHeading = useCallback((heading: HeadingEntry) => {
-    setHeadings((prev) => {
-      const existingIndex = prev.findIndex((item) => item.id === heading.id);
-      if (existingIndex !== -1) {
-        const next = [...prev];
-        next[existingIndex] = heading;
-        return next.sort((a, b) => a.position - b.position);
-      }
-      return [...prev, heading].sort((a, b) => a.position - b.position);
-    });
-  }, []);
 
   const resolveUrl = useCallback(
     (href?: string | null) => {
@@ -584,11 +543,9 @@ export const GfmMarkdown = ({
 
   return (
     <SluggerContext.Provider value={slugger}>
-      <HeadingContext.Provider value={{ registerHeading, tocDepth: mergedConfig.tocDepth }}>
-        <AssetContext.Provider value={{ resolveUrl, repository }}>
-          <div className="min-w-0">{content}</div>
-        </AssetContext.Provider>
-      </HeadingContext.Provider>
+      <AssetContext.Provider value={{ resolveUrl, repository }}>
+        <div className="min-w-0">{content}</div>
+      </AssetContext.Provider>
     </SluggerContext.Provider>
   );
 };
