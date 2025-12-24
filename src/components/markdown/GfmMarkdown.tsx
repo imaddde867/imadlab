@@ -395,69 +395,7 @@ const UnorderedList = ({ className, children, ...props }: HTMLAttributes<HTMLULi
   </ul>
 );
 
-const useActiveHeading = (headings: HeadingEntry[]) => {
-  const [activeId, setActiveId] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (typeof IntersectionObserver === 'undefined' || headings.length === 0) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible.length > 0) {
-          setActiveId(visible[0].target.id);
-        }
-      },
-      {
-        rootMargin: '0px 0px -70% 0px',
-        threshold: [0, 0.1, 0.25, 0.5],
-      }
-    );
-
-    const elements = headings
-      .map((heading) => document.getElementById(heading.id))
-      .filter((element): element is HTMLElement => Boolean(element));
-
-    elements.forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
-  }, [headings]);
-
-  return activeId;
-};
-
-const Toc = ({ headings, activeId }: { headings: HeadingEntry[]; activeId: string | null }) => (
-  <nav
-    aria-label="Table of contents"
-    className="sticky top-24 hidden max-h-[70vh] min-w-[220px] overflow-y-auto rounded-lg border border-white/10 bg-white/5 p-4 lg:block"
-  >
-    <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/60">
-      On this page
-    </h2>
-    <ul className="space-y-2 text-sm">
-      {headings.map((heading) => (
-        <li
-          key={heading.id}
-          className={clsx(heading.level === 3 && 'pl-4', heading.level === 4 && 'pl-6')}
-        >
-          <a
-            href={`#${heading.id}`}
-            className={clsx(
-              'block rounded px-2 py-1 text-white/60 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400',
-              activeId === heading.id && 'bg-blue-500/20 text-white'
-            )}
-          >
-            {heading.text}
-          </a>
-        </li>
-      ))}
-    </ul>
-  </nav>
-);
+// Table of contents UI removed (was causing broken layout/UX).
 
 export const GfmMarkdown = ({
   source,
@@ -467,7 +405,7 @@ export const GfmMarkdown = ({
   config,
 }: GfmMarkdownProps) => {
   const mergedConfig = { ...defaultConfig, ...(config ?? {}) };
-  const [headings, setHeadings] = useState<HeadingEntry[]>([]);
+  const [_headings, setHeadings] = useState<HeadingEntry[]>([]);
 
   const slugger = useMemo(() => new GithubSlugger(), []);
 
@@ -552,14 +490,6 @@ export const GfmMarkdown = ({
     },
     [baseUrl, repository?.baseUrl]
   );
-
-  const filteredHeadings = useMemo(
-    () =>
-      headings.filter((heading) => heading.level >= 2 && heading.level <= mergedConfig.tocDepth),
-    [headings, mergedConfig.tocDepth]
-  );
-
-  const activeHeading = useActiveHeading(filteredHeadings);
 
   const components = useMemo<Components>(() => {
     const mapping = {
@@ -656,12 +586,7 @@ export const GfmMarkdown = ({
     <SluggerContext.Provider value={slugger}>
       <HeadingContext.Provider value={{ registerHeading, tocDepth: mergedConfig.tocDepth }}>
         <AssetContext.Provider value={{ resolveUrl, repository }}>
-          <div className="flex flex-col gap-8 lg:flex-row">
-            <div className="min-w-0 flex-1">{content}</div>
-            {mergedConfig.showToc && filteredHeadings.length > 0 && (
-              <Toc headings={filteredHeadings} activeId={activeHeading} />
-            )}
-          </div>
+          <div className="min-w-0">{content}</div>
         </AssetContext.Provider>
       </HeadingContext.Provider>
     </SluggerContext.Provider>

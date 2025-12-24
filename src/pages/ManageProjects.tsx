@@ -20,10 +20,71 @@ import {
   ExternalLink,
   FolderOpen,
   Tag as TagIcon,
+  Github,
+  RefreshCw,
 } from 'lucide-react';
 import { PROJECT_ADMIN_SELECT } from '@/lib/content-selects';
 import type { ProjectDetail as ProjectAdmin } from '@/types/content';
 import { Switch } from '@/components/ui/switch';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { parseGithubRepo } from '@/lib/github';
+
+type GithubRepoListItem = {
+  id: number;
+  name: string;
+  full_name: string;
+  html_url: string;
+  description: string | null;
+  homepage: string | null;
+  language: string | null;
+  topics?: string[];
+  stargazers_count: number;
+  forks_count: number;
+  pushed_at: string | null;
+  updated_at: string | null;
+  fork: boolean;
+  archived: boolean;
+  private: boolean;
+};
+
+const normalizeGithubRepoUrl = (repoUrl?: string | null) => {
+  const repo = parseGithubRepo(repoUrl);
+  if (repo) return `https://github.com/${repo.owner}/${repo.repo}`;
+  return (repoUrl ?? '').trim().replace(/\/+$/, '');
+};
+
+const normalizeUrl = (value?: string | null) => {
+  const trimmed = (value ?? '').trim();
+  if (!trimmed) return null;
+  try {
+    const url = new URL(trimmed);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+};
+
+const buildProjectTitleFromRepo = (name: string) => {
+  const cleaned = name.replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!cleaned) return name;
+  return cleaned
+    .split(' ')
+    .map((word) => {
+      if (!word) return word;
+      const isAllCaps = word === word.toUpperCase();
+      if (isAllCaps) return word;
+      return word[0].toUpperCase() + word.slice(1);
+    })
+    .join(' ');
+};
 
 type ProjectFormState = {
   title: string;
@@ -52,6 +113,13 @@ const ManageProjects = () => {
   const [editingProject, setEditingProject] = useState<ProjectAdmin | null>(null);
   const [formData, setFormData] = useState<ProjectFormState>(createEmptyProjectForm);
   const [authChecked, setAuthChecked] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [importQuery, setImportQuery] = useState('');
+  const [importRepos, setImportRepos] = useState<GithubRepoListItem[]>([]);
+  const [importSelected, setImportSelected] = useState<Record<string, boolean>>({});
+  const [importLoading, setImportLoading] = useState(false);
+  const [importAutoFeatured, setImportAutoFeatured] = useState(true);
+  const [syncAllRunning, setSyncAllRunning] = useState(false);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -192,6 +260,166 @@ const ManageProjects = () => {
 
   const isProjectsLoading = isLoading || isFetching;
 
+  const existingRepoUrls = useMemo(() => {
+    return new Set(projectsList.map((p) => normalizeGithubRepoUrl(p.repo_url)));
+  }, [projectsList]);
+
+  const loadGithubRepos = async () => {
+    setImportLoading(true);
+    try {
+      const res = await fetch(
+        'https://api.github.com/users/imaddde867/repos?per_page=100&sort=updated&direction=desc',
+        {
+          headers: {
+            Accept: 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
+        }
+      );
+      if (!res.ok) throw new Error(`GitHub API error (${res.status})`);
+      const data = (await res.json()) as GithubRepoListItem[];
+      const filtered = (data ?? [])
+        .filter((r) => !r.fork && !r.archived && !r.private)
+        .sort((a, b) => {
+          const stars = (b.stargazers_count ?? 0) - (a.stargazers_count ?? 0);
+          if (stars !== 0) return stars;
+          return (
+            new Date(b.pushed_at ?? b.updated_at ?? 0).getTime() -
+            new Date(a.pushed_at ?? a.updated_at ?? 0).getTime()
+          );
+        });
+      setImportRepos(filtered);
+    } catch (error) {
+      toast({
+        title: 'Failed to load GitHub repos',
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
+  const openImportDialog = async () => {
+    setImportDialogOpen(true);
+    if (!importRepos.length) {
+      await loadGithubRepos();
+    }
+  };
+
+  const filteredImportRepos = useMemo(() => {
+    const q = importQuery.trim().toLowerCase();
+    const matchesQuery = (repo: GithubRepoListItem) => {
+      if (!q) return true;
+      const haystack = `${repo.name} ${repo.full_name} ${repo.description ?? ''} ${(repo.topics ?? []).join(' ')}`.toLowerCase();
+      return haystack.includes(q);
+    };
+    return importRepos.filter((repo) => matchesQuery(repo));
+  }, [importQuery, importRepos]);
+
+  const selectedImportRepos = useMemo(() => {
+    const selectedUrls = new Set(
+      Object.entries(importSelected)
+        .filter(([, v]) => v)
+        .map(([k]) => k)
+    );
+    return importRepos.filter((repo) => selectedUrls.has(repo.html_url));
+  }, [importRepos, importSelected]);
+
+  const importReposMutation = useMutation({
+    mutationFn: async (repos: GithubRepoListItem[]) => {
+      const rows = repos.map((repo) => {
+        const language = repo.language?.trim() ? [repo.language.trim()] : [];
+        const topics = Array.isArray(repo.topics) ? repo.topics.filter(Boolean) : [];
+        const techTags = Array.from(new Set([...language, ...topics]));
+
+        const description = repo.description?.trim().length ? repo.description.trim() : null;
+        const demoUrl = normalizeUrl(repo.homepage);
+        const title = buildProjectTitleFromRepo(repo.name);
+        const featured = importAutoFeatured ? repo.stargazers_count >= 3 : false;
+
+        const fullDescription = `## Overview\n${description ?? ''}\n\n## Links\n- Repo: ${repo.html_url}${
+          demoUrl ? `\n- Demo: ${demoUrl}` : ''
+        }\n\n## Highlights\n- \n\n## Tech\n${techTags.length ? techTags.map((t) => `- ${t}`).join('\n') : '- '}\n`;
+
+        return {
+          title,
+          description,
+          full_description: fullDescription,
+          image_url: null,
+          tech_tags: techTags.length ? techTags : null,
+          repo_url: repo.html_url,
+          demo_url: demoUrl,
+          featured,
+        };
+      });
+
+      const { data, error } = await supabase.from('projects').insert(rows).select();
+      if (error) throw error;
+      return data ?? [];
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      setImportDialogOpen(false);
+      setImportSelected({});
+      setImportQuery('');
+      toast({
+        title: 'Imported projects',
+        description: `${data.length} project${data.length === 1 ? '' : 's'} added.`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Import failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const syncFromGithubMutation = useMutation({
+    mutationFn: async (project: ProjectAdmin) => {
+      const repoUrl = normalizeGithubRepoUrl(project.repo_url);
+      if (!repoUrl) return { updated: false };
+      const repoRef = parseGithubRepo(repoUrl);
+      if (!repoRef) return { updated: false };
+      const fullName = `${repoRef.owner}/${repoRef.repo}`;
+
+      const res = await fetch(`https://api.github.com/repos/${fullName}`, {
+        headers: {
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      });
+      if (!res.ok) {
+        throw new Error(`GitHub API error (${res.status}) for ${fullName}`);
+      }
+      const repo = (await res.json()) as GithubRepoListItem;
+
+      const updates: Partial<ProjectAdmin> = {};
+      if (!project.description?.trim() && repo.description?.trim()) {
+        updates.description = repo.description.trim();
+      }
+      if (!project.demo_url && normalizeUrl(repo.homepage)) {
+        updates.demo_url = normalizeUrl(repo.homepage);
+      }
+      if (!project.tech_tags?.length) {
+        const language = repo.language?.trim() ? [repo.language.trim()] : [];
+        const topics = Array.isArray(repo.topics) ? repo.topics.filter(Boolean) : [];
+        const techTags = Array.from(new Set([...language, ...topics]));
+        updates.tech_tags = techTags.length ? techTags : null;
+      }
+
+      if (Object.keys(updates).length === 0) {
+        return { updated: false };
+      }
+
+      const { error } = await supabase.from('projects').update(updates).eq('id', project.id);
+      if (error) throw error;
+      return { updated: true };
+    },
+  });
+
   const addProjectMutation = useMutation({
     mutationFn: async (newProject: Omit<ProjectAdmin, 'id' | 'created_at'>) => {
       const { data, error } = await supabase
@@ -254,6 +482,7 @@ const ManageProjects = () => {
   });
 
   const isMutating = addProjectMutation.isPending || updateProjectMutation.isPending;
+  const isGithubMutating = importReposMutation.isPending || syncFromGithubMutation.isPending;
 
   const deleteProjectMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -322,6 +551,74 @@ const ManageProjects = () => {
     }
   };
 
+  const handleImportSelected = () => {
+    const candidates = selectedImportRepos.filter(
+      (repo) => !existingRepoUrls.has(normalizeGithubRepoUrl(repo.html_url))
+    );
+    if (candidates.length === 0) {
+      toast({
+        title: 'Nothing to import',
+        description: 'All selected repos already exist in Projects.',
+      });
+      return;
+    }
+    importReposMutation.mutate(candidates);
+  };
+
+  const handleSyncProject = async (project: ProjectAdmin) => {
+    try {
+      const result = await syncFromGithubMutation.mutateAsync(project);
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      toast(
+        result.updated
+          ? { title: 'Synced from GitHub' }
+          : { title: 'Already up to date', description: 'No missing fields to fill.' }
+      );
+    } catch (error) {
+      toast({
+        title: 'GitHub sync failed',
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleSyncAllMissing = async () => {
+    const candidates = projectsList.filter((p) => Boolean(p.repo_url));
+    if (!candidates.length) {
+      toast({
+        title: 'No GitHub repos found',
+        description: 'Add a `repo_url` to at least one project first.',
+      });
+      return;
+    }
+
+    setSyncAllRunning(true);
+    try {
+      let updatedCount = 0;
+      let skippedCount = 0;
+      let failedCount = 0;
+
+      for (const project of candidates) {
+        try {
+          const result = await syncFromGithubMutation.mutateAsync(project);
+          if (result.updated) updatedCount += 1;
+          else skippedCount += 1;
+        } catch {
+          failedCount += 1;
+        }
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      toast({
+        title: 'GitHub sync complete',
+        description: `Updated ${updatedCount}, skipped ${skippedCount}, failed ${failedCount}.`,
+      });
+    } finally {
+      setSyncAllRunning(false);
+    }
+  };
+
   if (!authChecked) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -343,15 +640,35 @@ const ManageProjects = () => {
           ]}
           meta={headerMeta}
           actions={
-            <Button
-              variant={showForm ? 'outline' : 'inverted'}
-              size="lg"
-              onClick={handleToggleForm}
-              disabled={isMutating}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              {showForm ? 'Cancel' : 'New Project'}
-            </Button>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={openImportDialog}
+                disabled={isMutating || isGithubMutating}
+              >
+                <Github className="mr-2 h-4 w-4" />
+                Import from GitHub
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={handleSyncAllMissing}
+                disabled={isMutating || isGithubMutating || syncAllRunning}
+              >
+                <RefreshCw className="mr-2 h-4 w-4" />
+                {syncAllRunning ? 'Syncing...' : 'Sync GitHub'}
+              </Button>
+              <Button
+                variant={showForm ? 'outline' : 'inverted'}
+                size="lg"
+                onClick={handleToggleForm}
+                disabled={isMutating || isGithubMutating || syncAllRunning}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                {showForm ? 'Cancel' : 'New Project'}
+              </Button>
+            </div>
           }
         >
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -371,13 +688,123 @@ const ManageProjects = () => {
                 </div>
               </div>
             ))}
-          </div>
-        </PageHeader>
+	          </div>
+	        </PageHeader>
 
-        {showForm && (
-          <Card className="rounded-3xl border border-white/10 bg-white/5 shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-md">
-            <CardHeader>
-              <CardTitle className="text-white">
+        <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-slate-900 text-white border border-white/10">
+            <DialogHeader>
+              <DialogTitle>Import projects from GitHub</DialogTitle>
+              <DialogDescription className="text-white/60">
+                Import selected public repos into Supabase Projects. Only safe fields are auto-filled (you can refine descriptions, images, and highlights after).
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <Input
+                  value={importQuery}
+                  onChange={(e) => setImportQuery(e.target.value)}
+                  placeholder="Search repos (name, description, topics)..."
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                />
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-white/60">Auto-feature ★3+</span>
+                    <Switch checked={importAutoFeatured} onCheckedChange={setImportAutoFeatured} />
+                  </div>
+                  <Button variant="soft" onClick={loadGithubRepos} disabled={importLoading}>
+                    <RefreshCw className={`mr-2 h-4 w-4 ${importLoading ? 'animate-spin' : ''}`} />
+                    Refresh
+                  </Button>
+                </div>
+              </div>
+
+              {importLoading ? (
+                <div className="py-8 text-center text-white/60">Loading GitHub repos...</div>
+              ) : (
+                <div className="rounded-2xl border border-white/10 bg-black/40">
+                  <div className="max-h-[420px] overflow-auto divide-y divide-white/10">
+                    {filteredImportRepos.map((repo) => {
+                      const alreadyAdded = existingRepoUrls.has(normalizeGithubRepoUrl(repo.html_url));
+                      const checked = Boolean(importSelected[repo.html_url]);
+                      const canSelect = !alreadyAdded;
+                      return (
+                        <button
+                          type="button"
+                          key={repo.id}
+                          onClick={() => {
+                            if (!canSelect) return;
+                            setImportSelected((prev) => ({
+                              ...prev,
+                              [repo.html_url]: !prev[repo.html_url],
+                            }));
+                          }}
+                          className="w-full text-left px-4 py-3 hover:bg-white/5 transition-colors disabled:opacity-50"
+                          disabled={!canSelect}
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-sm font-semibold text-white truncate">
+                                  {repo.name}
+                                </span>
+                                {alreadyAdded && (
+                                  <span className="text-[11px] rounded-full bg-white/10 px-2 py-0.5 text-white/60">
+                                    Already added
+                                  </span>
+                                )}
+                                {checked && (
+                                  <span className="text-[11px] rounded-full bg-emerald-500/15 px-2 py-0.5 text-emerald-200">
+                                    Selected
+                                  </span>
+                                )}
+                              </div>
+                              {repo.description && (
+                                <p className="mt-1 text-xs text-white/60 line-clamp-2">
+                                  {repo.description}
+                                </p>
+                              )}
+                              <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-white/50">
+                                <span>★{repo.stargazers_count}</span>
+                                {repo.language && <span>{repo.language}</span>}
+                                {normalizeUrl(repo.homepage) && <span>Demo</span>}
+                              </div>
+                            </div>
+                            <div className="mt-1 text-xs text-white/40">
+                              {alreadyAdded ? '—' : checked ? '✓' : '+'}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                    {!filteredImportRepos.length && (
+                      <div className="p-6 text-center text-white/60">No repos match your search.</div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button variant="ghost" onClick={() => setImportDialogOpen(false)}>
+                Close
+              </Button>
+              <Button
+                variant="inverted"
+                onClick={handleImportSelected}
+                disabled={importReposMutation.isPending || selectedImportRepos.length === 0}
+              >
+                Import selected ({selectedImportRepos.length})
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+	        {showForm && (
+	          <Card className="rounded-3xl border border-white/10 bg-white/5 shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-md">
+	            <CardHeader>
+	              <CardTitle className="text-white">
                 {editingProject ? 'Edit Project' : 'Create New Project'}
               </CardTitle>
               <CardDescription className="text-white/70">
@@ -609,21 +1036,32 @@ const ManageProjects = () => {
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Button asChild variant="soft" size="sm">
-                          <Link
-                            to={`/projects/${project.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+	                      <div className="flex flex-wrap items-center gap-2">
+	                        <Button asChild variant="soft" size="sm">
+	                          <Link
+	                            to={`/projects/${project.id}`}
+	                            target="_blank"
+	                            rel="noopener noreferrer"
+	                          >
+	                            <Eye className="mr-2 h-4 w-4" />
+	                            Preview
+	                          </Link>
+	                        </Button>
+                        {project.repo_url && (
+                          <Button
+                            variant="soft"
+                            size="sm"
+                            onClick={() => handleSyncProject(project)}
+                            disabled={syncFromGithubMutation.isPending || syncAllRunning}
                           >
-                            <Eye className="mr-2 h-4 w-4" />
-                            Preview
-                          </Link>
-                        </Button>
-                        <Button variant="soft" size="sm" onClick={() => handleEditClick(project)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit
-                        </Button>
+                            <RefreshCw className="mr-2 h-4 w-4" />
+                            Sync
+                          </Button>
+                        )}
+	                        <Button variant="soft" size="sm" onClick={() => handleEditClick(project)}>
+	                          <Edit className="mr-2 h-4 w-4" />
+	                          Edit
+	                        </Button>
                         <Button
                           variant="destructive"
                           size="sm"
