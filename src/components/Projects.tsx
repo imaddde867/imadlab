@@ -14,7 +14,9 @@ const Projects = () => {
     () => readPrerenderData<ProjectSummary[]>('projects')?.slice(0, 3),
     []
   );
-  const initialUpdatedAt = useRef<number | undefined>(initialProjects ? Date.now() : undefined);
+  const initialUpdatedAt = useRef<number | undefined>(
+    initialProjects?.length ? Date.now() : undefined
+  );
   const isCoarsePointer = useIsCoarsePointer();
   const {
     data: projects = [],
@@ -33,7 +35,7 @@ const Projects = () => {
       if (error) throw error;
       return data as ProjectSummary[];
     },
-    initialData: initialProjects,
+    initialData: initialProjects?.length ? initialProjects : undefined,
     initialDataUpdatedAt: initialUpdatedAt.current,
     staleTime: 1000 * 60,
   });

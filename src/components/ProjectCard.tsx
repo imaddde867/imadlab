@@ -10,12 +10,16 @@ type ProjectCardProps = {
 
 const ProjectCard = ({ project, linkTo, linkLabel = 'View Project' }: ProjectCardProps) => {
   const { data: repoInfo } = useGithubRepoInfo(project.repo_url);
+  const fallbackDescription =
+    project.description?.trim() ||
+    repoInfo?.description?.trim() ||
+    (project.tech_tags?.length ? `Built with ${project.tech_tags.slice(0, 3).join(', ')}.` : '');
 
   return (
     <CardItem
       title={project.title}
       tags={project.tech_tags || []}
-      description={project.description || ''}
+      description={fallbackDescription}
       linkTo={linkTo}
       linkLabel={linkLabel}
       githubUrl={project.repo_url || undefined}
@@ -29,4 +33,3 @@ const ProjectCard = ({ project, linkTo, linkLabel = 'View Project' }: ProjectCar
 };
 
 export default ProjectCard;
-
