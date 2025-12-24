@@ -405,7 +405,7 @@ const ProjectDetail = () => {
             source={project.full_description}
             className="prose-lg"
             repository={repository}
-            config={{ enableMermaid, enableMath, showToc: true }}
+            config={{ enableMermaid, enableMath }}
           />
         ) : (
           <div className="text-center py-12">
