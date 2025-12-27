@@ -74,8 +74,3 @@ supabase/config.toml
 supabase/db/
 supabase/.temp/
 .supabase/
-
-
-PLAN.md
-WARP.md
-post.md

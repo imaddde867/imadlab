@@ -10,16 +10,7 @@ import { Tag as TagChip } from '@/components/ui/tag';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  Calendar,
-  Clock,
-  Tag as TagIcon,
-  ExternalLink,
-} from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Calendar, Clock, ExternalLink } from 'lucide-react';
 import { calculateReadingTime } from '@/lib/markdown-utils';
 import { POST_ADMIN_SELECT, POST_DETAIL_SELECT } from '@/lib/content-selects';
 import type { PostAdmin } from '@/types/content';
@@ -111,24 +102,20 @@ const ManagePosts = () => {
   const headerMeta = useMemo(
     () => [
       {
-        label: `${totalPosts} total posts`,
-        icon: <Eye className="h-3.5 w-3.5" aria-hidden="true" />,
-        variant: 'neutral' as const,
+        label: 'Total posts',
+        value: totalPosts,
       },
       {
-        label: `${postsThisMonth} this month`,
-        icon: <Calendar className="h-3.5 w-3.5" aria-hidden="true" />,
-        variant: 'subtle' as const,
+        label: 'This month',
+        value: postsThisMonth,
       },
       {
-        label: `${totalTags} unique tags`,
-        icon: <TagIcon className="h-3.5 w-3.5" aria-hidden="true" />,
-        variant: 'outline' as const,
+        label: 'Unique tags',
+        value: totalTags,
       },
       {
-        label: `${averageReadTime || 0} min avg read`,
-        icon: <Clock className="h-3.5 w-3.5" aria-hidden="true" />,
-        variant: 'subtle' as const,
+        label: 'Avg read',
+        value: `${averageReadTime || 0} min`,
       },
     ],
     [averageReadTime, postsThisMonth, totalPosts, totalTags]
