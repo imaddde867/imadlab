@@ -13,9 +13,7 @@ let katexPromise: Promise<KatexModule> | null = null;
 
 const loadKatex = async () => {
   if (!katexPromise) {
-    katexPromise = Promise.all([import('katex/dist/katex.min.css'), import('katex')]).then(
-      ([, katex]) => katex
-    );
+    katexPromise = import('katex');
   }
   return katexPromise;
 };

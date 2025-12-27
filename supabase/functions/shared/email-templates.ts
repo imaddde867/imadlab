@@ -3,7 +3,7 @@ export interface BlogPostEmailData {
   unsubscribeToken: string;
   post: {
     title: string;
-    excerpt: string;
+    excerpt?: string;
     slug: string;
     publishedDate: string;
     tags: string[];
@@ -270,187 +270,179 @@ export function generateProjectEmail(data: ProjectEmailData): string {
             box-sizing: border-box;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            color: #ffffff;
-            background-color: #000000;
+            color: #0f172a;
+            background-color: #f6f7f9;
             margin: 0;
-            padding: 20px;
+            padding: 24px;
         }
         .email-container {
             max-width: 600px;
             margin: 0 auto;
-            background-color: #000000;
-            border: 1px solid #1a1a1a;
-            border-radius: 12px;
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .preheader {
+            display: none;
+            font-size: 1px;
+            color: #f6f7f9;
+            line-height: 1px;
+            max-height: 0;
+            max-width: 0;
+            opacity: 0;
             overflow: hidden;
         }
         .header {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-            padding: 48px 32px;
-            text-align: center;
-            border-bottom: 1px solid #1a1a1a;
+            padding: 28px 32px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eef2f6;
         }
         .logo {
-            font-size: 32px;
+            font-size: 16px;
             font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 8px;
-            letter-spacing: -0.02em;
+            color: #111827;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
         }
         .header-subtitle {
-            color: #888888;
-            font-size: 14px;
-            font-weight: 500;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.12em;
+            margin-top: 8px;
         }
         .content {
-            padding: 48px 32px;
+            padding: 28px 32px 32px;
         }
         .project-image {
             width: 100%;
             height: 240px;
             object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 32px;
-            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #e5e7eb;
+            display: block;
         }
         .project-title {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 24px;
-            line-height: 1.2;
-            letter-spacing: -0.02em;
+            color: #0f172a;
+            margin-bottom: 10px;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
         }
         .project-description {
-            color: #cccccc;
-            font-size: 16px;
+            color: #4b5563;
+            font-size: 15px;
             line-height: 1.7;
-            margin-bottom: 32px;
+            margin-bottom: 20px;
         }
         .tech-stack {
-            margin-bottom: 40px;
+            margin-bottom: 24px;
         }
         .tech-stack-title {
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 16px;
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.12em;
         }
         .tech-tag {
             display: inline-block;
-            background-color: #1a1a1a;
-            color: #ffffff;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 500;
+            background-color: #f3f4f6;
+            color: #111827;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
             margin-right: 8px;
             margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border: 1px solid #333333;
+            border: 1px solid #e5e7eb;
+        }
+        .divider {
+            height: 1px;
+            background-color: #eef2f6;
+            margin: 20px 0;
         }
         .action-buttons {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin-top: 32px;
+            margin-top: 12px;
         }
         .cta-button {
             display: inline-block;
             text-decoration: none;
-            padding: 16px 24px;
-            border-radius: 8px;
+            padding: 12px 18px;
+            border-radius: 10px;
             font-weight: 600;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            font-size: 13px;
+            letter-spacing: 0.02em;
             text-align: center;
-            transition: all 0.2s ease;
-            flex: 1;
-            min-width: 140px;
+            margin-right: 12px;
+            margin-bottom: 12px;
         }
         .cta-primary {
-            background-color: #ffffff;
-            color: #000000;
-            border: 2px solid #ffffff;
-        }
-        .cta-primary:hover {
-            background-color: #000000;
+            background-color: #111827;
             color: #ffffff;
-            transform: translateY(-1px);
+            border: 1px solid #111827;
         }
         .cta-secondary {
-            background-color: transparent;
-            color: #ffffff;
-            border: 2px solid #333333;
-        }
-        .cta-secondary:hover {
-            background-color: #333333;
-            border-color: #666666;
-            transform: translateY(-1px);
-        }
-        .divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent 0%, #333333 50%, transparent 100%);
-            margin: 32px 0;
+            background-color: #ffffff;
+            color: #111827;
+            border: 1px solid #d1d5db;
         }
         .footer {
-            background-color: #0a0a0a;
-            padding: 32px;
+            background-color: #f8fafc;
+            padding: 20px 32px;
             text-align: center;
-            border-top: 1px solid #1a1a1a;
+            border-top: 1px solid #eef2f6;
         }
         .footer-text {
-            color: #666666;
-            font-size: 13px;
+            color: #6b7280;
+            font-size: 12px;
             line-height: 1.6;
-            margin-bottom: 16px;
+            margin-bottom: 10px;
         }
         .unsubscribe {
-            color: #888888;
+            color: #9ca3af;
             text-decoration: none;
-            font-size: 11px;
+            font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-weight: 500;
+            letter-spacing: 0.16em;
+            font-weight: 600;
         }
         .unsubscribe:hover {
-            color: #ffffff;
+            color: #111827;
         }
         @media (max-width: 600px) {
             body {
                 padding: 10px;
             }
             .email-container {
-                border-radius: 8px;
+                border-radius: 0;
             }
             .header, .content, .footer {
-                padding: 24px 20px;
+                padding: 20px;
             }
             .project-title {
-                font-size: 24px;
+                font-size: 22px;
             }
-            .action-buttons {
-                flex-direction: column;
+            .project-image {
+                height: 200px;
             }
             .cta-button {
+                display: block;
                 width: 100%;
-            }
-        }
-        @media (prefers-color-scheme: light) {
-            body {
-                background-color: #000000;
+                margin-right: 0;
             }
         }
     </style>
 </head>
 <body>
+    <div class="preheader">New project: ${project.title} is live on imadlab.</div>
     <div class="email-container">
         <div class="header">
             <div class="logo">imadlab</div>
