@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/components/ui/page-header';
 import { Tag } from '@/components/ui/tag';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -17,7 +18,7 @@ import {
 } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { ContentLoader } from '@/components/ui/LoadingStates';
-import { RefreshCw, Send, Eye, Users, Mail, TrendingUp, Trash2 } from 'lucide-react';
+import { RefreshCw, Send, Eye, Users, Mail, TrendingUp, Trash2, Copy, RotateCw } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 import { POST_TITLE_SELECT, PROJECT_TITLE_SELECT } from '@/lib/content-selects';
 
@@ -109,6 +110,43 @@ type PreviewRequest =
   | { mode: 'latest'; contentType: 'blog_post' | 'project' }
   | { mode: 'queue'; queueItem: EmailQueueItem };
 
+type SubscriberStatus = 'active' | 'inactive' | 'unsubscribed';
+
+const getAnalyticsSortTime = (entry: EmailAnalyticsRow) => {
+  const timestamps = [
+    entry.clicked_at,
+    entry.opened_at,
+    entry.delivered_at,
+    entry.sent_at,
+    entry.bounced_at,
+    entry.unsubscribed_at,
+    entry.created_at,
+  ]
+    .filter(Boolean)
+    .map((value) => new Date(value as string).getTime());
+  return timestamps.length ? Math.max(...timestamps) : 0;
+};
+
+const getAnalyticsStatus = (entry: EmailAnalyticsRow): { label: string; variant: TagVariant } => {
+  if (entry.unsubscribed_at) return { label: 'Unsubscribed', variant: 'warning' };
+  if (entry.bounced_at) return { label: 'Bounced', variant: 'danger' };
+  if (entry.clicked_at) return { label: 'Clicked', variant: 'accent' };
+  if (entry.opened_at) return { label: 'Opened', variant: 'info' };
+  if (entry.delivered_at) return { label: 'Delivered', variant: 'success' };
+  if (entry.sent_at) return { label: 'Sent', variant: 'neutral' };
+  return { label: 'Queued', variant: 'outline' };
+};
+
+const getAnalyticsTimestamp = (entry: EmailAnalyticsRow) =>
+  entry.clicked_at ??
+  entry.opened_at ??
+  entry.delivered_at ??
+  entry.sent_at ??
+  entry.bounced_at ??
+  entry.unsubscribed_at ??
+  entry.created_at ??
+  null;
+
 const SECTION_CARD_CLASS = 'rounded-xl border border-white/10 bg-white/[0.03]';
 const SECTION_HEADER_CLASS = 'px-6 pt-6 pb-0';
 const SECTION_TITLE_CLASS = 'text-lg font-semibold text-white';
@@ -134,9 +172,13 @@ const EmailDashboard = () => {
   const [subscriberFilter, setSubscriberFilter] = useState<
     'all' | 'active' | 'inactive' | 'unsubscribed'
   >('all');
+  const [subscriberQuery, setSubscriberQuery] = useState('');
+  const [subscriberUpdating, setSubscriberUpdating] = useState(false);
   const [queueMetrics, setQueueMetrics] = useState<Record<string, QueueMetrics>>({});
-  const [blogAutoSend, setBlogAutoSend] = useState(true);
-  const [projectAutoSend, setProjectAutoSend] = useState(true);
+  const [queueRecipients, setQueueRecipients] = useState<Record<string, EmailAnalyticsRow[]>>({});
+  const [subscriberHistory, setSubscriberHistory] = useState<Record<string, EmailAnalyticsRow[]>>({});
+  const [blogAutoSend, setBlogAutoSend] = useState(false);
+  const [projectAutoSend, setProjectAutoSend] = useState(false);
 
   const loadEmailData = useCallback(async () => {
     try {
@@ -221,6 +263,8 @@ const EmailDashboard = () => {
         const subscriberMetricsMap: Record<string, SubscriberMetrics> = {};
         const queueAccumulator: Record<string, { metrics: QueueMetrics; recipients: Set<string> }> =
           {};
+        const queueRecipientsMap: Record<string, EmailAnalyticsRow[]> = {};
+        const subscriberHistoryMap: Record<string, EmailAnalyticsRow[]> = {};
 
         analytics.forEach((entry) => {
           const key = entry.subscriber_email;
@@ -236,6 +280,10 @@ const EmailDashboard = () => {
           }
 
           const subscriberMetric = subscriberMetricsMap[key];
+          if (!subscriberHistoryMap[key]) {
+            subscriberHistoryMap[key] = [];
+          }
+          subscriberHistoryMap[key].push(entry);
 
           if (entry.sent_at) subscriberMetric.sent += 1;
           if (entry.delivered_at) subscriberMetric.delivered += 1;
@@ -286,6 +334,11 @@ const EmailDashboard = () => {
             if (entry.opened_at) queueMetric.metrics.opened += 1;
             if (entry.clicked_at) queueMetric.metrics.clicked += 1;
             if (entry.bounced_at) queueMetric.metrics.bounced += 1;
+
+            if (!queueRecipientsMap[entry.email_queue_id]) {
+              queueRecipientsMap[entry.email_queue_id] = [];
+            }
+            queueRecipientsMap[entry.email_queue_id].push(entry);
           }
         });
 
@@ -297,9 +350,16 @@ const EmailDashboard = () => {
           };
         });
 
+        const sortByRecent = (a: EmailAnalyticsRow, b: EmailAnalyticsRow) =>
+          getAnalyticsSortTime(b) - getAnalyticsSortTime(a);
+        Object.values(queueRecipientsMap).forEach((entries) => entries.sort(sortByRecent));
+        Object.values(subscriberHistoryMap).forEach((entries) => entries.sort(sortByRecent));
+
         setSubscriberList(summaries);
         setSubscriberMetrics(subscriberMetricsMap);
         setQueueMetrics(queueMetricsMap);
+        setQueueRecipients(queueRecipientsMap);
+        setSubscriberHistory(subscriberHistoryMap);
 
         // Calculate rates - use sent emails as baseline if delivered data is missing
         const baselineForOpen = deliveredEmails > 0 ? deliveredEmails : totalEmailsSent;
@@ -413,12 +473,97 @@ const EmailDashboard = () => {
     }
   };
 
+  const requeueEmail = async (item: EmailQueueItem) => {
+    if (!confirm('Re-queue this email for another send to active subscribers?')) {
+      return;
+    }
+    try {
+      setProcessing(true);
+      const { error } = await supabase.from('email_queue').insert([
+        {
+          content_id: item.content_id,
+          content_type: item.content_type,
+          status: 'pending',
+        },
+      ]);
+
+      if (error) throw error;
+
+      toast({ title: 'Queued', description: 'A new send has been added to the queue.' });
+      await loadEmailData();
+    } catch (error) {
+      console.error('Error re-queueing email:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to re-queue this email.',
+        variant: 'destructive',
+      });
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const updateSubscriberStatus = async (email: string, status: SubscriberStatus) => {
+    try {
+      setSubscriberUpdating(true);
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('email', email);
+
+      if (error) throw error;
+
+      toast({ title: 'Subscriber updated', description: `${email} set to ${status}.` });
+      await loadEmailData();
+    } catch (error) {
+      console.error('Error updating subscriber:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update subscriber status.',
+        variant: 'destructive',
+      });
+    } finally {
+      setSubscriberUpdating(false);
+    }
+  };
+
+  const deleteSubscriber = async (email: string) => {
+    if (!confirm(`Remove ${email} from subscribers? This cannot be undone.`)) {
+      return;
+    }
+    try {
+      setSubscriberUpdating(true);
+      const { error } = await supabase.from('newsletter_subscribers').delete().eq('email', email);
+
+      if (error) throw error;
+
+      toast({ title: 'Subscriber removed', description: `${email} has been deleted.` });
+      await loadEmailData();
+    } catch (error) {
+      console.error('Error deleting subscriber:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete subscriber.',
+        variant: 'destructive',
+      });
+    } finally {
+      setSubscriberUpdating(false);
+    }
+  };
+
   const filteredSubscribers = useMemo(() => {
-    if (subscriberFilter === 'all') return subscriberList;
-    return subscriberList.filter(
-      (subscriber) => (subscriber.status ?? 'active') === subscriberFilter
+    const normalizedQuery = subscriberQuery.trim().toLowerCase();
+    const filteredByStatus =
+      subscriberFilter === 'all'
+        ? subscriberList
+        : subscriberList.filter(
+            (subscriber) => (subscriber.status ?? 'active') === subscriberFilter
+          );
+    if (!normalizedQuery) return filteredByStatus;
+    return filteredByStatus.filter((subscriber) =>
+      subscriber.email.toLowerCase().includes(normalizedQuery)
     );
-  }, [subscriberList, subscriberFilter]);
+  }, [subscriberList, subscriberFilter, subscriberQuery]);
 
   const totalSubscribers = subscriberList.length;
   const activeCount = subscriberList.filter(
@@ -430,6 +575,10 @@ const EmailDashboard = () => {
   const unsubscribedCount = subscriberList.filter(
     (subscriber) => subscriber.status === 'unsubscribed'
   ).length;
+  const queueLookup = useMemo(
+    () => new Map(emailQueue.map((item) => [item.id, item])),
+    [emailQueue]
+  );
 
   const headerMeta = useMemo(
     () => [
@@ -604,6 +753,35 @@ const EmailDashboard = () => {
       </div>
     );
   };
+
+  const handleCopyPreview = async () => {
+    if (!previewContent) return;
+    try {
+      await navigator.clipboard.writeText(previewContent);
+      toast({ title: 'Copied', description: 'Preview HTML copied to clipboard.' });
+    } catch (error) {
+      console.error('Error copying preview HTML:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to copy preview HTML.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const renderPreviewActions = () => (
+    <div className="flex justify-end">
+      <Button
+        variant="soft"
+        size="sm"
+        onClick={handleCopyPreview}
+        disabled={!previewContent}
+      >
+        <Copy className="w-4 h-4 mr-2" />
+        Copy HTML
+      </Button>
+    </div>
+  );
 
   const generateBlogPreview = (data: BlogPreviewPayload) => {
     const { post } = data;
@@ -845,6 +1023,8 @@ const EmailDashboard = () => {
                       const contentLabel =
                         item.content_type === 'blog_post' ? 'Blog Post' : 'Project';
                       const displayTitle = item.content_title || 'Untitled';
+                      const recipients = queueRecipients[item.id] ?? [];
+                      const canRequeue = item.status === 'sent';
 
                       return (
                         <div
@@ -891,19 +1071,103 @@ const EmailDashboard = () => {
                                   </Button>
                                 </DialogTrigger>
                                 <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-slate-900 text-white border border-white/10">
-                                  <DialogHeader>
-                                    <DialogTitle>{previewTitle || 'Email Preview'}</DialogTitle>
-                                    <DialogDescription className="text-white/60">
-                                      Preview of the message generated for this queue item.
-                                    </DialogDescription>
-                                  </DialogHeader>
-                                  {renderPreviewBody()}
-                                </DialogContent>
-                              </Dialog>
+                                <DialogHeader>
+                                  <DialogTitle>{previewTitle || 'Email Preview'}</DialogTitle>
+                                  <DialogDescription className="text-white/60">
+                                    Preview of the message generated for this queue item.
+                                  </DialogDescription>
+                                </DialogHeader>
+                                {renderPreviewActions()}
+                                {renderPreviewBody()}
+                              </DialogContent>
+                            </Dialog>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="soft" size="sm">
+                                  <Users className="w-4 h-4 mr-2" />
+                                  Recipients{recipients.length ? ` (${recipients.length})` : ''}
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto bg-slate-900 text-white border border-white/10">
+                                <DialogHeader>
+                                  <DialogTitle>Recipients • {displayTitle}</DialogTitle>
+                                  <DialogDescription className="text-white/60">
+                                    Delivery and engagement per recipient.
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="overflow-x-auto rounded-xl border border-white/10 bg-black/40">
+                                  <table className="min-w-full divide-y divide-white/10">
+                                    <thead className="bg-white/5">
+                                      <tr className={METRIC_LABEL_CLASS}>
+                                        <th className="px-4 py-3 text-left font-medium">
+                                          Recipient
+                                        </th>
+                                        <th className="px-4 py-3 text-left font-medium">
+                                          Status
+                                        </th>
+                                        <th className="px-4 py-3 text-left font-medium">
+                                          Last activity
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-white/10">
+                                      {recipients.length === 0 ? (
+                                        <tr>
+                                          <td
+                                            colSpan={3}
+                                            className="px-4 py-8 text-center text-white/50"
+                                          >
+                                            No recipients recorded yet.
+                                          </td>
+                                        </tr>
+                                      ) : (
+                                        recipients.map((entry) => {
+                                          const status = getAnalyticsStatus(entry);
+                                          const lastEvent = getAnalyticsTimestamp(entry);
+                                          return (
+                                            <tr
+                                              key={`${entry.subscriber_email}-${entry.id}`}
+                                              className="text-sm text-white/80"
+                                            >
+                                              <td className="px-4 py-3">
+                                                {entry.subscriber_email}
+                                              </td>
+                                              <td className="px-4 py-3">
+                                                <Tag
+                                                  variant={status.variant}
+                                                  size="xs"
+                                                  className="uppercase tracking-wide text-[11px]"
+                                                >
+                                                  {status.label}
+                                                </Tag>
+                                              </td>
+                                              <td className="px-4 py-3">
+                                                {formatDate(lastEvent)}
+                                              </td>
+                                            </tr>
+                                          );
+                                        })
+                                      )}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                            {canRequeue && (
                               <Button
                                 variant="soft"
                                 size="sm"
-                                className={`border-emerald-400/40 bg-emerald-500/20 text-emerald-100 hover:bg-emerald-500/25 ${
+                                disabled={processing}
+                                onClick={() => requeueEmail(item)}
+                              >
+                                <RotateCw className="w-4 h-4 mr-2" />
+                                Requeue
+                              </Button>
+                            )}
+                            <Button
+                              variant="soft"
+                              size="sm"
+                              className={`border-emerald-400/40 bg-emerald-500/20 text-emerald-100 hover:bg-emerald-500/25 ${
                                   !canSend
                                     ? 'opacity-50 cursor-not-allowed hover:bg-emerald-500/20'
                                     : ''
@@ -1010,23 +1274,35 @@ const EmailDashboard = () => {
                 </div>
               </CardHeader>
               <CardContent className={`${SECTION_CONTENT_CLASS} pt-4`}>
-                <div className="flex flex-wrap gap-2">
-                  {(['all', 'active', 'inactive', 'unsubscribed'] as const).map((filter) => {
-                    const isActive = subscriberFilter === filter;
-                    const label =
-                      filter === 'all' ? 'All' : filter.charAt(0).toUpperCase() + filter.slice(1);
-                    return (
-                      <Button
-                        key={filter}
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSubscriberFilter(filter)}
-                        className={`border-white/20 transition-colors ${isActive ? FILTER_BUTTON_ACTIVE_CLASS : FILTER_BUTTON_INACTIVE_CLASS}`}
-                      >
-                        {label}
-                      </Button>
-                    );
-                  })}
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="flex flex-wrap gap-2">
+                    {(['all', 'active', 'inactive', 'unsubscribed'] as const).map((filter) => {
+                      const isActive = subscriberFilter === filter;
+                      const label =
+                        filter === 'all'
+                          ? 'All'
+                          : filter.charAt(0).toUpperCase() + filter.slice(1);
+                      return (
+                        <Button
+                          key={filter}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSubscriberFilter(filter)}
+                          className={`border-white/20 transition-colors ${isActive ? FILTER_BUTTON_ACTIVE_CLASS : FILTER_BUTTON_INACTIVE_CLASS}`}
+                        >
+                          {label}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  <div className="w-full max-w-xs">
+                    <Input
+                      value={subscriberQuery}
+                      onChange={(event) => setSubscriberQuery(event.target.value)}
+                      placeholder="Search subscribers..."
+                      className="h-9 bg-black/40 border-white/10 text-white/90 placeholder:text-white/40"
+                    />
+                  </div>
                 </div>
 
                 <div className="overflow-x-auto rounded-xl border border-white/10 bg-black/40">
@@ -1042,12 +1318,13 @@ const EmailDashboard = () => {
                         <th className="px-4 py-3 text-left font-medium">Bounced</th>
                         <th className="px-4 py-3 text-left font-medium">Last Activity</th>
                         <th className="px-4 py-3 text-left font-medium">Subscribed</th>
+                        <th className="px-4 py-3 text-left font-medium">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/10">
                       {filteredSubscribers.length === 0 ? (
                         <tr>
-                          <td colSpan={9} className="px-4 py-8 text-center text-white/50">
+                          <td colSpan={10} className="px-4 py-8 text-center text-white/50">
                             No subscribers match the selected filter.
                           </td>
                         </tr>
@@ -1061,7 +1338,17 @@ const EmailDashboard = () => {
                             bounced: 0,
                             lastEvent: undefined,
                           };
-                          const status = subscriber.status ?? 'active';
+                          const status = (subscriber.status ?? 'active') as SubscriberStatus;
+                          const history = subscriberHistory[subscriber.email] ?? [];
+                          const latestEntry = history[0];
+                          const latestQueue = latestEntry?.email_queue_id
+                            ? queueLookup.get(latestEntry.email_queue_id)
+                            : undefined;
+                          const latestLabel = latestQueue
+                            ? `${latestQueue.content_title || 'Untitled'} · ${
+                                latestQueue.content_type === 'blog_post' ? 'Blog' : 'Project'
+                              }`
+                            : '—';
                           return (
                             <tr key={subscriber.email} className="text-sm text-white/80">
                               <td className="px-4 py-3">
@@ -1069,9 +1356,7 @@ const EmailDashboard = () => {
                                   <span className="text-base font-semibold text-white">
                                     {subscriber.email}
                                   </span>
-                                  <span className="text-xs text-white/50">
-                                    Last updated: {formatDate(subscriber.updated_at)}
-                                  </span>
+                                  <span className="text-xs text-white/50">Last email: {latestLabel}</span>
                                 </div>
                               </td>
                               <td className="px-4 py-3">{getSubscriberBadge(status)}</td>
@@ -1082,6 +1367,142 @@ const EmailDashboard = () => {
                               <td className="px-4 py-3">{metrics.bounced}</td>
                               <td className="px-4 py-3">{formatDate(metrics.lastEvent)}</td>
                               <td className="px-4 py-3">{formatDate(subscriber.created_at)}</td>
+                              <td className="px-4 py-3">
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button variant="soft" size="sm">
+                                      Manage
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto bg-slate-900 text-white border border-white/10">
+                                    <DialogHeader>
+                                      <DialogTitle>Subscriber</DialogTitle>
+                                      <DialogDescription className="text-white/60">
+                                        Manage status and review delivery history.
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="space-y-4">
+                                      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                                        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                          <div>
+                                            <p className="text-sm text-white/60">Email</p>
+                                            <p className="text-base font-semibold text-white">
+                                              {subscriber.email}
+                                            </p>
+                                          </div>
+                                          <div className="flex items-center gap-3">
+                                            {getSubscriberBadge(status)}
+                                            <select
+                                              value={status}
+                                              onChange={(event) =>
+                                                updateSubscriberStatus(
+                                                  subscriber.email,
+                                                  event.target.value as SubscriberStatus
+                                                )
+                                              }
+                                              className="rounded-md border border-white/10 bg-black/60 px-2 py-1 text-xs text-white/90 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                              disabled={subscriberUpdating}
+                                            >
+                                              <option value="active">Active</option>
+                                              <option value="inactive">Inactive</option>
+                                              <option value="unsubscribed">Unsubscribed</option>
+                                            </select>
+                                            <Button
+                                              variant="destructive"
+                                              size="sm"
+                                              onClick={() => deleteSubscriber(subscriber.email)}
+                                              disabled={subscriberUpdating}
+                                            >
+                                              Remove
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="space-y-2">
+                                        <p className="text-sm font-semibold text-white">
+                                          Email history
+                                        </p>
+                                        <div className="overflow-x-auto rounded-xl border border-white/10 bg-black/40">
+                                          <table className="min-w-full divide-y divide-white/10">
+                                            <thead className="bg-white/5">
+                                              <tr className={METRIC_LABEL_CLASS}>
+                                                <th className="px-4 py-3 text-left font-medium">
+                                                  Content
+                                                </th>
+                                                <th className="px-4 py-3 text-left font-medium">
+                                                  Status
+                                                </th>
+                                                <th className="px-4 py-3 text-left font-medium">
+                                                  Last activity
+                                                </th>
+                                              </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-white/10">
+                                              {history.length === 0 ? (
+                                                <tr>
+                                                  <td
+                                                    colSpan={3}
+                                                    className="px-4 py-8 text-center text-white/50"
+                                                  >
+                                                    No email history for this subscriber yet.
+                                                  </td>
+                                                </tr>
+                                              ) : (
+                                                history.map((entry) => {
+                                                  const statusMeta = getAnalyticsStatus(entry);
+                                                  const lastEvent = getAnalyticsTimestamp(entry);
+                                                  const entryQueue = entry.email_queue_id
+                                                    ? queueLookup.get(entry.email_queue_id)
+                                                    : undefined;
+                                                  const entryTitle = entryQueue?.content_title
+                                                    ? entryQueue.content_title
+                                                    : entry.email_queue_id
+                                                      ? `Queue ${entry.email_queue_id.slice(0, 6)}`
+                                                      : 'Manual';
+                                                  const entryType = entryQueue
+                                                    ? entryQueue.content_type === 'blog_post'
+                                                      ? 'Blog Post'
+                                                      : 'Project'
+                                                    : 'Email';
+                                                  return (
+                                                    <tr
+                                                      key={`${entry.subscriber_email}-${entry.id}`}
+                                                      className="text-sm text-white/80"
+                                                    >
+                                                      <td className="px-4 py-3">
+                                                        <div className="flex flex-col">
+                                                          <span className="text-white">
+                                                            {entryTitle}
+                                                          </span>
+                                                          <span className="text-xs text-white/50">
+                                                            {entryType}
+                                                          </span>
+                                                        </div>
+                                                      </td>
+                                                      <td className="px-4 py-3">
+                                                        <Tag
+                                                          variant={statusMeta.variant}
+                                                          size="xs"
+                                                          className="uppercase tracking-wide text-[11px]"
+                                                        >
+                                                          {statusMeta.label}
+                                                        </Tag>
+                                                      </td>
+                                                      <td className="px-4 py-3">
+                                                        {formatDate(lastEvent)}
+                                                      </td>
+                                                    </tr>
+                                                  );
+                                                })
+                                              )}
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </DialogContent>
+                                </Dialog>
+                              </td>
                             </tr>
                           );
                         })
@@ -1146,6 +1567,7 @@ const EmailDashboard = () => {
                               subscribers
                             </DialogDescription>
                           </DialogHeader>
+                          {renderPreviewActions()}
                           {renderPreviewBody()}
                         </DialogContent>
                       </Dialog>
@@ -1192,10 +1614,19 @@ const EmailDashboard = () => {
                               Preview of how project notification emails will appear to subscribers
                             </DialogDescription>
                           </DialogHeader>
+                          {renderPreviewActions()}
                           {renderPreviewBody()}
                         </DialogContent>
                       </Dialog>
                     </div>
+                  </div>
+
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                    <h3 className="text-base font-semibold text-white">Template source</h3>
+                    <p className="text-sm text-white/60 mt-1">
+                      Edit email templates in <span className="font-mono">supabase/functions/shared/email-templates.ts</span>.
+                      Copy HTML from previews above for quick edits.
+                    </p>
                   </div>
                 </div>
               </CardContent>
