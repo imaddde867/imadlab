@@ -571,7 +571,17 @@ const EmailDashboard = () => {
       scheduled_at: scheduledAt ?? null,
     };
     const { error } = await supabase.from('email_queue').update(payload).eq('id', queueId);
-    if (error) throw error;
+    if (!error) return { recipientStored: true };
+    const message = error.message || '';
+    if (message.toLowerCase().includes('recipient_emails')) {
+      const { error: fallbackError } = await supabase
+        .from('email_queue')
+        .update({ scheduled_at: scheduledAt ?? null })
+        .eq('id', queueId);
+      if (fallbackError) throw fallbackError;
+      return { recipientStored: false };
+    }
+    throw error;
   };
 
   const createQueueItem = async (
@@ -579,20 +589,32 @@ const EmailDashboard = () => {
     recipients: string[],
     scheduledAt?: string | null
   ) => {
-    const { data, error } = await supabase
-      .from('email_queue')
-      .insert({
-        content_id: item.content_id,
-        content_type: item.content_type,
-        status: 'pending',
-        scheduled_at: scheduledAt ?? null,
-        recipient_emails: recipients,
-      })
-      .select('id')
-      .single();
+    const payload = {
+      content_id: item.content_id,
+      content_type: item.content_type,
+      status: 'pending',
+      scheduled_at: scheduledAt ?? null,
+      recipient_emails: recipients,
+    };
+    const { data, error } = await supabase.from('email_queue').insert(payload).select('id').single();
 
-    if (error) throw error;
-    return data?.id as string;
+    if (!error) return data?.id as string;
+    const message = error.message || '';
+    if (message.toLowerCase().includes('recipient_emails')) {
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from('email_queue')
+        .insert({
+          content_id: item.content_id,
+          content_type: item.content_type,
+          status: 'pending',
+          scheduled_at: scheduledAt ?? null,
+        })
+        .select('id')
+        .single();
+      if (fallbackError) throw fallbackError;
+      return fallbackData?.id as string;
+    }
+    throw error;
   };
 
   const sendQueueNow = async (item: EmailQueueItem, recipients: string[]) => {
@@ -605,7 +627,13 @@ const EmailDashboard = () => {
     try {
       setProcessing(true);
       if (item.status === 'pending' || item.status === 'failed') {
-        await updateQueueOverrides(item.id, normalized, null);
+        const updateResult = await updateQueueOverrides(item.id, normalized, null);
+        if (!updateResult.recipientStored) {
+          toast({
+            title: 'Recipients not saved',
+            description: 'Run the email queue migration to store recipient overrides.',
+          });
+        }
         await processSpecificQueueItem(item.id, normalized);
         return;
       }
@@ -614,9 +642,10 @@ const EmailDashboard = () => {
       await processSpecificQueueItem(newQueueId, normalized);
     } catch (error) {
       console.error('Error sending email:', error);
+      const message = error instanceof Error ? error.message : 'Failed to send this email.';
       toast({
         title: 'Error',
-        description: 'Failed to send this email.',
+        description: message,
         variant: 'destructive',
       });
     } finally {
@@ -648,7 +677,15 @@ const EmailDashboard = () => {
     try {
       setProcessing(true);
       if (item.status === 'pending' || item.status === 'failed') {
-        await updateQueueOverrides(item.id, normalized, scheduledIso);
+        const updateResult = await updateQueueOverrides(item.id, normalized, scheduledIso);
+        if (!updateResult.recipientStored) {
+          toast({
+            title: 'Recipients not saved',
+            description: 'Run the email queue migration to store recipient overrides.',
+            variant: 'destructive',
+          });
+          return;
+        }
       } else {
         await createQueueItem(item, normalized, scheduledIso);
       }
@@ -657,9 +694,10 @@ const EmailDashboard = () => {
       await loadEmailData();
     } catch (error) {
       console.error('Error scheduling email:', error);
+      const message = error instanceof Error ? error.message : 'Failed to schedule this email.';
       toast({
         title: 'Error',
-        description: 'Failed to schedule this email.',
+        description: message,
         variant: 'destructive',
       });
     } finally {
