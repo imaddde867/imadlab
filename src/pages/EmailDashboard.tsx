@@ -434,20 +434,20 @@ const EmailDashboard = () => {
   const headerMeta = useMemo(
     () => [
       {
-        label: `${emailQueue.length} queue items`,
-        variant: 'outline' as TagVariant,
+        label: 'Queue items',
+        value: emailQueue.length,
       },
       {
-        label: `Blog auto-send ${blogAutoSend ? 'on' : 'off'}`,
-        variant: (blogAutoSend ? 'success' : 'warning') as TagVariant,
+        label: 'Blog auto-send',
+        value: blogAutoSend ? 'On' : 'Off',
       },
       {
-        label: `Project auto-send ${projectAutoSend ? 'on' : 'off'}`,
-        variant: (projectAutoSend ? 'success' : 'warning') as TagVariant,
+        label: 'Project auto-send',
+        value: projectAutoSend ? 'On' : 'Off',
       },
       {
-        label: `${totalSubscribers} subscribers`,
-        variant: 'neutral' as TagVariant,
+        label: 'Subscribers',
+        value: totalSubscribers,
       },
     ],
     [blogAutoSend, emailQueue.length, projectAutoSend, totalSubscribers]

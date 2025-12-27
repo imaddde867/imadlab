@@ -19,7 +19,6 @@ import {
   Code,
   ExternalLink,
   FolderOpen,
-  Tag as TagIcon,
 } from 'lucide-react';
 import { PROJECT_ADMIN_SELECT, PROJECT_DETAIL_SELECT } from '@/lib/content-selects';
 import type { ProjectDetail as ProjectAdmin } from '@/types/content';
@@ -117,24 +116,20 @@ const ManageProjects = () => {
   const headerMeta = useMemo(
     () => [
       {
-        label: `${totalProjects} active projects`,
-        icon: <FolderOpen className="h-3.5 w-3.5" aria-hidden="true" />,
-        variant: 'neutral' as const,
+        label: 'Total projects',
+        value: totalProjects,
       },
       {
-        label: `${projectsWithRepo} with repo access`,
-        icon: <Code className="h-3.5 w-3.5" aria-hidden="true" />,
-        variant: 'outline' as const,
+        label: 'Repos linked',
+        value: projectsWithRepo,
       },
       {
-        label: `${uniqueTechTags} tech tags`,
-        icon: <TagIcon className="h-3.5 w-3.5" aria-hidden="true" />,
-        variant: 'subtle' as const,
+        label: 'Tech tags',
+        value: uniqueTechTags,
       },
       {
-        label: `${projectsThisMonth} this month`,
-        icon: <Calendar className="h-3.5 w-3.5" aria-hidden="true" />,
-        variant: 'subtle' as const,
+        label: 'This month',
+        value: projectsThisMonth,
       },
     ],
     [projectsThisMonth, projectsWithRepo, totalProjects, uniqueTechTags]
