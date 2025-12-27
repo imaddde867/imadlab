@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   ArrowLeft,
@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import SEO from '@/components/SEO';
 import { PageLoader } from '@/components/ui/LoadingStates';
 import BackRow from '@/components/BackRow';
+import ShareBar from '@/components/ShareBar';
 import { stripMarkdown } from '@/lib/markdown-utils';
 import { tagToUrl } from '@/lib/tags';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
@@ -29,6 +30,7 @@ import type { PostSummary, ProjectDetail as ProjectDetailType, ProjectSummary } 
 import { parseGithubRepo } from '@/lib/github';
 import { useGithubRepoInfo } from '@/hooks/useGithubRepoInfo';
 import { expandTagVariants } from '@/lib/tag-variants';
+import { readPrerenderData } from '@/lib/prerender-data';
 
 const RelatedProjects = ({ currentId, tags }: { currentId: string; tags: string[] }) => {
   const queryTags = useMemo(() => expandTagVariants(tags), [tags]);
@@ -116,6 +118,11 @@ const RelatedPosts = ({ currentId, tags }: { currentId: string; tags: string[] }
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [showAllTags, setShowAllTags] = useState(false);
+  const initialProject = useMemo(
+    () => (id ? readPrerenderData<ProjectDetailType>(`project:${id}`) : undefined),
+    [id]
+  );
+  const initialUpdatedAt = useRef<number | undefined>(initialProject ? Date.now() : undefined);
 
   const {
     data: project,
@@ -134,6 +141,8 @@ const ProjectDetail = () => {
       return data as ProjectDetailType | null;
     },
     enabled: !!id,
+    initialData: initialProject,
+    initialDataUpdatedAt: initialUpdatedAt.current,
   });
 
   const { data: repoInfo } = useGithubRepoInfo(project?.repo_url);
@@ -291,6 +300,9 @@ const ProjectDetail = () => {
           ) : undefined
         }
       />
+      <div className="container-narrow mt-4">
+        <ShareBar title={seoTitle} />
+      </div>
 
       {/* Hero Section - Simplified */}
       <header className="relative pt-8 md:pt-12 pb-10">

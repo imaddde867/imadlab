@@ -48,6 +48,12 @@ const toAbsoluteUrl = (value?: string) => {
   return `${SITE_URL}${value.startsWith('/') ? value : `/${value}`}`;
 };
 
+const toAbsolutePageUrl = (value?: string) => {
+  if (!value) return undefined;
+  if (value.startsWith('http://') || value.startsWith('https://')) return value;
+  return `${SITE_URL}${value.startsWith('/') ? value : `/${value}`}`;
+};
+
 const normaliseDate = (value?: string) => {
   if (!value) return undefined;
   const date = new Date(value);
@@ -79,8 +85,8 @@ const Seo = ({
   const location = useLocation();
   const defaultTitle = `${SITE_NAME} | Data Engineer & AI/ML Portfolio`;
   const fullTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
-  const currentUrl = `${SITE_URL}${location.pathname}${location.search || ''}`;
-  const canonicalUrl = url || canonical || currentUrl;
+  const currentUrl = `${SITE_URL}${location.pathname}`;
+  const canonicalUrl = toAbsolutePageUrl(url || canonical) || currentUrl;
   const ogImage = toAbsoluteUrl(image);
   const twitter = twitterHandle || DEFAULT_TWITTER;
 
