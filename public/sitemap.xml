@@ -39,43 +39,13 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://imadlab.me/tags/pytorch</loc>
-    <lastmod>2025-12-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://imadlab.me/tags/yolo</loc>
-    <lastmod>2025-12-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://imadlab.me/tags/sam3</loc>
-    <lastmod>2025-12-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://imadlab.me/tags/opencv</loc>
-    <lastmod>2025-12-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://imadlab.me/tags/mlflow</loc>
-    <lastmod>2025-12-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://imadlab.me/tags/slurm</loc>
-    <lastmod>2025-12-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://imadlab.me/tags/tensorflow-keras</loc>
+    <lastmod>2025-12-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://imadlab.me/tags/pytorch</loc>
     <lastmod>2025-12-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -105,6 +75,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://imadlab.me/tags/opencv</loc>
+    <lastmod>2025-12-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://imadlab.me/tags/matplotlib</loc>
     <lastmod>2025-12-27</lastmod>
     <changefreq>weekly</changefreq>
@@ -112,6 +88,30 @@
   </url>
   <url>
     <loc>https://imadlab.me/tags/jupyter-notebook</loc>
+    <lastmod>2025-12-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://imadlab.me/tags/yolo</loc>
+    <lastmod>2025-12-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://imadlab.me/tags/sam3</loc>
+    <lastmod>2025-12-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://imadlab.me/tags/mlflow</loc>
+    <lastmod>2025-12-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://imadlab.me/tags/slurm</loc>
     <lastmod>2025-12-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -435,13 +435,13 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://imadlab.me/projects/bb3b627c-3e6e-46e1-ada8-a0764e991a66</loc>
+    <loc>https://imadlab.me/projects/5aae3db6-ac22-487a-9822-bbffc27833e9</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://imadlab.me/projects/5aae3db6-ac22-487a-9822-bbffc27833e9</loc>
+    <loc>https://imadlab.me/projects/bb3b627c-3e6e-46e1-ada8-a0764e991a66</loc>
     <lastmod>2025-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
