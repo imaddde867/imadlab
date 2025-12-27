@@ -78,6 +78,8 @@ const Search = () => {
         description="Search posts and projects"
         type="website"
         schemaType="SearchResultsPage"
+        noindex
+        nofollow
         breadcrumbs={[
           { name: 'Home', path: '/' },
           { name: 'Search', path: '/search' },
