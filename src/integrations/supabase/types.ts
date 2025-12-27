@@ -95,6 +95,7 @@ export type Database = {
           created_at: string | null
           error_message: string | null
           id: string
+          recipient_emails: string[] | null
           retry_count: number | null
           scheduled_at: string | null
           sent_at: string | null
@@ -106,6 +107,7 @@ export type Database = {
           created_at?: string | null
           error_message?: string | null
           id?: string
+          recipient_emails?: string[] | null
           retry_count?: number | null
           scheduled_at?: string | null
           sent_at?: string | null
@@ -117,6 +119,7 @@ export type Database = {
           created_at?: string | null
           error_message?: string | null
           id?: string
+          recipient_emails?: string[] | null
           retry_count?: number | null
           scheduled_at?: string | null
           sent_at?: string | null
