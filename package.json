@@ -10,7 +10,7 @@
     "analyze": "ANALYZE=true vite build",
     "prebuild": "node scripts/generate-sitemap.js && node scripts/generate-feed.js",
     "build": "vite build && cp dist/index.html dist/404.html",
-    "postbuild": "node scripts/prerender.js",
+    "postbuild": "node scripts/prerender.js && node scripts/deploy-supabase-functions.js",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
