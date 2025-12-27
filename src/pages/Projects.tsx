@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
@@ -13,11 +13,14 @@ import { PROJECT_LIST_SELECT } from '@/lib/content-selects';
 import type { ProjectSummary } from '@/types/content';
 import ProjectCard from '@/components/ProjectCard';
 
+type ProjectSort = 'newest' | 'title-asc' | 'title-desc';
+
 const Projects = () => {
   const initialProjects = useMemo(() => readPrerenderData<ProjectSummary[]>('projects'), []);
   const initialUpdatedAt = useRef<number | undefined>(
     initialProjects?.length ? Date.now() : undefined
   );
+  const [sortBy, setSortBy] = useState<ProjectSort>('newest');
 
   const {
     data: projects = [],
@@ -41,19 +44,35 @@ const Projects = () => {
 
   const isSkeletonVisible = isLoading && !projects.length && !isFetching;
 
+  const sortedProjects = useMemo(() => {
+    if (projects.length <= 1) return projects;
+    const list = [...projects];
+    const getCreatedTime = (project: ProjectSummary) => new Date(project.created_at).getTime();
+    switch (sortBy) {
+      case 'title-asc':
+        return list.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
+      case 'title-desc':
+        return list.sort((a, b) => b.title.localeCompare(a.title, undefined, { sensitivity: 'base' }));
+      case 'newest':
+      default:
+        return list.sort((a, b) => getCreatedTime(b) - getCreatedTime(a));
+    }
+  }, [projects, sortBy]);
+
   // Popular project tags (top 12)
   const popularTags = useMemo(() => getTopTags(projects, (project) => project.tech_tags), [projects]);
 
+  const projectItemOrder = sortBy === 'title-asc' ? 'Ascending' : 'Descending';
   const projectListSchema =
-    projects.length > 0
+    sortedProjects.length > 0
       ? [
           {
             '@context': 'https://schema.org',
             '@type': 'ItemList',
             name: 'Projects list',
-            itemListOrder: 'Descending',
-            numberOfItems: projects.length,
-            itemListElement: projects.map((project, index) => ({
+            itemListOrder: projectItemOrder,
+            numberOfItems: sortedProjects.length,
+            itemListElement: sortedProjects.map((project, index) => ({
               '@type': 'ListItem',
               position: index + 1,
               url: `https://imadlab.me/projects/${project.id}`,
@@ -92,22 +111,59 @@ const Projects = () => {
           <SectionHeader title={<span className="text-brand-gradient">Projects</span>} />
         </div>
 
-        {popularTags.length > 0 && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm text-white/60">Popular tags</h3>
-              <div className="flex items-center gap-3 text-xs">
-                <Link to="/tags" className="text-white/60 hover:text-white">All tags</Link>
-                <Link to="/search" className="text-white/60 hover:text-white">Search</Link>
+        {(popularTags.length > 0 || projects.length > 1) && (
+          <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            {popularTags.length > 0 && (
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-3 mb-3">
+                  <h3 className="text-sm text-white/60">Popular tags</h3>
+                  <div className="flex items-center gap-2 text-xs">
+                    <Link
+                      to="/tags"
+                      className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                    >
+                      All tags
+                    </Link>
+                    <Link
+                      to="/search"
+                      className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                    >
+                      Search
+                    </Link>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {popularTags.map((tag, index) => (
+                    <Link
+                      key={tag}
+                      to={tagToUrl(tag)}
+                      className={`px-2 py-1 text-xs bg-white/10 rounded-md text-white/90 hover:bg-white/20 ${
+                        index >= 5 ? 'hidden md:inline-flex' : 'inline-flex'
+                      }`}
+                    >
+                      {tag}
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {popularTags.map((tag) => (
-                <Link key={tag} to={tagToUrl(tag)} className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90 hover:bg-white/20">
-                  {tag}
-                </Link>
-              ))}
-            </div>
+            )}
+
+            {projects.length > 1 && (
+              <div className="flex items-center gap-2 text-xs text-white/60 md:pt-1">
+                <label className="flex items-center gap-2">
+                  Sort by
+                  <select
+                    value={sortBy}
+                    onChange={(event) => setSortBy(event.target.value as ProjectSort)}
+                className="rounded-md border border-white/10 bg-white/10 px-2 py-1 text-xs text-white/90 focus:outline-none focus:ring-2 focus:ring-white/30"
+              >
+                <option value="newest">Newest</option>
+                <option value="title-asc">Title A-Z</option>
+                <option value="title-desc">Title Z-A</option>
+              </select>
+                </label>
+              </div>
+            )}
           </div>
         )}
 
@@ -115,7 +171,7 @@ const Projects = () => {
           <GridSkeleton count={6} columns={3} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
-            {projects.map((project) => (
+            {sortedProjects.map((project) => (
               <ProjectCard
                 key={project.id}
                 project={project}
