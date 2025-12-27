@@ -26,7 +26,6 @@ const ProjectCard = ({ project, linkTo, linkLabel = 'View Project' }: ProjectCar
       demoUrl={project.demo_url || undefined}
       image_url={project.image_url || undefined}
       repoStars={repoInfo?.stargazers_count ?? null}
-      repoLanguage={repoInfo?.language ?? null}
       repoUpdatedAt={repoInfo?.pushed_at ?? repoInfo?.updated_at ?? null}
     />
   );

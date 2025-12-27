@@ -21,7 +21,6 @@ interface CardItemProps {
   isBlog?: boolean;
   image_url?: string | null;
   repoStars?: number | null;
-  repoLanguage?: string | null;
   repoUpdatedAt?: string | null;
 }
 
@@ -40,7 +39,6 @@ const CardItem = ({
   isBlog = false,
   image_url,
   repoStars,
-  repoLanguage,
   repoUpdatedAt,
 }: CardItemProps) => {
   // Enhanced state management for interactions
@@ -58,7 +56,7 @@ const CardItem = ({
   const showImage = Boolean(resolvedImageUrl) && !imageError;
   const placeholderLabel = isBlog ? 'Blog Post' : 'No Preview';
   const showRepoMeta =
-    repoStars !== null && repoStars !== undefined ? true : Boolean(repoLanguage || repoUpdatedAt);
+    repoStars !== null && repoStars !== undefined ? true : Boolean(repoUpdatedAt);
 
   const repoUpdatedLabel = (() => {
     if (!repoUpdatedAt) return null;
@@ -239,9 +237,6 @@ const CardItem = ({
                 )}
                 {repoStars !== null && repoStars !== undefined && (
                   <span className="text-xs text-white/50 font-mono">★{repoStars}</span>
-                )}
-                {repoLanguage && (
-                  <span className="text-xs text-white/50 font-mono">{repoLanguage}</span>
                 )}
                 {repoUpdatedLabel && (
                   <span className="text-xs text-white/50 font-mono hidden sm:inline">
