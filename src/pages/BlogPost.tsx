@@ -176,7 +176,6 @@ const BlogPost = () => {
 
   const body = post.body ?? '';
   const enableMermaid = body.includes('```mermaid');
-  const enableMath = /\$\$|\\\(|\\\[/.test(body);
   const coverImage = resolveImageUrl(post.image_url);
 
   return (
@@ -260,7 +259,7 @@ const BlogPost = () => {
           <GfmMarkdown
             source={post.body}
             className="prose-lg"
-            config={{ enableMermaid, enableMath }}
+            config={{ enableMermaid }}
           />
         ) : (
           <div className="text-center py-12">
