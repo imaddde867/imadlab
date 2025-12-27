@@ -47,7 +47,7 @@ type PathStats = {
   avgDuration: number;
 };
 
-const SECTION_CARD_CLASS = 'rounded-2xl border border-white/10 bg-white/[0.06] shadow-sm';
+const SECTION_CARD_CLASS = 'rounded-xl border border-white/10 bg-white/[0.03]';
 const SECTION_HEADER_CLASS = 'px-6 pt-6 pb-0';
 const SECTION_TITLE_CLASS = 'text-lg font-semibold text-white';
 const SECTION_DESCRIPTION_CLASS = 'text-sm text-white/70';
@@ -354,9 +354,9 @@ const AnalyticsDashboard = () => {
     <div className="min-h-screen bg-black text-white pt-14">
       <div className="container-site space-y-10 pb-24">
         <PageHeader
-          eyebrow="Admin Suite"
+          eyebrow="Admin"
           title="Analytics Dashboard"
-          description="Track visitor engagement, traffic patterns, and site performance metrics."
+          description="Track visitor engagement and traffic performance."
           breadcrumbs={[
             { label: 'Admin', href: '/admin' },
             { label: 'Analytics', href: '/admin/analytics' },
@@ -373,7 +373,7 @@ const AnalyticsDashboard = () => {
             {overviewStats.map((stat) => (
               <Card
                 key={stat.label}
-                className="rounded-2xl border border-white/10 bg-white/5 shadow-[0_16px_48px_rgba(15,23,42,0.35)] backdrop-blur-sm"
+                className="rounded-xl border border-white/10 bg-white/[0.03] shadow-none"
               >
                 <CardContent className="p-5">
                   <div className="flex items-center gap-3">

@@ -132,32 +132,6 @@ const ManagePosts = () => {
     [averageReadTime, postsThisMonth, totalPosts, totalTags]
   );
 
-  const overviewStats = useMemo(
-    () => [
-      {
-        label: 'Total posts',
-        value: totalPosts,
-        icon: <Eye className="h-4 w-4 text-white/80" aria-hidden="true" />,
-      },
-      {
-        label: 'Published this month',
-        value: postsThisMonth,
-        icon: <Calendar className="h-4 w-4 text-emerald-300" aria-hidden="true" />,
-      },
-      {
-        label: 'Average read time',
-        value: `${averageReadTime || 0}m`,
-        icon: <Clock className="h-4 w-4 text-sky-300" aria-hidden="true" />,
-      },
-      {
-        label: 'Unique tags',
-        value: totalTags,
-        icon: <TagIcon className="h-4 w-4 text-amber-300" aria-hidden="true" />,
-      },
-    ],
-    [averageReadTime, postsThisMonth, totalPosts, totalTags]
-  );
-
   const isPostsLoading = isLoading;
 
   const addPostMutation = useMutation({
@@ -351,9 +325,9 @@ const ManagePosts = () => {
     <div className="min-h-screen bg-black text-white py-12">
       <div className="container-site space-y-10 pb-24">
         <PageHeader
-          eyebrow="Admin Suite"
+          eyebrow="Admin"
           title="Blog Posts"
-          description="Craft, edit, and publish articles across imadlab while keeping tabs on performance."
+          description="Create, edit, and publish articles for imadlab."
           breadcrumbs={[
             { label: 'Admin', href: '/admin' },
             { label: 'Posts', href: '/admin/posts' },
@@ -370,29 +344,10 @@ const ManagePosts = () => {
               {showForm ? 'Cancel' : 'New Post'}
             </Button>
           }
-        >
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {overviewStats.map((stat) => (
-              <div
-                key={stat.label}
-                className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 shadow-[0_16px_48px_rgba(15,23,42,0.45)] backdrop-blur-sm"
-              >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
-                  {stat.icon}
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/60">
-                    {stat.label}
-                  </p>
-                  <p className="text-2xl font-bold text-white">{stat.value}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </PageHeader>
+        />
 
         {showForm && (
-          <Card className="rounded-3xl border border-white/10 bg-white/5 shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-md">
+          <Card className="rounded-2xl border border-white/10 bg-white/[0.03] shadow-none">
             <CardHeader>
               <CardTitle className="text-white">
                 {editingPost ? 'Edit Post' : 'Create New Post'}
@@ -491,11 +446,11 @@ const ManagePosts = () => {
         )}
 
         {/* Posts List */}
-        <Card className="rounded-3xl border border-white/10 bg-white/5 shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-md">
+        <Card className="rounded-2xl border border-white/10 bg-white/[0.03] shadow-none">
           <CardHeader>
             <CardTitle className="text-white">All Posts</CardTitle>
             <CardDescription className="text-white/70">
-              Manage your blog posts and track their performance
+              Manage your blog posts
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -504,7 +459,7 @@ const ManagePosts = () => {
                 {Array.from({ length: 3 }).map((_, index) => (
                   <div
                     key={index}
-                    className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
+                    className="rounded-2xl border border-white/10 bg-white/[0.03] p-6"
                   >
                     <Skeleton className="h-6 w-2/3" />
                     <div className="mt-3 flex flex-wrap gap-2">
@@ -539,12 +494,12 @@ const ManagePosts = () => {
                 {postsList.map((post) => (
                   <div
                     key={post.id}
-                    className="rounded-2xl border border-white/10 bg-black/60 p-6 shadow-[0_16px_48px_rgba(15,23,42,0.45)] backdrop-blur-sm transition hover:border-white/20"
+                    className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition hover:border-white/20"
                   >
                     <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                       <div className="flex-1 space-y-3">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                          <h3 className="text-xl font-semibold text-white">{post.title}</h3>
+                          <h3 className="text-lg font-semibold text-white">{post.title}</h3>
                           {post.tags && post.tags.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                               {post.tags.slice(0, 3).map((tag, index) => (

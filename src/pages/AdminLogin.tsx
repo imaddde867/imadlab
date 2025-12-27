@@ -40,8 +40,8 @@ const AdminLogin = () => {
             Back to Home
           </Link>
         </div>
-        <div className="bg-white/[0.02] border border-white/10 rounded-lg p-8 shadow-lg">
-          <h1 className="text-3xl font-bold text-center mb-6">Admin Login</h1>
+        <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 shadow-none">
+          <h1 className="text-2xl font-semibold text-center mb-6">Admin Login</h1>
           <form onSubmit={handleLogin} className="space-y-4">
             <Input
               type="email"
