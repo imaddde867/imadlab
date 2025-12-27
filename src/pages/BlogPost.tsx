@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { calculateReadingTime, stripMarkdown } from '@/lib/markdown-utils';
 import { resolveImageUrl } from '@/lib/image-utils';
 import { PageLoader } from '@/components/ui/LoadingStates';
 import BackRow from '@/components/BackRow';
+import ShareBar from '@/components/ShareBar';
 import TagList from '@/components/TagList';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
 import CardItem from '@/components/ui/CardItem';
@@ -16,6 +17,7 @@ import ProjectCard from '@/components/ProjectCard';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { POST_DETAIL_SELECT, POST_SUMMARY_SELECT, PROJECT_LIST_SELECT } from '@/lib/content-selects';
 import { expandTagVariants } from '@/lib/tag-variants';
+import { readPrerenderData } from '@/lib/prerender-data';
 import type { PostDetail, PostSummary, ProjectSummary } from '@/types/content';
 
 const RelatedPosts = ({ currentSlug, tags }: { currentSlug: string; tags: string[] }) => {
@@ -114,6 +116,11 @@ const buildMetaDescription = (excerpt?: string | null, body?: string | null) => 
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
+  const initialPost = useMemo(
+    () => (slug ? readPrerenderData<PostDetail>(`post:${slug}`) : undefined),
+    [slug]
+  );
+  const initialUpdatedAt = useRef<number | undefined>(initialPost ? Date.now() : undefined);
 
   const {
     data: post,
@@ -132,6 +139,8 @@ const BlogPost = () => {
       return data as PostDetail | null;
     },
     enabled: !!slug,
+    initialData: initialPost,
+    initialDataUpdatedAt: initialUpdatedAt.current,
   });
 
   // Calculate reading time if not provided
@@ -213,6 +222,9 @@ const BlogPost = () => {
           ) : undefined
         }
       />
+      <div className="container-narrow mt-4">
+        <ShareBar title={post.title} />
+      </div>
       {/* Hero Section */}
       <header className="relative pt-8 md:pt-12 pb-10">
         <div className="container-narrow">

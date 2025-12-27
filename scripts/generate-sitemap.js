@@ -12,7 +12,7 @@ async function generateSitemap() {
   // Fetch posts with updated_at for better lastmod
   const { data: posts, error: postsError } = await supabase
     .from('posts')
-    .select('slug, published_date, updated_at')
+    .select('slug, published_date, updated_at, tags')
     .order('published_date', { ascending: false });
 
   if (postsError) {
@@ -97,7 +97,9 @@ ${projects
 </urlset>`;
 
   fs.writeFileSync(SITEMAP_PATH, sitemap);
-  console.log(`✅ Sitemap generated with ${staticPages.length + posts.length + projects.length} URLs`);
+  console.log(
+    `✅ Sitemap generated with ${staticPages.length + tagUrls.length + posts.length + projects.length} URLs`
+  );
   console.log(`📊 Content: ${posts.length} blog posts, ${projects.length} projects`);
 }
 
