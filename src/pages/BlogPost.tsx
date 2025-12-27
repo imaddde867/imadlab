@@ -74,7 +74,6 @@ const RelatedProjects = ({ currentSlug, tags }: { currentSlug: string; tags: str
         .from('projects')
         .select(PROJECT_LIST_SELECT)
         .overlaps('tech_tags', queryTags)
-        .order('featured', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(3);
       if (error) throw error;

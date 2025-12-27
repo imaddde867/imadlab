@@ -29,7 +29,6 @@ const Projects = () => {
       const { data, error } = await supabase
         .from('projects')
         .select(PROJECT_LIST_SELECT)
-        .order('featured', { ascending: false })
         .order('created_at', { ascending: false });
 
       if (error) throw error;

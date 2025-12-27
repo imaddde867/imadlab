@@ -42,7 +42,6 @@ const RelatedProjects = ({ currentId, tags }: { currentId: string; tags: string[
         .select(PROJECT_LIST_SELECT)
         .overlaps('tech_tags', queryTags)
         .neq('id', currentId)
-        .order('featured', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(3);
       if (error) throw error;
@@ -310,13 +309,6 @@ const ProjectDetail = () => {
                 day: 'numeric',
               })}
             </div>
-
-            {project.featured && (
-              <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/15 px-3 py-1 text-sm text-amber-200">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-300" />
-                Featured
-              </div>
-            )}
 
             {repoInfo && (
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/70">
