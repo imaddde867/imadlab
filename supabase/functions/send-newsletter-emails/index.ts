@@ -18,7 +18,7 @@ interface EmailQueueItem {
 interface NewsletterSubscriber {
   id: string;
   email: string;
-  status: string;
+  status: string | null;
   unsubscribe_token: string;
 }
 
@@ -69,11 +69,24 @@ serve(async (req) => {
     const { generateBlogPostEmail, generateProjectEmail } = await import('../shared/email-templates.ts')
 
     let queueIds: string[] | undefined
+    let recipientEmails: string[] | undefined
     if (req.headers.get('content-type')?.includes('application/json')) {
       const payload = await req.json().catch(() => null)
       if (payload && Array.isArray(payload.queueIds)) {
         queueIds = payload.queueIds.filter((value): value is string => typeof value === 'string' && value.length > 0)
       }
+      if (payload && Array.isArray(payload.recipientEmails)) {
+        recipientEmails = payload.recipientEmails
+          .filter((value): value is string => typeof value === 'string' && value.length > 0)
+          .map((value) => value.toLowerCase())
+      }
+    }
+
+    if (recipientEmails && recipientEmails.length > 0 && (!queueIds || queueIds.length !== 1)) {
+      return new Response(
+        JSON.stringify({ error: 'recipientEmails requires exactly one queueId' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
     // Get pending email queue items
@@ -106,15 +119,23 @@ serve(async (req) => {
     const { data: subscribers, error: subscribersError } = await supabaseClient
       .from('newsletter_subscribers')
       .select('id, email, unsubscribe_token, status')
-      .eq('status', 'active')
+      .or('status.eq.active,status.is.null')
 
     if (subscribersError) {
       throw new Error(`Failed to fetch subscribers: ${subscribersError.message}`)
     }
 
-    if (!subscribers || subscribers.length === 0) {
+    let activeSubscribers = subscribers ?? []
+    if (recipientEmails && recipientEmails.length > 0) {
+      const recipientSet = new Set(recipientEmails)
+      activeSubscribers = activeSubscribers.filter((subscriber) =>
+        recipientSet.has(subscriber.email.toLowerCase())
+      )
+    }
+
+    if (!activeSubscribers || activeSubscribers.length === 0) {
       return new Response(
-        JSON.stringify({ message: 'No active subscribers found' }),
+        JSON.stringify({ message: recipientEmails?.length ? 'No matching active recipients found' : 'No active subscribers found' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -153,7 +174,7 @@ serve(async (req) => {
         }
 
         // Send emails to all subscribers
-        const emailPromises = subscribers.map(async (subscriber: NewsletterSubscriber) => {
+        const emailPromises = activeSubscribers.map(async (subscriber: NewsletterSubscriber) => {
           try {
             let emailHtml = ''
             let subject = ''
@@ -272,7 +293,7 @@ serve(async (req) => {
           contentType: queueItem.content_type,
           contentTitle: contentData.title,
           successCount,
-          totalSubscribers: subscribers.length
+          totalSubscribers: activeSubscribers.length
         })
 
       } catch (error) {
@@ -300,7 +321,7 @@ serve(async (req) => {
         message: 'Email processing completed',
         results,
         processedItems: queueItems.length,
-        totalSubscribers: subscribers.length
+        totalSubscribers: activeSubscribers.length
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
