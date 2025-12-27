@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { calculateReadingTime } from '@/lib/markdown-utils';
-import { POST_ADMIN_SELECT } from '@/lib/content-selects';
+import { POST_ADMIN_SELECT, POST_DETAIL_SELECT } from '@/lib/content-selects';
 import type { PostAdmin } from '@/types/content';
 
 type PostFormState = {
@@ -47,6 +47,8 @@ const ManagePosts = () => {
   const [editingPost, setEditingPost] = useState<PostAdmin | null>(null);
   const [formData, setFormData] = useState<PostFormState>(createEmptyPostForm);
   const [authChecked, setAuthChecked] = useState(false);
+  const [isEditLoading, setIsEditLoading] = useState(false);
+  const editRequestId = useRef(0);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -200,6 +202,7 @@ const ManagePosts = () => {
   });
 
   const isMutating = addPostMutation.isPending || updatePostMutation.isPending;
+  const isFormBusy = isMutating || isEditLoading;
 
   const deletePostMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -230,8 +233,10 @@ const ManagePosts = () => {
   const resetForm = () => setFormData(createEmptyPostForm());
 
   const closeForm = () => {
+    editRequestId.current += 1;
     setShowForm(false);
     setEditingPost(null);
+    setIsEditLoading(false);
     resetForm();
   };
 
@@ -257,17 +262,44 @@ const ManagePosts = () => {
     });
   };
 
-  const handleEditClick = (post: PostAdmin) => {
+  const handleEditClick = async (post: PostAdmin) => {
     setEditingPost(post);
-    setFormData({
-      title: post.title,
-      slug: post.slug,
-      body: post.body || '',
-      excerpt: post.excerpt || '',
-      tags: post.tags?.join(', ') || '',
-      image_url: post.image_url || '',
-    });
     setShowForm(true);
+    setIsEditLoading(true);
+    const requestId = (editRequestId.current += 1);
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select(POST_DETAIL_SELECT)
+        .eq('id', post.id)
+        .maybeSingle();
+      if (error) throw error;
+      const record = data ?? post;
+      if (requestId !== editRequestId.current) return;
+      setFormData({
+        title: record.title,
+        slug: record.slug,
+        body: record.body || '',
+        excerpt: record.excerpt || '',
+        tags: record.tags?.join(', ') || '',
+        image_url: record.image_url || '',
+      });
+    } catch (error) {
+      console.warn('Failed to load full post content', error);
+      if (requestId !== editRequestId.current) return;
+      setFormData({
+        title: post.title,
+        slug: post.slug,
+        body: post.body || '',
+        excerpt: post.excerpt || '',
+        tags: post.tags?.join(', ') || '',
+        image_url: post.image_url || '',
+      });
+    } finally {
+      if (requestId === editRequestId.current) {
+        setIsEditLoading(false);
+      }
+    }
   };
 
   const handleDeleteClick = (id: string) => {
@@ -278,6 +310,14 @@ const ManagePosts = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isEditLoading) {
+      toast({
+        title: 'Still loading',
+        description: 'Please wait for the full content to load before saving.',
+        variant: 'destructive',
+      });
+      return;
+    }
     if (!formData.title.trim() || !formData.slug.trim()) return;
 
     const tagsArray = formData.tags
@@ -426,8 +466,14 @@ const ManagePosts = () => {
                   </div>
                 </div>
 
+                {isEditLoading && (
+                  <div className="rounded-md border border-white/10 bg-white/[0.02] px-3 py-2 text-xs text-white/60">
+                    Loading full content…
+                  </div>
+                )}
+
                 <div className="flex flex-wrap gap-3">
-                  <Button type="submit" variant="inverted" disabled={isMutating}>
+                  <Button type="submit" variant="inverted" disabled={isFormBusy}>
                     {editingPost
                       ? updatePostMutation.isPending
                         ? 'Updating...'
@@ -436,7 +482,7 @@ const ManagePosts = () => {
                         ? 'Creating...'
                         : 'Create Post'}
                   </Button>
-                  <Button type="button" variant="ghost" onClick={closeForm}>
+                  <Button type="button" variant="ghost" onClick={closeForm} disabled={isFormBusy}>
                     Cancel
                   </Button>
                 </div>
