@@ -109,7 +109,7 @@ type PreviewRequest =
   | { mode: 'latest'; contentType: 'blog_post' | 'project' }
   | { mode: 'queue'; queueItem: EmailQueueItem };
 
-const SECTION_CARD_CLASS = 'rounded-2xl border border-white/10 bg-white/[0.06] shadow-sm';
+const SECTION_CARD_CLASS = 'rounded-xl border border-white/10 bg-white/[0.03]';
 const SECTION_HEADER_CLASS = 'px-6 pt-6 pb-0';
 const SECTION_TITLE_CLASS = 'text-lg font-semibold text-white';
 const SECTION_DESCRIPTION_CLASS = 'text-sm text-white/70';
@@ -743,9 +743,9 @@ const EmailDashboard = () => {
     <div className="min-h-screen bg-black text-white py-12">
       <div className="container-site space-y-10 pb-24">
         <PageHeader
-          eyebrow="Admin Suite"
+          eyebrow="Admin"
           title="Email Management"
-          description="Monitor automations, deliver campaigns, and keep the audience up to date."
+          description="Monitor automations and manage subscribers."
           breadcrumbs={[
             { label: 'Admin', href: '/admin' },
             { label: 'Emails', href: '/admin/emails' },
@@ -769,7 +769,7 @@ const EmailDashboard = () => {
               {overviewStats.map((stat) => (
                 <Card
                   key={stat.label}
-                  className="rounded-2xl border border-white/10 bg-white/5 shadow-[0_16px_48px_rgba(15,23,42,0.35)] backdrop-blur-sm"
+                  className="rounded-xl border border-white/10 bg-white/[0.03] shadow-none"
                 >
                   <CardContent className="p-5">
                     <div className="flex items-center gap-3">

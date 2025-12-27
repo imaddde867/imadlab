@@ -67,53 +67,62 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-black text-white pt-14">
-      <div className="container-site max-w-4xl">
-        <div className="mb-8">
-          <Link
-            to="/"
-            className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors"
+      <div className="container-site max-w-3xl space-y-6 pb-16">
+        <Link
+          to="/"
+          className="inline-flex items-center text-white/60 hover:text-white transition-colors"
+        >
+          <svg
+            className="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"></path>
-            </svg>
-            Back to Home
-          </Link>
-        </div>
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">Admin Dashboard</h1>
-          <Button onClick={handleLogout} className="bg-red-600 hover:bg-red-700">
-            Logout
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to Home
+        </Link>
+
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold">Admin</h1>
+            <p className="text-sm text-white/60">{user?.email}</p>
+          </div>
+          <Button variant="outline" onClick={handleLogout}>
+            Log out
           </Button>
         </div>
-        <p className="text-white/70 mb-8">Welcome, {user?.email}!</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Link to="/admin/posts">
-            <Button className="w-full h-24 text-xl bg-white/10 hover:bg-white/20 border border-white/20">
-              Manage Blog Posts
-            </Button>
+        <div className="grid gap-3">
+          <Link
+            to="/admin/posts"
+            className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-white hover:border-white/20"
+          >
+            <span>Blog posts</span>
+            <span className="text-xs font-normal text-white/50">Create + edit</span>
           </Link>
-          <Link to="/admin/projects">
-            <Button className="w-full h-24 text-xl bg-white/10 hover:bg-white/20 border border-white/20">
-              Manage Projects
-            </Button>
+          <Link
+            to="/admin/projects"
+            className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-white hover:border-white/20"
+          >
+            <span>Projects</span>
+            <span className="text-xs font-normal text-white/50">Manage portfolio</span>
           </Link>
-          <Link to="/admin/emails">
-            <Button className="w-full h-24 text-xl bg-white/10 hover:bg-white/20 border border-white/20">
-              Email Management
-            </Button>
+          <Link
+            to="/admin/emails"
+            className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-white hover:border-white/20"
+          >
+            <span>Email</span>
+            <span className="text-xs font-normal text-white/50">Queue + subscribers</span>
           </Link>
-          <Link to="/admin/analytics">
-            <Button className="w-full h-24 text-xl bg-white/10 hover:bg-white/20 border border-white/20">
-              Analytics Dashboard
-            </Button>
+          <Link
+            to="/admin/analytics"
+            className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-white hover:border-white/20"
+          >
+            <span>Analytics</span>
+            <span className="text-xs font-normal text-white/50">Traffic + performance</span>
           </Link>
         </div>
       </div>
