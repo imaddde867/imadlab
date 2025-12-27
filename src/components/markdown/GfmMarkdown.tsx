@@ -21,6 +21,7 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import remarkGithub from 'remark-github';
 import rehypeRaw from 'rehype-raw';
+import rehypeKatex from 'rehype-katex';
 import rehypeSanitize from 'rehype-sanitize';
 import GithubSlugger from 'github-slugger';
 import type { Schema } from 'hast-util-sanitize';
@@ -74,6 +75,10 @@ const mathSchemaExtensions: Schema = {
   ...defaultSchema,
   attributes: {
     ...defaultSchema.attributes,
+    code: [
+      ...(defaultSchema.attributes?.code ?? []),
+      ['className', 'math-inline', 'math-display'],
+    ],
     details: [...(defaultSchema.attributes?.details ?? []), 'open'],
     video: [
       ...(defaultSchema.attributes?.video ?? []),
@@ -465,8 +470,11 @@ export const GfmMarkdown = ({
     if (mergedConfig.sanitizeHtml) {
       plugins.push([rehypeSanitize, mathSchemaExtensions]);
     }
+    if (mergedConfig.enableMath) {
+      plugins.push(rehypeKatex);
+    }
     return plugins;
-  }, [mergedConfig.sanitizeHtml]);
+  }, [mergedConfig.enableMath, mergedConfig.sanitizeHtml]);
 
   const normalizedSource = useMemo(
     () => normalizeMathBlocks(source, mergedConfig.enableMath),
@@ -551,14 +559,6 @@ export const GfmMarkdown = ({
           <VideoRenderer {...(props as React.VideoHTMLAttributes<HTMLVideoElement>)} />
         ) : (
           <ImageRenderer {...props} />
-        ),
-      math: ({ value }) =>
-        mergedConfig.enableMath ? <MathRenderer value={value ?? ''} /> : <code>{value}</code>,
-      inlineMath: ({ value }) =>
-        mergedConfig.enableMath ? (
-          <MathRenderer value={value ?? ''} inline />
-        ) : (
-          <code>{value}</code>
         ),
       footnoteReference: (props) => <FootnoteReferenceRenderer {...props} />,
       footnoteDefinition: (props) => <FootnoteDefinitionRenderer {...props} />,

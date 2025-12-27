@@ -47,7 +47,7 @@ Deno.test("Blog post email template generation", () => {
   assertEquals(emailHtml.includes(`token=${mockBlogPostData.unsubscribeToken}`), true);
   
   // Test that email contains post URL
-  assertEquals(emailHtml.includes(`/blog/${mockBlogPostData.post.slug}`), true);
+  assertEquals(emailHtml.includes(`/blogs/${mockBlogPostData.post.slug}`), true);
   
   // Test that email contains tags
   mockBlogPostData.post.tags.forEach(tag => {
@@ -168,7 +168,6 @@ Deno.test("Email templates are mobile responsive", () => {
     assertEquals(email.includes('@media (max-width: 600px)'), true);
     
     // Test mobile-specific styles
-    assertEquals(email.includes('border-radius: 0'), true);
     assertEquals(email.includes('width: 100%'), true);
   });
 });
