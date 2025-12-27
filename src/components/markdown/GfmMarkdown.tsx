@@ -481,6 +481,7 @@ export const GfmMarkdown = ({
           return <InlineCode>{children}</InlineCode>;
         }
         const language = className?.replace(/language-/, '') ?? '';
+        const normalizedLanguage = language.toLowerCase();
         const meta =
           (node && 'data' in node && (node.data as { meta?: string })?.meta) || undefined;
         const codeString = String(children ?? '');
@@ -489,6 +490,13 @@ export const GfmMarkdown = ({
           return (
             <MermaidBlock code={codeString} maxDiagramSizeKB={mergedConfig.maxDiagramSizeKB} />
           );
+        }
+
+        if (
+          mergedConfig.enableMath &&
+          ['math', 'latex', 'tex', 'katex'].includes(normalizedLanguage)
+        ) {
+          return <MathRenderer value={codeString} />;
         }
 
         return <CodeBlock code={codeString} language={language} meta={meta} />;

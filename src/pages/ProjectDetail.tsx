@@ -209,7 +209,6 @@ const ProjectDetail = () => {
 
   const longForm = project.full_description ?? '';
   const enableMermaid = longForm.includes('```mermaid');
-  const enableMath = /\$\$|\\\(|\\\[/.test(longForm);
   const repoRef = parseGithubRepo(project.repo_url);
   const repository = repoRef ? { owner: repoRef.owner, name: repoRef.repo } : undefined;
   const repoUpdatedAt = repoInfo?.pushed_at ?? repoInfo?.updated_at ?? null;
@@ -397,7 +396,7 @@ const ProjectDetail = () => {
             source={project.full_description}
             className="prose-lg"
             repository={repository}
-            config={{ enableMermaid, enableMath }}
+            config={{ enableMermaid }}
           />
         ) : (
           <div className="text-center py-12">
