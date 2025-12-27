@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,7 @@ import {
   FolderOpen,
   Tag as TagIcon,
 } from 'lucide-react';
-import { PROJECT_ADMIN_SELECT } from '@/lib/content-selects';
+import { PROJECT_ADMIN_SELECT, PROJECT_DETAIL_SELECT } from '@/lib/content-selects';
 import type { ProjectDetail as ProjectAdmin } from '@/types/content';
 
 type ProjectFormState = {
@@ -49,6 +49,8 @@ const ManageProjects = () => {
   const [editingProject, setEditingProject] = useState<ProjectAdmin | null>(null);
   const [formData, setFormData] = useState<ProjectFormState>(createEmptyProjectForm);
   const [authChecked, setAuthChecked] = useState(false);
+  const [isEditLoading, setIsEditLoading] = useState(false);
+  const editRequestId = useRef(0);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -141,8 +143,10 @@ const ManageProjects = () => {
   const resetForm = () => setFormData(createEmptyProjectForm());
 
   const closeForm = () => {
+    editRequestId.current += 1;
     setShowForm(false);
     setEditingProject(null);
+    setIsEditLoading(false);
     resetForm();
   };
 
@@ -223,6 +227,7 @@ const ManageProjects = () => {
   });
 
   const isMutating = addProjectMutation.isPending || updateProjectMutation.isPending;
+  const isFormBusy = isMutating || isEditLoading;
 
   const deleteProjectMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -243,18 +248,46 @@ const ManageProjects = () => {
     },
   });
 
-  const handleEditClick = (project: ProjectAdmin) => {
+  const handleEditClick = async (project: ProjectAdmin) => {
     setEditingProject(project);
-    setFormData({
-      title: project.title,
-      description: project.description || '',
-      full_description: project.full_description || '',
-      image_url: project.image_url || '',
-      tech_tags: project.tech_tags?.join(', ') || '',
-      repo_url: project.repo_url || '',
-      demo_url: project.demo_url || '',
-    });
     setShowForm(true);
+    setIsEditLoading(true);
+    const requestId = (editRequestId.current += 1);
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .select(PROJECT_DETAIL_SELECT)
+        .eq('id', project.id)
+        .maybeSingle();
+      if (error) throw error;
+      const record = data ?? project;
+      if (requestId !== editRequestId.current) return;
+      setFormData({
+        title: record.title,
+        description: record.description || '',
+        full_description: record.full_description || '',
+        image_url: record.image_url || '',
+        tech_tags: record.tech_tags?.join(', ') || '',
+        repo_url: record.repo_url || '',
+        demo_url: record.demo_url || '',
+      });
+    } catch (error) {
+      console.warn('Failed to load full project content', error);
+      if (requestId !== editRequestId.current) return;
+      setFormData({
+        title: project.title,
+        description: project.description || '',
+        full_description: project.full_description || '',
+        image_url: project.image_url || '',
+        tech_tags: project.tech_tags?.join(', ') || '',
+        repo_url: project.repo_url || '',
+        demo_url: project.demo_url || '',
+      });
+    } finally {
+      if (requestId === editRequestId.current) {
+        setIsEditLoading(false);
+      }
+    }
   };
 
   const handleDeleteClick = (id: string) => {
@@ -265,6 +298,14 @@ const ManageProjects = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isEditLoading) {
+      toast({
+        title: 'Still loading',
+        description: 'Please wait for the full content to load before saving.',
+        variant: 'destructive',
+      });
+      return;
+    }
     if (!formData.title.trim()) return;
 
     const techTagsArray = formData.tech_tags
@@ -412,8 +453,14 @@ const ManageProjects = () => {
                   />
                 </div>
 
+                {isEditLoading && (
+                  <div className="rounded-md border border-white/10 bg-white/[0.02] px-3 py-2 text-xs text-white/60">
+                    Loading full content…
+                  </div>
+                )}
+
                 <div className="flex flex-wrap gap-3">
-                  <Button type="submit" variant="inverted" disabled={isMutating}>
+                  <Button type="submit" variant="inverted" disabled={isFormBusy}>
                     {editingProject
                       ? updateProjectMutation.isPending
                         ? 'Updating...'
@@ -422,7 +469,7 @@ const ManageProjects = () => {
                         ? 'Creating...'
                         : 'Create Project'}
                   </Button>
-                  <Button type="button" variant="ghost" onClick={closeForm}>
+                  <Button type="button" variant="ghost" onClick={closeForm} disabled={isFormBusy}>
                     Cancel
                   </Button>
                 </div>
