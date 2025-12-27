@@ -112,6 +112,20 @@ type PreviewRequest =
 
 type SubscriberStatus = 'active' | 'inactive' | 'unsubscribed';
 
+const BLOG_AUTO_SEND_KEY = 'imadlab-email-auto-send-blog';
+const PROJECT_AUTO_SEND_KEY = 'imadlab-email-auto-send-project';
+
+const getStoredBoolean = (key: string, fallback = false) => {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const value = window.localStorage.getItem(key);
+    if (value === null) return fallback;
+    return value === 'true';
+  } catch {
+    return fallback;
+  }
+};
+
 const getAnalyticsSortTime = (entry: EmailAnalyticsRow) => {
   const timestamps = [
     entry.clicked_at,
@@ -147,6 +161,17 @@ const getAnalyticsTimestamp = (entry: EmailAnalyticsRow) =>
   entry.created_at ??
   null;
 
+const getRecipientStatus = (
+  entry: EmailAnalyticsRow | undefined,
+  queueStatus: EmailQueueItem['status']
+) => {
+  if (entry) return getAnalyticsStatus(entry);
+  if (queueStatus === 'sent') return { label: 'Not sent', variant: 'warning' };
+  if (queueStatus === 'failed') return { label: 'Not sent', variant: 'danger' };
+  if (queueStatus === 'processing') return { label: 'Processing', variant: 'neutral' };
+  return { label: 'Queued', variant: 'outline' };
+};
+
 const SECTION_CARD_CLASS = 'rounded-xl border border-white/10 bg-white/[0.03]';
 const SECTION_HEADER_CLASS = 'px-6 pt-6 pb-0';
 const SECTION_TITLE_CLASS = 'text-lg font-semibold text-white';
@@ -177,8 +202,11 @@ const EmailDashboard = () => {
   const [queueMetrics, setQueueMetrics] = useState<Record<string, QueueMetrics>>({});
   const [queueRecipients, setQueueRecipients] = useState<Record<string, EmailAnalyticsRow[]>>({});
   const [subscriberHistory, setSubscriberHistory] = useState<Record<string, EmailAnalyticsRow[]>>({});
-  const [blogAutoSend, setBlogAutoSend] = useState(false);
-  const [projectAutoSend, setProjectAutoSend] = useState(false);
+  const [recipientOverrides, setRecipientOverrides] = useState<Record<string, string[]>>({});
+  const [blogAutoSend, setBlogAutoSend] = useState(() => getStoredBoolean(BLOG_AUTO_SEND_KEY));
+  const [projectAutoSend, setProjectAutoSend] = useState(() =>
+    getStoredBoolean(PROJECT_AUTO_SEND_KEY)
+  );
 
   const loadEmailData = useCallback(async () => {
     try {
@@ -414,14 +442,33 @@ const EmailDashboard = () => {
     };
   }, [loadEmailData, navigate, toast]);
 
-  const processEmailQueue = async (queueIds?: string[]) => {
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(BLOG_AUTO_SEND_KEY, blogAutoSend ? 'true' : 'false');
+    } catch {
+      // Ignore storage errors.
+    }
+  }, [blogAutoSend]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(PROJECT_AUTO_SEND_KEY, projectAutoSend ? 'true' : 'false');
+    } catch {
+      // Ignore storage errors.
+    }
+  }, [projectAutoSend]);
+
+  const processEmailQueue = async (queueIds?: string[], recipientEmails?: string[]) => {
     try {
       setProcessing(true);
+      const payload: Record<string, unknown> = {};
+      if (queueIds && queueIds.length) payload.queueIds = queueIds;
+      if (recipientEmails && recipientEmails.length) payload.recipientEmails = recipientEmails;
       const { data, error } = await supabase.functions.invoke<{ processedItems?: number }>(
         'send-newsletter-emails',
         {
           method: 'POST',
-          body: queueIds && queueIds.length ? { queueIds } : {},
+          body: Object.keys(payload).length ? payload : {},
         }
       );
 
@@ -445,8 +492,8 @@ const EmailDashboard = () => {
     }
   };
 
-  const processSpecificQueueItem = async (queueId: string) => {
-    await processEmailQueue([queueId]);
+  const processSpecificQueueItem = async (queueId: string, recipientEmails?: string[]) => {
+    await processEmailQueue([queueId], recipientEmails);
   };
 
   const deleteQueueItem = async (queueId: string) => {
@@ -551,6 +598,59 @@ const EmailDashboard = () => {
     }
   };
 
+  const activeSubscribers = useMemo(
+    () => subscriberList.filter((subscriber) => !subscriber.status || subscriber.status === 'active'),
+    [subscriberList]
+  );
+  const activeSubscriberEmails = useMemo(
+    () => activeSubscribers.map((subscriber) => subscriber.email).sort((a, b) => a.localeCompare(b)),
+    [activeSubscribers]
+  );
+  const activeSubscriberEmailSet = useMemo(
+    () => new Set(activeSubscriberEmails),
+    [activeSubscriberEmails]
+  );
+  const subscriberStatusMap = useMemo(
+    () => new Map(subscriberList.map((subscriber) => [subscriber.email, subscriber.status ?? 'active'])),
+    [subscriberList]
+  );
+
+  const ensureRecipientSelection = useCallback(
+    (queueId: string) => {
+      setRecipientOverrides((prev) => {
+        if (prev[queueId]) return prev;
+        return { ...prev, [queueId]: activeSubscriberEmails };
+      });
+    },
+    [activeSubscriberEmails]
+  );
+
+  const toggleRecipientSelection = useCallback(
+    (queueId: string, email: string) => {
+      setRecipientOverrides((prev) => {
+        const current = new Set(prev[queueId] ?? activeSubscriberEmails);
+        if (current.has(email)) {
+          current.delete(email);
+        } else {
+          current.add(email);
+        }
+        return { ...prev, [queueId]: Array.from(current) };
+      });
+    },
+    [activeSubscriberEmails]
+  );
+
+  const selectAllRecipients = useCallback(
+    (queueId: string) => {
+      setRecipientOverrides((prev) => ({ ...prev, [queueId]: activeSubscriberEmails }));
+    },
+    [activeSubscriberEmails]
+  );
+
+  const clearRecipients = useCallback((queueId: string) => {
+    setRecipientOverrides((prev) => ({ ...prev, [queueId]: [] }));
+  }, []);
+
   const filteredSubscribers = useMemo(() => {
     const normalizedQuery = subscriberQuery.trim().toLowerCase();
     const filteredByStatus =
@@ -566,9 +666,7 @@ const EmailDashboard = () => {
   }, [subscriberList, subscriberFilter, subscriberQuery]);
 
   const totalSubscribers = subscriberList.length;
-  const activeCount = subscriberList.filter(
-    (subscriber) => (subscriber.status ?? 'active') === 'active'
-  ).length;
+  const activeCount = activeSubscribers.length;
   const inactiveCount = subscriberList.filter(
     (subscriber) => subscriber.status === 'inactive'
   ).length;
@@ -1017,13 +1115,27 @@ const EmailDashboard = () => {
                       };
                       const canSend = item.status === 'pending' || item.status === 'failed';
                       const buttonLabel = item.status === 'failed' ? 'Retry' : 'Send Now';
-                      const targetRecipients = canSend
-                        ? activeCount
-                        : metric.uniqueRecipients || metric.sent || metric.delivered || 0;
                       const contentLabel =
                         item.content_type === 'blog_post' ? 'Blog Post' : 'Project';
                       const displayTitle = item.content_title || 'Untitled';
                       const recipients = queueRecipients[item.id] ?? [];
+                      const recipientMap = new Map(
+                        recipients.map((entry) => [entry.subscriber_email, entry])
+                      );
+                      const rosterEmails = new Set(activeSubscriberEmails);
+                      recipients.forEach((entry) => rosterEmails.add(entry.subscriber_email));
+                      const recipientList = Array.from(rosterEmails).sort((a, b) =>
+                        a.localeCompare(b)
+                      );
+                      const selectedRecipients = recipientOverrides[item.id] ?? activeSubscriberEmails;
+                      const selectedActiveRecipients = selectedRecipients.filter((email) =>
+                        activeSubscriberEmailSet.has(email)
+                      );
+                      const selectedSet = new Set(selectedRecipients);
+                      const selectedCount = selectedActiveRecipients.length;
+                      const targetRecipients = canSend
+                        ? selectedCount
+                        : metric.uniqueRecipients || metric.sent || metric.delivered || 0;
                       const canRequeue = item.status === 'sent';
 
                       return (
@@ -1083,9 +1195,9 @@ const EmailDashboard = () => {
                             </Dialog>
                             <Dialog>
                               <DialogTrigger asChild>
-                                <Button variant="soft" size="sm">
+                                <Button variant="soft" size="sm" onClick={() => ensureRecipientSelection(item.id)}>
                                   <Users className="w-4 h-4 mr-2" />
-                                  Recipients{recipients.length ? ` (${recipients.length})` : ''}
+                                  Recipients{recipientList.length ? ` (${recipientList.length})` : ''}
                                 </Button>
                               </DialogTrigger>
                               <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto bg-slate-900 text-white border border-white/10">
@@ -1095,6 +1207,43 @@ const EmailDashboard = () => {
                                     Delivery and engagement per recipient.
                                   </DialogDescription>
                                 </DialogHeader>
+                                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                  <div className="text-xs text-white/60">
+                                    Selected {selectedCount} / {activeSubscriberEmails.length} active
+                                    recipients
+                                  </div>
+                                  <div className="flex flex-wrap gap-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => selectAllRecipients(item.id)}
+                                      disabled={activeSubscriberEmails.length === 0}
+                                    >
+                                      Select all
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => clearRecipients(item.id)}
+                                      disabled={selectedCount === 0}
+                                    >
+                                      Clear
+                                    </Button>
+                                    {canSend && (
+                                      <Button
+                                        variant="soft"
+                                        size="sm"
+                                        onClick={() =>
+                                          processSpecificQueueItem(item.id, selectedActiveRecipients)
+                                        }
+                                        disabled={processing || selectedCount === 0}
+                                      >
+                                        <Send className="w-4 h-4 mr-2" />
+                                        Send to selected
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
                                 <div className="overflow-x-auto rounded-xl border border-white/10 bg-black/40">
                                   <table className="min-w-full divide-y divide-white/10">
                                     <thead className="bg-white/5">
@@ -1108,29 +1257,43 @@ const EmailDashboard = () => {
                                         <th className="px-4 py-3 text-left font-medium">
                                           Last activity
                                         </th>
+                                        <th className="px-4 py-3 text-left font-medium">
+                                          Include
+                                        </th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/10">
-                                      {recipients.length === 0 ? (
+                                      {recipientList.length === 0 ? (
                                         <tr>
                                           <td
-                                            colSpan={3}
+                                            colSpan={4}
                                             className="px-4 py-8 text-center text-white/50"
                                           >
-                                            No recipients recorded yet.
+                                            No recipients available yet.
                                           </td>
                                         </tr>
                                       ) : (
-                                        recipients.map((entry) => {
-                                          const status = getAnalyticsStatus(entry);
-                                          const lastEvent = getAnalyticsTimestamp(entry);
+                                        recipientList.map((email) => {
+                                          const entry = recipientMap.get(email);
+                                          const status = getRecipientStatus(entry, item.status);
+                                          const lastEvent = entry
+                                            ? getAnalyticsTimestamp(entry)
+                                            : null;
+                                          const subscriberStatus =
+                                            subscriberStatusMap.get(email) ?? 'inactive';
+                                          const isSelectable = subscriberStatus === 'active';
+                                          const isSelected = selectedSet.has(email);
                                           return (
-                                            <tr
-                                              key={`${entry.subscriber_email}-${entry.id}`}
-                                              className="text-sm text-white/80"
-                                            >
+                                            <tr key={email} className="text-sm text-white/80">
                                               <td className="px-4 py-3">
-                                                {entry.subscriber_email}
+                                                <div className="flex flex-col">
+                                                  <span className="text-white">{email}</span>
+                                                  {subscriberStatus !== 'active' && (
+                                                    <span className="text-xs text-white/50">
+                                                      {subscriberStatus}
+                                                    </span>
+                                                  )}
+                                                </div>
                                               </td>
                                               <td className="px-4 py-3">
                                                 <Tag
@@ -1143,6 +1306,16 @@ const EmailDashboard = () => {
                                               </td>
                                               <td className="px-4 py-3">
                                                 {formatDate(lastEvent)}
+                                              </td>
+                                              <td className="px-4 py-3">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={isSelected}
+                                                  disabled={!isSelectable}
+                                                  onChange={() => toggleRecipientSelection(item.id, email)}
+                                                  className="h-4 w-4 rounded border-white/20 bg-black/60 text-white focus:ring-2 focus:ring-white/30 disabled:opacity-40"
+                                                  aria-label={`Include ${email}`}
+                                                />
                                               </td>
                                             </tr>
                                           );
@@ -1164,21 +1337,25 @@ const EmailDashboard = () => {
                                 Requeue
                               </Button>
                             )}
-                            <Button
-                              variant="soft"
-                              size="sm"
-                              className={`border-emerald-400/40 bg-emerald-500/20 text-emerald-100 hover:bg-emerald-500/25 ${
+                              <Button
+                                variant="soft"
+                                size="sm"
+                                className={`border-emerald-400/40 bg-emerald-500/20 text-emerald-100 hover:bg-emerald-500/25 ${
                                   !canSend
                                     ? 'opacity-50 cursor-not-allowed hover:bg-emerald-500/20'
                                     : ''
                                 }`}
-                                disabled={processing || !canSend}
+                                disabled={processing || !canSend || selectedCount === 0}
                                 title={
-                                  canSend
+                                  selectedCount === 0
+                                    ? 'Select at least one recipient'
+                                    : canSend
                                     ? 'Send this email now'
                                     : 'Only pending or failed items can be resent'
                                 }
-                                onClick={() => processSpecificQueueItem(item.id)}
+                                onClick={() =>
+                                  processSpecificQueueItem(item.id, selectedActiveRecipients)
+                                }
                               >
                                 <Send
                                   className={`w-4 h-4 mr-2 ${processing ? 'animate-pulse' : ''}`}
