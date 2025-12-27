@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { ContentLoader } from '@/components/ui/LoadingStates';
-import { RefreshCw, Send, Eye, Users, Mail, TrendingUp, Trash2, Copy, RotateCw } from 'lucide-react';
+import { RefreshCw, Send, Eye, Users, Mail, TrendingUp, Trash2, Copy } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 import { POST_TITLE_SELECT, PROJECT_TITLE_SELECT } from '@/lib/content-selects';
 
@@ -186,6 +186,7 @@ const EmailDashboard = () => {
   const [queueRecipients, setQueueRecipients] = useState<Record<string, EmailAnalyticsRow[]>>({});
   const [subscriberHistory, setSubscriberHistory] = useState<Record<string, EmailAnalyticsRow[]>>({});
   const [recipientOverrides, setRecipientOverrides] = useState<Record<string, string[]>>({});
+  const [scheduleOverrides, setScheduleOverrides] = useState<Record<string, string>>({});
   const [blogAutoSend, setBlogAutoSend] = useState(() => getStoredBoolean(BLOG_AUTO_SEND_KEY));
   const [projectAutoSend, setProjectAutoSend] = useState(() =>
     getStoredBoolean(PROJECT_AUTO_SEND_KEY)
@@ -503,36 +504,6 @@ const EmailDashboard = () => {
     }
   };
 
-  const requeueEmail = async (item: EmailQueueItem) => {
-    if (!confirm('Re-queue this email for another send to active subscribers?')) {
-      return;
-    }
-    try {
-      setProcessing(true);
-      const { error } = await supabase.from('email_queue').insert([
-        {
-          content_id: item.content_id,
-          content_type: item.content_type,
-          status: 'pending',
-        },
-      ]);
-
-      if (error) throw error;
-
-      toast({ title: 'Queued', description: 'A new send has been added to the queue.' });
-      await loadEmailData();
-    } catch (error) {
-      console.error('Error re-queueing email:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to re-queue this email.',
-        variant: 'destructive',
-      });
-    } finally {
-      setProcessing(false);
-    }
-  };
-
   const updateSubscriberStatus = async (email: string, status: SubscriberStatus) => {
     try {
       setSubscriberUpdating(true);
@@ -581,6 +552,121 @@ const EmailDashboard = () => {
     }
   };
 
+  const normalizeRecipients = (emails: string[]) =>
+    Array.from(
+      new Set(
+        emails
+          .map((email) => email.trim().toLowerCase())
+          .filter(Boolean)
+      )
+    );
+
+  const updateQueueOverrides = async (
+    queueId: string,
+    recipients: string[],
+    scheduledAt?: string | null
+  ) => {
+    const payload = {
+      recipient_emails: recipients,
+      scheduled_at: scheduledAt ?? null,
+    };
+    const { error } = await supabase.from('email_queue').update(payload).eq('id', queueId);
+    if (error) throw error;
+  };
+
+  const createQueueItem = async (
+    item: EmailQueueItem,
+    recipients: string[],
+    scheduledAt?: string | null
+  ) => {
+    const { data, error } = await supabase
+      .from('email_queue')
+      .insert({
+        content_id: item.content_id,
+        content_type: item.content_type,
+        status: 'pending',
+        scheduled_at: scheduledAt ?? null,
+        recipient_emails: recipients,
+      })
+      .select('id')
+      .single();
+
+    if (error) throw error;
+    return data?.id as string;
+  };
+
+  const sendQueueNow = async (item: EmailQueueItem, recipients: string[]) => {
+    const normalized = normalizeRecipients(recipients);
+    if (!normalized.length) {
+      toast({ title: 'Select recipients', description: 'Choose at least one recipient.' });
+      return;
+    }
+
+    try {
+      setProcessing(true);
+      if (item.status === 'pending' || item.status === 'failed') {
+        await updateQueueOverrides(item.id, normalized, null);
+        await processSpecificQueueItem(item.id, normalized);
+        return;
+      }
+
+      const newQueueId = await createQueueItem(item, normalized, null);
+      await processSpecificQueueItem(newQueueId, normalized);
+    } catch (error) {
+      console.error('Error sending email:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to send this email.',
+        variant: 'destructive',
+      });
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const scheduleQueueSend = async (
+    item: EmailQueueItem,
+    recipients: string[],
+    scheduleValue: string
+  ) => {
+    if (!scheduleValue) {
+      toast({ title: 'Select a time', description: 'Choose when to schedule this send.' });
+      return;
+    }
+    const scheduledAt = new Date(scheduleValue);
+    if (Number.isNaN(scheduledAt.getTime())) {
+      toast({ title: 'Invalid time', description: 'Please select a valid schedule time.' });
+      return;
+    }
+    const normalized = normalizeRecipients(recipients);
+    if (!normalized.length) {
+      toast({ title: 'Select recipients', description: 'Choose at least one recipient.' });
+      return;
+    }
+    const scheduledIso = scheduledAt.toISOString();
+
+    try {
+      setProcessing(true);
+      if (item.status === 'pending' || item.status === 'failed') {
+        await updateQueueOverrides(item.id, normalized, scheduledIso);
+      } else {
+        await createQueueItem(item, normalized, scheduledIso);
+      }
+
+      toast({ title: 'Scheduled', description: 'Email scheduled successfully.' });
+      await loadEmailData();
+    } catch (error) {
+      console.error('Error scheduling email:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to schedule this email.',
+        variant: 'destructive',
+      });
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const activeSubscribers = useMemo(
     () => subscriberList.filter((subscriber) => !subscriber.status || subscriber.status === 'active'),
     [subscriberList]
@@ -599,14 +685,21 @@ const EmailDashboard = () => {
   );
 
   const ensureRecipientSelection = useCallback(
-    (queueId: string) => {
+    (queueId: string, defaults: string[]) => {
       setRecipientOverrides((prev) => {
         if (prev[queueId]) return prev;
-        return { ...prev, [queueId]: activeSubscriberEmails };
+        return { ...prev, [queueId]: defaults };
       });
     },
-    [activeSubscriberEmails]
+    []
   );
+
+  const ensureScheduleSelection = useCallback((queueId: string, scheduledAt?: string | null) => {
+    setScheduleOverrides((prev) => {
+      if (prev[queueId]) return prev;
+      return { ...prev, [queueId]: toDateTimeLocal(scheduledAt) };
+    });
+  }, []);
 
   const toggleRecipientSelection = useCallback(
     (queueId: string, email: string) => {
@@ -871,6 +964,19 @@ const EmailDashboard = () => {
     return parsed.toLocaleString();
   };
 
+  const toDateTimeLocal = (dateString?: string | null) => {
+    if (!dateString) return '';
+    const parsed = new Date(dateString);
+    if (Number.isNaN(parsed.getTime())) return '';
+    const pad = (value: number) => String(value).padStart(2, '0');
+    const year = parsed.getFullYear();
+    const month = pad(parsed.getMonth() + 1);
+    const day = pad(parsed.getDate());
+    const hours = pad(parsed.getHours());
+    const minutes = pad(parsed.getMinutes());
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
   if (user === null || loading) {
     return (
       <div className="min-h-screen bg-black text-white">
@@ -974,7 +1080,6 @@ const EmailDashboard = () => {
                         uniqueRecipients: 0,
                       };
                       const canSend = item.status === 'pending' || item.status === 'failed';
-                      const buttonLabel = item.status === 'failed' ? 'Retry' : 'Send Now';
                       const contentLabel =
                         item.content_type === 'blog_post' ? 'Blog Post' : 'Project';
                       const displayTitle = item.content_title || 'Untitled';
@@ -987,16 +1092,21 @@ const EmailDashboard = () => {
                       const recipientList = Array.from(rosterEmails).sort((a, b) =>
                         a.localeCompare(b)
                       );
-                      const selectedRecipients = recipientOverrides[item.id] ?? activeSubscriberEmails;
+                      const defaultRecipients =
+                        item.recipient_emails && item.recipient_emails.length
+                          ? item.recipient_emails
+                          : activeSubscriberEmails;
+                      const selectedRecipients = recipientOverrides[item.id] ?? defaultRecipients;
                       const selectedActiveRecipients = selectedRecipients.filter((email) =>
                         activeSubscriberEmailSet.has(email)
                       );
                       const selectedSet = new Set(selectedRecipients);
                       const selectedCount = selectedActiveRecipients.length;
+                      const scheduleValue =
+                        scheduleOverrides[item.id] ?? toDateTimeLocal(item.scheduled_at);
                       const targetRecipients = canSend
                         ? selectedCount
                         : metric.uniqueRecipients || metric.sent || metric.delivered || 0;
-                      const canRequeue = item.status === 'sent';
 
                       return (
                         <div
@@ -1023,6 +1133,9 @@ const EmailDashboard = () => {
                               </div>
                               <div className="text-sm leading-relaxed text-white/70 space-y-1">
                                 <div>Queued: {formatDate(item.created_at)}</div>
+                                {item.scheduled_at && (
+                                  <div>Scheduled: {formatDate(item.scheduled_at)}</div>
+                                )}
                                 {item.sent_at && <div>Sent: {formatDate(item.sent_at)}</div>}
                                 {item.error_message && (
                                   <div className="text-red-400">Error: {item.error_message}</div>
@@ -1055,179 +1168,194 @@ const EmailDashboard = () => {
                             </Dialog>
                             <Dialog>
                               <DialogTrigger asChild>
-                                <Button variant="soft" size="sm" onClick={() => ensureRecipientSelection(item.id)}>
-                                  <Users className="w-4 h-4 mr-2" />
-                                  Recipients{recipientList.length ? ` (${recipientList.length})` : ''}
+                                <Button
+                                  variant="soft"
+                                  size="sm"
+                                  onClick={() => {
+                                    ensureRecipientSelection(item.id, defaultRecipients);
+                                    ensureScheduleSelection(item.id, item.scheduled_at);
+                                  }}
+                                  disabled={processing || item.status === 'processing'}
+                                >
+                                  <Send className="w-4 h-4 mr-2" />
+                                  Send / Schedule
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto bg-slate-900 text-white border border-white/10">
+                              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-slate-900 text-white border border-white/10">
                                 <DialogHeader>
-                                  <DialogTitle>Recipients • {displayTitle}</DialogTitle>
+                                  <DialogTitle>Send • {displayTitle}</DialogTitle>
                                   <DialogDescription className="text-white/60">
-                                    Delivery and engagement per recipient.
+                                    Choose recipients and schedule the send.
                                   </DialogDescription>
                                 </DialogHeader>
-                                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+
+                                <div className="space-y-4">
+                                  <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                                    <div className="space-y-2">
+                                      <p className="text-xs uppercase tracking-widest text-white/60">
+                                        Schedule
+                                      </p>
+                                      <input
+                                        type="datetime-local"
+                                        value={scheduleValue}
+                                        onChange={(event) =>
+                                          setScheduleOverrides((prev) => ({
+                                            ...prev,
+                                            [item.id]: event.target.value,
+                                          }))
+                                        }
+                                        className="rounded-md border border-white/10 bg-black/60 px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                      />
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                          setScheduleOverrides((prev) => ({ ...prev, [item.id]: '' }))
+                                        }
+                                      >
+                                        Clear time
+                                      </Button>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => selectAllRecipients(item.id)}
+                                        disabled={activeSubscriberEmails.length === 0}
+                                      >
+                                        Select all
+                                      </Button>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => clearRecipients(item.id)}
+                                        disabled={selectedCount === 0}
+                                      >
+                                        Clear recipients
+                                      </Button>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex flex-wrap gap-2">
+                                    <Button
+                                      variant="soft"
+                                      size="sm"
+                                      onClick={() => sendQueueNow(item, selectedActiveRecipients)}
+                                      disabled={processing || selectedCount === 0}
+                                    >
+                                      <Send className="w-4 h-4 mr-2" />
+                                      Send now
+                                    </Button>
+                                    <Button
+                                      variant="soft"
+                                      size="sm"
+                                      onClick={() =>
+                                        scheduleQueueSend(
+                                          item,
+                                          selectedActiveRecipients,
+                                          scheduleValue
+                                        )
+                                      }
+                                      disabled={
+                                        processing ||
+                                        selectedCount === 0 ||
+                                        !scheduleValue.length
+                                      }
+                                    >
+                                      Schedule send
+                                    </Button>
+                                  </div>
+
                                   <div className="text-xs text-white/60">
                                     Selected {selectedCount} / {activeSubscriberEmails.length} active
                                     recipients
                                   </div>
-                                  <div className="flex flex-wrap gap-2">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => selectAllRecipients(item.id)}
-                                      disabled={activeSubscriberEmails.length === 0}
-                                    >
-                                      Select all
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => clearRecipients(item.id)}
-                                      disabled={selectedCount === 0}
-                                    >
-                                      Clear
-                                    </Button>
-                                    {canSend && (
-                                      <Button
-                                        variant="soft"
-                                        size="sm"
-                                        onClick={() =>
-                                          processSpecificQueueItem(item.id, selectedActiveRecipients)
-                                        }
-                                        disabled={processing || selectedCount === 0}
-                                      >
-                                        <Send className="w-4 h-4 mr-2" />
-                                        Send to selected
-                                      </Button>
-                                    )}
-                                  </div>
-                                </div>
-                                <div className="overflow-x-auto rounded-xl border border-white/10 bg-black/40">
-                                  <table className="min-w-full divide-y divide-white/10">
-                                    <thead className="bg-white/5">
-                                      <tr className={METRIC_LABEL_CLASS}>
-                                        <th className="px-4 py-3 text-left font-medium">
-                                          Recipient
-                                        </th>
-                                        <th className="px-4 py-3 text-left font-medium">
-                                          Status
-                                        </th>
-                                        <th className="px-4 py-3 text-left font-medium">
-                                          Last activity
-                                        </th>
-                                        <th className="px-4 py-3 text-left font-medium">
-                                          Include
-                                        </th>
-                                      </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-white/10">
-                                      {recipientList.length === 0 ? (
-                                        <tr>
-                                          <td
-                                            colSpan={4}
-                                            className="px-4 py-8 text-center text-white/50"
-                                          >
-                                            No recipients available yet.
-                                          </td>
+
+                                  <div className="overflow-x-auto rounded-xl border border-white/10 bg-black/40">
+                                    <table className="min-w-full divide-y divide-white/10">
+                                      <thead className="bg-white/5">
+                                        <tr className={METRIC_LABEL_CLASS}>
+                                          <th className="px-4 py-3 text-left font-medium">
+                                            Recipient
+                                          </th>
+                                          <th className="px-4 py-3 text-left font-medium">
+                                            Status
+                                          </th>
+                                          <th className="px-4 py-3 text-left font-medium">
+                                            Last activity
+                                          </th>
+                                          <th className="px-4 py-3 text-left font-medium">
+                                            Include
+                                          </th>
                                         </tr>
-                                      ) : (
-                                        recipientList.map((email) => {
-                                          const entry = recipientMap.get(email);
-                                          const status = getRecipientStatus(entry, item.status);
-                                          const lastEvent = entry
-                                            ? getAnalyticsTimestamp(entry)
-                                            : null;
-                                          const subscriberStatus =
-                                            subscriberStatusMap.get(email) ?? 'inactive';
-                                          const isSelectable = subscriberStatus === 'active';
-                                          const isSelected = selectedSet.has(email);
-                                          return (
-                                            <tr key={email} className="text-sm text-white/80">
-                                              <td className="px-4 py-3">
-                                                <div className="flex flex-col">
-                                                  <span className="text-white">{email}</span>
-                                                  {subscriberStatus !== 'active' && (
-                                                    <span className="text-xs text-white/50">
-                                                      {subscriberStatus}
-                                                    </span>
-                                                  )}
-                                                </div>
-                                              </td>
-                                              <td className="px-4 py-3">
-                                                <Tag
-                                                  variant={status.variant}
-                                                  size="xs"
-                                                  className="uppercase tracking-wide text-[11px]"
-                                                >
-                                                  {status.label}
-                                                </Tag>
-                                              </td>
-                                              <td className="px-4 py-3">
-                                                {formatDate(lastEvent)}
-                                              </td>
-                                              <td className="px-4 py-3">
-                                                <input
-                                                  type="checkbox"
-                                                  checked={isSelected}
-                                                  disabled={!isSelectable}
-                                                  onChange={() => toggleRecipientSelection(item.id, email)}
-                                                  className="h-4 w-4 rounded border-white/20 bg-black/60 text-white focus:ring-2 focus:ring-white/30 disabled:opacity-40"
-                                                  aria-label={`Include ${email}`}
-                                                />
-                                              </td>
-                                            </tr>
-                                          );
-                                        })
-                                      )}
-                                    </tbody>
-                                  </table>
+                                      </thead>
+                                      <tbody className="divide-y divide-white/10">
+                                        {recipientList.length === 0 ? (
+                                          <tr>
+                                            <td
+                                              colSpan={4}
+                                              className="px-4 py-8 text-center text-white/50"
+                                            >
+                                              No recipients available yet.
+                                            </td>
+                                          </tr>
+                                        ) : (
+                                          recipientList.map((email) => {
+                                            const entry = recipientMap.get(email);
+                                            const status = getRecipientStatus(entry, item.status);
+                                            const lastEvent = entry
+                                              ? getAnalyticsTimestamp(entry)
+                                              : null;
+                                            const subscriberStatus =
+                                              subscriberStatusMap.get(email) ?? 'inactive';
+                                            const isSelectable = subscriberStatus === 'active';
+                                            const isSelected = selectedSet.has(email);
+                                            return (
+                                              <tr key={email} className="text-sm text-white/80">
+                                                <td className="px-4 py-3">
+                                                  <div className="flex flex-col">
+                                                    <span className="text-white">{email}</span>
+                                                    {subscriberStatus !== 'active' && (
+                                                      <span className="text-xs text-white/50">
+                                                        {subscriberStatus}
+                                                      </span>
+                                                    )}
+                                                  </div>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                  <Tag
+                                                    variant={status.variant}
+                                                    size="xs"
+                                                    className="uppercase tracking-wide text-[11px]"
+                                                  >
+                                                    {status.label}
+                                                  </Tag>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                  {formatDate(lastEvent)}
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                  <input
+                                                    type="checkbox"
+                                                    checked={isSelected}
+                                                    disabled={!isSelectable}
+                                                    onChange={() =>
+                                                      toggleRecipientSelection(item.id, email)
+                                                    }
+                                                    className="h-4 w-4 rounded border-white/20 bg-black/60 text-white focus:ring-2 focus:ring-white/30 disabled:opacity-40"
+                                                    aria-label={`Include ${email}`}
+                                                  />
+                                                </td>
+                                              </tr>
+                                            );
+                                          })
+                                        )}
+                                      </tbody>
+                                    </table>
+                                  </div>
                                 </div>
                               </DialogContent>
                             </Dialog>
-                            {canRequeue && (
-                              <Button
-                                variant="soft"
-                                size="sm"
-                                disabled={processing}
-                                onClick={() => requeueEmail(item)}
-                              >
-                                <RotateCw className="w-4 h-4 mr-2" />
-                                Requeue
-                              </Button>
-                            )}
-                              <Button
-                                variant="soft"
-                                size="sm"
-                                className={`border-emerald-400/40 bg-emerald-500/20 text-emerald-100 hover:bg-emerald-500/25 ${
-                                  !canSend
-                                    ? 'opacity-50 cursor-not-allowed hover:bg-emerald-500/20'
-                                    : ''
-                                }`}
-                                disabled={processing || !canSend || selectedCount === 0}
-                                title={
-                                  selectedCount === 0
-                                    ? 'Select at least one recipient'
-                                    : canSend
-                                    ? 'Send this email now'
-                                    : 'Only pending or failed items can be resent'
-                                }
-                                onClick={() =>
-                                  processSpecificQueueItem(item.id, selectedActiveRecipients)
-                                }
-                              >
-                                <Send
-                                  className={`w-4 h-4 mr-2 ${processing ? 'animate-pulse' : ''}`}
-                                />
-                                {canSend
-                                  ? buttonLabel
-                                  : item.status === 'sent'
-                                    ? 'Processed'
-                                    : item.status === 'processing'
-                                      ? 'Processing'
-                                      : 'Queued'}
-                              </Button>
                               <Button
                                 variant="destructive"
                                 size="sm"

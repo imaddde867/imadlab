@@ -1,6 +1,11 @@
 import { spawnSync } from 'node:child_process';
 import { SUPABASE_URL } from './supabase-config.js';
 
+const shouldDeploy = () => {
+  const flag = process.env.SUPABASE_DEPLOY;
+  return flag === '1' || flag === 'true';
+};
+
 const resolveProjectRef = () => {
   if (process.env.SUPABASE_PROJECT_REF) return process.env.SUPABASE_PROJECT_REF;
   if (!SUPABASE_URL) return null;
@@ -15,6 +20,11 @@ const resolveProjectRef = () => {
 };
 
 const main = () => {
+  if (!shouldDeploy()) {
+    console.log('Supabase function deploy skipped (set SUPABASE_DEPLOY=1 to enable).');
+    return;
+  }
+
   const projectRef = resolveProjectRef();
   if (!projectRef) {
     console.error('Supabase project ref not found. Set SUPABASE_PROJECT_REF or SUPABASE_URL.');

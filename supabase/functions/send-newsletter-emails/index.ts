@@ -13,6 +13,8 @@ interface EmailQueueItem {
   content_id: string;
   status: string;
   retry_count: number;
+  scheduled_at: string | null;
+  recipient_emails: string[] | null;
 }
 
 interface NewsletterSubscriber {
@@ -108,7 +110,16 @@ serve(async (req) => {
       throw new Error(`Failed to fetch queue items: ${queueError.message}`)
     }
 
-    if (!queueItems || queueItems.length === 0) {
+    const now = Date.now()
+    const filteredQueueItems = queueIds && queueIds.length
+      ? queueItems
+      : (queueItems ?? []).filter((item) => {
+          if (!item.scheduled_at) return true
+          const scheduledTime = new Date(item.scheduled_at).getTime()
+          return Number.isNaN(scheduledTime) ? true : scheduledTime <= now
+        })
+
+    if (!filteredQueueItems || filteredQueueItems.length === 0) {
       return new Response(
         JSON.stringify({ message: queueIds?.length ? 'No matching queue items to process' : 'No pending emails to process' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -125,15 +136,9 @@ serve(async (req) => {
       throw new Error(`Failed to fetch subscribers: ${subscribersError.message}`)
     }
 
-    let activeSubscribers = subscribers ?? []
-    if (recipientEmails && recipientEmails.length > 0) {
-      const recipientSet = new Set(recipientEmails)
-      activeSubscribers = activeSubscribers.filter((subscriber) =>
-        recipientSet.has(subscriber.email.toLowerCase())
-      )
-    }
+    const baseSubscribers = subscribers ?? []
 
-    if (!activeSubscribers || activeSubscribers.length === 0) {
+    if (!baseSubscribers || baseSubscribers.length === 0) {
       return new Response(
         JSON.stringify({ message: recipientEmails?.length ? 'No matching active recipients found' : 'No active subscribers found' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -141,10 +146,39 @@ serve(async (req) => {
     }
 
     const results = []
+    const responseSubscriberCount = recipientEmails?.length ?? baseSubscribers.length
 
     // Process each queue item
-    for (const queueItem of queueItems as EmailQueueItem[]) {
+    for (const queueItem of filteredQueueItems as EmailQueueItem[]) {
       try {
+        const recipientSet = recipientEmails && recipientEmails.length
+          ? new Set(recipientEmails)
+          : queueItem.recipient_emails && queueItem.recipient_emails.length
+            ? new Set(queueItem.recipient_emails.map((email) => email.toLowerCase()))
+            : null
+
+        const activeSubscribers = recipientSet
+          ? baseSubscribers.filter((subscriber) => recipientSet.has(subscriber.email.toLowerCase()))
+          : baseSubscribers
+
+        if (!activeSubscribers.length) {
+          await supabaseClient
+            .from('email_queue')
+            .update({
+              status: 'failed',
+              retry_count: queueItem.retry_count + 1,
+              error_message: 'No matching active recipients found'
+            })
+            .eq('id', queueItem.id)
+
+          results.push({
+            queueItemId: queueItem.id,
+            error: 'No matching active recipients found'
+          })
+
+          continue
+        }
+
         // Mark as processing
         await supabaseClient
           .from('email_queue')
@@ -320,8 +354,8 @@ serve(async (req) => {
       JSON.stringify({ 
         message: 'Email processing completed',
         results,
-        processedItems: queueItems.length,
-        totalSubscribers: activeSubscribers.length
+        processedItems: filteredQueueItems.length,
+        totalSubscribers: responseSubscriberCount
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
