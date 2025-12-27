@@ -337,6 +337,45 @@ const resolveMediaType = (src?: string | null) => {
   return 'image';
 };
 
+const looksLikeMathLine = (line: string) => {
+  if (!line) return false;
+  if (!line.startsWith('\\')) return false;
+  return /\\[A-Za-z]+/.test(line);
+};
+
+const normalizeMathBlocks = (source: string, enableMath: boolean) => {
+  if (!enableMath) return source;
+  const lines = source.split('\n');
+  let inFence = false;
+  let inMathBlock = false;
+  const output: string[] = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('```')) {
+      inFence = !inFence;
+      output.push(line);
+      continue;
+    }
+    if (!inFence && trimmed === '$$') {
+      inMathBlock = !inMathBlock;
+      output.push(line);
+      continue;
+    }
+    if (inFence || inMathBlock) {
+      output.push(line);
+      continue;
+    }
+    if (looksLikeMathLine(trimmed)) {
+      output.push('$$', trimmed, '$$');
+      continue;
+    }
+    output.push(line);
+  }
+
+  return output.join('\n');
+};
+
 const OrderedList = ({
   className,
   children,
@@ -428,6 +467,11 @@ export const GfmMarkdown = ({
     }
     return plugins;
   }, [mergedConfig.sanitizeHtml]);
+
+  const normalizedSource = useMemo(
+    () => normalizeMathBlocks(source, mergedConfig.enableMath),
+    [source, mergedConfig.enableMath]
+  );
 
   const resolveUrl = useCallback(
     (href?: string | null) => {
@@ -544,7 +588,7 @@ export const GfmMarkdown = ({
         rehypePlugins={rehypePlugins}
         components={components}
       >
-        {source}
+        {normalizedSource}
       </ReactMarkdown>
     </section>
   );
