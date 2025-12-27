@@ -648,42 +648,46 @@ const EmailDashboard = () => {
     const techStack = (project.tech_tags ?? [])
       .map(
         (tech) =>
-          `<span style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 8px 16px; border-radius: 6px; font-size: 11px; font-weight: 500; margin-right: 8px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid #333333;">${tech}</span>`
+          `<span style="display: inline-block; background-color: #f3f4f6; color: #111827; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; margin-right: 8px; margin-bottom: 8px; border: 1px solid #e5e7eb;">${tech}</span>`
       )
       .join('');
+    const imageBlock = project.image_url
+      ? `<img src="${project.image_url}" alt="${project.title}" style="width: 100%; height: 240px; object-fit: cover; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e5e7eb; display: block;" />`
+      : '';
     return `
-      <div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #000000; border: 1px solid #1a1a1a; border-radius: 12px; overflow: hidden;">
-        <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 48px 32px; text-align: center; border-bottom: 1px solid #1a1a1a;">
-          <div style="font-size: 32px; font-weight: 700; color: #ffffff; margin-bottom: 8px; letter-spacing: -0.02em;">imadlab</div>
-          <div style="color: #888888; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em;">New Project</div>
+      <div style="max-width: 600px; margin: 0 auto; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; color: #0f172a;">
+        <div style="padding: 28px 32px 16px; text-align: left; border-bottom: 1px solid #eef2f6;">
+          <div style="font-size: 16px; font-weight: 700; color: #111827; letter-spacing: 0.2em; text-transform: uppercase;">imadlab</div>
+          <div style="color: #6b7280; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 8px;">New Project</div>
         </div>
-        <div style="padding: 48px 32px;">
-          <h1 style="font-size: 28px; font-weight: 700; color: #ffffff; margin-bottom: 24px; line-height: 1.2; letter-spacing: -0.02em;">${project.title}</h1>
-          <div style="color: #cccccc; font-size: 16px; line-height: 1.7; margin-bottom: 32px;">
+        <div style="padding: 28px 32px 32px;">
+          ${imageBlock}
+          <h1 style="font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 10px; line-height: 1.3; letter-spacing: -0.01em;">${project.title}</h1>
+          <div style="color: #4b5563; font-size: 15px; line-height: 1.7; margin-bottom: 20px;">
             ${project.description || 'Explore this new project showcasing innovative solutions and modern development practices.'}
           </div>
           ${
             techStack
               ? `
-          <div style="margin-bottom: 40px;">
-            <div style="color: #ffffff; font-size: 14px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em;">Tech Stack</div>
+          <div style="margin-bottom: 24px;">
+            <div style="color: #6b7280; font-size: 11px; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.12em;">Tech Stack</div>
             ${techStack}
           </div>
           `
               : ''
           }
-          <div style="height: 1px; background: linear-gradient(90deg, transparent 0%, #333333 50%, transparent 100%); margin: 32px 0;"></div>
-          <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-            <a href="#" style="display: inline-block; background-color: #ffffff; color: #000000; text-decoration: none; padding: 16px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; border: 2px solid #ffffff; flex: 1; min-width: 140px; text-align: center;">View Project</a>
-            ${project.repo_url ? '<a href="#" style="display: inline-block; background-color: transparent; color: #ffffff; text-decoration: none; padding: 16px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; border: 2px solid #333333; flex: 1; min-width: 140px; text-align: center;">View Code</a>' : ''}
+          <div style="height: 1px; background-color: #eef2f6; margin: 20px 0;"></div>
+          <div style="margin-top: 12px;">
+            <a href="#" style="display: inline-block; text-decoration: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 13px; letter-spacing: 0.02em; text-align: center; margin-right: 12px; margin-bottom: 12px; background-color: #111827; color: #ffffff; border: 1px solid #111827;">View Project</a>
+            ${project.repo_url ? '<a href="#" style="display: inline-block; text-decoration: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 13px; letter-spacing: 0.02em; text-align: center; margin-right: 12px; margin-bottom: 12px; background-color: #ffffff; color: #111827; border: 1px solid #d1d5db;">View Code</a>' : ''}
           </div>
         </div>
-        <div style="background-color: #0a0a0a; padding: 32px; text-align: center; border-top: 1px solid #1a1a1a;">
-          <div style="color: #666666; font-size: 13px; line-height: 1.6; margin-bottom: 16px;">
+        <div style="background-color: #f8fafc; padding: 20px 32px; text-align: center; border-top: 1px solid #eef2f6;">
+          <div style="color: #6b7280; font-size: 12px; line-height: 1.6; margin-bottom: 10px;">
             You're receiving this because you subscribed to imadlab updates.<br>
             Discover cutting-edge projects and technical innovations.
           </div>
-          <a href="#" style="color: #888888; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500;">Unsubscribe</a>
+          <a href="#" style="color: #9ca3af; text-decoration: none; font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600;">Unsubscribe</a>
         </div>
       </div>
     `;
