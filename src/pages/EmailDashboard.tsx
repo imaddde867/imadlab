@@ -36,9 +36,6 @@ type TagVariant =
 type EmailQueueRow = Database['public']['Tables']['email_queue']['Row'];
 type NewsletterSubscriberRow = Database['public']['Tables']['newsletter_subscribers']['Row'];
 type EmailAnalyticsRow = Database['public']['Tables']['email_analytics']['Row'];
-type BlogPostRow = Database['public']['Tables']['posts']['Row'];
-type ProjectRow = Database['public']['Tables']['projects']['Row'];
-
 type EmailQueueItem = EmailQueueRow & {
   content_type: 'blog_post' | 'project';
   status: 'pending' | 'processing' | 'sent' | 'failed';
@@ -53,20 +50,6 @@ interface EmailStats {
   openRate: number;
   clickRate: number;
 }
-
-type BlogPreviewPayload = {
-  subscriberEmail: string;
-  unsubscribeToken: string;
-  siteUrl: string;
-  post: BlogPostRow;
-};
-
-type ProjectPreviewPayload = {
-  subscriberEmail: string;
-  unsubscribeToken: string;
-  siteUrl: string;
-  project: ProjectRow;
-};
 
 const normalizeContentType = (value: string | null): EmailQueueItem['content_type'] =>
   value === 'project' ? 'project' : 'blog_post';
@@ -743,79 +726,44 @@ const EmailDashboard = () => {
       setPreviewTitle('Email Preview');
       setPreviewLoading(true);
       setPreviewContent('');
-      const siteUrl = window.location.origin;
-      const resolveTable = (contentType: 'blog_post' | 'project') =>
-        contentType === 'blog_post' ? 'posts' : 'projects';
 
-      let contentRow: BlogPostRow | ProjectRow | null = null;
-      let contentType: 'blog_post' | 'project';
+      const contentType = request.mode === 'queue' ? request.queueItem.content_type : request.contentType;
+      const payload =
+        request.mode === 'queue'
+          ? { contentType, contentId: request.queueItem.content_id }
+          : { contentType, mode: 'latest' };
+      const fallbackTitle =
+        request.mode === 'queue' ? request.queueItem.content_title : undefined;
 
-      if (request.mode === 'queue') {
-        contentType = request.queueItem.content_type;
-        const table = resolveTable(contentType);
-        const { data, error } = await supabase
-          .from(table)
-          .select('*')
-          .eq('id', request.queueItem.content_id)
-          .single();
+      const { data, error } = await supabase.functions.invoke<{
+        html?: string;
+        title?: string;
+        error?: string;
+      }>('render-email-preview', {
+        body: payload,
+      });
 
-        if (error || !data) {
-          toast({
-            title: 'Error',
-            description: 'Unable to load content for this queue item.',
-            variant: 'destructive',
-          });
-          return;
-        }
-
-        contentRow = data as BlogPostRow | ProjectRow;
-        setPreviewTitle(
-          `${contentType === 'blog_post' ? 'Blog Post' : 'Project'} • ${contentRow.title}`
-        );
-      } else {
-        contentType = request.contentType;
-        const table = resolveTable(contentType);
-        const { data, error } = await supabase
-          .from(table)
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (error || !data) {
-          toast({
-            title: 'Error',
-            description: `No recent ${contentType === 'blog_post' ? 'blog posts' : 'projects'} found.`,
-            variant: 'destructive',
-          });
-          return;
-        }
-
-        contentRow = data as BlogPostRow | ProjectRow;
-        setPreviewTitle(
-          `Latest ${contentType === 'blog_post' ? 'Blog Post' : 'Project'} • ${contentRow.title}`
-        );
+      if (error || !data?.html) {
+        toast({
+          title: 'Error',
+          description:
+            data?.error ||
+            `Unable to load ${contentType === 'blog_post' ? 'blog post' : 'project'} preview.`,
+          variant: 'destructive',
+        });
+        return;
       }
 
-      if (contentType === 'blog_post') {
-        const blogContent = contentRow as BlogPostRow;
-        const previewData: BlogPreviewPayload = {
-          subscriberEmail: 'preview@example.com',
-          unsubscribeToken: 'preview-token',
-          siteUrl,
-          post: blogContent,
-        };
-        setPreviewContent(generateBlogPreview(previewData));
+      const label = contentType === 'blog_post' ? 'Blog Post' : 'Project';
+      if (data.title) {
+        setPreviewTitle(`${label} • ${data.title}`);
+      } else if (fallbackTitle) {
+        setPreviewTitle(`${label} • ${fallbackTitle}`);
       } else {
-        const projectContent = contentRow as ProjectRow;
-        const previewData: ProjectPreviewPayload = {
-          subscriberEmail: 'preview@example.com',
-          unsubscribeToken: 'preview-token',
-          siteUrl,
-          project: projectContent,
-        };
-        setPreviewContent(generateProjectPreview(previewData));
+        setPreviewTitle(`${label} Preview`);
       }
+
+      setPreviewContent(data.html);
     } catch (error) {
       console.error('Error generating preview:', error);
       toast({
@@ -880,94 +828,6 @@ const EmailDashboard = () => {
       </Button>
     </div>
   );
-
-  const generateBlogPreview = (data: BlogPreviewPayload) => {
-    const { post } = data;
-    const publishedDate = new Date(post.published_date || post.created_at).toLocaleDateString(
-      'en-US',
-      {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }
-    );
-    return `
-      <div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #000000; border: 1px solid #1a1a1a; border-radius: 12px; overflow: hidden;">
-        <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); padding: 48px 32px; text-align: center; border-bottom: 1px solid #1a1a1a;">
-          <div style="font-size: 32px; font-weight: 700; color: #ffffff; margin-bottom: 8px; letter-spacing: -0.02em;">imadlab</div>
-          <div style="color: #888888; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em;">New Blog Post</div>
-        </div>
-        <div style="padding: 48px 32px;">
-          <h1 style="font-size: 28px; font-weight: 700; color: #ffffff; margin-bottom: 16px; line-height: 1.2; letter-spacing: -0.02em;">${post.title}</h1>
-          <div style="color: #666666; font-size: 13px; font-weight: 500; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.05em;">
-            ${publishedDate}
-          </div>
-          <div style="color: #cccccc; font-size: 16px; line-height: 1.7; margin-bottom: 32px;">
-            ${post.excerpt || 'Dive into the latest insights on data engineering, AI/ML, and cutting-edge web development techniques.'}
-          </div>
-          <div style="height: 1px; background: linear-gradient(90deg, transparent 0%, #333333 50%, transparent 100%); margin: 24px 0;"></div>
-          <a href="#" style="display: inline-block; background-color: #ffffff; color: #000000; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; border: 2px solid #ffffff;">Read Article</a>
-        </div>
-        <div style="background-color: #0a0a0a; padding: 32px; text-align: center; border-top: 1px solid #1a1a1a;">
-          <div style="color: #666666; font-size: 13px; line-height: 1.6; margin-bottom: 16px;">
-            You're receiving this because you subscribed to imadlab updates.<br>
-            Stay ahead with the latest in tech and development.
-          </div>
-          <a href="#" style="color: #888888; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500;">Unsubscribe</a>
-        </div>
-      </div>
-    `;
-  };
-
-  const generateProjectPreview = (data: ProjectPreviewPayload) => {
-    const { project } = data;
-    const techStack = (project.tech_tags ?? [])
-      .map(
-        (tech) =>
-          `<span style="display: inline-block; background-color: #f3f4f6; color: #111827; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; margin-right: 8px; margin-bottom: 8px; border: 1px solid #e5e7eb;">${tech}</span>`
-      )
-      .join('');
-    const imageBlock = project.image_url
-      ? `<img src="${project.image_url}" alt="${project.title}" style="width: 100%; height: 240px; object-fit: cover; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e5e7eb; display: block;" />`
-      : '';
-    return `
-      <div style="max-width: 600px; margin: 0 auto; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; color: #0f172a;">
-        <div style="padding: 28px 32px 16px; text-align: left; border-bottom: 1px solid #eef2f6;">
-          <div style="font-size: 16px; font-weight: 700; color: #111827; letter-spacing: 0.2em; text-transform: uppercase;">imadlab</div>
-          <div style="color: #6b7280; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 8px;">New Project</div>
-        </div>
-        <div style="padding: 28px 32px 32px;">
-          ${imageBlock}
-          <h1 style="font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 10px; line-height: 1.3; letter-spacing: -0.01em;">${project.title}</h1>
-          <div style="color: #4b5563; font-size: 15px; line-height: 1.7; margin-bottom: 20px;">
-            ${project.description || 'Explore this new project showcasing innovative solutions and modern development practices.'}
-          </div>
-          ${
-            techStack
-              ? `
-          <div style="margin-bottom: 24px;">
-            <div style="color: #6b7280; font-size: 11px; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.12em;">Tech Stack</div>
-            ${techStack}
-          </div>
-          `
-              : ''
-          }
-          <div style="height: 1px; background-color: #eef2f6; margin: 20px 0;"></div>
-          <div style="margin-top: 12px;">
-            <a href="#" style="display: inline-block; text-decoration: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 13px; letter-spacing: 0.02em; text-align: center; margin-right: 12px; margin-bottom: 12px; background-color: #111827; color: #ffffff; border: 1px solid #111827;">View Project</a>
-            ${project.repo_url ? '<a href="#" style="display: inline-block; text-decoration: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 13px; letter-spacing: 0.02em; text-align: center; margin-right: 12px; margin-bottom: 12px; background-color: #ffffff; color: #111827; border: 1px solid #d1d5db;">View Code</a>' : ''}
-          </div>
-        </div>
-        <div style="background-color: #f8fafc; padding: 20px 32px; text-align: center; border-top: 1px solid #eef2f6;">
-          <div style="color: #6b7280; font-size: 12px; line-height: 1.6; margin-bottom: 10px;">
-            You're receiving this because you subscribed to imadlab updates.<br>
-            Discover cutting-edge projects and technical innovations.
-          </div>
-          <a href="#" style="color: #9ca3af; text-decoration: none; font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600;">Unsubscribe</a>
-        </div>
-      </div>
-    `;
-  };
 
   const getStatusBadge = (status: EmailQueueItem['status']) => {
     const variantMap = {
@@ -1122,7 +982,7 @@ const EmailDashboard = () => {
                       const recipientMap = new Map(
                         recipients.map((entry) => [entry.subscriber_email, entry])
                       );
-                      const rosterEmails = new Set(activeSubscriberEmails);
+                      const rosterEmails = new Set(subscriberList.map((subscriber) => subscriber.email));
                       recipients.forEach((entry) => rosterEmails.add(entry.subscriber_email));
                       const recipientList = Array.from(rosterEmails).sort((a, b) =>
                         a.localeCompare(b)
@@ -1802,7 +1662,7 @@ const EmailDashboard = () => {
                     <h3 className="text-base font-semibold text-white">Template source</h3>
                     <p className="text-sm text-white/60 mt-1">
                       Edit email templates in <span className="font-mono">supabase/functions/shared/email-templates.ts</span>.
-                      Copy HTML from previews above for quick edits.
+                      Deploy the <span className="font-mono">render-email-preview</span> function to see updates here.
                     </p>
                   </div>
                 </div>
