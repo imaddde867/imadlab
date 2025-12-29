@@ -14,6 +14,7 @@ const DEFAULT_TITLE = `${SITE_NAME} | Data Engineer & AI/ML Portfolio`;
 const DEFAULT_IMAGE = `${SITE_URL}/images/hero-moon.png`;
 const DEFAULT_TWITTER = '@imadlab';
 const SEO_BLOCK_PATTERN = /<!-- prerender-seo:start -->[\s\S]*?<!-- prerender-seo:end -->/;
+const ABSOLUTE_PREFIXES = ['http://', 'https://', 'data:', 'blob:'];
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const SEO_TITLE_MAP = {
@@ -37,10 +38,32 @@ const getSeoTitle = (title) => {
   return SEO_TITLE_MAP[trimmed] || trimmed;
 };
 
+const resolveImageUrl = (value) => {
+  if (!value || typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (/^\/?public\//.test(trimmed)) {
+    return `/${trimmed.replace(/^\/?public\//, '')}`;
+  }
+  if (ABSOLUTE_PREFIXES.some((prefix) => trimmed.startsWith(prefix))) {
+    return trimmed;
+  }
+  if (trimmed.startsWith('/')) {
+    return trimmed;
+  }
+
+  if (SUPABASE_URL && (trimmed.startsWith('storage/') || trimmed.startsWith('storage/v1/'))) {
+    return `${SUPABASE_URL.replace(/\/$/, '')}/${trimmed}`;
+  }
+
+  return `/${trimmed}`;
+};
+
 const toAbsoluteUrl = (value) => {
-  if (!value || typeof value !== 'string') return DEFAULT_IMAGE;
-  if (value.startsWith('http://') || value.startsWith('https://')) return value;
-  return `${SITE_URL}${value.startsWith('/') ? value : `/${value}`}`;
+  const resolved = resolveImageUrl(value);
+  if (!resolved) return DEFAULT_IMAGE;
+  if (ABSOLUTE_PREFIXES.some((prefix) => resolved.startsWith(prefix))) return resolved;
+  return `${SITE_URL}${resolved.startsWith('/') ? resolved : `/${resolved}`}`;
 };
 
 const stripMarkdown = (value = '') =>
@@ -175,6 +198,7 @@ const renderProjectDetailMarkup = (project) => {
   const tags = Array.isArray(project.tech_tags)
     ? project.tech_tags.filter(Boolean).slice(0, 6)
     : [];
+  const coverImage = resolveImageUrl(project.image_url);
   const published = project.created_at
     ? new Date(project.created_at).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -190,9 +214,9 @@ const renderProjectDetailMarkup = (project) => {
     <h1 class="text-3xl font-bold mb-4">${descriptiveTitle}</h1>
     ${tags.length ? `<p class="prerender-tags">Tech: ${escapeHtml(tags.join(', '))}</p>` : ''}
     ${
-      project.image_url
+      coverImage
         ? `<div class="prerender-image"><img src="${escapeHtml(
-            project.image_url
+            coverImage
           )}" alt="${descriptiveTitle}" loading="lazy" decoding="async" /></div>`
         : ''
     }
@@ -228,8 +252,9 @@ const renderPostsMarkup = (posts) => {
         ? new Date(post.published_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
         : '';
       const tags = Array.isArray(post.tags) ? post.tags.filter(Boolean).slice(0, 5) : [];
-      const cover = post.image_url
-        ? `<div class="prerender-image"><img src="${escapeHtml(post.image_url)}" alt="${escapeHtml(post.title)}" loading="lazy" decoding="async" /></div>`
+      const coverImage = resolveImageUrl(post.image_url);
+      const cover = coverImage
+        ? `<div class="prerender-image"><img src="${escapeHtml(coverImage)}" alt="${escapeHtml(post.title)}" loading="lazy" decoding="async" /></div>`
         : '';
 
       return `
@@ -432,7 +457,7 @@ async function main() {
       ? stripMarkdown(descriptionSource).slice(0, 180) + (stripMarkdown(descriptionSource).length > 180 ? '...' : '')
       : 'Explore a highlighted data or AI project delivered by Imad Eddine El Mouss.';
     const canonicalUrl = `${SITE_URL}/projects/${project.id}`;
-    const image = project.image_url ? toAbsoluteUrl(project.image_url) : DEFAULT_IMAGE;
+    const image = toAbsoluteUrl(project.image_url);
     await injectIntoPage({
       route: path.join('projects', project.id),
       markup: renderProjectDetailMarkup(project),
@@ -472,7 +497,7 @@ async function main() {
     const descriptionSource = post.excerpt || stripMarkdown(post.body || '');
     const description = descriptionSource.length > 155 ? `${descriptionSource.slice(0, 152)}...` : descriptionSource;
     const canonicalUrl = `${SITE_URL}/blogs/${post.slug}`;
-    const image = post.image_url ? toAbsoluteUrl(post.image_url) : DEFAULT_IMAGE;
+    const image = toAbsoluteUrl(post.image_url);
     await injectIntoPage({
       route: path.join('blogs', post.slug),
       markup: renderPostDetailMarkup(post),
