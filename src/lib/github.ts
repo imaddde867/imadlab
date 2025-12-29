@@ -10,7 +10,6 @@ export type GithubRepoInfo = {
   description?: string | null;
   language?: string | null;
   stargazers_count: number;
-  forks_count: number;
   open_issues_count: number;
   pushed_at?: string | null;
   updated_at?: string | null;
@@ -38,4 +37,3 @@ export const parseGithubRepo = (repoUrl?: string | null): GithubRepoRef | null =
     return null;
   }
 };
-
