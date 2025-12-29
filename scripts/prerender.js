@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
+import { stripMarkdown } from './utils/markdown.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,16 +66,6 @@ const toAbsoluteUrl = (value) => {
   if (ABSOLUTE_PREFIXES.some((prefix) => resolved.startsWith(prefix))) return resolved;
   return `${SITE_URL}${resolved.startsWith('/') ? resolved : `/${resolved}`}`;
 };
-
-const stripMarkdown = (value = '') =>
-  value
-    .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/`[^`]*`/g, ' ')
-    .replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
-    .replace(/\[([^\]]+)]\([^)]*\)/g, '$1')
-    .replace(/[#>*_~`]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
 
 const getFullTitle = (title) => {
   const trimmed = typeof title === 'string' ? title.trim() : '';
@@ -453,8 +444,9 @@ async function main() {
     if (!project?.id) continue;
     const seoTitle = getSeoTitle(project.title);
     const descriptionSource = project.description || project.full_description || '';
+    const plainDescription = stripMarkdown(descriptionSource);
     const description = descriptionSource
-      ? stripMarkdown(descriptionSource).slice(0, 180) + (stripMarkdown(descriptionSource).length > 180 ? '...' : '')
+      ? plainDescription.slice(0, 180) + (plainDescription.length > 180 ? '...' : '')
       : 'Explore a highlighted data or AI project delivered by Imad Eddine El Mouss.';
     const canonicalUrl = `${SITE_URL}/projects/${project.id}`;
     const image = toAbsoluteUrl(project.image_url);
