@@ -1,10 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
+import { SITE_URL } from './utils/site.js';
+import { createSupabaseClient } from './utils/supabase.js';
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const SITEMAP_PATH = './public/sitemap.xml';
-const SITE_URL = 'https://imadlab.me';
+const supabase = createSupabaseClient();
 
 async function generateSitemap() {
   console.log('🚀 Generating enhanced sitemap...');

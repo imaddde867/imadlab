@@ -1,15 +1,14 @@
-import { createClient } from '@supabase/supabase-js';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
+import { SITE_URL } from './utils/site.js';
+import { createSupabaseClient, SUPABASE_URL } from './utils/supabase.js';
 import { stripMarkdown } from './utils/markdown.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
-const SITE_URL = 'https://imadlab.me';
 const SITE_NAME = 'Imadlab';
 const DEFAULT_TITLE = `${SITE_NAME} | Data Engineer & AI/ML Portfolio`;
 const DEFAULT_IMAGE = `${SITE_URL}/images/hero-moon.png`;
@@ -17,7 +16,7 @@ const DEFAULT_TWITTER = '@imadlab';
 const SEO_BLOCK_PATTERN = /<!-- prerender-seo:start -->[\s\S]*?<!-- prerender-seo:end -->/;
 const ABSOLUTE_PREFIXES = ['http://', 'https://', 'data:', 'blob:'];
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createSupabaseClient();
 const SEO_TITLE_MAP = {
   Explainium: 'Explainium: Local LLM Procedural Knowledge Extraction',
   InfiniteChessAI: 'InfiniteChessAI: Self-Improving Chess Engine in SwiftUI',
