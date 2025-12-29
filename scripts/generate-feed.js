@@ -1,13 +1,12 @@
-import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
 import { stripMarkdown } from './utils/markdown.js';
+import { SITE_URL } from './utils/site.js';
+import { createSupabaseClient } from './utils/supabase.js';
 
-const SITE_URL = 'https://imadlab.me';
 const FEED_PATH_RSS = './public/feed.xml';
 const FEED_PATH_JSON = './public/feed.json';
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createSupabaseClient();
 
 const escapeXml = (value = '') =>
   value
