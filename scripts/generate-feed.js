@@ -1,22 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
+import { stripMarkdown } from './utils/markdown.js';
 
 const SITE_URL = 'https://imadlab.me';
 const FEED_PATH_RSS = './public/feed.xml';
 const FEED_PATH_JSON = './public/feed.json';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-const stripMarkdown = (value = '') =>
-  value
-    .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/`[^`]*`/g, ' ')
-    .replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
-    .replace(/\[([^\]]+)]\([^)]*\)/g, '$1')
-    .replace(/[#>*_~`]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
 
 const escapeXml = (value = '') =>
   value
@@ -41,14 +32,16 @@ async function generateFeed() {
 
   const items = (posts ?? []).map((post) => {
     const itemUrl = `${SITE_URL}/blogs/${post.slug}`;
+    const plainBody = stripMarkdown(post.body || '');
     const summary = post.excerpt && post.excerpt.trim().length > 0
       ? post.excerpt.trim()
-      : stripMarkdown(post.body || '').slice(0, 220);
+      : plainBody.slice(0, 220);
 
     return {
       ...post,
       url: itemUrl,
       summary,
+      plainBody,
       publishedISO: post.published_date ? new Date(post.published_date).toISOString() : undefined,
       updatedISO: post.updated_at ? new Date(post.updated_at).toISOString() : undefined,
     };
@@ -104,7 +97,7 @@ ${rssItems}
       tags: Array.isArray(item.tags) ? item.tags.filter((tag) => typeof tag === 'string' && tag.trim().length > 0) : undefined,
       date_published: item.publishedISO,
       date_modified: item.updatedISO || item.publishedISO,
-      content_text: stripMarkdown(item.body || '')
+      content_text: item.plainBody
     }))
   };
 
