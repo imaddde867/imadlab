@@ -9,7 +9,6 @@ import {
   ChevronUp,
   Code,
   ExternalLink,
-  GitFork,
   Star,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -326,10 +325,6 @@ const ProjectDetail = () => {
                 <div className="flex items-center gap-1.5">
                   <Star className="w-4 h-4 text-white/50" />
                   {repoInfo.stargazers_count}
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <GitFork className="w-4 h-4 text-white/50" />
-                  {repoInfo.forks_count}
                 </div>
                 {repoUpdatedLabel && (
                   <div className="flex items-center gap-1.5">

@@ -57,6 +57,7 @@ const CardItem = ({
   const placeholderLabel = isBlog ? 'Blog Post' : 'No Preview';
   const showRepoMeta =
     repoStars !== null && repoStars !== undefined ? true : Boolean(repoUpdatedAt);
+  const linkAriaLabel = `Open ${title}`;
 
   const repoUpdatedLabel = (() => {
     if (!repoUpdatedAt) return null;
@@ -94,6 +95,132 @@ const CardItem = ({
     setImageError(true);
   };
 
+  const handlePrefetch = () => prefetchRoute(prefetchPath);
+  const imageWrapperClassName = 'relative w-full aspect-[16/9] overflow-hidden bg-white/5';
+  const imageLinkClassName = `${imageWrapperClassName} block focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30`;
+  const titleLinkClassName =
+    'block focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 rounded-sm';
+  const titleSpan = (
+    <span
+      ref={titleRef}
+      className={`block transition-all duration-700 ease-in-out ${
+        shouldMarquee && isHovered ? 'whitespace-nowrap' : 'truncate'
+      }`}
+      style={
+        shouldMarquee && isHovered
+          ? {
+              transform: `translateX(-${
+                titleRef.current && containerRef.current
+                  ? titleRef.current.scrollWidth - containerRef.current.offsetWidth
+                  : 0
+              }px)`,
+              transition: `transform ${
+                titleRef.current && containerRef.current
+                  ? Math.max(
+                      1.5,
+                      (titleRef.current.scrollWidth - containerRef.current.offsetWidth) / 60
+                    )
+                  : 1.5
+              }s linear`,
+            }
+          : { transform: 'translateX(0)', transition: 'transform 0.5s ease-out' }
+      }
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {title}
+    </span>
+  );
+  const titleContent = linkTo ? (
+    <Link
+      to={linkTo}
+      onPointerEnter={handlePrefetch}
+      aria-label={linkAriaLabel}
+      className={titleLinkClassName}
+    >
+      {titleSpan}
+    </Link>
+  ) : link ? (
+    <a
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={linkAriaLabel}
+      className={titleLinkClassName}
+    >
+      {titleSpan}
+    </a>
+  ) : (
+    titleSpan
+  );
+  const imageContent = showImage ? (
+    <>
+      {!imageLoaded && (
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 animate-pulse flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin"></div>
+        </div>
+      )}
+
+      <img
+        ref={imageRef}
+        src={resolvedImageUrl ?? undefined}
+        alt={title}
+        width="640"
+        height="360"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        className={`w-full h-full object-cover transition-all duration-500 ease-out ${
+          imageLoaded ? 'opacity-100' : 'opacity-0'
+        } ${isCardHovered ? 'scale-110' : 'scale-100'}`}
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+        loading="lazy"
+        decoding="async"
+      />
+
+      <div
+        className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-300 ${
+          isCardHovered ? 'opacity-80' : 'opacity-40'
+        }`}
+      />
+
+      <div
+        className={`absolute inset-0 bg-white/10 transition-opacity duration-300 ${
+          isCardHovered ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
+    </>
+  ) : (
+    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-white/10 via-white/5 to-transparent">
+      <span className="text-xs uppercase tracking-[0.25em] text-white/60">
+        {placeholderLabel}
+      </span>
+    </div>
+  );
+  const imageWrapper = showCover ? (
+    linkTo ? (
+      <Link
+        to={linkTo}
+        onPointerEnter={handlePrefetch}
+        aria-label={linkAriaLabel}
+        className={imageLinkClassName}
+      >
+        {imageContent}
+      </Link>
+    ) : link ? (
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={linkAriaLabel}
+        className={imageLinkClassName}
+      >
+        {imageContent}
+      </a>
+    ) : (
+      <div className={imageWrapperClassName}>{imageContent}</div>
+    )
+  ) : null;
+
   return (
     <SpotlightCard className="h-full flex flex-col overflow-hidden transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-2xl group">
       <div
@@ -102,57 +229,7 @@ const CardItem = ({
         className="h-full flex flex-col"
       >
         {/* Enhanced image section with better aspect ratio and loading states */}
-        {showCover && (
-          <div className="relative w-full aspect-[16/9] overflow-hidden bg-white/5">
-            {showImage ? (
-              <>
-                {/* Loading placeholder */}
-                {!imageLoaded && (
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 animate-pulse flex items-center justify-center">
-                    <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin"></div>
-                  </div>
-                )}
-
-                {/* Optimized image with responsive sizes and enhanced hover effects */}
-                <img
-                  ref={imageRef}
-                  src={resolvedImageUrl ?? undefined}
-                  alt={title}
-                  width="640"
-                  height="360"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className={`w-full h-full object-cover transition-all duration-500 ease-out ${
-                    imageLoaded ? 'opacity-100' : 'opacity-0'
-                  } ${isCardHovered ? 'scale-110' : 'scale-100'}`}
-                  onLoad={handleImageLoad}
-                  onError={handleImageError}
-                  loading="lazy"
-                  decoding="async"
-                />
-
-                {/* Gradient overlay for better text readability */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-300 ${
-                    isCardHovered ? 'opacity-80' : 'opacity-40'
-                  }`}
-                />
-
-                {/* Hover overlay with subtle animation */}
-                <div
-                  className={`absolute inset-0 bg-white/10 transition-opacity duration-300 ${
-                    isCardHovered ? 'opacity-100' : 'opacity-0'
-                  }`}
-                />
-              </>
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-white/10 via-white/5 to-transparent">
-                <span className="text-xs uppercase tracking-[0.25em] text-white/60">
-                  {placeholderLabel}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
+        {imageWrapper}
 
         {/* Enhanced content section with better spacing and hierarchy */}
         <div className="flex-1 flex flex-col p-6 gap-4 relative">
@@ -162,36 +239,7 @@ const CardItem = ({
               className="text-xl font-semibold text-white leading-tight flex-1 min-w-0 overflow-hidden relative group"
               ref={containerRef}
             >
-              <span
-                ref={titleRef}
-                className={`block transition-all duration-700 ease-in-out ${
-                  shouldMarquee && isHovered ? 'whitespace-nowrap' : 'truncate'
-                }`}
-                style={
-                  shouldMarquee && isHovered
-                    ? {
-                        transform: `translateX(-${
-                          titleRef.current && containerRef.current
-                            ? titleRef.current.scrollWidth - containerRef.current.offsetWidth
-                            : 0
-                        }px)`,
-                        transition: `transform ${
-                          titleRef.current && containerRef.current
-                            ? Math.max(
-                                1.5,
-                                (titleRef.current.scrollWidth - containerRef.current.offsetWidth) /
-                                  60
-                              )
-                            : 1.5
-                        }s linear`,
-                      }
-                    : { transform: 'translateX(0)', transition: 'transform 0.5s ease-out' }
-                }
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-              >
-                {title}
-              </span>
+              {titleContent}
             </h3>
           </div>
 
