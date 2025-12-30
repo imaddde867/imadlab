@@ -1,4 +1,5 @@
 import { Toaster } from '@/components/ui/toaster';
+import { PageLoader } from '@/components/ui/LoadingStates';
 import NewsletterPopup from '@/components/NewsletterPopup';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -95,16 +96,7 @@ const App = () => {
           <ErrorBoundary>
             <Suspense
               fallback={
-                <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
-                  <div className="relative w-24 h-24 mb-4">
-                    <div className="absolute inset-0 rounded-full border-4 border-t-4 border-white/20 border-t-white animate-spin"></div>
-                    <div
-                      className="absolute inset-4 rounded-full border-4 border-t-4 border-white/40 border-t-white animate-spin-reverse"
-                      style={{ animationDuration: '1.5s' }}
-                    ></div>
-                  </div>
-                  <div className="text-xl font-medium tracking-wider">Loading...</div>
-                </div>
+                <PageLoader text="Loading..." variant="orbit" />
               }
             >
               <ClickSpark
