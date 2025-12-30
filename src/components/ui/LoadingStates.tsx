@@ -10,43 +10,61 @@ interface SpinnerProps {
 // Inline spinner component
 const Spinner = ({ size = 'md', variant = 'default', text }: SpinnerProps) => {
   const sizeClasses = {
-    sm: 'w-8 h-8',
-    md: 'w-12 h-12',
-    lg: 'w-16 h-16',
+    sm: 'w-6 h-6',
+    md: 'w-10 h-10',
+    lg: 'w-14 h-14',
   };
+
+  const dotSizeClasses = {
+    sm: 'w-1.5 h-1.5',
+    md: 'w-2 h-2',
+    lg: 'w-2.5 h-2.5',
+  };
+
+  const renderRing = (withOrbitDot = false) => (
+    <div className={cn('relative', sizeClasses[size])}>
+      <div className="absolute inset-0 rounded-full border border-white/10" />
+      <div className="absolute inset-0 rounded-full border-[1.5px] border-transparent border-t-primary/80 border-r-primary/40 animate-[spin_1.1s_linear_infinite]" />
+      {withOrbitDot && (
+        <div className="absolute inset-0 animate-[spin_1.6s_linear_infinite]">
+          <div
+            className={cn(
+              'absolute left-1/2 top-0 -translate-x-1/2 rounded-full bg-primary/90',
+              dotSizeClasses[size]
+            )}
+          />
+        </div>
+      )}
+    </div>
+  );
 
   const renderSpinner = () => {
     switch (variant) {
       case 'orbit':
-        return (
-          <div className={cn('relative', sizeClasses[size])}>
-            <div className="absolute inset-0 border-4 border-white/20 rounded-full" />
-            <div className="absolute inset-0 border-4 border-transparent border-t-white rounded-full animate-spin" />
-          </div>
-        );
+        return renderRing(true);
       case 'dots':
         return (
           <div className="flex gap-2">
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="w-3 h-3 bg-white rounded-full animate-bounce"
-                style={{ animationDelay: `${i * 0.15}s` }}
+                className="w-2 h-2 bg-primary/70 rounded-full animate-[pulse_1.2s_ease-in-out_infinite]"
+                style={{ animationDelay: `${i * 0.18}s` }}
               />
             ))}
           </div>
         );
       case 'pulse':
-        return <div className={cn(sizeClasses[size], 'bg-white rounded-full animate-pulse')} />;
-      default:
         return (
           <div
             className={cn(
               sizeClasses[size],
-              'border-4 border-white/20 border-t-white rounded-full animate-spin'
+              'rounded-full bg-primary/20 ring-1 ring-primary/40 animate-[pulse_1.6s_ease-in-out_infinite]'
             )}
           />
         );
+      default:
+        return renderRing(false);
     }
   };
 
@@ -98,8 +116,8 @@ interface PageLoaderProps {
 
 // Page loading overlay
 export const PageLoader = ({ text = 'Loading...', variant = 'orbit' }: PageLoaderProps) => (
-  <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 shadow-2xl">
+  <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="flex flex-col items-center gap-4">
       <Spinner size="lg" variant={variant} text={text} />
     </div>
   </div>
@@ -114,16 +132,16 @@ interface ContentLoaderProps {
 // Content area loader
 export const ContentLoader = ({
   text = 'Loading content...',
-  variant = 'pulse',
+  variant = 'orbit',
   className,
 }: ContentLoaderProps) => (
   <div className={cn('flex items-center justify-center py-16', className)}>
-    <div className="relative flex w-full max-w-md flex-col items-center gap-4 rounded-2xl border border-white/10 bg-white/10 px-10 py-12 text-center shadow-[0_18px_60px_rgba(15,23,42,0.45)] backdrop-blur-xl">
+    <div className="relative flex w-full flex-col items-center gap-3 text-center">
       <Spinner size="md" variant={variant} />
-      <div className="h-1 w-24 overflow-hidden rounded-full bg-white/10">
-        <div className="h-full w-1/2 animate-[loading-slide_1.8s_linear_infinite] bg-white/40" />
+      <div className="h-px w-24 overflow-hidden rounded-full bg-white/10">
+        <div className="h-full w-1/3 animate-[loading-slide_1.6s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
       </div>
-      <p className="text-sm font-medium text-white/70">{text}</p>
+      <p className="text-sm font-medium text-white/65">{text}</p>
     </div>
   </div>
 );
@@ -166,8 +184,8 @@ export const ButtonLoader = ({ size = 'md', className }: ButtonLoaderProps) => {
   };
 
   return (
-    <div className={cn('animate-spin', sizeClasses[size], className)}>
-      <div className="w-full h-full border-2 border-transparent border-t-current border-r-current rounded-full" />
+    <div className={cn('animate-spin opacity-80', sizeClasses[size], className)}>
+      <div className="w-full h-full border-[1.5px] border-transparent border-t-current border-r-current rounded-full" />
     </div>
   );
 };
