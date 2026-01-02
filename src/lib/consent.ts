@@ -83,8 +83,55 @@ export function onConsentChange(cb: Subscriber) {
   };
 }
 
+// Owner/developer exclusion for analytics
+const OWNER_EXCLUSION_KEY = 'imadlab_exclude_analytics';
+
+/**
+ * Check if the current visitor is the site owner/developer
+ * who has opted out of being tracked.
+ */
+export function isOwnerExcluded(): boolean {
+  try {
+    return localStorage.getItem(OWNER_EXCLUSION_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Exclude yourself (the site owner) from analytics tracking.
+ * Run this once in your browser console: excludeFromAnalytics()
+ */
+export function excludeFromAnalytics(): void {
+  try {
+    localStorage.setItem(OWNER_EXCLUSION_KEY, 'true');
+    console.log('✅ You are now excluded from analytics tracking on this browser.');
+  } catch (error) {
+    console.error('Failed to set exclusion flag:', error);
+  }
+}
+
+/**
+ * Re-include yourself in analytics tracking.
+ * Run this in your browser console: includeInAnalytics()
+ */
+export function includeInAnalytics(): void {
+  try {
+    localStorage.removeItem(OWNER_EXCLUSION_KEY);
+    console.log('✅ You are now included in analytics tracking on this browser.');
+  } catch (error) {
+    console.error('Failed to remove exclusion flag:', error);
+  }
+}
+
 export function isAllowed(category: ConsentCategory): boolean {
   if (category === 'essential') return true;
+  
+  // If this is the site owner/developer, exclude from analytics/marketing
+  if ((category === 'analytics' || category === 'marketing') && isOwnerExcluded()) {
+    return false;
+  }
+  
   const c = getConsent();
   // If no decision has been made yet, allow all by default
   if (!c) return true;
