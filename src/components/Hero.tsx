@@ -29,7 +29,7 @@ const Hero = () => {
               className="text-lg md:text-xl lg:text-2xl font-semibold text-hierarchy-secondary animate-fade-in-left opacity-0"
               style={{ animationDelay: '0.3s' }}
             >
-              3rd-year ICT at TUAS • CoRe lab intern • Founder of SisuSpeak
+              B.Eng. ICT (Data Engineering & AI) • Founder of SisuSpeak
             </h2>
           </div>
 
@@ -39,8 +39,8 @@ const Hero = () => {
                 className="text-body-large text-hierarchy-tertiary leading-relaxed animate-fade-in-up opacity-0"
                 style={{ animationDelay: '0.5s' }}
               >
-                I build end-to-end data and AI systems—from streaming pipelines to deployed
-                models—that turn raw signals into reliable decisions!
+                I build end-to-end data and AI systems, from streaming pipelines to deployed
+                models, that turn raw signals into reliable decisions!
               </p>
             </div>
             <Button

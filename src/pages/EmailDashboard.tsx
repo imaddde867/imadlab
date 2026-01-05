@@ -996,9 +996,9 @@ const EmailDashboard = () => {
   };
 
   const formatDate = (dateString?: string | null) => {
-    if (!dateString) return '—';
+    if (!dateString) return '-';
     const parsed = new Date(dateString);
-    if (Number.isNaN(parsed.getTime())) return '—';
+    if (Number.isNaN(parsed.getTime())) return '-';
     return parsed.toLocaleString();
   };
 
@@ -1551,7 +1551,7 @@ const EmailDashboard = () => {
                             ? `${latestQueue.content_title || 'Untitled'} · ${
                                 latestQueue.content_type === 'blog_post' ? 'Blog' : 'Project'
                               }`
-                            : '—';
+                            : '-';
                           return (
                             <tr key={subscriber.email} className="text-sm text-white/80">
                               <td className="px-4 py-3">

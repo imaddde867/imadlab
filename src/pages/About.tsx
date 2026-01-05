@@ -36,11 +36,12 @@ const About = () => {
           <div className="md:col-span-2 space-y-8">
             <div className="py-8">
               <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white">
-                Hey — I’m <span className="text-white/90">Imad Eddine</span>.
+                Hey, I'm <span className="text-white/90">Imad Eddine</span>.
               </h1>
               <p className="text-xl text-white/70 leading-relaxed">
                 I'm a{' '}
-                <span className="font-semibold text-white">Data Engineering and AI student</span> in
+                <span className="font-semibold text-white">Data and Artificial Intelligence engineer</span>{' '}
+                based in
                 Finland, but I see myself as a lifelong learner and problem-solver. I'm passionate
                 about turning data into useful and impactful solutions.
               </p>
@@ -65,20 +66,36 @@ const About = () => {
                 me the value of clean architecture and clear communication in both research and
                 production environments.
               </p>
+              <p className="text-lg text-white/70 leading-relaxed mt-4">
+                My thesis on{' '}
+                <a
+                  href="https://urn.fi/URN:NBN:fi:amk-2025121235460"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-white hover:underline"
+                >
+                  Structured Procedural Knowledge Extraction from Industrial Documentation Using
+                  LLMs
+                </a>{' '}
+                achieved top marks (5/5) and introduced{' '}
+                <span className="font-semibold text-white">IPKE</span>, a privacy-preserving
+                pipeline for extracting procedural knowledge graphs from safety-critical industrial
+                manuals.
+              </p>
             </div>
             <div className="py-8">
               <h2 className="text-4xl font-bold mb-4 text-white">My Philosophy</h2>
               <p className="text-lg text-white/70 leading-relaxed">
                 My purpose is to build{' '}
-                <span className="font-semibold text-white">technology that endures</span> —
-                transformative systems that make a real, lasting difference. I want to create tools,
-                products, and frameworks that{' '}
-                <span className="font-semibold text-white">empower, simplify, and enlighten</span> —
-                solving human problems not with noise or novelty, but with{' '}
-                <span className="font-semibold text-white">substance</span>. My work isn’t meant to
+                <span className="font-semibold text-white">technology that endures</span>, creating
+                transformative systems that make a real, lasting difference. I want to create
+                tools, products, and frameworks that{' '}
+                <span className="font-semibold text-white">empower, simplify, and enlighten</span>{' '}
+                while solving human problems not with noise or novelty, but with{' '}
+                <span className="font-semibold text-white">substance</span>. My work isn't meant to
                 dazzle for a moment, but to{' '}
                 <span className="font-semibold text-white">lay foundations</span> others can build
-                upon long after I’m gone.
+                upon long after I'm gone.
               </p>
             </div>
           </div>
