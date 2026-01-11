@@ -13,7 +13,7 @@ const About = () => {
       <div className="absolute inset-0 opacity-10 animate-subtle-flicker" />
       <SEO
         title="About Imad Eddine"
-        description="Learn more about Imad Eddine El Mouss, a Data Engineer and AI enthusiast."
+        description="Learn more about Imad Eddine El Mouss, a Research Engineer working on multimodal industrial AI."
         keywords="about imadlab, imad eddine biography, data engineer experience, ai professional background"
         schemaType="AboutPage"
         breadcrumbs={[
@@ -40,31 +40,28 @@ const About = () => {
               </h1>
               <p className="text-xl text-white/70 leading-relaxed">
                 I'm a{' '}
-                <span className="font-semibold text-white">Data and Artificial Intelligence engineer</span>{' '}
-                based in
-                Finland, but I see myself as a lifelong learner and problem-solver. I'm passionate
-                about turning data into useful and impactful solutions.
+                <span className="font-semibold text-white">Research Engineer in Data and AI</span>{' '}
+                based in Finland, but I see myself as a lifelong learner and problem-solver. I'm
+                passionate about turning data into useful and impactful solutions.
               </p>
             </div>
             <div className="py-8">
               <h2 className="text-4xl font-bold mb-4 text-white">My Work</h2>
               <p className="text-lg text-white/70 leading-relaxed">
                 I enjoy working at the intersection of data, software, and intelligence. As a
-                Research Assistant at the{' '}
+                Research Engineer at the{' '}
                 <a
-                  href="https://www.turkuamk.fi/palvelu/autonomisten-ja-alykkaiden-jarjestelmien-laboratorio/"
+                  href="https://www.turkuamk.fi/en/reasearch_groups/cognitive-technologies-research-group-core/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-semibold text-white hover:underline"
                 >
-                  Autonomous Intelligent Systems (AIS) Lab
+                  CoRe Lab (Cognitive Technologies Research Group)
                 </a>
-                , I built data pipelines using tools like{' '}
-                <span className="font-semibold text-white">Airflow</span>,{' '}
-                <span className="font-semibold text-white">InfluxDB</span>, and{' '}
-                <span className="font-semibold text-white">PostgreSQL</span>. This experience taught
-                me the value of clean architecture and clear communication in both research and
-                production environments.
+                , I build end-to-end data systems and AI solutions with a focus on multimodal
+                industrial AI, explainable AI, and edge intelligence. I care about clean
+                architecture, reproducibility, and turning research into reliable, real-world
+                deployments.
               </p>
               <p className="text-lg text-white/70 leading-relaxed mt-4">
                 My thesis on{' '}
