@@ -4,421 +4,421 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://imadlab.me/</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://imadlab.me/about</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://imadlab.me/projects</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://imadlab.me/blogs</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://imadlab.me/extras</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/machine-learning</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/llm</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/nlp</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/deeplearning</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/transformer</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/tensorflow-keras</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/pytorch</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/ultralytics-yolov5</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/core-ml</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/jupyter</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/numpy</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/opencv</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/matplotlib</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/jupyter-notebook</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/yolo</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/sam3</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/mlflow</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/slurm</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/fastapi</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/streamlit</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/neo4j</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/docker-compose</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/llama-cpp-python</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/transformers</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/sentence-transformers</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/spacy</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/networkx</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/pandas</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/pymupdf</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/python-docx</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/python-pptx</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/pyvis</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/jsonschema</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/pytest</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/ipython</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/swift</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/flask</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/swiftui</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/python-chess</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/torchvision</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/pillow</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/lpips</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/bash</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/github-pages</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/scikit-learn</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/seaborn</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/react</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/typescript</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/tailwind-css</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/supabase</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/vite</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/spotify-api</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/formspree</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/postgresql</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/mqtt</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/websockets</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/jwt</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/encryption</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/docker</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/nginx</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/leaflet-js</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/real-time-processing</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/pca</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://imadlab.me/tags/kmeans</loc>
-    <lastmod>2026-01-05</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>

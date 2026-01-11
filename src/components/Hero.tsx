@@ -29,7 +29,8 @@ const Hero = () => {
               className="text-lg md:text-xl lg:text-2xl font-semibold text-hierarchy-secondary animate-fade-in-left opacity-0"
               style={{ animationDelay: '0.3s' }}
             >
-              B.Eng. ICT (Data Engineering & AI) • Founder of SisuSpeak
+              Research Engineer @ CoRe, Turku UAS | Multimodal Industrial AI • Explainable AI •
+              Edge Intelligence • Data Systems
             </h2>
           </div>
 
