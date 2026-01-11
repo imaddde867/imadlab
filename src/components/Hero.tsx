@@ -29,21 +29,14 @@ const Hero = () => {
               className="text-lg md:text-xl lg:text-2xl font-semibold text-hierarchy-secondary animate-fade-in-left opacity-0"
               style={{ animationDelay: '0.3s' }}
             >
-              Research Engineer @ CoRe, Turku UAS | Multimodal Industrial AI • Explainable AI •
-              Edge Intelligence • Data Systems
+              <span className="block">Research Engineer @ CoRe, Turku UAS</span>
+              <span className="block mt-2 text-sm md:text-base lg:text-lg text-hierarchy-tertiary">
+                Multimodal Industrial AI • Explainable AI • Edge Intelligence • Data Systems
+              </span>
             </h2>
           </div>
 
           <div className="space-y-6">
-            <div className="reading-width-wide mx-auto">
-              <p
-                className="text-body-large text-hierarchy-tertiary leading-relaxed animate-fade-in-up opacity-0"
-                style={{ animationDelay: '0.5s' }}
-              >
-                I build end-to-end data and AI systems, from streaming pipelines to deployed
-                models, that turn raw signals into reliable decisions!
-              </p>
-            </div>
             <Button
               variant="cta"
               size="pill"
