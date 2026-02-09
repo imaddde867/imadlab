@@ -1,6 +1,5 @@
 import { Toaster } from '@/components/ui/toaster';
 import { PageLoader } from '@/components/ui/LoadingStates';
-import NewsletterPopup from '@/components/NewsletterPopup';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -45,6 +44,7 @@ const About = lazyWithPrefetch('/about', () => import('./pages/About'));
 const Tag = lazyWithPrefetch('/tags/:tag', () => import('./pages/Tag'));
 const TagsIndex = lazyWithPrefetch('/tags', () => import('./pages/TagsIndex'));
 const Search = lazyWithPrefetch('/search', () => import('./pages/Search'));
+const NewsletterPopup = React.lazy(() => import('@/components/NewsletterPopup'));
 
 // Optimize QueryClient for better performance
 const queryClient = new QueryClient({
@@ -65,11 +65,13 @@ const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => {
   const [cookieConsentIsOpen, setCookieConsentIsOpen] = React.useState<boolean>(false);
+  const [shouldLoadNewsletter, setShouldLoadNewsletter] = React.useState<boolean>(false);
 
   // Load Cloudflare Analytics only when user has consented to analytics
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (window.location.hostname !== 'imadlab.me') return;
+    const hostname = window.location.hostname;
+    if (hostname !== 'imadlab.me' && hostname !== 'www.imadlab.me') return;
 
     loadScriptIfConsented('analytics', 'https://static.cloudflareinsights.com/beacon.min.js', {
       'data-cf-beacon': '{"token": "e8df18bc2d9d4512835bc2f9798f4b24"}',
@@ -77,6 +79,14 @@ const App = () => {
     }).catch(() => {
       // ignore failures silently
     });
+  }, []);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.location.pathname.startsWith('/admin')) return;
+
+    const timer = window.setTimeout(() => setShouldLoadNewsletter(true), 500);
+    return () => window.clearTimeout(timer);
   }, []);
 
   const baseContent = (
@@ -134,7 +144,11 @@ const App = () => {
           <Footer onOpenCookiePrefs={() => setCookieConsentIsOpen(true)} />
         </AnalyticsWrapper>
       </BrowserRouter>
-      <NewsletterPopup />
+      {shouldLoadNewsletter ? (
+        <Suspense fallback={null}>
+          <NewsletterPopup />
+        </Suspense>
+      ) : null}
       <CookieConsent isOpen={cookieConsentIsOpen} onOpenChange={setCookieConsentIsOpen} />
     </>
   );

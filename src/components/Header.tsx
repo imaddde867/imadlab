@@ -12,7 +12,10 @@ const Header = () => {
   const isCoarsePointer = useIsCoarsePointer();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const onScroll = () => {
+      const nextScrolled = window.scrollY > 8;
+      setScrolled((prev) => (prev === nextScrolled ? prev : nextScrolled));
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
