@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Meta tags dynamically injected by <Seo /> component via react-helmet-async -->
+    <!-- Static fallbacks only for crawlers that don't execute JS -->
+    <title>Procedural Knowledge Extraction Is Not Summarization | Imadlab | Research Engineer &amp; Internal CTO</title>
+    <meta name="description" content="In industrial documentation, a fluent summary can still be operationally wrong. This note explains why procedural extraction needs structure, constraint..." />
+    <!-- prerender-seo:start -->
+    <link rel="canonical" href="https://imadlab.me/blogs/procedural-knowledge-extraction-is-not-summarization" />
+    <meta property="og:title" content="Procedural Knowledge Extraction Is Not Summarization | Imadlab | Research Engineer &amp; Internal CTO" />
+    <meta property="og:description" content="In industrial documentation, a fluent summary can still be operationally wrong. This note explains why procedural extraction needs structure, constraint..." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://imadlab.me/blogs/procedural-knowledge-extraction-is-not-summarization" />
+    <meta property="og:image" content="https://miro.medium.com/v2/resize:fit:2000/format:webp/1*jNWQdkJwTMSN4P9_OvqBsQ.png" />
+    <meta property="og:image:alt" content="Procedural Knowledge Extraction Is Not Summarization" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Imadlab" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@imadlab" />
+    <meta name="twitter:creator" content="@imadlab" />
+    <meta name="twitter:title" content="Procedural Knowledge Extraction Is Not Summarization | Imadlab | Research Engineer &amp; Internal CTO" />
+    <meta name="twitter:description" content="In industrial documentation, a fluent summary can still be operationally wrong. This note explains why procedural extraction needs structure, constraint..." />
+    <meta name="twitter:image" content="https://miro.medium.com/v2/resize:fit:2000/format:webp/1*jNWQdkJwTMSN4P9_OvqBsQ.png" />
+    <meta name="twitter:image:alt" content="Procedural Knowledge Extraction Is Not Summarization" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Procedural Knowledge Extraction Is Not Summarization","name":"Procedural Knowledge Extraction Is Not Summarization","description":"In industrial documentation, a fluent summary can still be operationally wrong. This note explains why procedural extraction needs structure, constraint...","url":"https://imadlab.me/blogs/procedural-knowledge-extraction-is-not-summarization","image":"https://miro.medium.com/v2/resize:fit:2000/format:webp/1*jNWQdkJwTMSN4P9_OvqBsQ.png","datePublished":"2025-12-29T08:20:00+00:00","dateModified":"2025-12-29T08:20:00+00:00","author":{"@type":"Person","name":"Imad Eddine El Mouss","url":"https://imadlab.me/about"},"publisher":{"@type":"Person","name":"Imad Eddine El Mouss","url":"https://imadlab.me/about"},"keywords":"procedural-knowledge-extraction, industrial-ai, knowledge-graphs, evaluation, safety","mainEntityOfPage":"https://imadlab.me/blogs/procedural-knowledge-extraction-is-not-summarization"}</script>
+    <!-- prerender-seo:end -->
+
+    <!-- Favicon and Theme Color -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Preload hero image for faster LCP on home route -->
+    <link rel="preload" as="image" href="/images/hero-moon.avif" type="image/avif" />
+
+    <!-- Font Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Load fonts with font-display: swap for better performance -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </noscript>
+    
+    <!-- DNS prefetch for Supabase and Cloudflare Analytics -->
+    <link rel="dns-prefetch" href="https://mpkgugcasxpanhrkpkhs.supabase.co">
+    <link rel="preconnect" href="https://mpkgugcasxpanhrkpkhs.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://static.cloudflareinsights.com">
+    <link rel="preconnect" href="https://static.cloudflareinsights.com" crossorigin>
+    
+    <!-- RSS/JSON Feeds -->
+    <link rel="alternate" type="application/rss+xml" title="Imadlab Blog RSS Feed" href="/feed.xml" />
+    <link rel="alternate" type="application/feed+json" title="Imadlab Blog JSON Feed" href="/feed.json" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://imadlab.me",
+      "name": "Imadlab",
+      "description": "Applied research and engineering work by Imad Eddine El Mouss on multimodal industrial AI, procedural knowledge extraction, and deployable systems.",
+      "publisher": {
+        "@type": "Person",
+        "name": "Imad Eddine El Mouss",
+        "url": "https://imadlab.me/about",
+        "sameAs": [
+          "https://github.com/imaddde867",
+          "https://www.linkedin.com/in/imad-eddine-e-986741262"
+        ]
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://duckduckgo.com/?q=site%3Aimadlab.me+{search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="module" crossorigin src="/assets/js/index-B1IGmRtD.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-9eB0Q-OK.css">
+  </head>
+
+  <body>
+    <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Imadlab | Research Engineer & Internal CTO</h1>
+    <div id="root">
+<main data-prerender="true" class="prerender-shell">
+  <article class="prerender-article">
+    <p class="prerender-meta text-sm text-white/60">December 29, 2025</p>
+    <h1 class="text-3xl font-bold mb-4">Procedural Knowledge Extraction Is Not Summarization</h1>
+    <p class="prerender-tags">Tags: procedural-knowledge-extraction, industrial-ai, knowledge-graphs, evaluation, safety</p>
+    <p class="prerender-summary leading-relaxed">In industrial documentation, a fluent summary can still be operationally wrong. This note explains why procedural extraction needs structure, constraints, and traceable validation.</p>
+    <a class="prerender-link mt-6 inline-flex" href="/blogs">Back to Blog</a>
+  </article>
+</main>
+</div>
+    
+  <script>window.__PRERENDERED_DATA__ = window.__PRERENDERED_DATA__ || {}; window.__PRERENDERED_DATA__["post:procedural-knowledge-extraction-is-not-summarization"] = {"id":"38c5af12-e571-447e-8a54-e330254679b6","title":"Procedural Knowledge Extraction Is Not Summarization","slug":"procedural-knowledge-extraction-is-not-summarization","excerpt":"In industrial documentation, a fluent summary can still be operationally wrong. This note explains why procedural extraction needs structure, constraints, and traceable validation.","body":"Most teams start procedural extraction with a familiar baseline: summarize each page, stitch the text, and hope the model has captured the process. I did the same at the beginning. The output looked polished, but it failed in the exact places that matter most.\n\nThat mismatch was one of the first uncomfortable lessons I learned while working with industrial manuals. If the goal is operational support, style quality is almost irrelevant. What matters is whether the system preserves executable logic: order, conditions, exceptions, and responsibility boundaries.\n\nA summary can be fluent and still hide a safety-critical branch.\n\n## A concrete failure pattern\n\nTake a typical maintenance instruction:\n\n1. Isolate power.\n2. Confirm lockout tag status.\n3. If pressure is above threshold, vent line before valve replacement.\n4. Replace valve.\n5. Record torque value and sign-off.\n\nA standard summary usually compresses this into a paragraph about \"safe valve replacement.\" It might keep the broad intent and still lose the conditional step about pressure and venting. To a reader, that omission can look minor. In a plant, it is not minor.\n\nThat is why I treat procedural extraction as a structured prediction problem, not a text compression problem.\n\n## What summarization misses\n\nThe recurring misses are consistent across domains:\n\n- **Condition fidelity**: thresholds, guards, and preconditions disappear first.\n- **Decision points**: branch logic gets flattened into linear prose.\n- **Exception handling**: warnings, prohibited actions, and fallback paths are dropped.\n- **Role binding**: who approves, who executes, and who verifies becomes vague.\n\nIf your downstream system is a search UI, you might get away with this. If your downstream system informs real operations, you cannot.\n\n## What to extract instead\n\nThe extraction target should look like process logic, not paragraph logic. In practice, that means a graph-oriented schema with explicit types.\n\nMinimal example:\n\n```json\n{\n  \"steps\": [\n    {\"id\": \"S1\", \"action\": \"Isolate power\"},\n    {\"id\": \"S2\", \"action\": \"Confirm lockout tag status\"},\n    {\"id\": \"S3\", \"action\": \"Vent line\", \"condition\": \"pressure > threshold\"},\n    {\"id\": \"S4\", \"action\": \"Replace valve\"}\n  ],\n  \"edges\": [\n    {\"type\": \"NEXT\", \"from\": \"S1\", \"to\": \"S2\"},\n    {\"type\": \"CONDITIONAL_NEXT\", \"from\": \"S2\", \"to\": \"S3\", \"if\": \"pressure > threshold\"},\n    {\"type\": \"NEXT\", \"from\": \"S3\", \"to\": \"S4\"}\n  ],\n  \"constraints\": [\n    {\"type\": \"SAFETY_GUARD\", \"step_id\": \"S3\", \"text\": \"vent before replacement\"}\n  ]\n}\n```\n\nThis is not about graph databases for their own sake. The graph is useful because it makes omissions visible. You can inspect missing guards, broken edges, and orphaned conditions directly.\n\n## Pipeline design that works better\n\nThe extraction stack that has held up best for me has four explicit phases:\n\n1. **Structure-aware chunking**: preserve headings, list boundaries, and procedural block integrity.\n2. **Step extraction first**: force a stable ordered skeleton before attempting constraint attachment.\n3. **Constraint linking second**: map warnings, thresholds, and exceptions to specific step IDs.\n4. **Validation and repair pass**: run schema checks and lightweight consistency rules before publish.\n\nThe reason this staged setup works is simple: it reduces simultaneous ambiguity. If a model tries to infer order, condition scope, and relationship types in one pass, you usually get elegant but fragile output.\n\n## Evaluation needs to match operational risk\n\nAccuracy alone is a weak signal here. You can score high on generic overlap metrics and still fail the safety logic.\n\nI recommend tracking at least these dimensions:\n\n- **Step F1**: are core actions captured.\n- **Adjacency fidelity**: are transitions and ordering preserved.\n- **Constraint coverage**: what share of required guards and conditions are recovered.\n- **Decision-point fidelity**: are branch nodes and branch criteria retained.\n- **Exception recall**: are explicit warnings and prohibited actions represented.\n\nIf I had to choose one \"do not skip\" metric, it is constraint coverage. In industrial procedures, missing constraints cause disproportionate downstream risk.\n\n## Failure modes worth planning for\n\nThree failure modes show up repeatedly even with strong prompts:\n\n- **Scope leakage**: a condition from one subsection gets attached to the wrong step in another subsection.\n- **False merge**: two similar steps are collapsed into one generalized action.\n- **Hallucinated bridge**: the model inserts a transition that sounds plausible but does not exist in the source.\n\nThe mitigations are not glamorous, but they are effective:\n\n- keep chunk windows smaller around dense condition blocks,\n- use explicit step IDs during extraction,\n- require source-span references for every extracted constraint,\n- reject outputs that fail graph sanity checks.\n\n## Why this matters beyond one thesis project\n\nThere is a broader lesson here for applied AI in industry. Fluency can hide structural error. The more polished the output, the easier it is for teams to over-trust it.\n\nFor decision support, we need systems that are inspectable before they are impressive.\n\nThat is why my default target is not \"best sounding answer.\" It is an auditable intermediate representation that an engineer can question, debug, and improve over time.\n\n## Open problems I am actively interested in\n\n- Better automatic detection of condition scope boundaries across noisy OCR text.\n- Severity-aware scoring so missing high-risk constraints is penalized more heavily.\n- Hybrid extraction with rules plus model inference for stricter guard recovery.\n- Operator-friendly review interfaces that allow fast correction without schema expertise.\n\nIf you are building in this space, start with a small, high-quality gold set and one hard requirement: every extracted constraint must point back to source evidence. In my experience, that single decision improves system quality more than most prompt-tuning tricks.","tags":["procedural-knowledge-extraction","industrial-ai","knowledge-graphs","evaluation","safety"],"published_date":"2025-12-29T08:20:00+00:00","updated_at":"2025-12-29T08:20:00+00:00","read_time":5,"image_url":"https://miro.medium.com/v2/resize:fit:2000/format:webp/1*jNWQdkJwTMSN4P9_OvqBsQ.png"};</script>
+</body>
+</html>

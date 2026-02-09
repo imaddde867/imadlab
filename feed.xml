@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>Imadlab Blog</title>
+  <link>https://imadlab.me</link>
+  <description>Technical notes on industrial AI systems, procedural extraction, architecture, and evaluation.</description>
+  <language>en-us</language>
+  <lastBuildDate>Mon, 09 Feb 2026 14:38:11 GMT</lastBuildDate>
+  <atom:link href="https://imadlab.me/feed.xml" rel="self" type="application/rss+xml" />
+  <item>
+    <title>Evaluation Beyond Accuracy: Constraint Coverage and Safety</title>
+    <link>https://imadlab.me/blogs/evaluation-beyond-accuracy-constraint-coverage-and-safety</link>
+    <guid>https://imadlab.me/blogs/evaluation-beyond-accuracy-constraint-coverage-and-safety</guid>
+    <description><![CDATA[Why standard NLP accuracy numbers are not enough for industrial procedure extraction, and what to measure instead.]]></description>
+    <pubDate>Wed, 04 Feb 2026 09:10:00 GMT</pubDate>
+    <category>evaluation</category>
+    <category>industrial-ai</category>
+    <category>safety</category>
+    <category>procedural-knowledge-extraction</category>
+    <category>reliability</category>
+  </item>
+  <item>
+    <title>Designing Local LLM Pipelines for Industrial Documentation</title>
+    <link>https://imadlab.me/blogs/designing-local-llm-pipelines-for-industrial-documentation</link>
+    <guid>https://imadlab.me/blogs/designing-local-llm-pipelines-for-industrial-documentation</guid>
+    <description><![CDATA[A field guide for building local document intelligence pipelines when privacy, latency, and traceability are non-negotiable constraints.]]></description>
+    <pubDate>Fri, 16 Jan 2026 07:45:00 GMT</pubDate>
+    <category>local-llm</category>
+    <category>industrial-ai</category>
+    <category>privacy-by-design</category>
+    <category>systems-engineering</category>
+    <category>architecture</category>
+  </item>
+  <item>
+    <title>Procedural Knowledge Extraction Is Not Summarization</title>
+    <link>https://imadlab.me/blogs/procedural-knowledge-extraction-is-not-summarization</link>
+    <guid>https://imadlab.me/blogs/procedural-knowledge-extraction-is-not-summarization</guid>
+    <description><![CDATA[In industrial documentation, a fluent summary can still be operationally wrong. This note explains why procedural extraction needs structure, constraints, and traceable validation.]]></description>
+    <pubDate>Mon, 29 Dec 2025 08:20:00 GMT</pubDate>
+    <category>procedural-knowledge-extraction</category>
+    <category>industrial-ai</category>
+    <category>knowledge-graphs</category>
+    <category>evaluation</category>
+    <category>safety</category>
+  </item>
+  <item>
+    <title>Designing a Small Local LLM Pipeline on Apple Silicon: Engineering Notes</title>
+    <link>https://imadlab.me/blogs/local-llm-apple-silicon-engineering-notes</link>
+    <guid>https://imadlab.me/blogs/local-llm-apple-silicon-engineering-notes</guid>
+    <description><![CDATA[A practical engineering note on building and evaluating a local transformer pipeline under tight hardware constraints, including failure modes and reliability tradeoffs.]]></description>
+    <pubDate>Fri, 11 Jul 2025 21:07:09 GMT</pubDate>
+    <category>local-llm</category>
+    <category>industrial-ai</category>
+    <category>evaluation</category>
+    <category>privacy-by-design</category>
+    <category>systems-engineering</category>
+  </item>
+</channel>
+</rss>

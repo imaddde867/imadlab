@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Meta tags dynamically injected by <Seo /> component via react-helmet-async -->
+    <!-- Static fallbacks only for crawlers that don't execute JS -->
+    <title>Spotify Recommendation Pipeline (Content-Based Clustering) | Imadlab | Research Engineer &amp; Internal CTO</title>
+    <meta name="description" content="Recommendation system prototype combining feature engineering, clustering, and retrieval strategies over large audio metadata collections." />
+    <!-- prerender-seo:start -->
+    <link rel="canonical" href="https://imadlab.me/projects/ea66518d-ced2-4d09-b84c-63f57eefd644" />
+    <meta property="og:title" content="Spotify Recommendation Pipeline (Content-Based Clustering) | Imadlab | Research Engineer &amp; Internal CTO" />
+    <meta property="og:description" content="Recommendation system prototype combining feature engineering, clustering, and retrieval strategies over large audio metadata collections." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://imadlab.me/projects/ea66518d-ced2-4d09-b84c-63f57eefd644" />
+    <meta property="og:image" content="https://substackcdn.com/image/fetch/$s_!X0-a!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb84e92f0-cb22-458e-aa27-9abb9a602fdd_1421x699.png" />
+    <meta property="og:image:alt" content="Spotify Recommendation Pipeline (Content-Based Clustering)" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Imadlab" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@imadlab" />
+    <meta name="twitter:creator" content="@imadlab" />
+    <meta name="twitter:title" content="Spotify Recommendation Pipeline (Content-Based Clustering) | Imadlab | Research Engineer &amp; Internal CTO" />
+    <meta name="twitter:description" content="Recommendation system prototype combining feature engineering, clustering, and retrieval strategies over large audio metadata collections." />
+    <meta name="twitter:image" content="https://substackcdn.com/image/fetch/$s_!X0-a!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb84e92f0-cb22-458e-aa27-9abb9a602fdd_1421x699.png" />
+    <meta name="twitter:image:alt" content="Spotify Recommendation Pipeline (Content-Based Clustering)" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Spotify Recommendation Pipeline (Content-Based Clustering)","description":"Recommendation system prototype combining feature engineering, clustering, and retrieval strategies over large audio metadata collections.","url":"https://imadlab.me/projects/ea66518d-ced2-4d09-b84c-63f57eefd644","image":"https://substackcdn.com/image/fetch/$s_!X0-a!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb84e92f0-cb22-458e-aa27-9abb9a602fdd_1421x699.png","codeRepository":"https://github.com/imaddde867/spotify-clusters","sameAs":["https://github.com/imaddde867/spotify-clusters"],"datePublished":"2025-07-06T10:15:07.421174+00:00","dateModified":"2026-02-09T12:18:27.145+00:00","author":{"@type":"Person","name":"Imad Eddine El Mouss","url":"https://imadlab.me/about"}}</script>
+    <!-- prerender-seo:end -->
+
+    <!-- Favicon and Theme Color -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Preload hero image for faster LCP on home route -->
+    <link rel="preload" as="image" href="/images/hero-moon.avif" type="image/avif" />
+
+    <!-- Font Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Load fonts with font-display: swap for better performance -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </noscript>
+    
+    <!-- DNS prefetch for Supabase and Cloudflare Analytics -->
+    <link rel="dns-prefetch" href="https://mpkgugcasxpanhrkpkhs.supabase.co">
+    <link rel="preconnect" href="https://mpkgugcasxpanhrkpkhs.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://static.cloudflareinsights.com">
+    <link rel="preconnect" href="https://static.cloudflareinsights.com" crossorigin>
+    
+    <!-- RSS/JSON Feeds -->
+    <link rel="alternate" type="application/rss+xml" title="Imadlab Blog RSS Feed" href="/feed.xml" />
+    <link rel="alternate" type="application/feed+json" title="Imadlab Blog JSON Feed" href="/feed.json" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://imadlab.me",
+      "name": "Imadlab",
+      "description": "Applied research and engineering work by Imad Eddine El Mouss on multimodal industrial AI, procedural knowledge extraction, and deployable systems.",
+      "publisher": {
+        "@type": "Person",
+        "name": "Imad Eddine El Mouss",
+        "url": "https://imadlab.me/about",
+        "sameAs": [
+          "https://github.com/imaddde867",
+          "https://www.linkedin.com/in/imad-eddine-e-986741262"
+        ]
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://duckduckgo.com/?q=site%3Aimadlab.me+{search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="module" crossorigin src="/assets/js/index-B1IGmRtD.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-9eB0Q-OK.css">
+  </head>
+
+  <body>
+    <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Imadlab | Research Engineer & Internal CTO</h1>
+    <div id="root">
+<main data-prerender="true" class="prerender-shell">
+  <article class="prerender-article">
+    <p class="prerender-meta text-sm text-white/60">July 6, 2025</p>
+    <h1 class="text-3xl font-bold mb-4">Spotify Recommendation Pipeline (Content-Based Clustering)</h1>
+    <p class="prerender-tags">Tech: recommendation-systems, ml-pipelines, flask, feature-engineering, clustering</p>
+    <div class="prerender-image"><img src="https://substackcdn.com/image/fetch/$s_!X0-a!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb84e92f0-cb22-458e-aa27-9abb9a602fdd_1421x699.png" alt="Spotify Recommendation Pipeline (Content-Based Clustering)" loading="lazy" decoding="async" /></div>
+    <p class="prerender-summary leading-relaxed">This project is an advanced music recommendation engine powered by machine learning, designed to deliver highly personalized song suggestions based on audio feature analysis and clustering techniques. Built with a production-ready architecture, it combines a robust backend, a responsive frontend, and sophisticated algorithms to provide a seamless user experience.
+
+## Project Overview
+
+The system analyzes over 1.1 ...</p>
+    <p class="prerender-meta mt-4">Source: <a class="prerender-link inline" href="https://github.com/imaddde867/spotify-clusters" rel="noopener">View repository</a></p>
+    <a class="prerender-link mt-6 inline-flex" href="/projects/ea66518d-ced2-4d09-b84c-63f57eefd644">Continue exploring</a>
+  </article>
+</main>
+</div>
+    
+  <script>window.__PRERENDERED_DATA__ = window.__PRERENDERED_DATA__ || {}; window.__PRERENDERED_DATA__["project:ea66518d-ced2-4d09-b84c-63f57eefd644"] = {"id":"ea66518d-ced2-4d09-b84c-63f57eefd644","title":"Spotify Recommendation Pipeline (Content-Based Clustering)","description":"Recommendation system prototype combining feature engineering, clustering, and retrieval strategies over large audio metadata collections.","full_description":"This project is an advanced music recommendation engine powered by machine learning, designed to deliver highly personalized song suggestions based on audio feature analysis and clustering techniques. Built with a production-ready architecture, it combines a robust backend, a responsive frontend, and sophisticated algorithms to provide a seamless user experience.\n\n## Project Overview\n\nThe system analyzes over 1.1 million Spotify tracks, using Principal Component Analysis (PCA) and K-means clustering to group songs by audio characteristics. It offers two recommendation modes: one driven by Spotify's API for real-time song data and another using a preprocessed dataset for offline capabilities. The result is a scalable, reliable application that delivers tailored music recommendations with sub-second response times.\n\n## Key Features\n\n### Machine Learning Core\n- **Dimensionality Reduction**: PCA implementation preserves 91.99% of data variance, optimizing audio feature processing while reducing noise.\n- **Clustering Algorithm**: K-means groups songs into 35 optimized clusters based on audio similarity patterns.\n- **Feature Engineering**: Analyzes 11 core audio features plus engineered composite metrics like energy-to-acousticness ratios and vocal character analysis.\n- **Similarity Matching**: Uses cosine similarity within clusters for precise song recommendations with comprehensive error handling.\n\n### Web Application\n- **Flask REST API**: Scalable backend with comprehensive error handling and health monitoring.\n- **Responsive Interface**: Modern, accessible frontend with dark mode support and keyboard shortcuts.\n- **Real-Time Processing**: Generates recommendations in under 500ms using pre-trained models.\n- **Multi-level Fallback System**: Ensures uninterrupted service with four distinct recommendation strategies.\n\n### Data Pipeline\n- **Large-scale Dataset**: 1,159,764 Spotify tracks with detailed audio features.\n- **Robust Preprocessing**: Handles missing values, outliers, and feature scaling with validation checks.\n- **Model Persistence**: Optimized model serialization for efficient production deployment.\n\n## Technical Architecture\n\n### System Components\n- **Machine Learning Engine**: Implements PCA, K-means, and similarity calculations (src/recommendation_engine.py).\n- **Web Application**: Flask-based API server and responsive frontend (src/web/app.py and templates).\n- **Data Pipeline**: Feature engineering and model training workflow (notebooks/main.ipynb).\n- **Model Artifacts**: Pre-trained models and preprocessed data (src/models/).\n\n### Audio Features\nThe system processes the following Spotify audio features:\n\n| Feature           | Description                          | Processing         |\n|-------------------|--------------------------------------|--------------------|\n| Danceability      | Suitability for dancing              | Normalized (0-1)   |\n| Energy            | Intensity and activity               | Normalized (0-1)   |\n| Valence           | Musical positivity                   | Normalized (0-1)   |\n| Acousticness      | Acoustic vs. electronic confidence   | Normalized (0-1)   |\n| Instrumentalness  | Likelihood of vocal absence          | Normalized (0-1)   |\n| Liveness          | Presence of live audience            | Normalized (0-1)   |\n| Speechiness       | Presence of spoken words             | Normalized (0-1)   |\n| Tempo             | Speed in BPM                         | MinMax scaled      |\n| Loudness          | Volume in dB                         | Standard scaled    |\n| Key               | Musical key                          | One-hot encoded    |\n| Mode              | Major or minor scale                 | One-hot encoded    |\n\n## Screenshots\n\n### User Interface\n![Application Interface](https://raw.githubusercontent.com/imaddde867/spotify-clusters/main/docs/interface.png)\n\n### Search Functionality\n![Search Interface](https://raw.githubusercontent.com/imaddde867/spotify-clusters/main/docs/search.png)\n\n### Recommendation Results\n![Search Results](https://raw.githubusercontent.com/imaddde867/spotify-clusters/main/docs/result.png)\n\n## How It Works\n\n1. **Input Processing**: User provides a song name and artist, validated and normalized.\n2. **Spotify API Integration**: Fetches audio features for the input song with retry logic and caching.\n3. **Feature Preprocessing**: Scales and transforms features using trained models (StandardScaler, MinMaxScaler).\n4. **Cluster Assignment**: K-means predicts optimal cluster placement for the song.\n5. **Similarity Computation**: Calculates cosine similarity within the assigned cluster for precise matching.\n6. **Result Ranking**: Orders recommendations by similarity with distance-based metrics.\n7. **Fallback Handling**: Implements four levels of fallback strategies when API is unavailable:\n   - **Primary**: Spotify API + ML pipeline\n   - **Secondary**: Dataset fuzzy matching + clustering\n   - **Tertiary**: Random sampling from similar genres\n   - **Emergency**: Popular track recommendations\n\n## Performance Metrics\n\n| Metric                  | Value         | Description                              |\n|-------------------------|---------------|------------------------------------------|\n| Variance Preserved      | 91.99%        | PCA dimensionality reduction efficiency  |\n| Cluster Count           | 35            | Optimized K-means configuration          |\n| Dataset Size            | 1,159,764     | Total tracks analyzed                    |\n| Response Time           | \u003C500ms        | Average recommendation generation        |\n| Memory Usage            | ~2GB          | Model loading and operation requirements |\n\n## Setup Instructions\n\n### Prerequisites\n- Python 3.8+\n- Spotify Developer Account (for API access)\n- 4GB+ RAM (for model loading)\n\n### Steps\n1. **Clone the Repository**:\n   ```bash\n   git clone https://github.com/imaddde867/spotify-clusters.git\n   cd spotify-clusters\n   ```\n2. **Set Up Virtual Environment**:\n   ```bash\n   python -m venv venv\n   source venv/bin/activate  # Windows: venv\\Scripts\\activate\n   ```\n3. **Install Dependencies**:\n   ```bash\n   pip install -r requirements.txt\n   ```\n4. **Configure Spotify API**:\n   - Copy .env.example to .env\n   - Add your Spotify Client ID and Client Secret to .env\n\n### Running the Application\n- **Development**:\n   ```bash\n   python src/web/app.py\n   # Or use convenience script\n   ./run.sh  # Unix/Mac\n   run.bat   # Windows\n   ```\n- **Production**:\n   ```bash\n   gunicorn --bind 0.0.0.0:5000 --workers 4 src.web.app:app\n   ```\n\nAccess the app at `http://localhost:5001` (development) or `http://localhost:5000` (production).\n\n## API Documentation\n\n- **GET /**: Serves the main application interface.\n- **POST /recommend**: Generates music recommendations.\n  - Example Request:\n    ```json\n    {\n      \"song_name\": \"Bohemian Rhapsody\",\n      \"artist_name\": \"Queen\",\n      \"playlist_size\": 10\n    }\n    ```\n  - Response includes track names, artists, genres, and popularity scores.\n- **GET /api/popular-examples**: Provides sample songs for the interface.\n- **GET /health**: System health check endpoint with component status.\n\n## Development Insights\n\n### Technical Challenges Addressed\n- **Memory Optimization**: Implemented efficient data loading and processing for the 1.1M+ track dataset.\n- **API Resilience**: Created a robust caching system to reduce Spotify API calls and handle rate limits.\n- **Error Recovery**: Designed comprehensive try/except blocks with multiple fallback mechanisms.\n- **Frontend Accessibility**: Implemented keyboard shortcuts, screen reader support, and responsive design.\n\n### Future Enhancements\n- Integrate a database backend for faster data retrieval and user preferences.\n- Add user playlist analysis for personalized clustering and recommendations.\n- Enhance frontend with interactive audio feature visualizations.\n- Implement collaborative filtering to complement content-based recommendations.\n\n## Technologies Used\n- **Backend**: Python 3.8+, Flask 2.0+, scikit-learn, pandas, numpy, spotipy\n- **Frontend**: HTML5, CSS3, Vanilla JavaScript with accessibility features\n- **Deployment**: Gunicorn-ready, Docker-compatible\n- **Data**: Spotify API, 1.1M+ track dataset with 11 core audio features\n\n## Project Status\n- **Status**: Production-Ready\n- **Maintenance**: Active Development\n- **Performance**: Sub-second recommendation generation\n\nThis project showcases my expertise in machine learning, web development, and API integration, delivering a practical and engaging solution for music discovery that combines sophisticated algorithms with a polished user experience.","tech_tags":["recommendation-systems","ml-pipelines","flask","feature-engineering","clustering"],"created_at":"2025-07-06T10:15:07.421174+00:00","updated_at":"2026-02-09T12:18:27.145+00:00","image_url":"https://substackcdn.com/image/fetch/$s_!X0-a!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb84e92f0-cb22-458e-aa27-9abb9a602fdd_1421x699.png","repo_url":"https://github.com/imaddde867/spotify-clusters","demo_url":null,"featured":false};</script>
+</body>
+</html>

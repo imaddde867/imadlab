@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Meta tags dynamically injected by <Seo /> component via react-helmet-async -->
+    <!-- Static fallbacks only for crawlers that don't execute JS -->
+    <title>Evaluation Beyond Accuracy: Constraint Coverage and Safety | Imadlab | Research Engineer &amp; Internal CTO</title>
+    <meta name="description" content="Why standard NLP accuracy numbers are not enough for industrial procedure extraction, and what to measure instead." />
+    <!-- prerender-seo:start -->
+    <link rel="canonical" href="https://imadlab.me/blogs/evaluation-beyond-accuracy-constraint-coverage-and-safety" />
+    <meta property="og:title" content="Evaluation Beyond Accuracy: Constraint Coverage and Safety | Imadlab | Research Engineer &amp; Internal CTO" />
+    <meta property="og:description" content="Why standard NLP accuracy numbers are not enough for industrial procedure extraction, and what to measure instead." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://imadlab.me/blogs/evaluation-beyond-accuracy-constraint-coverage-and-safety" />
+    <meta property="og:image" content="https://miro.medium.com/1*d3PZ7JqYIy_ENB2zuUOk3Q.jpeg" />
+    <meta property="og:image:alt" content="Evaluation Beyond Accuracy: Constraint Coverage and Safety" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Imadlab" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@imadlab" />
+    <meta name="twitter:creator" content="@imadlab" />
+    <meta name="twitter:title" content="Evaluation Beyond Accuracy: Constraint Coverage and Safety | Imadlab | Research Engineer &amp; Internal CTO" />
+    <meta name="twitter:description" content="Why standard NLP accuracy numbers are not enough for industrial procedure extraction, and what to measure instead." />
+    <meta name="twitter:image" content="https://miro.medium.com/1*d3PZ7JqYIy_ENB2zuUOk3Q.jpeg" />
+    <meta name="twitter:image:alt" content="Evaluation Beyond Accuracy: Constraint Coverage and Safety" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Evaluation Beyond Accuracy: Constraint Coverage and Safety","name":"Evaluation Beyond Accuracy: Constraint Coverage and Safety","description":"Why standard NLP accuracy numbers are not enough for industrial procedure extraction, and what to measure instead.","url":"https://imadlab.me/blogs/evaluation-beyond-accuracy-constraint-coverage-and-safety","image":"https://miro.medium.com/1*d3PZ7JqYIy_ENB2zuUOk3Q.jpeg","datePublished":"2026-02-04T09:10:00+00:00","dateModified":"2026-02-04T09:10:00+00:00","author":{"@type":"Person","name":"Imad Eddine El Mouss","url":"https://imadlab.me/about"},"publisher":{"@type":"Person","name":"Imad Eddine El Mouss","url":"https://imadlab.me/about"},"keywords":"evaluation, industrial-ai, safety, procedural-knowledge-extraction, reliability","mainEntityOfPage":"https://imadlab.me/blogs/evaluation-beyond-accuracy-constraint-coverage-and-safety"}</script>
+    <!-- prerender-seo:end -->
+
+    <!-- Favicon and Theme Color -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Preload hero image for faster LCP on home route -->
+    <link rel="preload" as="image" href="/images/hero-moon.avif" type="image/avif" />
+
+    <!-- Font Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Load fonts with font-display: swap for better performance -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </noscript>
+    
+    <!-- DNS prefetch for Supabase and Cloudflare Analytics -->
+    <link rel="dns-prefetch" href="https://mpkgugcasxpanhrkpkhs.supabase.co">
+    <link rel="preconnect" href="https://mpkgugcasxpanhrkpkhs.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://static.cloudflareinsights.com">
+    <link rel="preconnect" href="https://static.cloudflareinsights.com" crossorigin>
+    
+    <!-- RSS/JSON Feeds -->
+    <link rel="alternate" type="application/rss+xml" title="Imadlab Blog RSS Feed" href="/feed.xml" />
+    <link rel="alternate" type="application/feed+json" title="Imadlab Blog JSON Feed" href="/feed.json" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://imadlab.me",
+      "name": "Imadlab",
+      "description": "Applied research and engineering work by Imad Eddine El Mouss on multimodal industrial AI, procedural knowledge extraction, and deployable systems.",
+      "publisher": {
+        "@type": "Person",
+        "name": "Imad Eddine El Mouss",
+        "url": "https://imadlab.me/about",
+        "sameAs": [
+          "https://github.com/imaddde867",
+          "https://www.linkedin.com/in/imad-eddine-e-986741262"
+        ]
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://duckduckgo.com/?q=site%3Aimadlab.me+{search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="module" crossorigin src="/assets/js/index-B1IGmRtD.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-9eB0Q-OK.css">
+  </head>
+
+  <body>
+    <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Imadlab | Research Engineer & Internal CTO</h1>
+    <div id="root">
+<main data-prerender="true" class="prerender-shell">
+  <article class="prerender-article">
+    <p class="prerender-meta text-sm text-white/60">February 4, 2026</p>
+    <h1 class="text-3xl font-bold mb-4">Evaluation Beyond Accuracy: Constraint Coverage and Safety</h1>
+    <p class="prerender-tags">Tags: evaluation, industrial-ai, safety, procedural-knowledge-extraction, reliability</p>
+    <p class="prerender-summary leading-relaxed">Why standard NLP accuracy numbers are not enough for industrial procedure extraction, and what to measure instead.</p>
+    <a class="prerender-link mt-6 inline-flex" href="/blogs">Back to Blog</a>
+  </article>
+</main>
+</div>
+    
+  <script>window.__PRERENDERED_DATA__ = window.__PRERENDERED_DATA__ || {}; window.__PRERENDERED_DATA__["post:evaluation-beyond-accuracy-constraint-coverage-and-safety"] = {"id":"8999aba3-c346-4e57-9ce9-cba1dc6459a0","title":"Evaluation Beyond Accuracy: Constraint Coverage and Safety","slug":"evaluation-beyond-accuracy-constraint-coverage-and-safety","excerpt":"Why standard NLP accuracy numbers are not enough for industrial procedure extraction, and what to measure instead.","body":"Most extraction systems look acceptable if you only report one headline number.\n\nI have made that reporting mistake myself, and it hides the real risk.\n\nIn industrial procedure support, a model can score well on overlap-style metrics and still fail where risk is concentrated: conditions, prohibitions, and exception logic. If evaluation ignores that gap, teams get a false sense of readiness.\n\n## The limits of standard \"accuracy\"\n\nFor procedural tasks, classic metrics can over-reward the easy parts:\n\n- action verbs,\n- frequent entities,\n- common step patterns.\n\nThe hard parts are less frequent but more important:\n\n- threshold conditions,\n- decision branches,\n- exception paths,\n- role-specific approvals.\n\nIf a system misses one high-risk guard and captures twenty low-risk steps, aggregate accuracy can still look strong. Operationally, that is still a failing system.\n\n## A metric suite aligned with risk\n\nI use a metric set that separates structural correctness from safety-critical fidelity.\n\n| Metric | What it checks | Why it matters |\n| --- | --- | --- |\n| Step F1 | Core step extraction quality | Baseline structural coverage |\n| Adjacency fidelity | Correct step ordering and transitions | Process logic continuity |\n| Constraint coverage | Recovery of required conditions and guards | Safety-critical completeness |\n| Decision-point fidelity | Preservation of branch nodes and branch criteria | Correct behavior under variation |\n| Exception recall | Capture of warnings and prohibited actions | Prevents silent hazardous omissions |\n| Traceability score | Presence of source-span evidence per extracted claim | Supports audit and review |\n\nThis split makes failures visible where aggregate metrics hide them.\n\n## Severity weighting changes decisions\n\nNot all errors are equal. Missing a unit label and missing a lockout precondition should not carry the same penalty.\n\nI recommend assigning severity classes in the gold standard:\n\n- **Critical**: omission can directly affect safety-critical action.\n- **Major**: omission can degrade decision quality or compliance.\n- **Minor**: omission has low operational consequence.\n\nThen compute a severity-weighted error index alongside base metrics.\n\nSimple form:\n\n```\nWeightedError = sum(severity_weight_i * error_i) / sum(severity_weight_i)\n```\n\nUse weights that domain experts agree on, not arbitrary values decided only by engineers.\n\n## Constraint coverage should be explicit\n\nConstraint coverage is often treated as a side metric. In my experience, it should be a primary release gate for procedural systems.\n\nPractical definition:\n\n```\nConstraintCoverage = matched_constraints / gold_constraints\n```\n\nBut matching needs discipline:\n\n- match by semantic equivalence, not only string overlap,\n- require linkage to the correct step,\n- verify scope boundaries when the same term appears in multiple sections.\n\nA condition extracted in the wrong place is not a partial success. It is a structural error.\n\n## Evaluation protocol that scales\n\nA useful protocol for applied research-to-pilot work:\n\n1. Build a gold set with mixed complexity (easy, medium, edge-case documents).\n2. Annotate steps, transitions, constraints, exceptions, and severity labels.\n3. Run extraction with fixed config and seeded decoding for reproducibility.\n4. Compute metric suite and failure taxonomy.\n5. Review error clusters with domain experts.\n6. Update chunking, prompts, or validators.\n7. Re-run on unchanged gold set before adding new data.\n\nThe key is resisting metric drift. If the gold set changes every cycle, your trend lines become hard to trust.\n\n## Failure taxonomy is as important as scores\n\nRaw numbers tell you \"how much.\" Taxonomy tells you \"why.\"\n\nUseful failure classes:\n\n- condition dropped,\n- condition mis-scoped,\n- step merge,\n- hallucinated transition,\n- exception omitted,\n- role misassignment,\n- source citation missing.\n\nWhen you track these categories over iterations, you can see whether improvements come from real behavior change or from scoring artifacts.\n\n## Add abstention quality to your dashboard\n\nA mature system should know when it is unsure.\n\nTrack:\n\n- abstention rate,\n- abstention precision (how often abstention was justified),\n- high-risk false accept rate.\n\nIn safety-adjacent workflows, a thoughtful abstention is usually better than a confident error with polished prose.\n\n## Latency and reliability still belong in evaluation\n\nEvaluation cannot ignore operational constraints. Even high-quality extraction is unusable if latency is unstable or failures are opaque.\n\nMinimum operational metrics:\n\n- p50/p95 end-to-end latency,\n- stage-level latency breakdown,\n- validation failure rate,\n- retry and timeout rates,\n- reproducibility delta across repeated runs.\n\nFor partner-facing pilots, include these in the same report as semantic metrics. Keeping them separate usually delays integration issues until late stages.\n\n## A practical release gate template\n\nBefore promoting a model/pipeline version, require all of the following:\n\n- Step F1 above target threshold,\n- constraint coverage above target threshold,\n- zero unresolved critical-severity errors on benchmark set,\n- traceability score above minimum,\n- latency SLO met at p95,\n- no regression in top failure classes over previous version.\n\nThis is stricter than typical ML dashboards. It is also closer to what industrial partners expect once real workflows depend on the system.\n\n## What I would prioritize next\n\n- Better automated scoring for condition scope correctness.\n- Shared benchmark fragments across organizations without exposing sensitive text.\n- Confidence calibration that maps to true error likelihood per error class.\n- Review tools that connect each metric regression to concrete examples immediately.\n\nEvaluation is not the final chapter after model building. In applied industrial AI, evaluation is the control loop that decides whether a prototype is trustworthy enough to become a pilot.","tags":["evaluation","industrial-ai","safety","procedural-knowledge-extraction","reliability"],"published_date":"2026-02-04T09:10:00+00:00","updated_at":"2026-02-04T09:10:00+00:00","read_time":5,"image_url":"https://miro.medium.com/1*d3PZ7JqYIy_ENB2zuUOk3Q.jpeg"};</script>
+</body>
+</html>

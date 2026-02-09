@@ -1,0 +1,1 @@
+import"./index-B1IGmRtD.js";const c=e=>{const r=e.trim().split(/\s+/).length;return Math.ceil(r/200)},a=e=>e.replace(/```[\s\S]*?```/g," ").replace(/`[^`]*`/g," ").replace(/!\[[^\]]*]\([^)]*\)/g," ").replace(/\[([^\]]+)]\([^)]*\)/g,"$1").replace(/[#>*_~`]/g," ").replace(/\s+/g," ").trim();export{c,a as s};

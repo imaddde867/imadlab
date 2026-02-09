@@ -1,0 +1,92 @@
+# Cloudflare-optimized cache headers for imadlab.me
+# Note: Cloudflare respects Cache-Control headers and adds its own edge caching
+
+# Cache static assets for 1 year (immutable with hash in filename)
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# JavaScript files - ensure correct MIME type
+/assets/*.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: public, max-age=31536000, immutable
+
+# CSS files - ensure correct MIME type
+/assets/*.css
+  Content-Type: text/css; charset=utf-8
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache fonts for 1 year
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
+/*.ttf
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache images with hash for 1 year
+/assets/*.png
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache static images in public folder for 30 days (extended from 1 week)
+/images/*
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
+/*.png
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
+/*.jpg
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
+/*.jpeg
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
+/*.webp
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
+/*.svg
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
+/*.ico
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
+/*.pdf
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
+
+# Cache videos for 30 days (extended from 1 week)
+/*.mp4
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
+/*.webm
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
+
+# HTML files - cache for 1 hour with stale-while-revalidate
+/*.html
+  Cache-Control: public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400
+
+# Root index - cache for 5 minutes with stale-while-revalidate
+/index.html
+  Cache-Control: public, max-age=300, s-maxage=300, must-revalidate, stale-while-revalidate=3600
+
+# JSON feeds - cache for 6 hours (extended from 1 hour)
+/*.json
+  Cache-Control: public, max-age=21600, s-maxage=21600, stale-while-revalidate=3600
+
+# XML feeds - cache for 6 hours (extended from 1 hour)
+/*.xml
+  Cache-Control: public, max-age=21600, s-maxage=21600, stale-while-revalidate=3600
+
+# Service worker - no cache
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Manifest - cache for 7 days
+/site.webmanifest
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+# Security headers for all routes (compatible with Cloudflare Pages)
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  X-XSS-Protection: 1; mode=block

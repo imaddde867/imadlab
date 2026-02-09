@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Meta tags dynamically injected by <Seo /> component via react-helmet-async -->
+    <!-- Static fallbacks only for crawlers that don't execute JS -->
+    <title>Designing a Small Local LLM Pipeline on Apple Silicon: Engineering Notes | Imadlab | Research Engineer &amp; Internal CTO</title>
+    <meta name="description" content="A practical engineering note on building and evaluating a local transformer pipeline under tight hardware constraints, including failure modes and relia..." />
+    <!-- prerender-seo:start -->
+    <link rel="canonical" href="https://imadlab.me/blogs/local-llm-apple-silicon-engineering-notes" />
+    <meta property="og:title" content="Designing a Small Local LLM Pipeline on Apple Silicon: Engineering Notes | Imadlab | Research Engineer &amp; Internal CTO" />
+    <meta property="og:description" content="A practical engineering note on building and evaluating a local transformer pipeline under tight hardware constraints, including failure modes and relia..." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://imadlab.me/blogs/local-llm-apple-silicon-engineering-notes" />
+    <meta property="og:image" content="https://images.manning.com/book/1/92362be-2647-4fa1-9998-e4959d9c568f/DOTD_Raschka.png" />
+    <meta property="og:image:alt" content="Designing a Small Local LLM Pipeline on Apple Silicon: Engineering Notes" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Imadlab" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@imadlab" />
+    <meta name="twitter:creator" content="@imadlab" />
+    <meta name="twitter:title" content="Designing a Small Local LLM Pipeline on Apple Silicon: Engineering Notes | Imadlab | Research Engineer &amp; Internal CTO" />
+    <meta name="twitter:description" content="A practical engineering note on building and evaluating a local transformer pipeline under tight hardware constraints, including failure modes and relia..." />
+    <meta name="twitter:image" content="https://images.manning.com/book/1/92362be-2647-4fa1-9998-e4959d9c568f/DOTD_Raschka.png" />
+    <meta name="twitter:image:alt" content="Designing a Small Local LLM Pipeline on Apple Silicon: Engineering Notes" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Designing a Small Local LLM Pipeline on Apple Silicon: Engineering Notes","name":"Designing a Small Local LLM Pipeline on Apple Silicon: Engineering Notes","description":"A practical engineering note on building and evaluating a local transformer pipeline under tight hardware constraints, including failure modes and relia...","url":"https://imadlab.me/blogs/local-llm-apple-silicon-engineering-notes","image":"https://images.manning.com/book/1/92362be-2647-4fa1-9998-e4959d9c568f/DOTD_Raschka.png","datePublished":"2025-07-11T21:07:09.397+00:00","dateModified":"2026-02-09T12:18:27.145+00:00","author":{"@type":"Person","name":"Imad Eddine El Mouss","url":"https://imadlab.me/about"},"publisher":{"@type":"Person","name":"Imad Eddine El Mouss","url":"https://imadlab.me/about"},"keywords":"local-llm, industrial-ai, evaluation, privacy-by-design, systems-engineering","mainEntityOfPage":"https://imadlab.me/blogs/local-llm-apple-silicon-engineering-notes"}</script>
+    <!-- prerender-seo:end -->
+
+    <!-- Favicon and Theme Color -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Preload hero image for faster LCP on home route -->
+    <link rel="preload" as="image" href="/images/hero-moon.avif" type="image/avif" />
+
+    <!-- Font Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Load fonts with font-display: swap for better performance -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </noscript>
+    
+    <!-- DNS prefetch for Supabase and Cloudflare Analytics -->
+    <link rel="dns-prefetch" href="https://mpkgugcasxpanhrkpkhs.supabase.co">
+    <link rel="preconnect" href="https://mpkgugcasxpanhrkpkhs.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://static.cloudflareinsights.com">
+    <link rel="preconnect" href="https://static.cloudflareinsights.com" crossorigin>
+    
+    <!-- RSS/JSON Feeds -->
+    <link rel="alternate" type="application/rss+xml" title="Imadlab Blog RSS Feed" href="/feed.xml" />
+    <link rel="alternate" type="application/feed+json" title="Imadlab Blog JSON Feed" href="/feed.json" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://imadlab.me",
+      "name": "Imadlab",
+      "description": "Applied research and engineering work by Imad Eddine El Mouss on multimodal industrial AI, procedural knowledge extraction, and deployable systems.",
+      "publisher": {
+        "@type": "Person",
+        "name": "Imad Eddine El Mouss",
+        "url": "https://imadlab.me/about",
+        "sameAs": [
+          "https://github.com/imaddde867",
+          "https://www.linkedin.com/in/imad-eddine-e-986741262"
+        ]
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://duckduckgo.com/?q=site%3Aimadlab.me+{search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="module" crossorigin src="/assets/js/index-B1IGmRtD.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-9eB0Q-OK.css">
+  </head>
+
+  <body>
+    <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Imadlab | Research Engineer & Internal CTO</h1>
+    <div id="root">
+<main data-prerender="true" class="prerender-shell">
+  <article class="prerender-article">
+    <p class="prerender-meta text-sm text-white/60">July 11, 2025</p>
+    <h1 class="text-3xl font-bold mb-4">Designing a Small Local LLM Pipeline on Apple Silicon: Engineering Notes</h1>
+    <p class="prerender-tags">Tags: local-llm, industrial-ai, evaluation, privacy-by-design, systems-engineering</p>
+    <p class="prerender-summary leading-relaxed">A practical engineering note on building and evaluating a local transformer pipeline under tight hardware constraints, including failure modes and reliability tradeoffs.</p>
+    <a class="prerender-link mt-6 inline-flex" href="/blogs">Back to Blog</a>
+  </article>
+</main>
+</div>
+    
+  <script>window.__PRERENDERED_DATA__ = window.__PRERENDERED_DATA__ || {}; window.__PRERENDERED_DATA__["post:local-llm-apple-silicon-engineering-notes"] = {"id":"19f314c2-c0fe-4581-8e16-e915a9f0d62f","title":"Designing a Small Local LLM Pipeline on Apple Silicon: Engineering Notes","slug":"local-llm-apple-silicon-engineering-notes","excerpt":"A practical engineering note on building and evaluating a local transformer pipeline under tight hardware constraints, including failure modes and reliability tradeoffs.","body":"## The Spark That Started It All\n\nI'll be honest with you, six months ago, I thought building a language model was something only PhD researchers at big tech companies could do. I mean, we're talking about neural networks that can understand and generate human language, right? That's got to be rocket science.\n\nBut then I stumbled across a YouTube video of someone training a tiny GPT model on Shakespeare's works, and something just clicked. \"What if I could build my own?\" I thought. Not something that would compete with ChatGPT or Claude, but something *mine*—something I could understand from the ground up.\n\nSpoiler alert: it was harder than I expected, but also way more rewarding than I imagined.\n\n## Why I Decided to Go Local (And Small)\n\nBefore diving into the technical stuff, let me tell you why I chose to build a small, local model instead of just fine-tuning an existing one.\n\nFirst, **privacy**. I wanted something that would run entirely on my machine, no data leaving my computer. Second, **understanding**. I'm the kind of person who needs to know how things work under the hood. And third, **constraints breed creativity**. With my M4 MacBook Pro and its 16GB of unified memory, I had to get creative about architecture and training. No fancy GPU here—just the neural engine and whatever PyTorch could squeeze out of Metal Performance Shaders.\n\n## The Technical Journey\n\n### Step 1: Understanding the Basics\n\nI started with the fundamentals. If you're thinking about doing this yourself, don't skip this part like I almost did. I spent two weeks just reading papers and tutorials:\n\n- The original \"Attention Is All You Need\" paper (read it three times before it clicked)\n- Andrej Karpathy's \"makemore\" series (absolute gold)\n- The nanoGPT repository \n\n**Pro tip**: Don't try to understand everything at once. I made notes in a simple text file, and looking back, some of my early notes make me laugh. \"Attention = somehow the model looks at different parts of the input\" was one of my profound insights.\n\n### Step 2: Choosing My Architecture\n\nI went with a decoder-only transformer architecture, similar to GPT but much smaller. Here's what I settled on:\n\n- **6 layers** (compared to GPT-3's 96)\n- **8 attention heads** \n- **384 embedding dimensions**\n- **Vocabulary size: 10,000** tokens\n- **Context window: 512** tokens\n\nTotal parameters? About 10 million. Tiny by today's standards, but perfect for my laptop.\n\n### Step 3: The Data Dilemma\n\nThis was my first real challenge. What do you train a small model on? I considered several options:\n\n- **Wikipedia dumps** (too big, too varied)\n- **Books** (copyright issues)\n- **My own writing** (not enough data)\n\nI ended up creating a curated dataset mixing:\n- Public domain books from Project Gutenberg\n- Wikipedia articles on topics I cared about\n- Programming tutorials and documentation\n- Some Reddit discussions (carefully filtered)\n\nFinal dataset: about 50MB of text. Small, but focused.\n\n### Step 4: Implementation Reality Check\n\nI initially planned to write everything from scratch in pure Python. That lasted about two days. Here's what I actually ended up using:\n\n- **PyTorch** for the neural network (with MPS backend for M4 acceleration)\n- **Hugging Face tokenizers** for text preprocessing\n- **Weights & Biases** for experiment tracking\n- **A lot of Stack Overflow** for debugging Metal Performance Shaders issues\n\nThe actual model implementation was about 200 lines of Python. Here's the surprising part: getting PyTorch to properly utilize the M4's neural engine took longer than writing the model itself. Apple's Metal Performance Shaders documentation became my bedtime reading.\n\n### Step 5: Training Adventures\n\nMy first training run was a disaster. The loss went to NaN after 100 steps, and I had no idea why. After some debugging (and discovering that MPS has some quirks with certain operations), I found out my learning rate was way too high and I needed to move some operations back to CPU.\n\n**Training specs:**\n- **Batch size**: 8 (memory constraints with 16GB shared between system and model)\n- **Learning rate**: 3e-4 (after much experimentation)\n- **Training time**: 2 days on M4 (surprisingly efficient!)\n- **Final loss**: 2.4 (not great, but not terrible)\n\nThe M4 was actually fantastic for this kind of work. The unified memory architecture meant I could load larger datasets than I expected, and the neural engine handled the matrix operations beautifully once I got the MPS backend working properly.\n\nI trained three different versions, each time learning something new:\n1. **Version 1**: Overfit to the training data\n2. **Version 2**: Added dropout, but learning rate was still wrong\n3. **Version 3**: Finally got it right\n\n## The Moment of Truth\n\nAfter two days of training version 3, I nervously typed my first prompt: \"The future of artificial intelligence\"\n\nThe output was... underwhelming:\n> The future of artificial intelligence is a complex and multifaceted topic that involves many different aspects of technology and society. In recent years, there has been...\n\nIt was generic, but it was *coherent*. My little model was actually generating reasonable text! I may have done a small victory dance in my room. (The M4 stayed remarkably cool throughout this whole process, which was a nice bonus.)\n\n## What I Learned (The Hard Way)\n\n### Technical Lessons\n\n1. **Learning rate scheduling matters more than I thought**. I spent hours tweaking the architecture when the real problem was my learning rate decay.\n\n2. **Data quality beats data quantity**. My 50MB of curated text worked better than the 500MB of random internet text I tried first.\n\n3. **Regularization is crucial**. Without proper dropout and weight decay, my model would memorize the training data instead of learning patterns.\n\n### Personal Lessons\n\n1. **Start smaller than you think**. My first attempt had 50 million parameters. My successful model had 10 million.\n\n2. **Document everything**. I wish I'd kept better notes about what worked and what didn't. Future me would thank past me.\n\n3. **The community is amazing**. I got help from strangers on Reddit, Discord, and Twitter. The ML community really wants to help newcomers.\n\n## Performance and Limitations\n\nLet's be real about what my little model can and can't do:\n\n**What it's good at:**\n- Writing coherent paragraphs on familiar topics\n- Completing sentences in a reasonable way\n- Following basic instruction patterns\n\n**What it struggles with:**\n- Complex reasoning\n- Staying on topic for long passages\n- Anything requiring real-world knowledge\n- Math (it once told me 2+2=5, very confidently)\n\n## Lessons for Anyone Thinking About This\n\nIf you're considering building your own LLM, here's my honest advice:\n\n**Do it if:**\n- You want to understand how these models really work\n- You enjoy debugging and experimentation\n- You have a specific use case in mind\n- You learn better by doing than reading\n\n**Don't expect:**\n- To build the next ChatGPT\n- It to be easy or quick\n- Perfect results on your first try\n- To save money compared to using APIs\n\n## What's Next?\n\nI'm already planning version 4. I want to experiment with:\n- **Mixture of Experts** architecture\n- **Better tokenization** strategies\n- **Instruction tuning** on my own dataset\n- **Quantization** to make it even more efficient\n\nBut honestly? The biggest win isn't the model itself—it's the understanding I gained. Every time I use ChatGPT or Claude now, I have a much better appreciation for what's happening under the hood.\n\n## Final Thoughts\n\nBuilding my own LLM was like learning to cook by growing your own vegetables. Sure, you can buy better results at the store, but there's something magical about the process. Every bug I fixed, every hyperparameter I tuned, every coherent sentence my model generated—it all felt like a small victory.\n\nIf you're curious about AI and have some programming experience, I'd encourage you to try it. Not because you'll build something revolutionary, but because you'll understand something revolutionary in a completely new way.\n\nAnd who knows? Maybe your small model will surprise you, just like mine surprised me.","tags":["local-llm","industrial-ai","evaluation","privacy-by-design","systems-engineering"],"published_date":"2025-07-11T21:07:09.397+00:00","updated_at":"2026-02-09T12:18:27.145+00:00","read_time":7,"image_url":"https://images.manning.com/book/1/92362be-2647-4fa1-9998-e4959d9c568f/DOTD_Raschka.png"};</script>
+</body>
+</html>
