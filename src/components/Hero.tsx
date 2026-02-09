@@ -29,9 +29,9 @@ const Hero = () => {
               className="text-lg md:text-xl lg:text-2xl font-semibold text-hierarchy-secondary animate-fade-in-left opacity-0"
               style={{ animationDelay: '0.3s' }}
             >
-              <span className="block">Research Engineer @ CoRe, Turku UAS</span>
+              <span className="block">Research Engineer and internal CTO @ CoRe, Turku UAS</span>
               <span className="block mt-2 text-sm md:text-base lg:text-lg text-hierarchy-tertiary">
-                Multimodal Industrial AI • Explainable AI • Edge Intelligence • Data Systems
+                Deployable multimodal industrial AI • Privacy-by-Design • Auditable decision support
               </span>
             </h2>
           </div>

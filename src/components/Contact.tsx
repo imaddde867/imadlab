@@ -1,4 +1,4 @@
-import { ArrowUp, Github, Linkedin, MessageSquare, Mail } from 'lucide-react';
+import { ArrowUp, Github, Linkedin, Mail } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -14,7 +14,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import SpotifyNowPlaying from '@/components/SpotifyNowPlaying';
 import SectionHeader from '@/components/SectionHeader';
 
 const Contact = () => {
@@ -73,8 +72,7 @@ const Contact = () => {
       href: 'https://www.linkedin.com/in/imad-eddine-e-986741262',
       icon: Linkedin,
     },
-    { name: 'Discord', href: 'https://discord.com/users/766969796579295232', icon: MessageSquare },
-    { name: 'Email', href: 'mailto:imadeddine200507@gmail.com', icon: Mail },
+    { name: 'Email', href: 'mailto:imad.e.elmouss@turkuamk.fi', icon: Mail },
   ];
 
   return (
@@ -87,7 +85,11 @@ const Contact = () => {
       </div>
 
       <div className="container-site relative z-10">
-        <SectionHeader align="center" title={"Let's Build"} subtitle={'Something Amazing'} />
+        <SectionHeader
+          align="center"
+          title={'Collaboration'}
+          subtitle={'Research and Industrial AI'}
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           {/* Contact form */}
@@ -147,7 +149,7 @@ const Contact = () => {
                       </FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Tell me about your project or just say hello..."
+                          placeholder="Briefly describe your research scope, constraints, and timeline."
                           rows={6}
                           className="w-full px-4 py-4 bg-white/[0.03] border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] transition-all duration-300 resize-none relative z-10"
                           {...field}
@@ -177,16 +179,17 @@ const Contact = () => {
             </Form>
           </div>
 
-          {/* Social links and quote */}
+          {/* Social links */}
           <div className="lg:col-span-4 lg:col-start-9 space-y-12">
-            {/* Social links */}
             <div>
-              <h3 className="text-card-title text-hierarchy-primary mb-8">Connect With Me</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <h3 className="text-card-title text-hierarchy-primary mb-8">Professional Links</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {socialLinks.map((social) => (
                   <a
                     key={social.name}
                     href={social.href}
+                    target={social.name === 'Email' ? undefined : '_blank'}
+                    rel={social.name === 'Email' ? undefined : 'noopener noreferrer'}
                     className="group relative p-4 bg-white/[0.02] border border-white/10 rounded-xl transition-all duration-300 hover:bg-white/[0.05] hover:border-white/30 hover:scale-105 focus-enhanced"
                   >
                     <div className="relative z-10 text-center">
@@ -199,9 +202,6 @@ const Contact = () => {
                 ))}
               </div>
             </div>
-
-            {/* Spotify Now Playing */}
-            <SpotifyNowPlaying />
           </div>
         </div>
 

@@ -72,7 +72,7 @@ ${categories}
 <channel>
   <title>Imadlab Blog</title>
   <link>${SITE_URL}</link>
-  <description>Latest writing from Imadlab on data engineering, AI, and machine learning.</description>
+  <description>Technical notes on industrial AI systems, procedural extraction, architecture, and evaluation.</description>
   <language>en-us</language>
   <lastBuildDate>${now}</lastBuildDate>
   <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml" />
@@ -87,7 +87,8 @@ ${rssItems}
     title: 'Imadlab Blog',
     home_page_url: SITE_URL,
     feed_url: `${SITE_URL}/feed.json`,
-    description: 'Latest writing from Imadlab on data engineering, AI, and machine learning.',
+    description:
+      'Technical notes on industrial AI systems, procedural extraction, architecture, and evaluation.',
     items: items.map((item) => ({
       id: item.url,
       url: item.url,
