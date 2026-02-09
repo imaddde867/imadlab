@@ -1,10 +1,32 @@
+import { lazy, Suspense, type ReactNode } from 'react';
 import Hero from '@/components/Hero';
 import Projects from '@/components/Projects';
-import TechStack from '@/components/TechStack';
 import Marquee from '@/components/Marquee';
 import SEO from '@/components/SEO';
 import BlogFeed from '@/components/BlogFeed';
-import Contact from '@/components/Contact';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+
+const TechStack = lazy(() => import('@/components/TechStack'));
+const Contact = lazy(() => import('@/components/Contact'));
+
+type DeferredSectionProps = {
+  children: ReactNode;
+  minHeightClass?: string;
+};
+
+const DeferredSection = ({ children, minHeightClass }: DeferredSectionProps) => {
+  const { ref, isIntersecting } = useIntersectionObserver<HTMLDivElement>({
+    rootMargin: '300px',
+  });
+
+  return (
+    <div ref={ref} className={minHeightClass}>
+      {isIntersecting ? (
+        <Suspense fallback={<div className="section" aria-hidden="true" />}>{children}</Suspense>
+      ) : null}
+    </div>
+  );
+};
 
 const personSchema = {
   '@context': 'https://schema.org',
@@ -40,7 +62,9 @@ const Index = () => {
       <Hero />
 
       <Projects />
-      <TechStack />
+      <DeferredSection minHeightClass="min-h-[640px]">
+        <TechStack />
+      </DeferredSection>
       <div className="my-24">
         <Marquee
           words={[
@@ -62,7 +86,9 @@ const Index = () => {
       </div>
 
       <BlogFeed />
-      <Contact />
+      <DeferredSection minHeightClass="min-h-[760px]">
+        <Contact />
+      </DeferredSection>
     </div>
   );
 };
