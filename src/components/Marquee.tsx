@@ -34,17 +34,10 @@ const Marquee = ({ words, speed = 'normal' }: MarqueeProps) => {
 
   return (
     <div className="relative w-full overflow-hidden py-4">
-      <style>{`
-        @keyframes marquee {
-          0% { transform: translateX(0%); }
-          100% { transform: translateX(-100%); }
-        }
-        .animate-marquee {
-          animation: marquee ${duration} linear infinite !important;
-          will-change: transform;
-        }
-      `}</style>
-      <div className="flex whitespace-nowrap animate-marquee" style={{ animationDelay }}>
+      <div
+        className="flex whitespace-nowrap animate-marquee"
+        style={{ animationDelay, animationDuration: duration }}
+      >
         {/* Duplicate content to create seamless loop */}
         {[...shuffledWords, ...shuffledWords].map((word, index) => (
           <span

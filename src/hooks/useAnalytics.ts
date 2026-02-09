@@ -20,6 +20,9 @@ export const useAnalytics = () => {
   const sessionInitialized = useRef<boolean>(false);
   const pageViewIdRef = useRef<string | null>(null);
   const metadataRef = useRef<Awaited<ReturnType<typeof getAnalyticsMetadata>> | null>(null);
+  const isProductionHost =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'imadlab.me' || window.location.hostname === 'www.imadlab.me');
 
   const getMetadata = useCallback(async () => {
     if (metadataRef.current) return metadataRef.current;
@@ -29,7 +32,7 @@ export const useAnalytics = () => {
   }, []);
 
   useEffect(() => {
-    if (!isAllowed('analytics')) return;
+    if (!isProductionHost || !isAllowed('analytics')) return;
 
     const sessionId = sessionIdRef.current;
 
@@ -81,10 +84,10 @@ export const useAnalytics = () => {
     };
 
     initSession();
-  }, [getMetadata]);
+  }, [getMetadata, isProductionHost]);
 
   useEffect(() => {
-    if (!isAllowed('analytics')) return;
+    if (!isProductionHost || !isAllowed('analytics')) return;
 
     const sessionId = sessionIdRef.current;
     const startTime = Date.now();
@@ -164,5 +167,5 @@ export const useAnalytics = () => {
           });
       }
     };
-  }, [getMetadata, location.pathname]);
+  }, [getMetadata, isProductionHost, location.pathname]);
 };

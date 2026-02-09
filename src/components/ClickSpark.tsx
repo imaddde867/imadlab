@@ -32,7 +32,7 @@ const ClickSpark = ({
 }: ClickSparkProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sparksRef = useRef<Spark[]>([]);
-  const startTimeRef = useRef<number | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
   const isCoarsePointer = useIsCoarsePointer();
   const disableEffects = prefersReducedMotion || isCoarsePointer;
@@ -83,21 +83,27 @@ const ClickSpark = ({
     [easing]
   );
 
-  useEffect(() => {
-    if (disableEffects) {
-      return;
-    }
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    let animationId: number;
-    const draw = (timestamp: number) => {
-      if (!startTimeRef.current) {
-        startTimeRef.current = timestamp;
+  const draw = useCallback(
+    (timestamp: number) => {
+      if (disableEffects) {
+        animationFrameRef.current = null;
+        return;
       }
-      ctx?.clearRect(0, 0, canvas.width, canvas.height);
+
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        animationFrameRef.current = null;
+        return;
+      }
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        animationFrameRef.current = null;
+        return;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       sparksRef.current = sparksRef.current.filter((spark: Spark) => {
         const elapsed = timestamp - spark.startTime;
         if (elapsed >= duration) {
@@ -111,6 +117,7 @@ const ClickSpark = ({
         const y1 = spark.y + distance * Math.sin(spark.angle);
         const x2 = spark.x + (distance + lineLength) * Math.cos(spark.angle);
         const y2 = spark.y + (distance + lineLength) * Math.sin(spark.angle);
+
         ctx.strokeStyle = sparkColor;
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -119,22 +126,43 @@ const ClickSpark = ({
         ctx.stroke();
         return true;
       });
-      animationId = requestAnimationFrame(draw);
-    };
-    animationId = requestAnimationFrame(draw);
+
+      if (sparksRef.current.length > 0) {
+        animationFrameRef.current = requestAnimationFrame(draw);
+      } else {
+        animationFrameRef.current = null;
+      }
+    },
+    [disableEffects, duration, easeFunc, extraScale, sparkColor, sparkRadius, sparkSize]
+  );
+
+  useEffect(() => {
+    if (!disableEffects) {
+      return () => {
+        if (animationFrameRef.current !== null) {
+          cancelAnimationFrame(animationFrameRef.current);
+          animationFrameRef.current = null;
+        }
+      };
+    }
+
+    sparksRef.current = [];
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    ctx?.clearRect(0, 0, canvas?.width ?? 0, canvas?.height ?? 0);
+
+    if (animationFrameRef.current !== null) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+
     return () => {
-      cancelAnimationFrame(animationId);
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
     };
-  }, [
-    sparkColor,
-    sparkSize,
-    sparkRadius,
-    sparkCount,
-    duration,
-    easeFunc,
-    extraScale,
-    disableEffects,
-  ]);
+  }, [disableEffects]);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>): void => {
     if (disableEffects) {
@@ -153,6 +181,10 @@ const ClickSpark = ({
       startTime: now,
     }));
     sparksRef.current.push(...newSparks);
+
+    if (animationFrameRef.current === null) {
+      animationFrameRef.current = requestAnimationFrame(draw);
+    }
   };
 
   return (

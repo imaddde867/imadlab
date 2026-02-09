@@ -36,6 +36,8 @@
   Cache-Control: public, max-age=31536000, immutable
 
 # Cache static images in public folder for 30 days (extended from 1 week)
+/images/*
+  Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
 /*.png
   Cache-Control: public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=86400
 /*.jpg

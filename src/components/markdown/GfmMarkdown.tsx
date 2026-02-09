@@ -39,6 +39,7 @@ import { ListItem } from './components/ListItem';
 import { ThematicBreak } from './components/ThematicBreak';
 import { MathRenderer } from './components/MathRenderer';
 import { MermaidBlock } from './components/MermaidBlock';
+import 'katex/dist/katex.min.css';
 
 type RepositoryContext = {
   owner: string;
