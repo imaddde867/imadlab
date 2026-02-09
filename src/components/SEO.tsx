@@ -40,7 +40,7 @@ const DEFAULT_IMAGE = `${SITE_URL}/images/hero-moon.png`;
 const DEFAULT_AUTHOR = 'Imad Eddine El Mouss';
 const DEFAULT_TWITTER = '@imadlab';
 const DEFAULT_KEYWORDS =
-  'imadlab, imad eddine elmouss, data engineer, ai ml professional, machine learning, data science, portfolio, blog, projects, python, react, typescript';
+  'imadlab, imad eddine el mouss, research engineer, internal cto, applied research, industrial ai, multimodal data fusion, procedural knowledge extraction, privacy-by-design, auditable decision support, edge-to-cloud systems';
 
 const toAbsoluteUrl = (value?: string) => {
   if (!value) return DEFAULT_IMAGE;
@@ -83,7 +83,7 @@ const Seo = ({
   twitterHandle,
 }: SEOProps) => {
   const location = useLocation();
-  const defaultTitle = `${SITE_NAME} | Data Engineer & AI/ML Portfolio`;
+  const defaultTitle = `${SITE_NAME} | Research Engineer & Internal CTO`;
   const fullTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
   const currentUrl = `${SITE_URL}${location.pathname}`;
   const canonicalUrl = toAbsolutePageUrl(url || canonical) || currentUrl;

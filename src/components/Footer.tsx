@@ -18,7 +18,7 @@ const Footer = ({ onOpenCookiePrefs }: FooterProps) => {
             {/* Brand */}
             <div className="text-center md:text-left">
               <p className="text-sm text-white/60 max-w-md">
-                Data Eng, AI/ML projects, blogs, and experiments by Imad Eddine.
+                Applied research notes, projects, and architecture work in multimodal industrial AI.
               </p>
             </div>
 
