@@ -91,8 +91,8 @@ const Blogs = () => {
     <div className="min-h-screen bg-black text-white section pt-14">
       <SEO
         title="Blog"
-        description="Read articles and tutorials on data engineering, AI, machine learning, and more. Stay up-to-date with the latest trends and technologies."
-        keywords="data engineering blog, machine learning tutorials, ai articles, python tutorials, tech blog, data science articles, programming tutorials"
+        description="Technical notes on industrial AI systems, local LLM extraction pipelines, architecture tradeoffs, and evaluation."
+        keywords="industrial ai blog, applied research engineering notes, local llm pipelines, procedural knowledge extraction, ai system architecture, evaluation methodology"
         type="website"
         schemaType="CollectionPage"
         breadcrumbs={[

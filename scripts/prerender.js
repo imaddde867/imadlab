@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
 const SITE_NAME = 'Imadlab';
-const DEFAULT_TITLE = `${SITE_NAME} | Data Engineer & AI/ML Portfolio`;
+const DEFAULT_TITLE = `${SITE_NAME} | Research Engineer & Internal CTO`;
 const DEFAULT_IMAGE = `${SITE_URL}/images/hero-moon.png`;
 const DEFAULT_TWITTER = '@imadlab';
 const SEO_BLOCK_PATTERN = /<!-- prerender-seo:start -->[\s\S]*?<!-- prerender-seo:end -->/;
@@ -405,7 +405,7 @@ async function main() {
     seo: {
       title: 'Projects',
       description:
-        'Explore a collection of my projects in data engineering, AI, and machine learning.',
+        'Selected applied research projects in multimodal industrial AI, procedural knowledge extraction, and deployable data systems.',
       canonicalUrl: `${SITE_URL}/projects`,
       image: DEFAULT_IMAGE,
       type: 'website',
@@ -426,7 +426,8 @@ async function main() {
     baseHtml,
     seo: {
       title: 'Blog',
-      description: 'Latest writing from Imadlab on data engineering, AI, and machine learning.',
+      description:
+        'Technical notes on industrial AI systems, local LLM extraction pipelines, architecture, and evaluation.',
       canonicalUrl: `${SITE_URL}/blogs`,
       image: DEFAULT_IMAGE,
       type: 'website',

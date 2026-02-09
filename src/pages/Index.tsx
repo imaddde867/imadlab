@@ -11,11 +11,17 @@ const personSchema = {
   '@type': 'Person',
   name: 'Imad Eddine',
   url: 'https://imadlab.me',
-  jobTitle: 'Data Engineer',
-  knowsAbout: ['Python', 'Apache Pulsar', 'LLMs', 'React', 'Data Engineering'],
+  jobTitle: 'Research Engineer',
+  knowsAbout: [
+    'Applied industrial AI',
+    'Multimodal data fusion',
+    'Procedural knowledge extraction',
+    'Privacy-by-Design systems',
+    'Edge-to-cloud architecture',
+  ],
   sameAs: [
     'https://github.com/imaddde867',
-    'https://linkedin.com/in/imad-eddine-el-mouss-986741262',
+    'https://www.linkedin.com/in/imad-eddine-e-986741262/',
   ],
 };
 
@@ -24,8 +30,8 @@ const Index = () => {
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <SEO
         title="Home"
-        description="Welcome to the portfolio of Imad Eddine Elmouss, a Data Engineer and AI/ML professional. Explore projects, articles, and insights on data science, machine learning, and software engineering."
-        keywords="data engineer portfolio, ai ml engineer, machine learning projects, data science blog, python developer, react developer, portfolio website, tech blog"
+        description="Research Engineer and internal CTO at CoRe (Turku UAS) building deployable, Privacy-by-Design industrial AI systems for auditable decision support."
+        keywords="research engineer portfolio, internal cto applied research, industrial ai systems, multimodal data fusion, procedural knowledge extraction, privacy-by-design ai, edge-to-cloud ai"
         type="website"
         schemaType="WebSite"
         url="https://imadlab.me"
@@ -38,18 +44,18 @@ const Index = () => {
       <div className="my-24">
         <Marquee
           words={[
-            'Streaming',
-            'Orchestration',
-            'Data Modeling',
-            'Microservices',
-            'Real‑time Analytics',
-            'Feature Engineering',
-            'Training',
-            'Evaluation',
-            'MLOps',
-            'LLM Tooling',
-            'Privacy',
-            'Scalability',
+            'Multimodal Fusion',
+            'Procedural Extraction',
+            'Knowledge Graphs',
+            'Privacy-by-Design',
+            'Edge-to-Cloud',
+            'Auditable AI',
+            'Constraint Coverage',
+            'Operational Reliability',
+            'Integration Readiness',
+            'Evaluation Discipline',
+            'Reproducibility',
+            'Industrial Deployment',
           ]}
           speed="normal"
         />

@@ -87,8 +87,8 @@ const Projects = () => {
     <div className="min-h-screen bg-black text-white section pt-14">
       <SEO
         title="Projects"
-        description="Explore a collection of my projects in data engineering, AI, and machine learning. See live demos and browse the source code."
-        keywords="data engineering projects, machine learning projects, ai projects, python projects, react projects, open source, github projects, portfolio projects"
+        description="Selected applied research projects in multimodal industrial AI, procedural knowledge extraction, and deployable data/ML systems."
+        keywords="industrial ai projects, applied research engineering, multimodal data fusion projects, procedural knowledge extraction, deployable ai systems, edge-to-cloud architecture"
         type="website"
         schemaType="CollectionPage"
         breadcrumbs={[
