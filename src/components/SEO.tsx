@@ -36,7 +36,7 @@ type SEOProps = {
 
 const SITE_URL = 'https://imadlab.com';
 const SITE_NAME = 'Imadlab';
-const DEFAULT_IMAGE = `${SITE_URL}/images/hero-moon.png`;
+const DEFAULT_IMAGE = `${SITE_URL}/images/og-default.jpg`;
 const DEFAULT_AUTHOR = 'Imad Eddine El Mouss';
 const DEFAULT_TWITTER = '@imadlab';
 const DEFAULT_KEYWORDS =
@@ -58,6 +58,16 @@ const normaliseDate = (value?: string) => {
   if (!value) return undefined;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
+};
+
+const inferImageMimeType = (url: string) => {
+  const cleanUrl = url.split('?')[0].toLowerCase();
+  if (cleanUrl.endsWith('.jpg') || cleanUrl.endsWith('.jpeg')) return 'image/jpeg';
+  if (cleanUrl.endsWith('.png')) return 'image/png';
+  if (cleanUrl.endsWith('.gif')) return 'image/gif';
+  if (cleanUrl.endsWith('.webp')) return 'image/webp';
+  if (cleanUrl.endsWith('.avif')) return 'image/avif';
+  return undefined;
 };
 
 const Seo = ({
@@ -88,6 +98,8 @@ const Seo = ({
   const currentUrl = `${SITE_URL}${location.pathname}`;
   const canonicalUrl = toAbsolutePageUrl(url || canonical) || currentUrl;
   const ogImage = toAbsoluteUrl(image);
+  const ogImageType = inferImageMimeType(ogImage);
+  const isDefaultOgImage = ogImage === DEFAULT_IMAGE;
   const twitter = twitterHandle || DEFAULT_TWITTER;
 
   const keywordsContent = keywords ? `${keywords}, ${DEFAULT_KEYWORDS}` : DEFAULT_KEYWORDS;
@@ -248,6 +260,9 @@ const Seo = ({
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:image:secure_url" content={ogImage} />
+      {ogImageType && <meta property="og:image:type" content={ogImageType} />}
+      {isDefaultOgImage && <meta property="og:image:width" content="1200" />}
+      {isDefaultOgImage && <meta property="og:image:height" content="630" />}
       {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
       <meta property="og:locale" content={locale} />
       <meta property="og:site_name" content={SITE_NAME} />

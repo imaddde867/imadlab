@@ -35,3 +35,7 @@ jobs:
           publish_branch: gh-pages
           force_orphan: true
           cname: imadlab.com
+
+      - name: Notify IndexNow
+        run: node scripts/submit-indexnow.js
+        continue-on-error: true

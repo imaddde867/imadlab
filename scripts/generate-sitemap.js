@@ -4,6 +4,30 @@ import { createSupabaseClient } from './utils/supabase.js';
 
 const SITEMAP_PATH = './public/sitemap.xml';
 const supabase = createSupabaseClient();
+const ABSOLUTE_PREFIXES = ['http://', 'https://'];
+
+const escapeXml = (value = '') =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+
+const toAbsoluteImageUrl = (value) => {
+  if (!value || typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (ABSOLUTE_PREFIXES.some((prefix) => trimmed.startsWith(prefix))) return trimmed;
+  if (trimmed.startsWith('/')) return `${SITE_URL}${trimmed}`;
+  return `${SITE_URL}/${trimmed}`;
+};
+
+const renderImageTag = (imageUrl) => {
+  const absoluteImageUrl = toAbsoluteImageUrl(imageUrl);
+  if (!absoluteImageUrl) return '';
+  return `\n    <image:image>\n      <image:loc>${escapeXml(absoluteImageUrl)}</image:loc>\n    </image:image>`;
+};
 
 async function generateSitemap() {
   console.log('🚀 Generating enhanced sitemap...');
@@ -11,7 +35,7 @@ async function generateSitemap() {
   // Fetch posts with updated_at for better lastmod
   const { data: posts, error: postsError } = await supabase
     .from('posts')
-    .select('slug, published_date, updated_at, tags')
+    .select('slug, published_date, updated_at, tags, image_url')
     .order('published_date', { ascending: false });
 
   if (postsError) {
@@ -22,7 +46,7 @@ async function generateSitemap() {
   // Fetch projects with updated_at for better lastmod
   const { data: projects, error: projectsError } = await supabase
     .from('projects')
-    .select('id, created_at, updated_at, tech_tags')
+    .select('id, created_at, updated_at, tech_tags, image_url')
     .order('featured', { ascending: false })
     .order('created_at', { ascending: false });
 
@@ -61,8 +85,7 @@ async function generateSitemap() {
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${[...staticPages, ...tagUrls]
   .map(
     (page) => `  <url>
@@ -80,6 +103,7 @@ ${posts
     <lastmod>${new Date(post.updated_at || post.published_date).toISOString().split('T')[0]}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    ${renderImageTag(post.image_url)}
   </url>`
   )
   .join('\n')}
@@ -90,6 +114,7 @@ ${projects
     <lastmod>${new Date(project.updated_at || project.created_at).toISOString().split('T')[0]}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    ${renderImageTag(project.image_url)}
   </url>`
   )
   .join('\n')}
