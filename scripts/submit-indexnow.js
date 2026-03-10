@@ -119,6 +119,13 @@ async function main() {
         await postIndexNowBatch({ key, keyLocation, urlList });
         break;
       } catch (error) {
+        if (error?.status === 429) {
+          console.warn(
+            '⚠️  IndexNow rate-limited this request. Skipping for this deploy and trying again next deploy.'
+          );
+          return;
+        }
+
         const shouldRetry = attempt < SUBMIT_RETRY_ATTEMPTS;
         if (!shouldRetry) throw error;
         console.warn(
@@ -132,6 +139,8 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error('❌ IndexNow submission failed:', error);
-  process.exit(1);
+  console.warn(
+    `⚠️  IndexNow submission skipped: ${error?.message || 'unexpected error'}`
+  );
+  process.exit(0);
 });
