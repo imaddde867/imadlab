@@ -14,7 +14,11 @@ const DEFAULT_TITLE = `${SITE_NAME} | Research Engineer & Internal CTO`;
 const DEFAULT_IMAGE = `${SITE_URL}/images/og-default.jpg`;
 const DEFAULT_TWITTER = '@imadlab';
 const SEO_BLOCK_PATTERN = /<!-- prerender-seo:start -->[\s\S]*?<!-- prerender-seo:end -->/;
+const SITE_VERIFICATION_BLOCK_PATTERN =
+  /<!-- site-verification:start -->[\s\S]*?<!-- site-verification:end -->/;
 const ABSOLUTE_PREFIXES = ['http://', 'https://', 'data:', 'blob:'];
+const GOOGLE_SITE_VERIFICATION = process.env.VITE_GOOGLE_SITE_VERIFICATION?.trim() || '';
+const BING_SITE_VERIFICATION = process.env.VITE_BING_SITE_VERIFICATION?.trim() || '';
 
 const supabase = createSupabaseClient();
 const SEO_TITLE_MAP = {
@@ -45,6 +49,31 @@ const getSeoTitle = (title) => {
   if (!title || typeof title !== 'string') return title;
   const trimmed = title.trim();
   return SEO_TITLE_MAP[trimmed] || trimmed;
+};
+
+const buildSiteVerificationBlock = () => {
+  const tags = [];
+  if (GOOGLE_SITE_VERIFICATION) {
+    tags.push(
+      `<meta name="google-site-verification" content="${escapeHtml(GOOGLE_SITE_VERIFICATION)}" />`
+    );
+  }
+  if (BING_SITE_VERIFICATION) {
+    tags.push(`<meta name="msvalidate.01" content="${escapeHtml(BING_SITE_VERIFICATION)}" />`);
+  }
+  const tagsMarkup = tags.length ? `${tags.map((tag) => `    ${tag}`).join('\n')}\n` : '';
+  return `<!-- site-verification:start -->\n${tagsMarkup}    <!-- site-verification:end -->`;
+};
+
+const applySiteVerificationToHtml = (html) => {
+  const block = buildSiteVerificationBlock();
+  if (SITE_VERIFICATION_BLOCK_PATTERN.test(html)) {
+    return html.replace(SITE_VERIFICATION_BLOCK_PATTERN, block);
+  }
+  if (html.includes('</head>')) {
+    return html.replace('</head>', `  ${block}\n  </head>`);
+  }
+  return html;
 };
 
 const resolveImageUrl = (value) => {
@@ -140,12 +169,13 @@ ${jsonLdScripts ? `${jsonLdScripts}\n` : ''}    <!-- prerender-seo:end -->`;
 };
 
 const applySeoToHtml = (html, seo) => {
-  if (!seo) return html;
+  let output = applySiteVerificationToHtml(html);
+  if (!seo) return output;
 
   const title = getFullTitle(seo.title);
   const description = typeof seo.description === 'string' ? seo.description.trim() : '';
 
-  let output = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(title)}</title>`);
+  output = output.replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(title)}</title>`);
   output = output.replace(
     /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/,
     `<meta name="description" content="${escapeHtml(description)}" />`
@@ -411,6 +441,8 @@ async function main() {
     console.error('❌ Unable to read dist/index.html. Ensure the Vite build completed successfully.', error);
     return;
   }
+  baseHtml = applySiteVerificationToHtml(baseHtml);
+  await fs.writeFile(path.join(DIST_DIR, 'index.html'), baseHtml, 'utf8');
 
   const [projects, posts] = await Promise.all([fetchProjects(), fetchPosts()]);
 
