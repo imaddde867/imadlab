@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Meta tags dynamically injected by <Seo /> component via react-helmet-async -->
     <!-- Static fallbacks only for crawlers that don't execute JS -->
+    <script>
+      (function () {
+        var host = window.location.hostname.toLowerCase();
+        if (host === 'imadlab.me' || host === 'www.imadlab.me') {
+          var target =
+            'https://imadlab.com' +
+            window.location.pathname +
+            window.location.search +
+            window.location.hash;
+          window.location.replace(target);
+        }
+      })();
+    </script>
     <title>Imadlab | Research Engineer & Internal CTO</title>
     <meta name="description" content="Research Engineer and internal CTO at CoRe (Turku UAS) building deployable, Privacy-by-Design industrial AI systems." />
     <!-- prerender-seo:start -->
@@ -63,6 +76,8 @@
     <link rel="alternate" type="application/rss+xml" title="Imadlab Blog RSS Feed" href="/feed.xml" />
     <link rel="alternate" type="application/feed+json" title="Imadlab Blog JSON Feed" href="/feed.json" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <!-- site-verification:start -->
+    <!-- site-verification:end -->
 
     <!-- Structured Data -->
     <script type="application/ld+json">
