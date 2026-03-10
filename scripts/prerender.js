@@ -11,7 +11,7 @@ const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
 const SITE_NAME = 'Imadlab';
 const DEFAULT_TITLE = `${SITE_NAME} | Research Engineer & Internal CTO`;
-const DEFAULT_IMAGE = `${SITE_URL}/images/hero-moon.png`;
+const DEFAULT_IMAGE = `${SITE_URL}/images/og-default.jpg`;
 const DEFAULT_TWITTER = '@imadlab';
 const SEO_BLOCK_PATTERN = /<!-- prerender-seo:start -->[\s\S]*?<!-- prerender-seo:end -->/;
 const ABSOLUTE_PREFIXES = ['http://', 'https://', 'data:', 'blob:'];
@@ -32,6 +32,15 @@ const escapeHtml = (value = '') =>
     .replace(/'/g, '&#39;');
 
 const serialise = (data) => JSON.stringify(data).replace(/</g, '\\u003C');
+const inferImageMimeType = (value = '') => {
+  const cleanUrl = value.split('?')[0].toLowerCase();
+  if (cleanUrl.endsWith('.jpg') || cleanUrl.endsWith('.jpeg')) return 'image/jpeg';
+  if (cleanUrl.endsWith('.png')) return 'image/png';
+  if (cleanUrl.endsWith('.gif')) return 'image/gif';
+  if (cleanUrl.endsWith('.webp')) return 'image/webp';
+  if (cleanUrl.endsWith('.avif')) return 'image/avif';
+  return null;
+};
 const getSeoTitle = (title) => {
   if (!title || typeof title !== 'string') return title;
   const trimmed = title.trim();
@@ -85,6 +94,8 @@ const buildSeoBlock = ({
   const metaDescription = typeof description === 'string' ? description.trim() : '';
   const url = canonicalUrl || SITE_URL;
   const ogImage = toAbsoluteUrl(image);
+  const ogImageType = inferImageMimeType(ogImage);
+  const isDefaultOgImage = ogImage === DEFAULT_IMAGE;
   const alt = imageAlt || fullTitle;
   const twitter = twitterHandle || DEFAULT_TWITTER;
 
@@ -108,6 +119,13 @@ const buildSeoBlock = ({
     <meta property="og:type" content="${escapeHtml(type)}" />
     <meta property="og:url" content="${escapeHtml(url)}" />
     <meta property="og:image" content="${escapeHtml(ogImage)}" />
+    ${
+      ogImageType
+        ? `<meta property="og:image:type" content="${escapeHtml(ogImageType)}" />`
+        : ''
+    }
+    ${isDefaultOgImage ? '<meta property="og:image:width" content="1200" />' : ''}
+    ${isDefaultOgImage ? '<meta property="og:image:height" content="630" />' : ''}
     <meta property="og:image:alt" content="${escapeHtml(alt)}" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content="${escapeHtml(SITE_NAME)}" />
