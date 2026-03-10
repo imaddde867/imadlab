@@ -181,11 +181,11 @@ const ProjectDetail = () => {
   const breadcrumbTrail = [
     { name: 'Home', path: '/' },
     { name: 'Projects', path: '/projects' },
-    { name: project.title, url: `https://imadlab.me/projects/${project.id}` },
+    { name: project.title, url: `https://imadlab.com/projects/${project.id}` },
   ];
   const seoTitle = getSeoTitle(project.title);
   const coverImage = resolveImageUrl(project.image_url);
-  const projectUrl = `https://imadlab.me/projects/${project.id}`;
+  const projectUrl = `https://imadlab.com/projects/${project.id}`;
   const projectStructuredData = {
     '@context': 'https://schema.org',
     '@type': project.repo_url ? 'SoftwareApplication' : 'TechArticle',
@@ -200,7 +200,7 @@ const ProjectDetail = () => {
     author: {
       '@type': 'Person',
       name: 'Imad Eddine',
-      url: 'https://imadlab.me',
+      url: 'https://imadlab.com',
     },
     sameAs: [project.repo_url, project.demo_url].filter(Boolean),
     applicationCategory: project.repo_url ? 'DeveloperApplication' : undefined,

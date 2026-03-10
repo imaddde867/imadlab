@@ -85,7 +85,7 @@ const TagsIndex = () => {
           '@type': 'ListItem',
           position: i + 1,
           name: t.label,
-          url: `https://imadlab.me${tagToUrl(t.label)}`,
+          url: `https://imadlab.com${tagToUrl(t.label)}`,
         })),
       }]
     : undefined;

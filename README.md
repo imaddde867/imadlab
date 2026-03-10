@@ -7,7 +7,7 @@
 
 imadlab showcases how I design, build, and run data-heavy web systems end to end. A React 18 + TanStack Query front end sits on top of Supabase services, custom analytics, and automation scripts so the site stays fast, interactive, and always up to date.
 
-**Live Demo:** [imadlab.me](https://imadlab.me) | **Source:** [github.com/imaddde867/imadlab](https://github.com/imaddde867/imadlab)
+**Live Demo:** [imadlab.com](https://imadlab.com) | **Source:** [github.com/imaddde867/imadlab](https://github.com/imaddde867/imadlab)
 
 ## Quick Start
 
@@ -109,7 +109,7 @@ scripts/
 ---
 
 <div align="center" style="margin-top: 40px;">
-  <a href="https://imadlab.me">
+  <a href="https://imadlab.com">
     <img src="https://img.shields.io/badge/Visit_Live_Site-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Site">
   </a>
 </div>

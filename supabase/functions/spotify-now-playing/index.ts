@@ -14,7 +14,7 @@ if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !SPOTIFY_REFRESH_TOKEN) {
       {
         headers: {
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "https://imadlab.me",
+          "Access-Control-Allow-Origin": "https://imadlab.com",
           "Access-Control-Allow-Methods": "GET, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type, Authorization",
         },
