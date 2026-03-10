@@ -1,1 +1,1 @@
-export const SITE_URL = 'https://imadlab.me';
+export const SITE_URL = 'https://imadlab.com';

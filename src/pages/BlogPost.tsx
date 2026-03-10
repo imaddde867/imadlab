@@ -172,7 +172,7 @@ const BlogPost = () => {
   const breadcrumbTrail = [
     { name: 'Home', path: '/' },
     { name: 'Blog', path: '/blogs' },
-    { name: post.title, url: `https://imadlab.me/blogs/${post.slug}` },
+    { name: post.title, url: `https://imadlab.com/blogs/${post.slug}` },
   ];
   const articleReadTime = post.read_time || estimatedReadTime || undefined;
   const speakableSchema = [

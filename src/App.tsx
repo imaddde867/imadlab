@@ -71,7 +71,7 @@ const App = () => {
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
     const hostname = window.location.hostname;
-    if (hostname !== 'imadlab.me' && hostname !== 'www.imadlab.me') return;
+    if (hostname !== 'imadlab.com' && hostname !== 'www.imadlab.com') return;
 
     loadScriptIfConsented('analytics', 'https://static.cloudflareinsights.com/beacon.min.js', {
       'data-cf-beacon': '{"token": "e8df18bc2d9d4512835bc2f9798f4b24"}',

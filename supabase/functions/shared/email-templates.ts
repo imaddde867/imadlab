@@ -275,7 +275,7 @@ export function generateBlogPostEmail(data: BlogPostEmailData): string {
                 <a href="${THEME.socials.linkedin}" class="social-link">LinkedIn</a>
             </div>
             <div class="footer-text">
-                Crafted with care at imadlab.me
+                Crafted with care at imadlab.com
             </div>
             <a href="${unsubscribeUrl}" class="unsubscribe">Unsubscribe</a>
         </div>
@@ -342,7 +342,7 @@ export function generateProjectEmail(data: ProjectEmailData): string {
                 <a href="${THEME.socials.linkedin}" class="social-link">LinkedIn</a>
             </div>
             <div class="footer-text">
-                Building cool things at imadlab.me
+                Building cool things at imadlab.com
             </div>
             <a href="${unsubscribeUrl}" class="unsubscribe">Unsubscribe</a>
         </div>
