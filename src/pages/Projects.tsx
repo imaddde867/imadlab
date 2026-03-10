@@ -75,7 +75,7 @@ const Projects = () => {
             itemListElement: sortedProjects.map((project, index) => ({
               '@type': 'ListItem',
               position: index + 1,
-              url: `https://imadlab.me/projects/${project.id}`,
+              url: `https://imadlab.com/projects/${project.id}`,
               name: project.title,
               description: project.description ?? undefined,
             })),

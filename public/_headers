@@ -1,4 +1,4 @@
-# Cloudflare-optimized cache headers for imadlab.me
+# Cloudflare-optimized cache headers for imadlab.com
 # Note: Cloudflare respects Cache-Control headers and adds its own edge caching
 
 # Cache static assets for 1 year (immutable with hash in filename)

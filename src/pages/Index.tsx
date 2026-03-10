@@ -32,7 +32,7 @@ const personSchema = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: 'Imad Eddine',
-  url: 'https://imadlab.me',
+  url: 'https://imadlab.com',
   jobTitle: 'Research Engineer',
   knowsAbout: [
     'Applied industrial AI',
@@ -56,7 +56,7 @@ const Index = () => {
         keywords="research engineer portfolio, internal cto applied research, industrial ai systems, multimodal data fusion, procedural knowledge extraction, privacy-by-design ai, edge-to-cloud ai"
         type="website"
         schemaType="WebSite"
-        url="https://imadlab.me"
+        url="https://imadlab.com"
         structuredData={personSchema}
       />
       <Hero />

@@ -79,7 +79,7 @@ const Blogs = () => {
             itemListElement: sortedPosts.map((post, index) => ({
               '@type': 'ListItem',
               position: index + 1,
-              url: `https://imadlab.me/blogs/${post.slug}`,
+              url: `https://imadlab.com/blogs/${post.slug}`,
               name: post.title,
               description: post.excerpt ?? undefined,
             })),

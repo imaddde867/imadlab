@@ -22,7 +22,7 @@ export const useAnalytics = () => {
   const metadataRef = useRef<Awaited<ReturnType<typeof getAnalyticsMetadata>> | null>(null);
   const isProductionHost =
     typeof window !== 'undefined' &&
-    (window.location.hostname === 'imadlab.me' || window.location.hostname === 'www.imadlab.me');
+    (window.location.hostname === 'imadlab.com' || window.location.hostname === 'www.imadlab.com');
 
   const getMetadata = useCallback(async () => {
     if (metadataRef.current) return metadataRef.current;

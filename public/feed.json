@@ -1,13 +1,13 @@
 {
   "version": "https://jsonfeed.org/version/1.1",
   "title": "Imadlab Blog",
-  "home_page_url": "https://imadlab.me",
-  "feed_url": "https://imadlab.me/feed.json",
+  "home_page_url": "https://imadlab.com",
+  "feed_url": "https://imadlab.com/feed.json",
   "description": "Latest writing from Imadlab on data engineering, AI, and machine learning.",
   "items": [
     {
-      "id": "https://imadlab.me/blogs/1st-llm",
-      "url": "https://imadlab.me/blogs/1st-llm",
+      "id": "https://imadlab.com/blogs/1st-llm",
+      "url": "https://imadlab.com/blogs/1st-llm",
       "title": "How I Built My First Small Local LLM From Scratch",
       "summary": "A journey of curiosity, countless late nights, and surprisingly many cups of coffee",
       "tags": [

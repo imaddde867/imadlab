@@ -94,7 +94,7 @@ const Tag = () => {
     { name: 'Blog', path: '/blogs' },
     {
       name: `Tag: ${displayTag}`,
-      url: `https://imadlab.me/tags/${encodeURIComponent(tagSlugParam)}`,
+      url: `https://imadlab.com/tags/${encodeURIComponent(tagSlugParam)}`,
     },
   ];
 
@@ -109,7 +109,7 @@ const Tag = () => {
             '@type': 'ListItem',
             position: index + 1,
             name: post.title,
-            url: `https://imadlab.me/blogs/${post.slug}`,
+            url: `https://imadlab.com/blogs/${post.slug}`,
           })),
         }
       : undefined,
@@ -123,7 +123,7 @@ const Tag = () => {
             '@type': 'ListItem',
             position: index + 1,
             name: project.title,
-            url: `https://imadlab.me/projects/${project.id}`,
+            url: `https://imadlab.com/projects/${project.id}`,
           })),
         }
       : undefined,

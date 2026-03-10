@@ -34,7 +34,7 @@ type SEOProps = {
   twitterHandle?: string;
 };
 
-const SITE_URL = 'https://imadlab.me';
+const SITE_URL = 'https://imadlab.com';
 const SITE_NAME = 'Imadlab';
 const DEFAULT_IMAGE = `${SITE_URL}/images/hero-moon.png`;
 const DEFAULT_AUTHOR = 'Imad Eddine El Mouss';
