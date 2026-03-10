@@ -39,6 +39,10 @@ const SITE_NAME = 'Imadlab';
 const DEFAULT_IMAGE = `${SITE_URL}/images/og-default.jpg`;
 const DEFAULT_AUTHOR = 'Imad Eddine El Mouss';
 const DEFAULT_TWITTER = '@imadlab';
+const GOOGLE_SITE_VERIFICATION =
+  (import.meta.env.VITE_GOOGLE_SITE_VERIFICATION as string | undefined)?.trim() || '';
+const BING_SITE_VERIFICATION =
+  (import.meta.env.VITE_BING_SITE_VERIFICATION as string | undefined)?.trim() || '';
 const DEFAULT_KEYWORDS =
   'imadlab, imad eddine el mouss, research engineer, internal cto, applied research, industrial ai, multimodal data fusion, procedural knowledge extraction, privacy-by-design, auditable decision support, edge-to-cloud systems';
 
@@ -236,6 +240,10 @@ const Seo = ({
       <meta name="keywords" content={keywordsContent} />
       <meta name="author" content={author} />
       <meta name="robots" content={robotsDirectives} />
+      {GOOGLE_SITE_VERIFICATION && (
+        <meta name="google-site-verification" content={GOOGLE_SITE_VERIFICATION} />
+      )}
+      {BING_SITE_VERIFICATION && <meta name="msvalidate.01" content={BING_SITE_VERIFICATION} />}
       <link rel="canonical" href={canonicalUrl} />
       <link
         rel="alternate"

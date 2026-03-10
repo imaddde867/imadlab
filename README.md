@@ -94,6 +94,7 @@ scripts/
 ## Development Notes
 
 - Fill `.env` and Supabase secrets before invoking Edge Functions locally.
+- Optional SEO verification: set `VITE_GOOGLE_SITE_VERIFICATION` and `VITE_BING_SITE_VERIFICATION` in `.env` (local) and as GitHub Actions repository secrets (deploy).
 - Analytics honors the cookie consent gate; when disabled, no data leaves the browser.
 - Newsletter and contact workflows require Resend + Formspree credentials to send real email.
 - Linting (`npm run lint`) and type checks (`npm run typecheck`) guard pull requests; CI mirrors the same commands.
