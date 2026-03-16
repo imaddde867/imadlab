@@ -85,7 +85,7 @@ const App = () => {
     if (typeof window === 'undefined') return;
     if (window.location.pathname.startsWith('/admin')) return;
 
-    const timer = window.setTimeout(() => setShouldLoadNewsletter(true), 500);
+    const timer = window.setTimeout(() => setShouldLoadNewsletter(true), 5000); // 5s delay for new visitors
     return () => window.clearTimeout(timer);
   }, []);
 

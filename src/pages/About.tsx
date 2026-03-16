@@ -10,7 +10,7 @@ const About = () => {
   return (
     <div className="relative min-h-screen bg-black text-white section pt-14">
       <Stars />
-      <div className="absolute inset-0 opacity-10 animate-subtle-flicker" />
+      <div className="absolute inset-0 opacity-10" />
       <SEO
         title="About Imad Eddine"
         description="Research Engineer and internal CTO at CoRe (Turku UAS), focused on deployable multimodal industrial AI, procedural knowledge extraction, and Privacy-by-Design systems."

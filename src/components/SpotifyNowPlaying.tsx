@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Music, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SpotifyData {
   isPlaying: boolean;
@@ -18,13 +19,8 @@ const SpotifyNowPlaying: React.FC = () => {
   useEffect(() => {
     const fetchSpotifyData = async () => {
       try {
-        const response = await fetch(
-          'https://mpkgugcasxpanhrkpkhs.supabase.co/functions/v1/spotify-now-playing'
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result: SpotifyData = await response.json();
+        const { data: result, error } = await supabase.functions.invoke<SpotifyData>('spotify-now-playing');
+        if (error) throw error;
         setData(result);
       } catch (e: unknown) {
         setError(e instanceof Error ? e.message : String(e));
