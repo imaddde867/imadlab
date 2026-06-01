@@ -6,7 +6,7 @@ const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || Deno.env.get('S
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://imadlab.com',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
@@ -31,6 +31,7 @@ serve(async (req) => {
   }
 
   try {
+    // Verify Supabase JWT
     const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
     if (authError || !user) {
       return new Response(
@@ -38,22 +39,10 @@ serve(async (req) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
       );
     }
-  } catch {
-    return new Response(
-      JSON.stringify({ error: 'Authentication failed' }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
-    );
-  }
 
-  const STRAVA_CLIENT_ID = Deno.env.get('STRAVA_CLIENT_ID');
+    const STRAVA_CLIENT_ID = Deno.env.get('STRAVA_CLIENT_ID');
     const STRAVA_CLIENT_SECRET = Deno.env.get('STRAVA_CLIENT_SECRET');
     const STRAVA_REFRESH_TOKEN = Deno.env.get('STRAVA_REFRESH_TOKEN');
-
-    console.log('Strava credentials check:', {
-      hasClientId: !!STRAVA_CLIENT_ID,
-      hasClientSecret: !!STRAVA_CLIENT_SECRET,
-      hasRefreshToken: !!STRAVA_REFRESH_TOKEN,
-    });
 
     if (!STRAVA_CLIENT_ID || !STRAVA_CLIENT_SECRET || !STRAVA_REFRESH_TOKEN) {
       const missing = [];
@@ -123,11 +112,6 @@ serve(async (req) => {
       statsResponse.json(),
       activitiesResponse.json(),
     ]);
-
-    console.log('Successfully fetched Strava data:', {
-      statsKeys: Object.keys(stats),
-      activitiesCount: activities.length,
-    });
 
     return new Response(
       JSON.stringify({ stats, activities }),
