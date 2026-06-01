@@ -126,41 +126,43 @@ const Header = () => {
       </header>
 
       {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-30 sm:hidden">
-          {/* Backdrop */}
+      <div className={`fixed inset-0 z-30 sm:hidden ${mobileMenuOpen ? '' : 'pointer-events-none'}`}>
+        {/* Backdrop */}
+        {mobileMenuOpen && (
           <div
             className="absolute inset-0 bg-black/80 backdrop-blur-md"
             onClick={() => setMobileMenuOpen(false)}
           />
+        )}
 
-          {/* Menu Content */}
-          <nav
-            className="relative top-14 bg-black/95 border-b border-white/10 shadow-2xl"
-            aria-label="Mobile navigation"
-          >
-            <div className="max-w-7xl mx-auto px-4 py-6 space-y-1">
-              {PRIMARY_NAV_ITEMS.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  onPointerEnter={() => maybePrefetch(item.path)}
-                  onFocus={() => maybePrefetch(item.path)}
-                  className={({ isActive }) =>
-                    `block px-4 py-3 rounded-lg text-base font-medium transition-all ${
-                      isActive || location.pathname.startsWith(item.path)
-                        ? 'bg-white/10 text-white border-l-2 border-white'
-                        : 'text-white/70 hover:text-white hover:bg-white/5'
-                    }`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-            </div>
-          </nav>
-        </div>
-      )}
+        {/* Menu Content */}
+        <nav
+          className={`relative top-14 bg-black/95 border-b border-white/10 shadow-2xl transition-all duration-300 ${
+            mobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0 pointer-events-none'
+          }`}
+          aria-label="Mobile navigation"
+        >
+          <div className="max-w-7xl mx-auto px-4 py-6 space-y-1">
+            {PRIMARY_NAV_ITEMS.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                onPointerEnter={() => maybePrefetch(item.path)}
+                onFocus={() => maybePrefetch(item.path)}
+                className={({ isActive }) =>
+                  `block px-4 py-3 rounded-lg text-base font-medium transition-all ${
+                    isActive || location.pathname.startsWith(item.path)
+                      ? 'bg-white/10 text-white border-l-2 border-white'
+                      : 'text-white/70 hover:text-white hover:bg-white/5'
+                  }`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+        </nav>
+      </div>
     </>
   );
 };

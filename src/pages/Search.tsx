@@ -5,6 +5,7 @@ import SEO from '@/components/SEO';
 import SectionHeader from '@/components/SectionHeader';
 import CardItem from '@/components/ui/CardItem';
 import ProjectCard from '@/components/ProjectCard';
+import { Loader2 } from 'lucide-react';
 import { POST_SEARCH_SELECT, PROJECT_SEARCH_SELECT } from '@/lib/content-selects';
 import type { PostDetail, ProjectDetail } from '@/types/content';
 
@@ -21,7 +22,7 @@ const Search = () => {
     return () => clearTimeout(t);
   }, [q]);
 
-  const { data: posts = [] } = useQuery({
+  const { data: posts = [], isLoading: postsLoading } = useQuery({
     queryKey: ['search-posts'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -34,7 +35,7 @@ const Search = () => {
     staleTime: 60_000,
   });
 
-  const { data: projects = [] } = useQuery({
+  const { data: projects = [], isLoading: projectsLoading } = useQuery({
     queryKey: ['search-projects'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -90,13 +91,24 @@ const Search = () => {
         <SectionHeader title={<span className="text-brand-gradient">Search</span>} />
 
         <div className="mb-8">
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search posts and projects..."
-            className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-white/30"
-          />
+          <div className="relative">
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search posts and projects..."
+              className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-white/30"
+            />
+            {(postsLoading || projectsLoading) && (
+              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-white/50" />
+            )}
+          </div>
         </div>
+
+        {!debounced && (
+          <p className="text-white/40 text-sm">
+            Search across posts and projects by title, tags, or content.
+          </p>
+        )}
 
         {debounced && (
           <>

@@ -18,6 +18,7 @@ export const useAnalytics = () => {
   const location = useLocation();
   const sessionIdRef = useRef<string>(generateSessionId());
   const sessionInitialized = useRef<boolean>(false);
+  const sessionReadyRef = useRef<{ resolve: () => void; promise: Promise<void> } | null>(null);
   const pageViewIdRef = useRef<string | null>(null);
   const metadataRef = useRef<Awaited<ReturnType<typeof getAnalyticsMetadata>> | null>(null);
   const isProductionHost =
@@ -38,6 +39,13 @@ export const useAnalytics = () => {
 
     // Create or update session
     const initSession = async () => {
+      // Create the session-ready promise before any async work
+      let resolveReady!: () => void;
+      const readyPromise = new Promise<void>((resolve) => {
+        resolveReady = resolve;
+      });
+      sessionReadyRef.current = { promise: readyPromise, resolve: resolveReady };
+
       const metadata = await getMetadata();
 
       logger.debug('📊 Analytics metadata collected:', metadata);
@@ -59,9 +67,11 @@ export const useAnalytics = () => {
 
       if (error) {
         logger.error('❌ Analytics session error:', error);
+        sessionReadyRef.current?.resolve();
       } else {
         logger.debug('✅ Analytics session created/updated:', sessionId);
         sessionInitialized.current = true;
+        sessionReadyRef.current?.resolve();
 
         // Call geolocation edge function to enrich session with location data
         try {
@@ -95,12 +105,8 @@ export const useAnalytics = () => {
 
     // Track page view - ensure session exists first
     const trackPageView = async () => {
-      // Wait for session to be initialized if not ready yet
-      let attempts = 0;
-      while (!sessionInitialized.current && attempts < 10) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        attempts++;
-      }
+      // Wait for session to be initialized
+      await sessionReadyRef.current?.promise;
 
       // Get analytics metadata
       const metadata = await getMetadata();

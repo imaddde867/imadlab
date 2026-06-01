@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import SEO from '@/components/SEO';
 import { GridSkeleton } from '@/components/ui/LoadingStates';
 import NewsletterSignup from '@/components/NewsletterSignup';
+import BackRow from '@/components/BackRow';
 import { readPrerenderData } from '@/lib/prerender-data';
 import SectionHeader from '@/components/SectionHeader';
 import { getTopTags, tagToUrl } from '@/lib/tags';
@@ -97,16 +98,12 @@ const Projects = () => {
         ]}
         additionalSchemas={projectListSchema}
       />
+      <BackRow
+        to="/"
+        label="Home"
+        icon={<ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />}
+      />
       <div className="container-site">
-        <div className="mb-8">
-          <Link
-            to="/"
-            className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
-          </Link>
-        </div>
         <div>
           <SectionHeader title={<span className="text-brand-gradient">Projects</span>} />
         </div>

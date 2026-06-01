@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 interface NewsletterSignupProps {
   className?: string;
@@ -99,7 +100,7 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
             description: 'Failed to subscribe. Please try again.',
             variant: 'destructive',
           });
-          console.error('Error subscribing:', error);
+          logger.error('Error subscribing:', error);
         }
       } else {
         // Success
@@ -120,7 +121,7 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
         description: 'An unexpected error occurred. Please try again.',
         variant: 'destructive',
       });
-      console.error('Unexpected error:', err);
+      logger.error('Unexpected error:', err);
     } finally {
       setIsSubmitting(false);
     }
