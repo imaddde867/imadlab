@@ -25,11 +25,11 @@ const daysToExpires = (days: number) => {
 };
 
 const setCookie = (name: string, value: string, days: number) => {
-  document.cookie = `${name}=${value}; expires=${daysToExpires(days)}; path=/; SameSite=Lax`;
+  document.cookie = `${name}=${value}; expires=${daysToExpires(days)}; path=/; SameSite=Lax; Secure`;
 };
 
 const getCookie = (name: string): string | null => {
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  const match = document.cookie.match(new RegExp('(^| ;)' + name + '=([^;]+)'));
   return match ? match[2] : null;
 };
 

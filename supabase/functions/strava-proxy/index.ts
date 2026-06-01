@@ -1,4 +1,9 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+
+const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || Deno.env.get('SUPABASE_ANON_KEY') || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -16,8 +21,31 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  // Verify caller is authenticated
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader) {
+    return new Response(
+      JSON.stringify({ error: 'Authentication required' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+    );
+  }
+
   try {
-    const STRAVA_CLIENT_ID = Deno.env.get('STRAVA_CLIENT_ID');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+  } catch {
+    return new Response(
+      JSON.stringify({ error: 'Authentication failed' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+    );
+  }
+
+  const STRAVA_CLIENT_ID = Deno.env.get('STRAVA_CLIENT_ID');
     const STRAVA_CLIENT_SECRET = Deno.env.get('STRAVA_CLIENT_SECRET');
     const STRAVA_REFRESH_TOKEN = Deno.env.get('STRAVA_REFRESH_TOKEN');
 

@@ -1,5 +1,5 @@
 import { assertEquals, assertExists } from "https://deno.land/std@0.168.0/testing/asserts.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
 // Integration tests for email system
 // Note: These tests require a test Supabase instance with proper setup

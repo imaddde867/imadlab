@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import clsx from 'clsx';
+import DOMPurify from 'dompurify';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 type MermaidModule = typeof import('mermaid');
@@ -55,7 +56,22 @@ export const MermaidBlock = ({ code, maxDiagramSizeKB }: MermaidBlockProps) => {
         const mermaid = await loadMermaid();
         const { svg: renderedSvg } = await mermaid.render(`mermaid-${diagramId}`, code);
         if (!cancelled) {
-          setSvg(renderedSvg);
+          const sanitizedSvg = DOMPurify.sanitize(renderedSvg, {
+            USE_PROFILES: { svg: true, svgFilters: true },
+            ALLOWED_TAGS: ['svg', 'g', 'path', 'line', 'circle', 'rect', 'polygon', 'polyline',
+              'ellipse', 'text', 'tspan', 'textPath', 'defs', 'marker', 'use', 'linearGradient',
+              'radialGradient', 'stop', 'filter', 'feGaussianBlur', 'feMerge', 'feMergeNode',
+              'feOffset', 'title', 'desc', 'clipPath', 'mask'],
+            ALLOWED_ATTR: ['class', 'style', 'd', 'x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'r',
+              'rx', 'ry', 'width', 'height', 'points', 'fill', 'stroke', 'stroke-width',
+              'font-size', 'font-family', 'font-weight', 'text-anchor', 'dominant-baseline',
+              'transform', 'opacity', 'href', 'xlink:href', 'id', 'viewBox', 'preserveAspectRatio'],
+            FORBID_TAGS: ['a', 'script', 'image', 'foreignObject', 'iframe'],
+            FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onmouseenter',
+              'onmouseout', 'onkeydown', 'onkeyup', 'onkeypress', 'onsubmit', 'onchange', 'oninput',
+              'onblur', 'onfocus', 'formaction'],
+          });
+          setSvg(sanitizedSvg);
           setError(null);
         }
       } catch (err) {

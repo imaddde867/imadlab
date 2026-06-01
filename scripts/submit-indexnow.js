@@ -2,7 +2,6 @@ import fs from 'fs/promises';
 
 const SITE_URL = 'https://imadlab.com';
 const HOST = 'imadlab.com';
-const DEFAULT_INDEXNOW_KEY = '47bf4593ec4fc33700cda5cecf0d7fec';
 const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
 const SITEMAP_PATH = './public/sitemap.xml';
 const URL_BATCH_SIZE = 10000;
@@ -88,7 +87,12 @@ const chunk = (arr, size) => {
 };
 
 async function main() {
-  const key = (process.env.INDEXNOW_KEY || DEFAULT_INDEXNOW_KEY).trim();
+  const key = process.env.INDEXNOW_KEY?.trim();
+  if (!key) {
+    console.warn('⚠️  IndexNow skipped: INDEXNOW_KEY not set.');
+    process.exit(0);
+  }
+
   const keyLocation = `${SITE_URL}/${key}.txt`;
 
   try {

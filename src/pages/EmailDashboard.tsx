@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import DOMPurify from 'dompurify';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -926,7 +927,7 @@ const EmailDashboard = () => {
 
     return (
       <div className="border border-white/10 rounded-lg p-4 bg-black">
-        <div dangerouslySetInnerHTML={{ __html: previewContent }} />
+        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(previewContent) }} />
       </div>
     );
   };
