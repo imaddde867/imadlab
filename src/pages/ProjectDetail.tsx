@@ -19,100 +19,14 @@ import ShareBar from '@/components/ShareBar';
 import { stripMarkdown } from '@/lib/markdown-utils';
 import { tagToUrl } from '@/lib/tags';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
-import CardItem from '@/components/ui/CardItem';
-import ProjectCard from '@/components/ProjectCard';
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { RelatedPosts, RelatedProjects } from '@/components/RelatedContent';
 import { getSeoTitle } from '@/lib/seo-utils';
 import { resolveImageUrl } from '@/lib/image-utils';
-import { POST_SUMMARY_SELECT, PROJECT_DETAIL_SELECT, PROJECT_LIST_SELECT } from '@/lib/content-selects';
-import type { PostSummary, ProjectDetail as ProjectDetailType, ProjectSummary } from '@/types/content';
+import { PROJECT_DETAIL_SELECT } from '@/lib/content-selects';
+import type { ProjectDetail as ProjectDetailType } from '@/types/content';
 import { parseGithubRepo } from '@/lib/github';
 import { useGithubRepoInfo } from '@/hooks/useGithubRepoInfo';
-import { expandTagVariants } from '@/lib/tag-variants';
 import { readPrerenderData } from '@/lib/prerender-data';
-
-const RelatedProjects = ({ currentId, tags }: { currentId: string; tags: string[] }) => {
-  const queryTags = useMemo(() => expandTagVariants(tags), [tags]);
-  const { ref, isIntersecting } = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px' });
-  const { data: related = [] } = useQuery({
-    queryKey: ['related-projects', currentId, queryTags.slice().sort().join(',')],
-    enabled: tags.length > 0 && isIntersecting,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('projects')
-        .select(PROJECT_LIST_SELECT)
-        .overlaps('tech_tags', queryTags)
-        .neq('id', currentId)
-        .order('created_at', { ascending: false })
-        .limit(3);
-      if (error) throw error;
-      return data as ProjectSummary[];
-    },
-    staleTime: 60_000,
-  });
-
-  if (!related.length && !isIntersecting) return null;
-
-  return (
-    <section ref={ref} className="mt-12 border-t border-white/10 pt-8">
-      <h2 className="text-xl font-semibold mb-6">Related projects</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {related.map((p) => (
-          <ProjectCard
-            key={p.id}
-            project={p}
-            linkTo={`/projects/${p.id}`}
-            linkLabel="View Project"
-          />
-        ))}
-      </div>
-    </section>
-  );
-};
-
-const RelatedPosts = ({ currentId, tags }: { currentId: string; tags: string[] }) => {
-  const queryTags = useMemo(() => expandTagVariants(tags), [tags]);
-  const { ref, isIntersecting } = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px' });
-  const { data: related = [] } = useQuery({
-    queryKey: ['related-posts', currentId, queryTags.slice().sort().join(',')],
-    enabled: tags.length > 0 && isIntersecting,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('posts')
-        .select(POST_SUMMARY_SELECT)
-        .overlaps('tags', queryTags)
-        .order('published_date', { ascending: false })
-        .limit(3);
-      if (error) throw error;
-      return data as PostSummary[];
-    },
-    staleTime: 60_000,
-  });
-
-  if (!related.length && !isIntersecting) return null;
-
-  return (
-    <section ref={ref} className="mt-12 border-t border-white/10 pt-8">
-      <h2 className="text-xl font-semibold mb-6">Related articles</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {related.map((p) => (
-          <CardItem
-            key={p.id}
-            title={p.title}
-            tags={p.tags || []}
-            date={new Date(p.published_date).toLocaleDateString('en-US')}
-            excerpt={p.excerpt || ''}
-            linkTo={`/blogs/${p.slug}`}
-            linkLabel="Read"
-            readTime={p.read_time || undefined}
-            isBlog
-            image_url={p.image_url || undefined}
-          />
-        ))}
-      </div>
-    </section>
-  );
-};
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -351,7 +265,7 @@ const ProjectDetail = () => {
                 {projectTags.length > 3 && (
                   <button
                     onClick={() => setShowAllTags(!showAllTags)}
-                    className="text-xs text-blue-400 hover:text-blue-300 flex items-center"
+                    className="text-xs text-primary hover:text-primary/80 flex items-center"
                     aria-label={showAllTags ? 'Show fewer tags' : 'Show all tags'}
                   >
                     {showAllTags ? (
@@ -441,7 +355,7 @@ const ProjectDetail = () => {
         )}
         {/* Related Projects */}
         <RelatedProjects currentId={project.id} tags={projectTags} />
-        <RelatedPosts currentId={project.id} tags={projectTags} />
+        <RelatedPosts tags={projectTags} />
       </main>
 
       {/* Page footer removed; global Footer is used */}

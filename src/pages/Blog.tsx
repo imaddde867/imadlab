@@ -7,6 +7,8 @@ import { ArrowLeft } from 'lucide-react';
 import SEO from '@/components/SEO';
 import SectionHeader from '@/components/SectionHeader';
 import NewsletterSignup from '@/components/NewsletterSignup';
+import BackRow from '@/components/BackRow';
+import { Skeleton } from '@/components/ui/skeleton';
 import { readPrerenderData } from '@/lib/prerender-data';
 import { getTopTags, tagToUrl } from '@/lib/tags';
 import { POST_SUMMARY_SELECT } from '@/lib/content-selects';
@@ -101,16 +103,12 @@ const Blogs = () => {
         ]}
         additionalSchemas={postListSchema}
       />
+      <BackRow
+        to="/"
+        label="Home"
+        icon={<ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />}
+      />
       <div className="container-site">
-        <div className="mb-8">
-          <Link
-            to="/"
-            className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
-          </Link>
-        </div>
         <div>
           <SectionHeader title={<span className="text-brand-gradient">Blog</span>} />
         </div>
@@ -173,8 +171,17 @@ const Blogs = () => {
         )}
 
         {isSkeletonVisible ? (
-          <div className="text-center py-12">
-            <div className="text-white/60">Loading posts...</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="flex flex-col gap-3">
+                <Skeleton className="aspect-video w-full" />
+                <Skeleton className="h-6 w-3/4" />
+                <div className="flex gap-2">
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
