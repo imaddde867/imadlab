@@ -1,0 +1,1 @@
+import{j as e,L as n}from"./index-rFCdR7xM.js";const o=({to:t,label:s,icon:i,right:r})=>e.jsx("div",{className:"container-narrow pt-6",children:e.jsxs("div",{className:"flex items-center justify-between text-sm text-white/70",children:[e.jsxs(n,{to:t,className:"inline-flex items-center hover:text-white transition-colors group",children:[i,s]}),r]})});export{o as B};

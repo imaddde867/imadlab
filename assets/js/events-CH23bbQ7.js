@@ -1,0 +1,1 @@
+import{ac as o,s as a}from"./index-rFCdR7xM.js";async function c(s,n={}){try{if(!o("analytics"))return;const t=sessionStorage.getItem("analytics_session_id")||null,e=typeof window<"u"?window.location.pathname:null;await a.from("events").insert({name:s,data:n,path:e,session_id:t})}catch{}}export{c as logEvent};
