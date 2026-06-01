@@ -5,7 +5,7 @@
   <link>https://imadlab.com</link>
   <description>Technical notes on industrial AI systems, procedural extraction, architecture, and evaluation.</description>
   <language>en-us</language>
-  <lastBuildDate>Mon, 01 Jun 2026 16:48:17 GMT</lastBuildDate>
+  <lastBuildDate>Mon, 01 Jun 2026 16:51:45 GMT</lastBuildDate>
   <atom:link href="https://imadlab.com/feed.xml" rel="self" type="application/rss+xml" />
   <item>
     <title>Evaluation Beyond Accuracy: Constraint Coverage and Safety in Procedure Extraction</title>
