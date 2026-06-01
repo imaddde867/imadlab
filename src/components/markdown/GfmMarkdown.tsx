@@ -469,6 +469,12 @@ export const GfmMarkdown = ({
   const rehypePlugins = useMemo<PluggableList>(() => {
     const plugins: PluggableList = [rehypeRaw];
     if (mergedConfig.sanitizeHtml) {
+      // rehypeRaw runs first to parse raw HTML into the AST.
+      // rehypeSanitize then strips any tags/attributes not in the allowlist.
+      // The defaultSchema blocks iframe/object/embed/script/form/input/button.
+      // mathSchemaExtensions only adds explicit whitelisted tags and attributes
+      // (details, summary, figure, figcaption, video, audio, track) with
+      // restricted attribute sets. No event handlers or javascript: URIs allowed.
       plugins.push([rehypeSanitize, mathSchemaExtensions]);
     }
     if (mergedConfig.enableMath) {
