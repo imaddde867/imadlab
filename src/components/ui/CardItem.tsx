@@ -46,7 +46,6 @@ const CardItem = ({
   const containerRef = useRef<HTMLHeadingElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const [shouldMarquee, setShouldMarquee] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const [isCardHovered, setIsCardHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -104,10 +103,10 @@ const CardItem = ({
     <span
       ref={titleRef}
       className={`block transition-all duration-700 ease-in-out ${
-        shouldMarquee && isHovered ? 'whitespace-nowrap' : 'truncate'
+        shouldMarquee && isCardHovered ? 'whitespace-nowrap' : 'truncate'
       }`}
       style={
-        shouldMarquee && isHovered
+        shouldMarquee && isCardHovered
           ? {
               transform: `translateX(-${
                 titleRef.current && containerRef.current
@@ -125,8 +124,6 @@ const CardItem = ({
             }
           : { transform: 'translateX(0)', transition: 'transform 0.5s ease-out' }
       }
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {title}
     </span>
@@ -247,9 +244,9 @@ const CardItem = ({
           {(tags?.length || date) && (
             <div className="flex flex-wrap items-center gap-2 min-h-[1.5rem]">
               {tags &&
-                tags.slice(0, 4).map((tag, i) => (
+                tags.slice(0, 4).map((tag) => (
                   <Link
-                    key={i}
+                    key={tag}
                     to={tagToUrl(tag)}
                     className={`px-3 py-1 text-xs font-medium rounded-full transition-all duration-200 ${
                       isCardHovered
