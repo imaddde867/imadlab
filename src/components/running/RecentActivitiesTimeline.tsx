@@ -1,5 +1,5 @@
 import { StravaActivity } from '@/integrations/strava/client';
-import { Heart, Award, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import {
   formatDistanceCompact,
@@ -118,27 +118,6 @@ const RecentActivitiesTimeline = ({ activities }: RecentActivitiesTimelineProps)
                   </div>
                 </div>
 
-                {/* Additional metrics */}
-                {(activity.average_heartrate || activity.suffer_score) && (
-                  <div className="flex items-center gap-4 pt-3 mt-3 border-t border-white/[0.05]">
-                    {activity.average_heartrate && (
-                      <div className="flex items-center gap-1.5 text-xs group/metric hover:text-[#FC4C02] transition-colors cursor-default">
-                        <Heart className="w-3.5 h-3.5 text-white/30 group-hover/metric:text-[#FC4C02]/70" />
-                        <span className="text-white/50 group-hover/metric:text-[#FC4C02]">
-                          {Math.round(activity.average_heartrate)} bpm
-                        </span>
-                      </div>
-                    )}
-                    {activity.suffer_score && (
-                      <div className="flex items-center gap-1.5 text-xs group/metric hover:text-[#FC4C02] transition-colors cursor-default">
-                        <Award className="w-3.5 h-3.5 text-white/30 group-hover/metric:text-[#FC4C02]/70" />
-                        <span className="text-white/50 group-hover/metric:text-[#FC4C02]">
-                          Suffer Score: {activity.suffer_score}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             </div>
           </div>

@@ -133,9 +133,9 @@ export function isAllowed(category: ConsentCategory): boolean {
   }
   
   const c = getConsent();
-  // If no decision has been made yet, allow all by default
-  if (!c) return true;
-  return !!c && !!c[category];
+  // No decision yet — deny until explicit opt-in (GDPR default)
+  if (!c) return false;
+  return !!c[category];
 }
 
 export function acceptAll() {

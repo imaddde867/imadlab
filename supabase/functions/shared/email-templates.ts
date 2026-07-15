@@ -1,3 +1,22 @@
+const escapeHtml = (value: string): string =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+const safeUrl = (value: string | undefined): string | null => {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+    return escapeHtml(value);
+  } catch {
+    return null;
+  }
+};
+
 // Shared styles and constants to keep the design consistent
 const THEME = {
   colors: {
@@ -218,11 +237,12 @@ const getSharedCSS = () => `
 
 export function generateBlogPostEmail(data: BlogPostEmailData): string {
   const { post, siteUrl, unsubscribeToken } = data;
-  const postUrl = withUTM(`${siteUrl}/blogs/${post.slug}`, 'blog_post');
-  const unsubscribeUrl = `${siteUrl}/functions/v1/handle-unsubscribe?token=${unsubscribeToken}`;
-  
-  // Create a nice preview text if excerpt is missing
-  const previewText = post.excerpt || `Read the latest article: ${post.title}`;
+  const postUrl = safeUrl(withUTM(`${siteUrl}/blogs/${post.slug}`, 'blog_post'));
+  const unsubscribeUrl = safeUrl(`${siteUrl}/functions/v1/handle-unsubscribe?token=${unsubscribeToken}`);
+  const safeImageUrl = safeUrl(post.imageUrl);
+  const safeTitle = escapeHtml(post.title);
+  const safeExcerpt = escapeHtml(post.excerpt || '');
+  const previewText = escapeHtml(post.excerpt || `Read the latest article: ${post.title}`);
 
   return `
 <!DOCTYPE html>
@@ -230,7 +250,7 @@ export function generateBlogPostEmail(data: BlogPostEmailData): string {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${post.title}</title>
+    <title>${safeTitle}</title>
     <style>${getSharedCSS()}</style>
 </head>
 <body>
@@ -238,46 +258,47 @@ export function generateBlogPostEmail(data: BlogPostEmailData): string {
     <div class="container">
         <div class="card">
             <div class="header">
-                <a href="${siteUrl}" class="logo">imadlab<span style="color:${THEME.colors.muted}">.me</span></a>
+                <a href="${escapeHtml(siteUrl)}" class="logo">imadlab<span style="color:${THEME.colors.muted}">.me</span></a>
                 <div><span class="badge">New Article</span></div>
             </div>
-            
+
             <div class="content">
-                ${post.imageUrl ? `
+                ${safeImageUrl && postUrl ? `
                 <a href="${postUrl}">
-                    <img src="${post.imageUrl}" alt="${post.title}" class="hero-image">
+                    <img src="${safeImageUrl}" alt="${safeTitle}" class="hero-image">
                 </a>` : ''}
-                
+
                 <div class="meta">
                     <span>${new Date(post.publishedDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                 </div>
 
-                <h1>${post.title}</h1>
-                
-                <p>${post.excerpt || 'Check out my latest insights on software engineering and development.'}</p>
-                
+                <h1>${safeTitle}</h1>
+
+                <p>${safeExcerpt || 'Check out my latest insights on software engineering and development.'}</p>
+
                 ${post.tags && post.tags.length > 0 ? `
                 <div style="margin-bottom: 24px;">
-                    ${post.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                    ${post.tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('')}
                 </div>
                 ` : ''}
-                
+
+                ${postUrl ? `
                 <div style="margin-top: 32px;">
                     <a href="${postUrl}" class="btn">Read Article</a>
-                </div>
+                </div>` : ''}
             </div>
         </div>
 
         <div class="footer">
             <div class="social-links">
-                <a href="${THEME.socials.github}" class="social-link">GitHub</a> • 
-                <a href="${THEME.socials.discord}" class="social-link">Discord</a> • 
+                <a href="${THEME.socials.github}" class="social-link">GitHub</a> •
+                <a href="${THEME.socials.discord}" class="social-link">Discord</a> •
                 <a href="${THEME.socials.linkedin}" class="social-link">LinkedIn</a>
             </div>
             <div class="footer-text">
                 Crafted with care at imadlab.com
             </div>
-            <a href="${unsubscribeUrl}" class="unsubscribe">Unsubscribe</a>
+            ${unsubscribeUrl ? `<a href="${unsubscribeUrl}" class="unsubscribe">Unsubscribe</a>` : ''}
         </div>
     </div>
 </body>
@@ -287,11 +308,13 @@ export function generateBlogPostEmail(data: BlogPostEmailData): string {
 
 export function generateProjectEmail(data: ProjectEmailData): string {
   const { project, siteUrl, unsubscribeToken } = data;
-  const projectUrl = withUTM(`${siteUrl}/projects/${project.id}`, 'new_project');
-  const repoUrl = project.repoUrl ? withUTM(project.repoUrl, 'new_project_repo') : null;
-  const unsubscribeUrl = `${siteUrl}/functions/v1/handle-unsubscribe?token=${unsubscribeToken}`;
-  
-  const previewText = project.description || `Check out my new project: ${project.title}`;
+  const projectUrl = safeUrl(withUTM(`${siteUrl}/projects/${project.id}`, 'new_project'));
+  const repoUrl = project.repoUrl ? safeUrl(withUTM(project.repoUrl, 'new_project_repo')) : null;
+  const unsubscribeUrl = safeUrl(`${siteUrl}/functions/v1/handle-unsubscribe?token=${unsubscribeToken}`);
+  const safeImageUrl = safeUrl(project.imageUrl);
+  const safeTitle = escapeHtml(project.title);
+  const safeDescription = escapeHtml(project.description || '');
+  const previewText = escapeHtml(project.description || `Check out my new project: ${project.title}`);
 
   return `
 <!DOCTYPE html>
@@ -299,7 +322,7 @@ export function generateProjectEmail(data: ProjectEmailData): string {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Project: ${project.title}</title>
+    <title>New Project: ${safeTitle}</title>
     <style>${getSharedCSS()}</style>
 </head>
 <body>
@@ -307,44 +330,45 @@ export function generateProjectEmail(data: ProjectEmailData): string {
     <div class="container">
         <div class="card">
             <div class="header">
-                <a href="${siteUrl}" class="logo">imadlab<span style="color:${THEME.colors.muted}">.me</span></a>
+                <a href="${escapeHtml(siteUrl)}" class="logo">imadlab<span style="color:${THEME.colors.muted}">.me</span></a>
                 <div><span class="badge">Project Launch</span></div>
             </div>
-            
+
             <div class="content">
-                ${project.imageUrl ? `
+                ${safeImageUrl && projectUrl ? `
                 <a href="${projectUrl}">
-                    <img src="${project.imageUrl}" alt="${project.title}" class="hero-image">
+                    <img src="${safeImageUrl}" alt="${safeTitle}" class="hero-image">
                 </a>` : ''}
-                
-                <h1>${project.title}</h1>
-                
-                <p>${project.description || 'I just shipped a new project. Click below to see the tech stack and details.'}</p>
-                
+
+                <h1>${safeTitle}</h1>
+
+                <p>${safeDescription || 'I just shipped a new project. Click below to see the tech stack and details.'}</p>
+
                 ${project.techTags && project.techTags.length > 0 ? `
                 <div style="margin-bottom: 24px;">
                     <div style="font-size: 11px; text-transform: uppercase; color: ${THEME.colors.muted}; margin-bottom: 8px; font-weight: 700;">Built With</div>
-                    ${project.techTags.map(tech => `<span class="tag">${tech}</span>`).join('')}
+                    ${project.techTags.map(tech => `<span class="tag">${escapeHtml(tech)}</span>`).join('')}
                 </div>
                 ` : ''}
-                
+
+                ${projectUrl ? `
                 <div style="margin-top: 32px;">
                     <a href="${projectUrl}" class="btn">View Project</a>
                     ${repoUrl ? `<a href="${repoUrl}" class="btn btn-outline">Source Code</a>` : ''}
-                </div>
+                </div>` : ''}
             </div>
         </div>
 
         <div class="footer">
             <div class="social-links">
-                <a href="${THEME.socials.github}" class="social-link">GitHub</a> • 
-                <a href="${THEME.socials.discord}" class="social-link">Discord</a> • 
+                <a href="${THEME.socials.github}" class="social-link">GitHub</a> •
+                <a href="${THEME.socials.discord}" class="social-link">Discord</a> •
                 <a href="${THEME.socials.linkedin}" class="social-link">LinkedIn</a>
             </div>
             <div class="footer-text">
                 Building cool things at imadlab.com
             </div>
-            <a href="${unsubscribeUrl}" class="unsubscribe">Unsubscribe</a>
+            ${unsubscribeUrl ? `<a href="${unsubscribeUrl}" class="unsubscribe">Unsubscribe</a>` : ''}
         </div>
     </div>
 </body>

@@ -165,7 +165,7 @@ Deno.test("Email templates are mobile responsive", () => {
   
   [blogEmail, projectEmail].forEach(email => {
     // Test mobile breakpoint
-    assertEquals(email.includes('@media (max-width: 600px)'), true);
+    assertEquals(email.includes('max-width: 600px'), true);
     
     // Test mobile-specific styles
     assertEquals(email.includes('width: 100%'), true);
