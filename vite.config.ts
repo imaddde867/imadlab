@@ -20,7 +20,7 @@ export default defineConfig({
     minify: 'esbuild',
     chunkSizeWarningLimit: 1000,
     cssCodeSplit: true,
-    sourcemap: 'hidden', // enables debugging without exposing in prod
+    sourcemap: false,
     rollupOptions: {
       output: {
         // Optimize asset naming for better caching

@@ -24,14 +24,13 @@ interface CookieConsentProps {
 
 const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
   const [showBanner, setShowBanner] = useState(false);
-  const [prefs, setPrefs] = useState<Prefs>({ analytics: true, marketing: true, functional: true });
+  const [prefs, setPrefs] = useState<Prefs>({ analytics: false, marketing: false, functional: true });
 
   useEffect(() => {
     const current = getConsent();
     if (!current) {
       setShowBanner(true);
-      // Set all to true by default when no decision has been made
-      setPrefs({ analytics: true, marketing: true, functional: true });
+      setPrefs({ analytics: false, marketing: false, functional: true });
     } else {
       setPrefs({
         analytics: current.analytics,
