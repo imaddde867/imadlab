@@ -15,8 +15,7 @@ CREATE POLICY "posts_insert_admin" ON posts
   WITH CHECK (
     auth.uid() = 'cd614e51-7734-4685-b021-d27a24b1655e'::uuid
     OR (auth.role() = 'authenticated' AND (
-      (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
-      OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+      (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
     ))
   );
 
@@ -34,8 +33,7 @@ CREATE POLICY "projects_insert_admin" ON projects
   WITH CHECK (
     auth.uid() = 'cd614e51-7734-4685-b021-d27a24b1655e'::uuid
     OR (auth.role() = 'authenticated' AND (
-      (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
-      OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+      (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
     ))
   );
 
@@ -53,8 +51,7 @@ CREATE POLICY "Admin users can read subscribers" ON newsletter_subscribers
   FOR SELECT
   USING (
     auth.role() = 'authenticated' AND (
-      (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
-      OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+      (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
     )
   );
 
@@ -62,8 +59,7 @@ CREATE POLICY "Admin users can update subscribers" ON newsletter_subscribers
   FOR UPDATE
   USING (
     auth.role() = 'authenticated' AND (
-      (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
-      OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+      (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
     )
   );
 
@@ -71,7 +67,6 @@ CREATE POLICY "Admin users can delete subscribers" ON newsletter_subscribers
   FOR DELETE
   USING (
     auth.role() = 'authenticated' AND (
-      (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
-      OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+      (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
     )
   );

@@ -27,9 +27,8 @@ export async function requireAdminOrJobSecret(req: Request): Promise<AuthResult>
     return { authorized: false, status: 401, message: 'Invalid or expired token' }
   }
 
-  const meta = data.user.user_metadata as Record<string, unknown>
   const appMeta = data.user.app_metadata as Record<string, unknown>
-  const isAdmin = meta?.role === 'admin' || appMeta?.role === 'admin'
+  const isAdmin = appMeta?.role === 'admin'
   if (!isAdmin) {
     return { authorized: false, status: 403, message: 'Admin access required' }
   }

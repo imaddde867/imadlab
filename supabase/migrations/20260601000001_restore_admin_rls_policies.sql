@@ -11,7 +11,6 @@ DROP POLICY IF EXISTS "Authenticated users can delete email queue" ON email_queu
 CREATE POLICY "Admin users can view email queue" ON email_queue
   FOR SELECT USING (
     auth.role() = 'authenticated' AND (
-      (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR
       (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
     )
   );
@@ -19,7 +18,6 @@ CREATE POLICY "Admin users can view email queue" ON email_queue
 CREATE POLICY "Admin users can insert email queue" ON email_queue
   FOR INSERT WITH CHECK (
     auth.role() = 'authenticated' AND (
-      (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR
       (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
     )
   );
@@ -27,7 +25,6 @@ CREATE POLICY "Admin users can insert email queue" ON email_queue
 CREATE POLICY "Admin users can update email queue" ON email_queue
   FOR UPDATE USING (
     auth.role() = 'authenticated' AND (
-      (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR
       (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
     )
   );
@@ -35,7 +32,6 @@ CREATE POLICY "Admin users can update email queue" ON email_queue
 CREATE POLICY "Admin users can delete email queue" ON email_queue
   FOR DELETE USING (
     auth.role() = 'authenticated' AND (
-      (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR
       (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
     )
   );
@@ -49,7 +45,6 @@ DROP POLICY IF EXISTS "Authenticated users can delete email analytics" ON email_
 CREATE POLICY "Admin users can view email analytics" ON email_analytics
   FOR SELECT USING (
     auth.role() = 'authenticated' AND (
-      (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR
       (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
     )
   );
@@ -57,7 +52,6 @@ CREATE POLICY "Admin users can view email analytics" ON email_analytics
 CREATE POLICY "Admin users can insert email analytics" ON email_analytics
   FOR INSERT WITH CHECK (
     auth.role() = 'authenticated' AND (
-      (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR
       (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
     )
   );
@@ -65,7 +59,6 @@ CREATE POLICY "Admin users can insert email analytics" ON email_analytics
 CREATE POLICY "Admin users can update email analytics" ON email_analytics
   FOR UPDATE USING (
     auth.role() = 'authenticated' AND (
-      (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR
       (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
     )
   );
@@ -73,7 +66,6 @@ CREATE POLICY "Admin users can update email analytics" ON email_analytics
 CREATE POLICY "Admin users can delete email analytics" ON email_analytics
   FOR DELETE USING (
     auth.role() = 'authenticated' AND (
-      (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR
       (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
     )
   );

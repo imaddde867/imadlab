@@ -14,6 +14,15 @@ const SAFE_SEGMENT = /^[a-zA-Z0-9_-]+$/;
 const isSafeSegment = (segment) =>
   typeof segment === 'string' && SAFE_SEGMENT.test(segment) && segment.length > 0;
 const isInsideDist = (resolved) => resolved.startsWith(DIST_DIR + path.sep) || resolved === DIST_DIR;
+const isSafeHttpUrl = (value) => {
+  if (typeof value !== 'string' || !value.trim()) return false;
+  try {
+    const parsed = new URL(value.trim());
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
 const SITE_NAME = 'Imadlab';
 const DEFAULT_TITLE = `${SITE_NAME} | Research Engineer & Internal CTO`;
 const DEFAULT_IMAGE = `${SITE_URL}/images/og-default.jpg`;
@@ -206,6 +215,7 @@ const renderProjectsMarkup = (projects) => {
   }
 
   const items = projects
+    .filter((project) => isSafeSegment(project?.id))
     .map((project) => {
       const description = project.description || project.full_description || '';
       const summary = escapeHtml(description.length > 220 ? `${description.slice(0, 217)}...` : description);
@@ -218,7 +228,7 @@ const renderProjectsMarkup = (projects) => {
       <h2 class="prerender-title">${escapeHtml(project.title)}</h2>
       ${tags.length ? `<p class="prerender-tags">Tech: ${escapeHtml(tags.join(', '))}</p>` : ''}
       ${summary ? `<p class="prerender-summary">${summary}</p>` : ''}
-      <a href="/projects/${project.id}" class="prerender-link">View project</a>
+      <a href="/projects/${encodeURIComponent(project.id)}" class="prerender-link">View project</a>
     </article>`;
     })
     .join('\n');
@@ -269,11 +279,11 @@ const renderProjectDetailMarkup = (project) => {
         : '<p class="prerender-summary">Full project details will load after hydration.</p>'
     }
     ${
-      project.repo_url
+      isSafeHttpUrl(project.repo_url)
         ? `<p class="prerender-meta mt-4">Source: <a class="prerender-link inline" href="${escapeHtml(project.repo_url)}" rel="noopener">View repository</a></p>`
         : ''
     }
-    <a class="prerender-link mt-6 inline-flex" href="/projects/${project.id}">Continue exploring</a>
+    <a class="prerender-link mt-6 inline-flex" href="/projects/${encodeURIComponent(project.id)}">Continue exploring</a>
   </article>
 </main>`;
 };
@@ -288,6 +298,7 @@ const renderPostsMarkup = (posts) => {
   }
 
   const items = posts
+    .filter((post) => isSafeSegment(post?.slug))
     .map((post) => {
       const summarySource = post.excerpt || post.body || '';
       const summary = escapeHtml(summarySource.length > 220 ? `${summarySource.slice(0, 217)}...` : summarySource);
@@ -307,7 +318,7 @@ const renderPostsMarkup = (posts) => {
       ${published ? `<p class="prerender-meta">Published ${escapeHtml(published)}</p>` : ''}
       ${tags.length ? `<p class="prerender-tags">Tags: ${escapeHtml(tags.join(', '))}</p>` : ''}
       ${summary ? `<p class="prerender-summary">${summary}</p>` : ''}
-      <a href="/blogs/${post.slug}" class="prerender-link">Read article</a>
+      <a href="/blogs/${encodeURIComponent(post.slug)}" class="prerender-link">Read article</a>
     </article>`;
     })
     .join('\n');

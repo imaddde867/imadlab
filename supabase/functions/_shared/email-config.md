@@ -14,8 +14,8 @@ SITE_URL=https://your-domain.com
 ### Newsletter Job Secret
 
 `send-newsletter-emails` and `render-email-preview` require authorization:
-either a Supabase user JWT whose `user_metadata.role` or `app_metadata.role`
-is `admin`, or a shared secret for non-interactive callers (cron jobs,
+either a Supabase user JWT whose `app_metadata.role` is `admin` (set via the
+Admin API, not user-editable), or a shared secret for non-interactive callers (cron jobs,
 scripts). The anon key alone is no longer sufficient.
 
 ```bash
