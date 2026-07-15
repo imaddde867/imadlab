@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { generateBlogPostEmail, generateProjectEmail } from '../shared/email-templates.ts'
+import { requireAdminOrJobSecret } from '../shared/admin-auth.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -27,6 +28,11 @@ serve(async (req) => {
   }
 
   try {
+    const authResult = await requireAdminOrJobSecret(req)
+    if (!authResult.authorized) {
+      return jsonResponse({ error: authResult.message }, authResult.status)
+    }
+
     const payload = (await req.json().catch(() => null)) as PreviewRequest | null
     if (!payload) {
       return jsonResponse({ error: 'Missing request payload' }, 400)
