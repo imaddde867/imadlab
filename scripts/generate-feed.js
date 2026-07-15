@@ -16,6 +16,11 @@ const escapeXml = (value = '') =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
 
+const escapeCdata = (value = '') => value.replace(/]]>/g, ']]]]><![CDATA[>');
+
+const SAFE_SEGMENT = /^[a-zA-Z0-9_-]+$/;
+const isSafeSegment = (seg) => typeof seg === 'string' && SAFE_SEGMENT.test(seg) && seg.length > 0;
+
 async function generateFeed() {
   console.log('Generating content feeds...');
 
@@ -29,8 +34,8 @@ async function generateFeed() {
     return;
   }
 
-  const items = (posts ?? []).map((post) => {
-    const itemUrl = `${SITE_URL}/blogs/${post.slug}`;
+  const items = (posts ?? []).filter((post) => isSafeSegment(post.slug)).map((post) => {
+    const itemUrl = `${SITE_URL}/blogs/${encodeURIComponent(post.slug)}`;
     const plainBody = stripMarkdown(post.body || '');
     const summary = post.excerpt && post.excerpt.trim().length > 0
       ? post.excerpt.trim()
@@ -57,9 +62,9 @@ async function generateFeed() {
 
       return `  <item>
     <title>${escapeXml(item.title)}</title>
-    <link>${item.url}</link>
-    <guid>${item.url}</guid>
-    <description><![CDATA[${item.summary}]]></description>
+    <link>${escapeXml(item.url)}</link>
+    <guid>${escapeXml(item.url)}</guid>
+    <description><![CDATA[${escapeCdata(item.summary)}]]></description>
     <pubDate>${item.publishedISO ? new Date(item.publishedISO).toUTCString() : new Date().toUTCString()}</pubDate>
 ${categories}
   </item>`;

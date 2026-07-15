@@ -9,6 +9,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
+
+const SAFE_SEGMENT = /^[a-zA-Z0-9_-]+$/;
+const isSafeSegment = (segment) =>
+  typeof segment === 'string' && SAFE_SEGMENT.test(segment) && segment.length > 0;
+const isInsideDist = (resolved) => resolved.startsWith(DIST_DIR + path.sep) || resolved === DIST_DIR;
 const SITE_NAME = 'Imadlab';
 const DEFAULT_TITLE = `${SITE_NAME} | Research Engineer & Internal CTO`;
 const DEFAULT_IMAGE = `${SITE_URL}/images/og-default.jpg`;
@@ -342,7 +347,11 @@ const renderPostDetailMarkup = (post) => {
 };
 
 const injectIntoPage = async ({ route, markup, dataKey, data, baseHtml, seo }) => {
-  const routeDir = path.join(DIST_DIR, route);
+  const routeDir = path.resolve(DIST_DIR, route);
+  if (!isInsideDist(routeDir)) {
+    console.error(`⛔ Blocked unsafe route path: ${route}`);
+    return;
+  }
   const targetPath = path.join(routeDir, 'index.html');
 
   await fs.mkdir(routeDir, { recursive: true });
@@ -491,7 +500,7 @@ async function main() {
   });
 
   for (const project of projects) {
-    if (!project?.id) continue;
+    if (!project?.id || !isSafeSegment(project.id)) continue;
     const seoTitle = getSeoTitle(project.title);
     const descriptionSource = project.description || project.full_description || '';
     const plainDescription = stripMarkdown(descriptionSource);
@@ -535,7 +544,7 @@ async function main() {
   }
 
   for (const post of posts) {
-    if (!post?.slug) continue;
+    if (!post?.slug || !isSafeSegment(post.slug)) continue;
     const descriptionSource = post.excerpt || stripMarkdown(post.body || '');
     const description = descriptionSource.length > 155 ? `${descriptionSource.slice(0, 152)}...` : descriptionSource;
     const canonicalUrl = `${SITE_URL}/blogs/${post.slug}`;
