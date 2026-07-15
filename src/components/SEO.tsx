@@ -3,6 +3,14 @@ import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { PRIMARY_NAV_ITEMS, getAbsoluteNavUrl } from '@/lib/navigation';
 
+const safeJsonLd = (data: unknown): string =>
+  JSON.stringify(data)
+    .replace(/</g, '\\u003C')
+    .replace(/>/g, '\\u003E')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+
 type Breadcrumb = {
   name: string;
   path?: string;
@@ -293,7 +301,7 @@ const Seo = ({
         <script
           key={index}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }}
         />
       ))}
     </Helmet>

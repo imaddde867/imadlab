@@ -67,6 +67,8 @@ async function generateSitemap() {
     { url: '/extras', priority: '0.7', changefreq: 'monthly', lastmod: today }
   ];
 
+  const SAFE_SEGMENT = /^[a-zA-Z0-9_-]+$/;
+  const isSafeSegment = (seg) => typeof seg === 'string' && SAFE_SEGMENT.test(seg) && seg.length > 0;
   const slugify = (s) => s.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   // Derive unique tags from posts
   const tagSet = new Set();
@@ -89,7 +91,7 @@ async function generateSitemap() {
 ${[...staticPages, ...tagUrls]
   .map(
     (page) => `  <url>
-    <loc>${SITE_URL}${page.url}</loc>
+    <loc>${escapeXml(`${SITE_URL}${page.url}`)}</loc>
     <lastmod>${page.lastmod}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
@@ -97,9 +99,10 @@ ${[...staticPages, ...tagUrls]
   )
   .join('\n')}
 ${posts
+  .filter((post) => isSafeSegment(post.slug))
   .map(
     (post) => `  <url>
-    <loc>${SITE_URL}/blogs/${post.slug}</loc>
+    <loc>${escapeXml(`${SITE_URL}/blogs/${encodeURIComponent(post.slug)}`)}</loc>
     <lastmod>${new Date(post.updated_at || post.published_date).toISOString().split('T')[0]}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -108,9 +111,10 @@ ${posts
   )
   .join('\n')}
 ${projects
+  .filter((project) => isSafeSegment(project.id))
   .map(
     (project) => `  <url>
-    <loc>${SITE_URL}/projects/${project.id}</loc>
+    <loc>${escapeXml(`${SITE_URL}/projects/${encodeURIComponent(project.id)}`)}</loc>
     <lastmod>${new Date(project.updated_at || project.created_at).toISOString().split('T')[0]}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

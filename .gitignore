@@ -74,3 +74,9 @@ supabase/config.toml
 supabase/db/
 supabase/.temp/
 .supabase/
+
+# Local AI tooling configs
+.codex/
+.mcp.json
+.playwright-mcp/
+opencode.json

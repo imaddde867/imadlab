@@ -12,7 +12,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import CookieConsent from '@/components/CookieConsent';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { registerRoutePrefetch } from '@/lib/routePrefetch';
-import { loadScriptIfConsented } from '@/lib/consent';
+import { loadScriptIfConsented, onConsentChange } from '@/lib/consent';
 import { HelmetProvider } from 'react-helmet-async';
 
 const lazyWithPrefetch = <T extends React.ComponentType<unknown>>(
@@ -67,18 +67,23 @@ const App = () => {
   const [cookieConsentIsOpen, setCookieConsentIsOpen] = React.useState<boolean>(false);
   const [shouldLoadNewsletter, setShouldLoadNewsletter] = React.useState<boolean>(false);
 
-  // Load Cloudflare Analytics only when user has consented to analytics
+  // Load Cloudflare Analytics when consented; also fires if user accepts later
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
     const hostname = window.location.hostname;
     if (hostname !== 'imadlab.com' && hostname !== 'www.imadlab.com') return;
 
-    loadScriptIfConsented('analytics', 'https://static.cloudflareinsights.com/beacon.min.js', {
-      'data-cf-beacon': '{"token": "e8df18bc2d9d4512835bc2f9798f4b24"}',
-      defer: 'true',
-    }).catch(() => {
-      // ignore failures silently
-    });
+    let loaded = false;
+    const tryLoad = () => {
+      if (loaded) return;
+      loadScriptIfConsented('analytics', 'https://static.cloudflareinsights.com/beacon.min.js', {
+        'data-cf-beacon': '{"token": "e8df18bc2d9d4512835bc2f9798f4b24"}',
+        defer: 'true',
+      }).then((el) => { if (el) loaded = true; }).catch(() => { /* ignore */ });
+    };
+
+    tryLoad();
+    return onConsentChange((state) => { if (state.analytics) tryLoad(); });
   }, []);
 
   React.useEffect(() => {

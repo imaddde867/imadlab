@@ -2,17 +2,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { StravaCache } from '@/lib/strava-cache';
 
-export interface StravaPhoto {
-  id: number;
-  unique_id: string;
-  urls: {
-    '100': string;
-    '600': string;
-  };
-  source: number;
-  caption?: string;
-}
-
 export interface StravaActivity {
   id: number;
   name: string;
@@ -26,19 +15,6 @@ export interface StravaActivity {
   max_speed: number;
   kudos_count?: number;
   achievement_count?: number;
-  total_photo_count?: number;
-  map?: {
-    id: string;
-    summary_polyline: string;
-    resource_state: number;
-  };
-  average_heartrate?: number;
-  max_heartrate?: number;
-  suffer_score?: number;
-  photos?: {
-    primary?: StravaPhoto;
-    count: number;
-  };
 }
 
 export interface StravaStats {
@@ -49,19 +25,7 @@ export interface StravaStats {
     elapsed_time: number;
     elevation_gain: number;
   };
-  all_ride_totals?: {
-    count: number;
-    distance: number;
-    moving_time: number;
-    elapsed_time: number;
-    elevation_gain: number;
-  };
   ytd_run_totals?: {
-    count: number;
-    distance: number;
-    moving_time: number;
-  };
-  ytd_ride_totals?: {
     count: number;
     distance: number;
     moving_time: number;
