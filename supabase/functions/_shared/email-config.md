@@ -11,6 +11,19 @@ RESEND_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxxxxxxx
 SITE_URL=https://your-domain.com
 ```
 
+### Newsletter Job Secret
+
+`send-newsletter-emails` and `render-email-preview` require authorization:
+either a Supabase user JWT whose `user_metadata.role` or `app_metadata.role`
+is `admin`, or a shared secret for non-interactive callers (cron jobs,
+scripts). The anon key alone is no longer sufficient.
+
+```bash
+NEWSLETTER_JOB_SECRET=a-long-random-string
+```
+
+Non-interactive callers must send it as `x-job-secret`, not `Authorization`.
+
 ## Resend Setup Instructions
 
 ### 1. Create Resend Account
@@ -49,6 +62,7 @@ SITE_URL=https://your-domain.com
 supabase secrets set RESEND_API_KEY=your_api_key
 supabase secrets set RESEND_WEBHOOK_SECRET=your_webhook_secret
 supabase secrets set SITE_URL=https://your-domain.com
+supabase secrets set NEWSLETTER_JOB_SECRET=your_job_secret
 ```
 
 ## Testing Configuration
@@ -56,9 +70,12 @@ supabase secrets set SITE_URL=https://your-domain.com
 ### Test Email Sending
 ```bash
 curl -X POST https://your-project-ref.supabase.co/functions/v1/send-newsletter-emails \
-  -H "Authorization: Bearer YOUR_ANON_KEY" \
+  -H "x-job-secret: YOUR_NEWSLETTER_JOB_SECRET" \
   -H "Content-Type: application/json"
 ```
+
+To call as an admin user instead, use `-H "Authorization: Bearer <admin user JWT>"`
+— an anon key alone will now be rejected with 401/403.
 
 ### Test Webhook
 ```bash

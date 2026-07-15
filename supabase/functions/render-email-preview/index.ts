@@ -5,7 +5,7 @@ import { requireAdminOrJobSecret } from '../shared/admin-auth.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-job-secret',
 }
 
 type ContentType = 'blog_post' | 'project'
