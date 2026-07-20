@@ -17,6 +17,16 @@ const safeUrl = (value: string | undefined): string | null => {
   }
 };
 
+const buildUnsubscribeUrl = (siteUrl: string, token: string): string | null => {
+  try {
+    const url = new URL(`${siteUrl}/functions/v1/handle-unsubscribe`);
+    url.searchParams.set('token', token);
+    return safeUrl(url.toString());
+  } catch {
+    return null;
+  }
+};
+
 // Shared styles and constants to keep the design consistent
 const THEME = {
   colors: {
@@ -238,7 +248,7 @@ const getSharedCSS = () => `
 export function generateBlogPostEmail(data: BlogPostEmailData): string {
   const { post, siteUrl, unsubscribeToken } = data;
   const postUrl = safeUrl(withUTM(`${siteUrl}/blogs/${post.slug}`, 'blog_post'));
-  const unsubscribeUrl = safeUrl(`${siteUrl}/functions/v1/handle-unsubscribe?token=${unsubscribeToken}`);
+  const unsubscribeUrl = buildUnsubscribeUrl(siteUrl, unsubscribeToken);
   const safeImageUrl = safeUrl(post.imageUrl);
   const safeTitle = escapeHtml(post.title);
   const safeExcerpt = escapeHtml(post.excerpt || '');
@@ -310,7 +320,7 @@ export function generateProjectEmail(data: ProjectEmailData): string {
   const { project, siteUrl, unsubscribeToken } = data;
   const projectUrl = safeUrl(withUTM(`${siteUrl}/projects/${project.id}`, 'new_project'));
   const repoUrl = project.repoUrl ? safeUrl(withUTM(project.repoUrl, 'new_project_repo')) : null;
-  const unsubscribeUrl = safeUrl(`${siteUrl}/functions/v1/handle-unsubscribe?token=${unsubscribeToken}`);
+  const unsubscribeUrl = buildUnsubscribeUrl(siteUrl, unsubscribeToken);
   const safeImageUrl = safeUrl(project.imageUrl);
   const safeTitle = escapeHtml(project.title);
   const safeDescription = escapeHtml(project.description || '');
