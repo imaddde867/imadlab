@@ -31,20 +31,26 @@ const main = () => {
     process.exit(1);
   }
 
-  const result = spawnSync(
-    'supabase',
-    ['functions', 'deploy', 'render-email-preview', 'send-newsletter-emails', '--project-ref', projectRef],
-    { stdio: 'inherit' }
-  );
+  const deploys = [
+    // These verify auth themselves (requireAdminOrJobSecret), so non-interactive
+    // callers can send x-job-secret without a Supabase-issued bearer token.
+    ['functions', 'deploy', 'render-email-preview', 'send-newsletter-emails', '--no-verify-jwt', '--project-ref', projectRef],
+    // Called via supabase-js (attaches anon key as bearer), keep default JWT verification.
+    ['functions', 'deploy', 'strava-proxy', '--project-ref', projectRef],
+  ];
 
-  if (result.error) {
-    console.error('Failed to run Supabase CLI. Is it installed and authenticated?');
-    console.error(result.error.message);
-    process.exit(1);
-  }
+  for (const args of deploys) {
+    const result = spawnSync('supabase', args, { stdio: 'inherit' });
 
-  if (result.status !== 0) {
-    process.exit(result.status ?? 1);
+    if (result.error) {
+      console.error('Failed to run Supabase CLI. Is it installed and authenticated?');
+      console.error(result.error.message);
+      process.exit(1);
+    }
+
+    if (result.status !== 0) {
+      process.exit(result.status ?? 1);
+    }
   }
 };
 

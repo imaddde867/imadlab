@@ -1,5 +1,5 @@
 import { StravaActivity } from '@/integrations/strava/client';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Heart } from 'lucide-react';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import {
   formatDistanceCompact,

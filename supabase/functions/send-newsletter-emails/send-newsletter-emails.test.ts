@@ -178,14 +178,15 @@ Deno.test("Unsubscribe token validation", () => {
     'another-test-token-123',
     'special-chars-!@#$%'
   ];
-  
+
   testCases.forEach(token => {
     const data = {
       ...mockBlogPostData,
       unsubscribeToken: token
     };
-    
+
     const email = generateBlogPostEmail(data);
-    assertEquals(email.includes(`token=${token}`), true);
+    const encodedToken = new URLSearchParams({ token }).toString().slice('token='.length);
+    assertEquals(email.includes(`token=${encodedToken}`), true);
   });
 });
