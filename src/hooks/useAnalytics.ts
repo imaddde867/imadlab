@@ -16,7 +16,7 @@ const generateSessionId = (): string => {
 
 export const useAnalytics = () => {
   const location = useLocation();
-  const sessionIdRef = useRef<string>(generateSessionId());
+  const sessionIdRef = useRef<string | null>(null);
   const sessionInitialized = useRef<boolean>(false);
   const sessionReadyRef = useRef<{ resolve: () => void; promise: Promise<void> } | null>(null);
   const pageViewIdRef = useRef<string | null>(null);
@@ -35,7 +35,8 @@ export const useAnalytics = () => {
   useEffect(() => {
     if (!isProductionHost || !isAllowed('analytics')) return;
 
-    const sessionId = sessionIdRef.current;
+    const sessionId = sessionIdRef.current ?? generateSessionId();
+    sessionIdRef.current = sessionId;
 
     // Create or update session
     const initSession = async () => {
@@ -99,7 +100,8 @@ export const useAnalytics = () => {
   useEffect(() => {
     if (!isProductionHost || !isAllowed('analytics')) return;
 
-    const sessionId = sessionIdRef.current;
+    const sessionId = sessionIdRef.current ?? generateSessionId();
+    sessionIdRef.current = sessionId;
     const startTime = Date.now();
     pageViewIdRef.current = null;
 

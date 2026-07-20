@@ -258,14 +258,16 @@ serve(async (req) => {
             }
 
             // Send email via Resend
-                        
+            const unsubscribeUrl = new URL(`${siteUrl}/functions/v1/handle-unsubscribe`)
+            unsubscribeUrl.searchParams.set('token', subscriber.unsubscribe_token)
+
             const emailPayload = {
               from: 'imadlab <onboarding@resend.dev>',
               to: [subscriber.email],
               subject: subject,
               html: emailHtml,
               headers: {
-                'List-Unsubscribe': `<${siteUrl}/functions/v1/handle-unsubscribe?token=${subscriber.unsubscribe_token}>`,
+                'List-Unsubscribe': `<${unsubscribeUrl.toString()}>`,
               }
             }
             
