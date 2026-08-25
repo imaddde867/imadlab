@@ -52,7 +52,7 @@ const GOOGLE_SITE_VERIFICATION =
 const BING_SITE_VERIFICATION =
   (import.meta.env.VITE_BING_SITE_VERIFICATION as string | undefined)?.trim() || '';
 const DEFAULT_KEYWORDS =
-  'imadlab, imad eddine el mouss, research engineer, internal cto, applied research, industrial ai, multimodal data fusion, procedural knowledge extraction, privacy-by-design, auditable decision support, edge-to-cloud systems';
+  'imadlab, imad eddine el mouss, research engineer, aiop, applied research, industrial ai, multimodal data fusion, procedural knowledge extraction, privacy-by-design, auditable decision support, edge-to-cloud systems';
 
 const toAbsoluteUrl = (value?: string) => {
   if (!value) return DEFAULT_IMAGE;
@@ -105,7 +105,7 @@ const Seo = ({
   twitterHandle,
 }: SEOProps) => {
   const location = useLocation();
-  const defaultTitle = `${SITE_NAME} | Research Engineer & Internal CTO`;
+  const defaultTitle = `${SITE_NAME} | Research Engineer, On-Premises Industrial AI`;
   const fullTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
   const currentUrl = `${SITE_URL}${location.pathname}`;
   const canonicalUrl = toAbsolutePageUrl(url || canonical) || currentUrl;
