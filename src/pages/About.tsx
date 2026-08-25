@@ -13,8 +13,8 @@ const About = () => {
       <div className="absolute inset-0 opacity-10" />
       <SEO
         title="About Imad Eddine"
-        description="Research Engineer and internal CTO at CoRe (Turku UAS), focused on deployable multimodal industrial AI, procedural knowledge extraction, and Privacy-by-Design systems."
-        keywords="imad eddine el mouss, research engineer, internal cto, core turku uas, industrial ai, procedural knowledge extraction, multimodal data fusion, privacy-by-design"
+        description="Research Engineer at CoRe (Turku UAS) and architect of AIOP, an on-premises event-driven AI platform, focused on deployable multimodal industrial AI, procedural knowledge extraction, and Privacy-by-Design systems."
+        keywords="imad eddine el mouss, research engineer, aiop, core turku uas, industrial ai, procedural knowledge extraction, multimodal data fusion, privacy-by-design"
         schemaType="AboutPage"
         breadcrumbs={[
           { name: 'Home', path: '/' },
@@ -48,10 +48,42 @@ const About = () => {
                 >
                   Cognitive Technologies Research Group (CoRe)
                 </a>{' '}
-                in Turku University of Applied Sciences, where I also operate as{' '}
-                <span className="font-semibold text-white">internal CTO</span> for lab
-                prototypes, architecture decisions, and engineering delivery quality.
+                in Turku University of Applied Sciences, where I am the{' '}
+                <span className="font-semibold text-white">
+                  architect and principal developer of AIOP
+                </span>
+                , the on-premises event-driven AI platform that acts as the integration backbone
+                for every industrial pilot module the group runs.
               </p>
+            </div>
+
+            <div className="py-8">
+              <h2 className="text-4xl font-bold mb-4 text-white">Selected Highlights</h2>
+              <ul className="space-y-3 text-lg text-white/70 leading-relaxed list-disc pl-6">
+                <li>
+                  <span className="font-semibold text-white">Patent pending.</span> Named inventor
+                  (one of three) on a European patent application filed at the EPO on 10 April
+                  2026: adaptive digital content generation based on multimodal data. Applicant:
+                  Turku University of Applied Sciences.
+                </li>
+                <li>
+                  <span className="font-semibold text-white">EUR 6.98M Horizon Europe project.</span>{' '}
+                  Contributed to the planning of Sensor4Food (HORIZON-CL4), a 21-partner European
+                  consortium coordinated by Turku UAS, developing photonic sensing and AI for the
+                  poultry value chain across pilot sites in Spain, Italy and Norway (2026-2030).
+                </li>
+                <li>
+                  <span className="font-semibold text-white">Platform ownership.</span> Architect
+                  and principal developer of AIOP (Python, NATS JetStream, Docker, FastAPI).
+                  Reproducible stress audits: 200 events/s sustained at 0% loss, 10ms p99 latency
+                  (and 75 events/s at 5ms p99).
+                </li>
+                <li>
+                  <span className="font-semibold text-white">Technical lead</span> for the group's
+                  student engineering portfolio — more than twenty applied-AI R&D projects across a
+                  rotating intern cohort.
+                </li>
+              </ul>
             </div>
 
             <div className="py-8">
@@ -66,6 +98,15 @@ const About = () => {
                 </li>
                 <li>
                   Privacy-by-design and auditable outputs for safety-critical industrial contexts.
+                </li>
+                <li>
+                  Deliver partner pilots across two funded programmes — TeoÄly (ERDF, ~EUR 320k)
+                  and ADINO (Business Finland, ten industrial partners).
+                </li>
+                <li>
+                  Authored the group's EU AI Act position for its industrial offerings:
+                  per-offering Annex III exposure and task-level rather than person-level
+                  monitoring as a default design rule.
                 </li>
               </ul>
             </div>
@@ -143,11 +184,11 @@ const About = () => {
                     Imad Eddine El Mouss
                   </a>
                   <a
-                    href="mailto:imad.e.elmouss@turkuamk.fi"
+                    href="mailto:imadeddine200507@gmail.com"
                     className="inline-flex items-center text-white/80 hover:text-white transition-colors"
                   >
                     <Mail className="w-4 h-4 mr-2" />
-                    imad.e.elmouss@turkuamk.fi
+                    imadeddine200507@gmail.com
                   </a>
                 </div>
               </CardContent>

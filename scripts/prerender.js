@@ -24,7 +24,7 @@ const isSafeHttpUrl = (value) => {
   }
 };
 const SITE_NAME = 'Imadlab';
-const DEFAULT_TITLE = `${SITE_NAME} | Research Engineer & Internal CTO`;
+const DEFAULT_TITLE = `${SITE_NAME} | Research Engineer, On-Premises Industrial AI`;
 const DEFAULT_IMAGE = `${SITE_URL}/images/og-default.jpg`;
 const DEFAULT_TWITTER = '@imadlab';
 const SEO_BLOCK_PATTERN = /<!-- prerender-seo:start -->[\s\S]*?<!-- prerender-seo:end -->/;

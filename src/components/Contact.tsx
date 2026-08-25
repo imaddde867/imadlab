@@ -72,7 +72,7 @@ const Contact = () => {
       href: 'https://www.linkedin.com/in/imad-eddine-e-986741262',
       icon: Linkedin,
     },
-    { name: 'Email', href: 'mailto:imad.e.elmouss@turkuamk.fi', icon: Mail },
+    { name: 'Email', href: 'mailto:imadeddine200507@gmail.com', icon: Mail },
   ];
 
   return (
