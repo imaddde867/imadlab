@@ -52,8 +52,8 @@ const Index = () => {
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <SEO
         title="Home"
-        description="Research Engineer and internal CTO at CoRe (Turku UAS) building deployable, Privacy-by-Design industrial AI systems for auditable decision support."
-        keywords="research engineer portfolio, internal cto applied research, industrial ai systems, multimodal data fusion, procedural knowledge extraction, privacy-by-design ai, edge-to-cloud ai"
+        description="Research Engineer at CoRe (Turku UAS) and architect of AIOP, an on-premises event-driven AI platform, building deployable, Privacy-by-Design industrial AI systems for auditable decision support."
+        keywords="research engineer portfolio, aiop platform, industrial ai systems, multimodal data fusion, procedural knowledge extraction, privacy-by-design ai, edge-to-cloud ai"
         type="website"
         schemaType="WebSite"
         url="https://imadlab.com"

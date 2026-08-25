@@ -29,6 +29,10 @@ import {
   SiApacheparquet,
   SiAmazons3,
   SiFlask,
+  SiNatsdotio,
+  SiNeo4J,
+  SiRaspberrypi,
+  SiEspressif,
 } from 'react-icons/si';
 import { TbSql, TbMapPin, TbLock, TbContainer, TbDatabase, TbBrain } from 'react-icons/tb';
 import { SiHuggingface } from 'react-icons/si';
@@ -76,6 +80,13 @@ export const techStack: TechItem[] = [
     category: 'Streaming & Ingestion',
     description: 'Lightweight messaging protocol for IoT and edge devices',
   },
+  {
+    name: 'NATS JetStream',
+    icon: <SiNatsdotio className="w-8 h-8 text-[#27AAE1]" />,
+    url: 'https://nats.io/',
+    category: 'Streaming & Ingestion',
+    description: 'Event streaming and persistence layer for AIOP, an on-premises event-driven AI platform',
+  },
 
   // Orchestration
   {
@@ -107,6 +118,13 @@ export const techStack: TechItem[] = [
     url: 'https://www.influxdata.com/',
     category: 'Storage & Databases',
     description: 'Time-series database for sensor data, metrics, and IoT workloads',
+  },
+  {
+    name: 'Neo4j',
+    icon: <SiNeo4J className="w-8 h-8 text-[#008CC1]" />,
+    url: 'https://neo4j.com/',
+    category: 'Storage & Databases',
+    description: 'Graph database for knowledge-graph and structured-extraction pipelines',
   },
 
   // DataFrames & Features
@@ -157,6 +175,13 @@ export const techStack: TechItem[] = [
     url: 'https://github.com/ggerganov/llama.cpp',
     category: 'LLM & AI Tooling',
     description: 'Efficient local inference for LLaMA and other LLMs',
+  },
+  {
+    name: 'vLLM',
+    icon: <TbBrain className="w-8 h-8 text-white" />,
+    url: 'https://github.com/vllm-project/vllm',
+    category: 'LLM & AI Tooling',
+    description: 'High-throughput local LLM inference on GPU workstations',
   },
   {
     name: 'Hugging Face',
@@ -370,6 +395,22 @@ export const techStack: TechItem[] = [
     url: 'https://git-scm.com/',
     category: 'Additional Tools',
     description: 'Version control system',
+  },
+
+  // Edge Hardware
+  {
+    name: 'Raspberry Pi',
+    icon: <SiRaspberrypi className="w-8 h-8 text-[#A22846]" />,
+    url: 'https://www.raspberrypi.com/',
+    category: 'Additional Tools',
+    description: 'Edge hardware for spectral sensing in industrial process-control pilots',
+  },
+  {
+    name: 'ESP32',
+    icon: <SiEspressif className="w-8 h-8 text-[#E7352C]" />,
+    url: 'https://www.espressif.com/en/products/socs/esp32',
+    category: 'Additional Tools',
+    description: 'Microcontroller platform for sensor edge devices in industrial pilots',
   },
 ];
 
