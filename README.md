@@ -5,7 +5,7 @@
 
 ## Overview
 
-imadlab showcases how I design, build, and run data-heavy web systems end to end. A React 18 + TanStack Query front end sits on top of Supabase services, custom analytics, and automation scripts so the site stays fast, interactive, and always up to date.
+imadlab is my personal site, and a worked example of the data-heavy web systems I build end to end. The front end is React 18 with TanStack Query, sitting on Supabase services, custom analytics, and a set of automation scripts that keep content and SEO assets current.
 
 **Live Demo:** [imadlab.com](https://imadlab.com) | **Source:** [github.com/imaddde867/imadlab](https://github.com/imaddde867/imadlab)
 
@@ -24,7 +24,7 @@ npm run dev
 
 ## Feature Highlights
 
-- **Content & Publishing** - Supabase-backed projects and blog with shadcn/ui admin tools, staged drafts, rich Markdown (GFM, KaTeX, Mermaid), RSS feed, and sitemap generation.
+- **Content & Publishing** - Supabase-backed projects and blog with shadcn/ui admin tools, staged drafts, extended Markdown (GFM, KaTeX, Mermaid), RSS feed, and sitemap generation.
 - **Real-Time Integrations** - Running dashboards powered by Strava Edge Functions with multi-layer caching, Spotify Now Playing, and newsletter forms with automatic tagging.
 - **Automation & Email Ops** - Newsletter queue processed by Supabase Edge Functions, Resend templates, inbound webhooks, unsubscribe tokens, and retry-aware delivery.
 - **Privacy-Aware Analytics** - Consent-gated tracking, Supabase storage for sessions/page views, geolocation enrichment via Edge Functions, and an internal analytics dashboard with period filtering.
@@ -101,11 +101,11 @@ scripts/
 
 ## Impact
 
-- Demonstrates full-stack ownership across data ingestion, content ops, and UX polish.
-- Privacy-compliant analytics with consent handling, geolocation enrichment, and admin visibility.
-- Resilient API integrations with rate-limit-aware caching, retries, and graceful fallbacks.
-- Newsletter automation, Strava dashboards, and Spotify presence showcase real-time storytelling.
-- Consistent performance (Lighthouse 95+) and responsive design tuned for modern devices.
+- Full-stack ownership: data ingestion, content operations, and the front end.
+- Analytics run behind a consent gate, with geolocation enrichment and an admin view.
+- API integrations handle rate limits through caching, retries, and fallbacks when a provider is unavailable.
+- Newsletter delivery, Strava dashboards, and the Spotify widget all update from live data.
+- Consistent performance (Lighthouse 95+) and a responsive layout.
 
 ---
 

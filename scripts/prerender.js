@@ -370,7 +370,7 @@ const renderAboutMarkup = () => `
     <p class="prerender-summary leading-relaxed">
       I am a Research Engineer at the Cognitive Technologies Research Group (CoRe) in Turku
       University of Applied Sciences, where I am the architect and principal developer of AIOP,
-      the on-premises event-driven AI platform that acts as the integration backbone for every
+      the on-premises event-driven AI platform that is the integration backbone for every
       industrial pilot module the group runs. Named inventor on a European patent application
       filed at the EPO on 10 April 2026, and a contributor to Sensor4Food, a EUR 6.98M Horizon
       Europe project.
@@ -384,7 +384,7 @@ const renderExtrasMarkup = () => `
   <article class="prerender-article">
     <h1 class="text-3xl font-bold mb-4">Running Journey</h1>
     <p class="prerender-summary leading-relaxed">
-      Follow my running journey - every mile, every achievement, every step forward.
+      My running log: distances and recent activities, pulled from Strava.
     </p>
     <a class="prerender-link mt-6 inline-flex" href="/">Back to Home</a>
   </article>
@@ -587,7 +587,7 @@ async function main() {
     baseHtml,
     seo: {
       title: 'Running Journey',
-      description: 'Follow my running journey - every mile, every achievement, every step forward',
+      description: 'My running log: distances and recent activities, pulled from Strava',
       canonicalUrl: `${SITE_URL}/extras`,
       image: DEFAULT_IMAGE,
       type: 'website',
@@ -625,7 +625,7 @@ async function main() {
     baseHtml,
     seo: {
       title: 'Tags',
-      description: 'Browse all tags across posts and projects.',
+      description: 'Every tag used across my posts and projects.',
       canonicalUrl: `${SITE_URL}/tags`,
       image: DEFAULT_IMAGE,
       type: 'website',

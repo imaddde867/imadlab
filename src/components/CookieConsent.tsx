@@ -120,8 +120,8 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
               <div className="flex-1">
                 <p className="text-white font-semibold mb-1">I respect your privacy</p>
                 <p className="text-white/70 text-sm leading-relaxed">
-                  I use cookies to enhance your browsing experience, provide basic functionality,
-                  and to understand traffic. You can accept all, reject non-essential, or manage
+                  I use cookies to keep the site working and to see roughly how much traffic it
+                  gets. You can accept all, reject the non-essential ones, or set your own
                   preferences.
                 </p>
               </div>
@@ -171,7 +171,7 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
             <Toggle
               id="consent-functional"
               label="Functional"
-              desc="Remember preferences and enhance features (e.g., UI state)."
+              desc="Remember preferences such as UI state."
               checked={prefs.functional}
               onChange={(v) => setPrefs((p) => ({ ...p, functional: v }))}
             />
@@ -205,7 +205,7 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
           </div>
 
           <p className="mt-3 text-xs text-white/50">
-            You can update your preferences anytime via the “Manage cookies” link in the footer.
+            You can update your preferences anytime via the "Manage cookies" link in the footer.
           </p>
         </DialogContent>
       </Dialog>

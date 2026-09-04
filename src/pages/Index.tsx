@@ -52,7 +52,7 @@ const Index = () => {
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <SEO
         title="Home"
-        description="Research Engineer at CoRe (Turku UAS) and architect of AIOP, an on-premises event-driven AI platform, building deployable, Privacy-by-Design industrial AI systems for auditable decision support."
+        description="Research Engineer at CoRe (Turku UAS) and architect of AIOP, an on-premises event-driven AI platform. I build Privacy-by-Design industrial AI systems that reach deployment and produce auditable decision support."
         keywords="research engineer portfolio, aiop platform, industrial ai systems, multimodal data fusion, procedural knowledge extraction, privacy-by-design ai, edge-to-cloud ai"
         type="website"
         schemaType="WebSite"

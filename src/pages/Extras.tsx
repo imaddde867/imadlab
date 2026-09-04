@@ -70,7 +70,7 @@ const Extras = () => {
 
       <SEO
         title="Running Journey"
-        description="Follow my running journey - every mile, every achievement, every step forward"
+        description="My running log: distances and recent activities, pulled from Strava"
         keywords="strava, running, fitness, marathon, athletics, training"
         type="website"
       />
