@@ -31,7 +31,7 @@ const Hero = () => {
             >
               <span className="block">Research Engineer @ CoRe, Turku UAS</span>
               <span className="block mt-2 text-sm md:text-base lg:text-lg text-hierarchy-tertiary">
-                Architect and principal developer of AIOP — the platform behind every pilot module in the research group
+                I build on-premises industrial AI systems — architect of AIOP, the event-driven platform behind CoRe's partner pilots
               </span>
             </h2>
           </div>
