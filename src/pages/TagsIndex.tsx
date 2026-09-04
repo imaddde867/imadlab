@@ -94,7 +94,7 @@ const TagsIndex = () => {
     <div className="min-h-screen bg-black text-white section pt-14">
       <SEO
         title="Tags"
-        description="Browse all tags across posts and projects."
+        description="Every tag used across my posts and projects."
         type="website"
         schemaType="CollectionPage"
         breadcrumbs={[

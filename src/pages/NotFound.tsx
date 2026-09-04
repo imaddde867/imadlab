@@ -5,7 +5,7 @@ const NotFound = () => (
   <>
     <SEO
       title="404"
-      description="This page could not be found. Explore Imadlab for projects, writing, and data engineering resources."
+      description="This page does not exist. Try the projects or the blog instead."
       noindex
       nofollow
       schemaType="WebPage"
