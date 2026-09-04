@@ -13,6 +13,12 @@ const DIST_DIR = path.join(ROOT_DIR, 'dist');
 const SAFE_SEGMENT = /^[a-zA-Z0-9_-]+$/;
 const isSafeSegment = (segment) =>
   typeof segment === 'string' && SAFE_SEGMENT.test(segment) && segment.length > 0;
+const tagSlug = (tag) =>
+  tag
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 const isInsideDist = (resolved) => resolved.startsWith(DIST_DIR + path.sep) || resolved === DIST_DIR;
 const isSafeHttpUrl = (value) => {
   if (typeof value !== 'string' || !value.trim()) return false;
@@ -357,6 +363,91 @@ const renderPostDetailMarkup = (post) => {
 </main>`;
 };
 
+const renderAboutMarkup = () => `
+<main data-prerender="true" class="prerender-shell">
+  <article class="prerender-article">
+    <h1 class="text-3xl font-bold mb-4">Imad Eddine El Mouss</h1>
+    <p class="prerender-summary leading-relaxed">
+      I am a Research Engineer at the Cognitive Technologies Research Group (CoRe) in Turku
+      University of Applied Sciences, where I am the architect and principal developer of AIOP,
+      the on-premises event-driven AI platform that acts as the integration backbone for every
+      industrial pilot module the group runs. Named inventor on a European patent application
+      filed at the EPO on 10 April 2026, and a contributor to Sensor4Food, a EUR 6.98M Horizon
+      Europe project.
+    </p>
+    <a class="prerender-link mt-6 inline-flex" href="/">Back to Home</a>
+  </article>
+</main>`;
+
+const renderExtrasMarkup = () => `
+<main data-prerender="true" class="prerender-shell">
+  <article class="prerender-article">
+    <h1 class="text-3xl font-bold mb-4">Running Journey</h1>
+    <p class="prerender-summary leading-relaxed">
+      Follow my running journey - every mile, every achievement, every step forward.
+    </p>
+    <a class="prerender-link mt-6 inline-flex" href="/">Back to Home</a>
+  </article>
+</main>`;
+
+const renderTagsIndexMarkup = (tagEntries) => {
+  if (!tagEntries.length) {
+    return `
+<main data-prerender="true" class="prerender-shell">
+  <h1 class="text-3xl font-bold mb-4">Tags</h1>
+  <p class="text-base text-white/70">No tags yet. Check back soon.</p>
+</main>`;
+  }
+
+  const items = tagEntries
+    .map(
+      ({ slug, label }) =>
+        `<a href="/tags/${encodeURIComponent(slug)}" class="prerender-link inline mr-4">#${escapeHtml(label)}</a>`
+    )
+    .join('\n    ');
+
+  return `
+<main data-prerender="true" class="prerender-shell">
+  <h1 class="text-3xl font-bold mb-4">Tags</h1>
+  <p class="prerender-tags">
+    ${items}
+  </p>
+</main>`;
+};
+
+const renderTagDetailMarkup = (label, matchedPosts, matchedProjects) => {
+  const postItems = matchedPosts
+    .map(
+      (post) =>
+        `<li><a class="prerender-link inline" href="/blogs/${encodeURIComponent(post.slug)}">${escapeHtml(post.title)}</a></li>`
+    )
+    .join('\n      ');
+  const projectItems = matchedProjects
+    .map(
+      (project) =>
+        `<li><a class="prerender-link inline" href="/projects/${encodeURIComponent(project.id)}">${escapeHtml(project.title)}</a></li>`
+    )
+    .join('\n      ');
+
+  return `
+<main data-prerender="true" class="prerender-shell">
+  <article class="prerender-article">
+    <h1 class="text-3xl font-bold mb-4">#${escapeHtml(label)}</h1>
+    ${
+      matchedPosts.length
+        ? `<h2 class="text-xl font-semibold mt-4 mb-2">Blog</h2><ul class="prerender-grid">\n      ${postItems}\n    </ul>`
+        : ''
+    }
+    ${
+      matchedProjects.length
+        ? `<h2 class="text-xl font-semibold mt-4 mb-2">Projects</h2><ul class="prerender-grid">\n      ${projectItems}\n    </ul>`
+        : ''
+    }
+    <a class="prerender-link mt-6 inline-flex" href="/tags">Back to Tags</a>
+  </article>
+</main>`;
+};
+
 const injectIntoPage = async ({ route, markup, dataKey, data, baseHtml, seo }) => {
   const routeDir = path.resolve(DIST_DIR, route);
   if (!isInsideDist(routeDir)) {
@@ -465,6 +556,103 @@ async function main() {
   await fs.writeFile(path.join(DIST_DIR, 'index.html'), baseHtml, 'utf8');
 
   const [projects, posts] = await Promise.all([fetchProjects(), fetchPosts()]);
+
+  await injectIntoPage({
+    route: 'about',
+    markup: renderAboutMarkup(),
+    baseHtml,
+    seo: {
+      title: 'About Imad Eddine',
+      description:
+        'Research Engineer at CoRe (Turku UAS) and architect of AIOP, an on-premises event-driven AI platform, focused on deployable multimodal industrial AI, procedural knowledge extraction, and Privacy-by-Design systems.',
+      canonicalUrl: `${SITE_URL}/about`,
+      image: DEFAULT_IMAGE,
+      type: 'profile',
+      structuredData: {
+        '@context': 'https://schema.org',
+        '@type': 'ProfilePage',
+        url: `${SITE_URL}/about`,
+        mainEntity: {
+          '@type': 'Person',
+          name: 'Imad Eddine El Mouss',
+          url: `${SITE_URL}/about`,
+        },
+      },
+    },
+  });
+
+  await injectIntoPage({
+    route: 'extras',
+    markup: renderExtrasMarkup(),
+    baseHtml,
+    seo: {
+      title: 'Running Journey',
+      description: 'Follow my running journey - every mile, every achievement, every step forward',
+      canonicalUrl: `${SITE_URL}/extras`,
+      image: DEFAULT_IMAGE,
+      type: 'website',
+    },
+  });
+
+  const tagLabels = new Map();
+  for (const post of posts) {
+    if (Array.isArray(post.tags)) {
+      for (const t of post.tags) {
+        if (t && typeof t === 'string') {
+          const slug = tagSlug(t);
+          if (slug && !tagLabels.has(slug)) tagLabels.set(slug, t.trim());
+        }
+      }
+    }
+  }
+  for (const project of projects) {
+    if (Array.isArray(project.tech_tags)) {
+      for (const t of project.tech_tags) {
+        if (t && typeof t === 'string') {
+          const slug = tagSlug(t);
+          if (slug && !tagLabels.has(slug)) tagLabels.set(slug, t.trim());
+        }
+      }
+    }
+  }
+  const tagEntries = Array.from(tagLabels.entries())
+    .filter(([slug]) => isSafeSegment(slug))
+    .map(([slug, label]) => ({ slug, label }));
+
+  await injectIntoPage({
+    route: 'tags',
+    markup: renderTagsIndexMarkup(tagEntries),
+    baseHtml,
+    seo: {
+      title: 'Tags',
+      description: 'Browse all tags across posts and projects.',
+      canonicalUrl: `${SITE_URL}/tags`,
+      image: DEFAULT_IMAGE,
+      type: 'website',
+    },
+  });
+
+  for (const { slug, label } of tagEntries) {
+    const matchedPosts = posts.filter(
+      (post) => Array.isArray(post.tags) && post.tags.some((t) => t && tagSlug(t) === slug)
+    );
+    const matchedProjects = projects.filter(
+      (project) =>
+        Array.isArray(project.tech_tags) && project.tech_tags.some((t) => t && tagSlug(t) === slug)
+    );
+    await injectIntoPage({
+      route: path.join('tags', slug),
+      markup: renderTagDetailMarkup(label, matchedPosts, matchedProjects),
+      baseHtml,
+      seo: {
+        title: `Tag: ${label}`,
+        description: `Content tagged with ${label}.`,
+        canonicalUrl: `${SITE_URL}/tags/${encodeURIComponent(slug)}`,
+        image: DEFAULT_IMAGE,
+        type: 'website',
+      },
+    });
+  }
 
   await injectIntoPage({
     route: 'projects',
