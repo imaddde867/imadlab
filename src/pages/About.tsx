@@ -52,8 +52,8 @@ const About = () => {
                 <span className="font-semibold text-white">
                   architect and principal developer of AIOP
                 </span>
-                , the on-premises event-driven AI platform that acts as the integration backbone
-                for every industrial pilot module the group runs.
+                , the on-premises event-driven AI platform that is the integration backbone for
+                every industrial pilot module the group runs.
               </p>
             </div>
 
@@ -80,7 +80,7 @@ const About = () => {
                 </li>
                 <li>
                   <span className="font-semibold text-white">Technical lead</span> for the group's
-                  student engineering portfolio — more than twenty applied-AI R&D projects across a
+                  student engineering portfolio: more than twenty applied-AI R&D projects across a
                   rotating intern cohort.
                 </li>
               </ul>
@@ -93,14 +93,14 @@ const About = () => {
                   Technical architecture ownership for applied research prototypes in industrial AI.
                 </li>
                 <li>
-                  Prototype-to-pilot delivery with reproducibility, validation, and integration
-                  readiness.
+                  Prototype-to-pilot delivery, with reproducible and validated results, ready for
+                  integration on a partner's system.
                 </li>
                 <li>
                   Privacy-by-design and auditable outputs for safety-critical industrial contexts.
                 </li>
                 <li>
-                  Deliver partner pilots across two funded programmes — TeoÄly (ERDF, ~EUR 320k)
+                  Deliver partner pilots across two funded programmes: TeoÄly (ERDF, ~EUR 320k)
                   and ADINO (Business Finland, ten industrial partners).
                 </li>
                 <li>
@@ -116,7 +116,7 @@ const About = () => {
               <ul className="space-y-3 text-lg text-white/70 leading-relaxed list-disc pl-6">
                 <li>Multimodal industrial intelligence across sensors, machines, logs, and documents.</li>
                 <li>Procedural knowledge extraction and knowledge graph construction from industrial documentation.</li>
-                <li>Applied LLM systems with robust evaluation and failure-mode awareness.</li>
+                <li>Applied LLM systems with evaluation that accounts for how they fail.</li>
                 <li>Edge-to-cloud data and ML system design for real operational environments.</li>
               </ul>
             </div>
@@ -138,8 +138,8 @@ const About = () => {
                 pipeline for extracting procedural knowledge graphs from safety-critical manuals.
               </p>
               <p className="text-lg text-white/70 leading-relaxed mt-4">
-                It combines local LLM pipelines, schema-aware extraction, and measurable procedural
-                fidelity to support explainable industrial decision workflows.
+                It uses local LLM pipelines, schema-aware extraction, and measurable procedural
+                fidelity, so industrial decision workflows stay explainable.
               </p>
             </div>
 
@@ -160,9 +160,9 @@ const About = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-white/70">
-                  Open to collaboration with research teams and industrial R&D partners on
-                  multimodal industrial AI, procedural knowledge extraction, and deployable AI
-                  systems.
+                  I'm open to working with research teams and industrial R&D partners on
+                  multimodal industrial AI, procedural knowledge extraction, and AI systems that
+                  have to reach deployment.
                 </p>
                 <div className="flex flex-col space-y-3">
                   <a

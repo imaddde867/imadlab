@@ -140,8 +140,8 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
               Stay Updated
             </h2>
             <p className="text-white/60 text-sm sm:text-base max-w-md">
-              Get notified when new projects and blog posts are published. Never miss out on the
-              latest content.
+              I'll email you when I publish a new project or blog post. That's the only thing the
+              list is used for.
             </p>
           </div>
 
