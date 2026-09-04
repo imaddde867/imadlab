@@ -183,7 +183,7 @@ const NewsletterSignup = ({ className = '' }: NewsletterSignupProps) => {
                   </p>
                 )}
                 <span id="newsletter-description" className="sr-only">
-                  Enter your email to subscribe to our newsletter and receive updates on new
+                  Enter your email to subscribe to my newsletter and receive updates on new
                   content.
                 </span>
               </div>
