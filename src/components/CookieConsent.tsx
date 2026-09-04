@@ -118,9 +118,9 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
           <div className="mx-auto max-w-5xl m-4 rounded-xl border border-white/10 bg-black/70 backdrop-blur px-5 py-4 shadow-2xl">
             <div className="flex flex-col md:flex-row md:items-center gap-4">
               <div className="flex-1">
-                <p className="text-white font-semibold mb-1">We value your privacy</p>
+                <p className="text-white font-semibold mb-1">I respect your privacy</p>
                 <p className="text-white/70 text-sm leading-relaxed">
-                  We use cookies to enhance your browsing experience, provide basic functionality,
+                  I use cookies to enhance your browsing experience, provide basic functionality,
                   and to understand traffic. You can accept all, reject non-essential, or manage
                   preferences.
                 </p>
@@ -178,7 +178,7 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
             <Toggle
               id="consent-analytics"
               label="Analytics"
-              desc="Help us understand site usage to improve content and performance."
+              desc="Helps me understand site usage to improve content and performance."
               checked={prefs.analytics}
               onChange={(v) => setPrefs((p) => ({ ...p, analytics: v }))}
             />
