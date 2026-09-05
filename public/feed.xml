@@ -5,7 +5,7 @@
   <link>https://imadlab.com</link>
   <description>Technical notes on industrial AI systems, procedural extraction, architecture, and evaluation.</description>
   <language>en-us</language>
-  <lastBuildDate>Mon, 01 Jun 2026 18:51:20 GMT</lastBuildDate>
+  <lastBuildDate>Sat, 05 Sep 2026 13:47:02 GMT</lastBuildDate>
   <atom:link href="https://imadlab.com/feed.xml" rel="self" type="application/rss+xml" />
   <item>
     <title>Evaluation Beyond Accuracy: Constraint Coverage and Safety in Procedure Extraction</title>
@@ -23,7 +23,7 @@
     <title>Designing Local LLM Pipelines for Industrial Documentation</title>
     <link>https://imadlab.com/blogs/designing-local-llm-pipelines-for-industrial-documentation</link>
     <guid>https://imadlab.com/blogs/designing-local-llm-pipelines-for-industrial-documentation</guid>
-    <description><![CDATA[A field guide for building local document intelligence pipelines when privacy, latency, and traceability are non-negotiable constraints.]]></description>
+    <description><![CDATA[How I build local document intelligence pipelines when the data cannot leave the organization and every output has to be traceable.]]></description>
     <pubDate>Fri, 16 Jan 2026 07:45:00 GMT</pubDate>
     <category>local-llm</category>
     <category>industrial-ai</category>
@@ -35,7 +35,7 @@
     <title>Procedural Knowledge Extraction Is Not Summarization</title>
     <link>https://imadlab.com/blogs/procedural-knowledge-extraction-is-not-summarization</link>
     <guid>https://imadlab.com/blogs/procedural-knowledge-extraction-is-not-summarization</guid>
-    <description><![CDATA[In industrial documentation, a fluent summary can still be operationally wrong. This note explains why procedural extraction needs structure, constraints, and traceable validation.]]></description>
+    <description><![CDATA[In industrial documentation, a fluent summary can still be operationally wrong. Procedural extraction needs explicit structure and traceable validation, not better compression.]]></description>
     <pubDate>Mon, 29 Dec 2025 08:20:00 GMT</pubDate>
     <category>procedural-knowledge-extraction</category>
     <category>industrial-ai</category>
