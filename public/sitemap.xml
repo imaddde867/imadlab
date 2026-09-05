@@ -375,9 +375,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     
-    <image:image>
-      <image:loc>https://raw.githubusercontent.com/imaddde867/IPKE/main/assets/banner.jpg</image:loc>
-    </image:image>
   </url>
   <url>
     <loc>https://imadlab.com/projects/6dd91268-b428-4803-9100-904bf51b895f</loc>
