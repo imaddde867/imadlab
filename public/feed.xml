@@ -5,7 +5,7 @@
   <link>https://imadlab.com</link>
   <description>Technical notes on industrial AI systems, procedural extraction, architecture, and evaluation.</description>
   <language>en-us</language>
-  <lastBuildDate>Sat, 05 Sep 2026 13:47:02 GMT</lastBuildDate>
+  <lastBuildDate>Sat, 05 Sep 2026 14:01:42 GMT</lastBuildDate>
   <atom:link href="https://imadlab.com/feed.xml" rel="self" type="application/rss+xml" />
   <item>
     <title>Evaluation Beyond Accuracy: Constraint Coverage and Safety in Procedure Extraction</title>
@@ -44,10 +44,10 @@
     <category>safety</category>
   </item>
   <item>
-    <title>Designing a Small Local LLM Pipeline on Apple Silicon: Engineering Notes</title>
+    <title>I Built a 10M-Parameter Language Model on My MacBook</title>
     <link>https://imadlab.com/blogs/local-llm-apple-silicon-engineering-notes</link>
     <guid>https://imadlab.com/blogs/local-llm-apple-silicon-engineering-notes</guid>
-    <description><![CDATA[A practical engineering note on building and evaluating a local transformer pipeline under tight hardware constraints, including failure modes and reliability tradeoffs.]]></description>
+    <description><![CDATA[I spent two weeks reading papers and two days training a 10M-parameter transformer on an M4 MacBook Pro. The first run went to NaN, and the third version writes coherent paragraphs but still cannot do math.]]></description>
     <pubDate>Fri, 11 Jul 2025 21:07:09 GMT</pubDate>
     <category>local-llm</category>
     <category>industrial-ai</category>
