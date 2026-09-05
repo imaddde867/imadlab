@@ -663,7 +663,7 @@ async function main() {
     seo: {
       title: 'Projects',
       description:
-        'Selected applied research projects in multimodal industrial AI, procedural knowledge extraction, and deployable data systems.',
+        'Selected applied research projects in multimodal industrial AI, procedural knowledge extraction, and deployable data/ML systems.',
       canonicalUrl: `${SITE_URL}/projects`,
       image: DEFAULT_IMAGE,
       type: 'website',
@@ -685,7 +685,7 @@ async function main() {
     seo: {
       title: 'Blog',
       description:
-        'Technical notes on industrial AI systems, local LLM extraction pipelines, architecture, and evaluation.',
+        'Technical notes on industrial AI systems, local LLM extraction pipelines, architecture tradeoffs, and evaluation.',
       canonicalUrl: `${SITE_URL}/blogs`,
       image: DEFAULT_IMAGE,
       type: 'website',
