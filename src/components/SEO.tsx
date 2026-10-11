@@ -52,7 +52,7 @@ const GOOGLE_SITE_VERIFICATION =
 const BING_SITE_VERIFICATION =
   (import.meta.env.VITE_BING_SITE_VERIFICATION as string | undefined)?.trim() || '';
 const DEFAULT_KEYWORDS =
-  'imadlab, imad eddine el mouss, research engineer, applied research, industrial ai, multimodal data fusion, procedural knowledge extraction, privacy-by-design, auditable decision support, edge-to-cloud systems';
+  'imadlab, imad eddine el mouss, research engineer, aiop, applied research, industrial ai, multimodal data fusion, procedural knowledge extraction, privacy-by-design, auditable decision support, edge-to-cloud systems';
 
 const toAbsoluteUrl = (value?: string) => {
   if (!value) return DEFAULT_IMAGE;
