@@ -13,8 +13,8 @@ const About = () => {
       <div className="absolute inset-0 opacity-10" />
       <SEO
         title="About Imad Eddine"
-        description="Research Engineer at CoRe (Turku UAS) and architect of AIOP, an on-premises event-driven AI platform, focused on deployable multimodal industrial AI, procedural knowledge extraction, and Privacy-by-Design systems."
-        keywords="imad eddine el mouss, research engineer, aiop, core turku uas, industrial ai, procedural knowledge extraction, multimodal data fusion, privacy-by-design"
+        description="Research Engineer at CoRe (Turku UAS), building on-premises, event-driven industrial AI systems, focused on deployable multimodal industrial AI, procedural knowledge extraction, and Privacy-by-Design systems."
+        keywords="imad eddine el mouss, research engineer, core turku uas, industrial ai, procedural knowledge extraction, multimodal data fusion, privacy-by-design"
         schemaType="AboutPage"
         breadcrumbs={[
           { name: 'Home', path: '/' },
@@ -50,9 +50,9 @@ const About = () => {
                 </a>{' '}
                 in Turku University of Applied Sciences, where I am the{' '}
                 <span className="font-semibold text-white">
-                  architect and principal developer of AIOP
-                </span>
-                , the on-premises event-driven AI platform that is the integration backbone for
+                  architect and principal developer
+                </span>{' '}
+                of the on-premises, event-driven AI platform that is the integration backbone for
                 every industrial pilot module the group runs.
               </p>
             </div>
@@ -74,9 +74,8 @@ const About = () => {
                 </li>
                 <li>
                   <span className="font-semibold text-white">Platform ownership.</span> Architect
-                  and principal developer of AIOP (Python, NATS JetStream, Docker, FastAPI).
-                  Reproducible stress audits: 200 events/s sustained at 0% loss, 10ms p99 latency
-                  (and 75 events/s at 5ms p99).
+                  and principal developer of the group's on-premises, event-driven AI platform
+                  (Python, NATS JetStream, Docker, FastAPI).
                 </li>
                 <li>
                   <span className="font-semibold text-white">Technical lead</span> for the group's

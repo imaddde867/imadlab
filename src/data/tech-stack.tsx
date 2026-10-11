@@ -85,7 +85,7 @@ export const techStack: TechItem[] = [
     icon: <SiNatsdotio className="w-8 h-8 text-[#27AAE1]" />,
     url: 'https://nats.io/',
     category: 'Streaming & Ingestion',
-    description: 'Event streaming and persistence layer for AIOP, an on-premises event-driven AI platform',
+    description: 'Event streaming and persistence layer for an on-premises, event-driven AI platform',
   },
 
   // Orchestration

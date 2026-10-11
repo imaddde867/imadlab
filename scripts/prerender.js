@@ -369,7 +369,7 @@ const renderAboutMarkup = () => `
     <h1 class="text-3xl font-bold mb-4">Imad Eddine El Mouss</h1>
     <p class="prerender-summary leading-relaxed">
       I am a Research Engineer at the Cognitive Technologies Research Group (CoRe) in Turku
-      University of Applied Sciences, where I am the architect and principal developer of AIOP,
+      University of Applied Sciences, where I am the architect and principal developer of
       the on-premises event-driven AI platform that is the integration backbone for every
       industrial pilot module the group runs. Named inventor on a European patent application
       filed at the EPO on 10 April 2026, and a contributor to Sensor4Food, a EUR 6.98M Horizon
@@ -564,7 +564,7 @@ async function main() {
     seo: {
       title: 'About Imad Eddine',
       description:
-        'Research Engineer at CoRe (Turku UAS) and architect of AIOP, an on-premises event-driven AI platform, focused on deployable multimodal industrial AI, procedural knowledge extraction, and Privacy-by-Design systems.',
+        'Research Engineer at CoRe (Turku UAS), building on-premises, event-driven industrial AI systems, focused on deployable multimodal industrial AI, procedural knowledge extraction, and Privacy-by-Design systems.',
       canonicalUrl: `${SITE_URL}/about`,
       image: DEFAULT_IMAGE,
       type: 'profile',
