@@ -84,7 +84,7 @@ export const MermaidBlock = ({ code, maxDiagramSizeKB }: MermaidBlockProps) => {
     return (
       <div
         ref={ref}
-        className="my-6 rounded-md border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200"
+        className="md-block rounded-md border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200"
         role="alert"
       >
         {error}
@@ -96,7 +96,7 @@ export const MermaidBlock = ({ code, maxDiagramSizeKB }: MermaidBlockProps) => {
     <div
       ref={ref}
       className={clsx(
-        'my-8 overflow-x-auto rounded-lg border border-white/10 bg-card p-4',
+        'md-block overflow-x-auto rounded-md border border-white/10 bg-card p-4',
         svg ? 'text-white' : 'text-white/70'
       )}
       role="img"

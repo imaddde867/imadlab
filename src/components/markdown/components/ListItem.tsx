@@ -28,13 +28,13 @@ export const ListItem = ({ checked, className, children, ...props }: ListItemPro
             onChange={() => setIsChecked((value) => !value)}
           />
         </span>
-        <div className="flex-1 text-base leading-7 text-white/80">{children}</div>
+        <div className="flex-1">{children}</div>
       </li>
     );
   }
 
   return (
-    <li className={clsx('text-base leading-7 text-white/80', className)} {...props}>
+    <li className={clsx(className)} {...props}>
       {children}
     </li>
   );

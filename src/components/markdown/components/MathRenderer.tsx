@@ -73,7 +73,7 @@ export const MathRenderer = ({ value, inline = false }: MathRendererProps) => {
       className={clsx(
         inline
           ? 'mx-1 inline-block align-middle text-white'
-          : 'my-6 block overflow-x-auto text-center text-lg text-white'
+          : 'md-block block overflow-x-auto text-center text-white'
       )}
       role="math"
       aria-label={value}

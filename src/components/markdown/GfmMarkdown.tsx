@@ -76,10 +76,7 @@ const mathSchemaExtensions: Schema = {
   ...defaultSchema,
   attributes: {
     ...defaultSchema.attributes,
-    code: [
-      ...(defaultSchema.attributes?.code ?? []),
-      ['className', 'math-inline', 'math-display'],
-    ],
+    code: [...(defaultSchema.attributes?.code ?? []), ['className', 'math-inline', 'math-display']],
     details: [...(defaultSchema.attributes?.details ?? []), 'open'],
     video: [
       ...(defaultSchema.attributes?.video ?? []),
@@ -183,15 +180,6 @@ const HeadingAnchor = ({ id }: { id: string }) => (
   </a>
 );
 
-const headingStyles: Record<number, string> = {
-  1: 'text-3xl md:text-4xl font-bold text-white mt-12 mb-6 leading-tight',
-  2: 'text-2xl md:text-3xl font-semibold text-white mt-10 mb-5 leading-tight border-b border-white/10 pb-3',
-  3: 'text-xl md:text-2xl font-semibold text-white mt-8 mb-4 leading-tight',
-  4: 'text-lg md:text-xl font-semibold text-white mt-6 mb-3 leading-tight',
-  5: 'text-base md:text-lg font-semibold text-white mt-4 mb-2 leading-tight',
-  6: 'text-base font-semibold text-white mt-4 mb-2 leading-tight uppercase tracking-wide',
-};
-
 const HeadingRenderer = ({
   level,
   node,
@@ -207,7 +195,7 @@ const HeadingRenderer = ({
   const id = slugger.slug(text);
 
   return (
-    <Tag id={id} className={clsx('group relative scroll-mt-24', headingStyles[level])}>
+    <Tag id={id} className="group relative scroll-mt-24">
       <HeadingAnchor id={id} />
       {children}
     </Tag>
@@ -240,8 +228,8 @@ const ImageRenderer = ({ alt, src, title, ...props }: ImgHTMLAttributes<HTMLImag
   const resolved = resolveUrl(src);
 
   return (
-    <figure className="my-10 w-full max-w-full">
-      <div className="relative w-full overflow-hidden rounded-lg border border-white/10 bg-black/50">
+    <figure className="md-block w-full max-w-full">
+      <div className="w-full overflow-hidden rounded-md border border-white/10">
         <img
           src={resolved}
           alt={alt || ''}
@@ -253,9 +241,7 @@ const ImageRenderer = ({ alt, src, title, ...props }: ImgHTMLAttributes<HTMLImag
           {...props}
         />
       </div>
-      {(alt || title) && (
-        <figcaption className="mt-3 text-center text-sm text-white/60">{title ?? alt}</figcaption>
-      )}
+      {title && <figcaption className="mt-2 text-sm text-white/55">{title}</figcaption>}
     </figure>
   );
 };
@@ -270,8 +256,8 @@ const VideoRenderer = ({
   const resolved = resolveUrl(src);
 
   return (
-    <figure className="my-10 w-full max-w-full">
-      <div className="w-full overflow-hidden rounded-lg border border-white/10 bg-black/30">
+    <figure className="md-block w-full max-w-full">
+      <div className="w-full overflow-hidden rounded-md border border-white/10">
         <video
           controls
           preload="metadata"
@@ -284,9 +270,7 @@ const VideoRenderer = ({
         </video>
       </div>
       {poster && (
-        <figcaption className="mt-2 text-center text-sm text-white/50">
-          Video preview available
-        </figcaption>
+        <figcaption className="mt-2 text-sm text-white/55">Video preview available</figcaption>
       )}
     </figure>
   );
@@ -324,7 +308,7 @@ const FootnoteDefinitionRenderer = ({
 const FootnotesContainer = ({ children }: { children: ReactNode }) => (
   <section
     data-footnotes
-    className="mt-12 rounded-lg border border-white/10 bg-white/5 p-6 text-white"
+    className="md-block border-t border-white/10 pt-6 text-sm text-white/70"
     aria-label="Footnotes"
   >
     <h2 className="sr-only">Footnotes</h2>
@@ -389,10 +373,7 @@ const OrderedList = ({
   ...props
 }: OlHTMLAttributes<HTMLOListElement>) => (
   <ol
-    className={clsx(
-      'mb-6 ml-6 list-decimal space-y-2 text-base leading-7 text-white/80 marker:text-white/40',
-      className
-    )}
+    className={clsx('list-decimal pl-[1.3em] marker:text-white/40', className)}
     start={start}
     {...props}
   >
@@ -401,13 +382,7 @@ const OrderedList = ({
 );
 
 const UnorderedList = ({ className, children, ...props }: HTMLAttributes<HTMLUListElement>) => (
-  <ul
-    className={clsx(
-      'mb-6 ml-6 list-disc space-y-2 text-base leading-7 text-white/80 marker:text-white/40',
-      className
-    )}
-    {...props}
-  >
+  <ul className={clsx('list-disc pl-[1.3em] marker:text-white/40', className)} {...props}>
     {children}
   </ul>
 );
@@ -511,7 +486,20 @@ export const GfmMarkdown = ({
       h4: (props) => <HeadingRenderer level={4} {...props} />,
       h5: (props) => <HeadingRenderer level={5} {...props} />,
       h6: (props) => <HeadingRenderer level={6} {...props} />,
-      p: Paragraph,
+      // A paragraph holding only an image would wrap a <figure> in a <p>; render the figure alone.
+      p: ({ node, children, ...props }) => {
+        const kids =
+          (node as { children?: Array<{ type: string; tagName?: string; value?: string }> })
+            ?.children ?? [];
+        const imageOnly =
+          kids.length > 0 &&
+          kids.every(
+            (k) =>
+              (k.type === 'element' && k.tagName === 'img') ||
+              (k.type === 'text' && !k.value?.trim())
+          );
+        return imageOnly ? <>{children}</> : <Paragraph {...props}>{children}</Paragraph>;
+      },
       blockquote: Blockquote,
       hr: ThematicBreak,
       ul: UnorderedList,
@@ -587,7 +575,7 @@ export const GfmMarkdown = ({
   }, [mergedConfig.enableMath, mergedConfig.enableMermaid, mergedConfig.maxDiagramSizeKB]);
 
   const content = (
-    <section className={clsx('prose prose-invert max-w-none', className)}>
+    <section className={clsx('article-body', className)}>
       <ReactMarkdown
         remarkPlugins={remarkPlugins}
         rehypePlugins={rehypePlugins}

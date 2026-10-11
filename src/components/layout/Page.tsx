@@ -31,7 +31,7 @@ export const PageTitle = ({
         ← {back.label}
       </Link>
     )}
-    <h1 className="text-4xl text-[color:var(--nd-ink)] md:text-5xl">{title}</h1>
+    <h1 className="text-3xl leading-[1.15] text-[color:var(--nd-ink)] md:text-4xl">{title}</h1>
     {description && <p className="mt-4 text-[color:var(--nd-ink-2)]">{description}</p>}
     {children}
   </header>

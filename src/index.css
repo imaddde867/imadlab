@@ -124,43 +124,6 @@ All colors MUST be HSL.
     hanging-punctuation: first last;
   }
 
-  /* Enhanced reading experience */
-  .prose {
-    @apply max-w-none;
-  }
-
-  .prose p {
-    @apply text-white/80 leading-7 mb-6;
-  }
-
-  .prose h1,
-  .prose h2,
-  .prose h3,
-  .prose h4,
-  .prose h5,
-  .prose h6 {
-    @apply text-white font-bold mb-4 mt-8;
-  }
-
-  .prose h1 {
-    @apply text-3xl;
-  }
-  .prose h2 {
-    @apply text-2xl;
-  }
-  .prose h3 {
-    @apply text-xl;
-  }
-  .prose h4 {
-    @apply text-lg;
-  }
-
-  .prose h1,
-  .prose h2,
-  .prose h3 {
-    @apply font-display font-semibold;
-  }
-
   /* Custom text selection styling */
   ::selection {
     background-color: hsl(var(--primary) / 0.3);
@@ -170,6 +133,60 @@ All colors MUST be HSL.
 }
 
 @layer components {
+  /* Article body (project and post text). One vertical rhythm: block components set no outer
+     margins of their own; spacing comes only from these sibling rules. */
+  .article-body {
+    color: hsl(var(--foreground) / 0.9);
+    font-size: 17px;
+    line-height: 1.7;
+  }
+  .article-body > * {
+    margin: 0;
+  }
+  .article-body > * + * {
+    margin-top: 1.15em;
+  }
+  .article-body > :is(h2, h3, h4, h5, h6) {
+    color: hsl(var(--foreground));
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+  .article-body > h2 {
+    @apply font-display;
+    font-size: 1.45rem;
+    font-weight: 600;
+    margin-top: 2.3em;
+  }
+  .article-body > h3 {
+    @apply font-display;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 1.9em;
+  }
+  .article-body > :is(h4, h5, h6) {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 1.6em;
+  }
+  .article-body > :is(h2, h3, h4, h5, h6) + * {
+    margin-top: 0.55em;
+  }
+  /* :where keeps these at low specificity, so a heading after a block keeps its own larger gap. */
+  .article-body > :where(.md-block),
+  .article-body > :where(.md-block) + * {
+    margin-top: 1.75em;
+  }
+  .article-body > :is(h2, h3, h4, h5, h6) + :where(.md-block) {
+    margin-top: 0.9em;
+  }
+  .article-body > :first-child {
+    margin-top: 0;
+  }
+  .article-body li + li,
+  .article-body li > :is(ul, ol) {
+    margin-top: 0.35em;
+  }
+
   .hljs {
     @apply text-white/90;
   }

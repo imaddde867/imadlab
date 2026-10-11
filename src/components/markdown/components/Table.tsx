@@ -19,16 +19,11 @@ type HeaderCellProps = DetailedHTMLProps<
 >;
 
 export const Table = ({ className, children, ...props }: TableProps) => (
-  <div
-    role="region"
-    aria-label="Markdown table"
-    className="relative my-8 w-full max-w-full rounded-lg border border-white/10 bg-white/5"
-  >
+  <div role="region" aria-label="Markdown table" className="md-block w-full max-w-full">
     <div className="overflow-x-auto">
       <table
         className={clsx(
-          'w-full border-collapse text-left text-sm text-white/80',
-          'min-w-[420px]',
+          'w-full border-collapse text-left text-[15px] leading-snug [font-variant-numeric:tabular-nums]',
           className
         )}
         {...props}
@@ -40,13 +35,13 @@ export const Table = ({ className, children, ...props }: TableProps) => (
 );
 
 export const TableHead = ({ className, children, ...props }: SectionProps) => (
-  <thead className={clsx('bg-white/10 text-white', className)} {...props}>
+  <thead className={clsx('text-white', className)} {...props}>
     {children}
   </thead>
 );
 
 export const TableBody = ({ className, children, ...props }: SectionProps) => (
-  <tbody className={clsx('divide-y divide-white/10', className)} {...props}>
+  <tbody className={clsx(className)} {...props}>
     {children}
   </tbody>
 );
@@ -54,7 +49,7 @@ export const TableBody = ({ className, children, ...props }: SectionProps) => (
 export const TableHeaderCell = ({ className, children, ...props }: HeaderCellProps) => (
   <th
     className={clsx(
-      'sticky top-0 z-[1] bg-white/10 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-white',
+      'border-b border-white/25 px-3 py-2 text-[14px] font-semibold text-white first:pl-0',
       className
     )}
     scope="col"
@@ -65,7 +60,13 @@ export const TableHeaderCell = ({ className, children, ...props }: HeaderCellPro
 );
 
 export const TableCell = ({ className, children, ...props }: CellProps) => (
-  <td className={clsx('px-4 py-3 align-top text-sm text-white/80', className)} {...props}>
+  <td
+    className={clsx(
+      'whitespace-nowrap border-b border-white/10 px-3 py-2 align-top text-white/85 first:whitespace-normal first:pl-0',
+      className
+    )}
+    {...props}
+  >
     {children}
   </td>
 );
