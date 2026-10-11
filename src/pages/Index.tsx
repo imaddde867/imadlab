@@ -1,6 +1,7 @@
 import { lazy, Suspense, type ReactNode } from 'react';
 import Hero from '@/components/Hero';
 import Projects from '@/components/Projects';
+import { useLocation } from 'react-router-dom';
 import SEO from '@/components/SEO';
 import BlogFeed from '@/components/BlogFeed';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
@@ -43,7 +44,20 @@ const personSchema = {
   sameAs: ['https://github.com/imaddde867', 'https://www.linkedin.com/in/imad-eddine-e-986741262/'],
 };
 
+// PROTOTYPE (throwaway): dev-only variant preview, remove with src/pages/home-prototype.
+const HomePrototype = import.meta.env.DEV
+  ? lazy(() => import('./home-prototype/HomePrototype'))
+  : null;
+
 const Index = () => {
+  const variant = new URLSearchParams(useLocation().search).get('variant');
+  if (HomePrototype && variant) {
+    return (
+      <Suspense fallback={null}>
+        <HomePrototype variant={variant} />
+      </Suspense>
+    );
+  }
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <SEO
