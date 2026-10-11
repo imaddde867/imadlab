@@ -1,7 +1,6 @@
 import { lazy, Suspense, type ReactNode } from 'react';
 import Hero from '@/components/Hero';
 import Projects from '@/components/Projects';
-import Marquee from '@/components/Marquee';
 import SEO from '@/components/SEO';
 import BlogFeed from '@/components/BlogFeed';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
@@ -41,10 +40,7 @@ const personSchema = {
     'Privacy-by-Design systems',
     'Edge-to-cloud architecture',
   ],
-  sameAs: [
-    'https://github.com/imaddde867',
-    'https://www.linkedin.com/in/imad-eddine-e-986741262/',
-  ],
+  sameAs: ['https://github.com/imaddde867', 'https://www.linkedin.com/in/imad-eddine-e-986741262/'],
 };
 
 const Index = () => {
@@ -65,26 +61,6 @@ const Index = () => {
       <DeferredSection minHeightClass="min-h-[640px]">
         <TechStack />
       </DeferredSection>
-      <div className="my-24">
-        <Marquee
-          words={[
-            'Multimodal Fusion',
-            'Procedural Extraction',
-            'Knowledge Graphs',
-            'Privacy-by-Design',
-            'Edge-to-Cloud',
-            'Auditable AI',
-            'Constraint Coverage',
-            'Operational Reliability',
-            'Integration Readiness',
-            'Evaluation Discipline',
-            'Reproducibility',
-            'Industrial Deployment',
-          ]}
-          speed="normal"
-        />
-      </div>
-
       <BlogFeed />
       <DeferredSection minHeightClass="min-h-[760px]">
         <Contact />
