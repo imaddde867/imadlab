@@ -26,7 +26,7 @@ const personSchema = {
 };
 
 const links = [
-  { label: 'CV (PDF)', href: '/Resume.pdf' },
+  { label: 'Resume', href: '/Resume.pdf' },
   { label: 'GitHub', href: 'https://github.com/imaddde867' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/imad-eddine-e-986741262' },
   { label: 'Email', href: 'mailto:ielmouss867@gmail.com' },
