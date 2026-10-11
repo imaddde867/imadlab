@@ -51,20 +51,16 @@ export const useAnalytics = () => {
 
       logger.debug('📊 Analytics metadata collected:', metadata);
 
-      const { error } = await supabase.from('visitor_sessions').upsert(
-        {
-          session_id: sessionId,
-          last_activity: new Date().toISOString(),
-          user_agent: metadata.user_agent,
-          device_type: metadata.device_type,
-          browser: metadata.browser,
-          os: metadata.os,
-          screen_resolution: metadata.screen_resolution,
-          language: metadata.language,
-          timezone: metadata.timezone,
-        },
-        { onConflict: 'session_id' }
-      );
+      const { error } = await supabase.rpc('track_session', {
+        p_session_id: sessionId,
+        p_user_agent: metadata.user_agent,
+        p_device_type: metadata.device_type,
+        p_browser: metadata.browser,
+        p_os: metadata.os,
+        p_screen_resolution: metadata.screen_resolution,
+        p_language: metadata.language,
+        p_timezone: metadata.timezone,
+      });
 
       if (error) {
         logger.error('❌ Analytics session error:', error);
@@ -130,29 +126,25 @@ export const useAnalytics = () => {
         ...utmParams,
       });
 
-      const { data: inserted, error } = await supabase
-        .from('page_views')
-        .insert({
-          session_id: sessionId,
-          path: location.pathname,
-          referrer: referrer,
-          traffic_source: trafficSource,
-          utm_source: utmParams.utm_source || null,
-          utm_medium: utmParams.utm_medium || null,
-          utm_campaign: utmParams.utm_campaign || null,
-          utm_term: utmParams.utm_term || null,
-          utm_content: utmParams.utm_content || null,
-          device_type: metadata.device_type,
-          browser: metadata.browser,
-          os: metadata.os,
-        })
-        .select('id')
-        .single();
+      const { data: insertedId, error } = await supabase.rpc('track_page_view', {
+        p_session_id: sessionId,
+        p_path: location.pathname,
+        p_referrer: referrer,
+        p_traffic_source: trafficSource,
+        p_utm_source: utmParams.utm_source || null,
+        p_utm_medium: utmParams.utm_medium || null,
+        p_utm_campaign: utmParams.utm_campaign || null,
+        p_utm_term: utmParams.utm_term || null,
+        p_utm_content: utmParams.utm_content || null,
+        p_device_type: metadata.device_type,
+        p_browser: metadata.browser,
+        p_os: metadata.os,
+      });
 
       if (error) {
         logger.error('❌ Analytics page view error:', error);
       } else {
-        pageViewIdRef.current = inserted?.id ?? null;
+        pageViewIdRef.current = insertedId ?? null;
         logger.debug('✅ Page view tracked:', location.pathname, { trafficSource, ...utmParams });
       }
     };
@@ -163,9 +155,7 @@ export const useAnalytics = () => {
       const duration = Math.floor((Date.now() - startTime) / 1000);
       if (duration > 0 && isAllowed('analytics') && pageViewIdRef.current) {
         supabase
-          .from('page_views')
-          .update({ duration })
-          .eq('id', pageViewIdRef.current)
+          .rpc('set_page_view_duration', { p_id: pageViewIdRef.current, p_duration: duration })
           .then(({ error }) => {
             if (error) {
               logger.error('❌ Duration update error:', error);

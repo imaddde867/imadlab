@@ -382,6 +382,40 @@ export type Database = {
     }
     Functions: {
       cleanup_old_email_analytics: { Args: never; Returns: undefined }
+      set_page_view_duration: {
+        Args: { p_duration: number; p_id: string }
+        Returns: undefined
+      }
+      track_page_view: {
+        Args: {
+          p_browser: string
+          p_device_type: string
+          p_os: string
+          p_path: string
+          p_referrer: string
+          p_session_id: string
+          p_traffic_source: string
+          p_utm_campaign: string
+          p_utm_content: string
+          p_utm_medium: string
+          p_utm_source: string
+          p_utm_term: string
+        }
+        Returns: string
+      }
+      track_session: {
+        Args: {
+          p_browser: string
+          p_device_type: string
+          p_language: string
+          p_os: string
+          p_screen_resolution: string
+          p_session_id: string
+          p_timezone: string
+          p_user_agent: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
