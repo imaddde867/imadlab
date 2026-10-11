@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 // One column, one type scale, one section style for every public page.
 export const Page = ({ children, className }: { children: ReactNode; className?: string }) => (
   <div className="theme-night-desk min-h-screen pt-14">
-    <div className={cn('mx-auto max-w-[44rem] px-5 pb-24 text-[17px] leading-relaxed', className)}>
+    <div className={cn('mx-auto max-w-[44rem] px-5 pb-16 text-[17px] leading-relaxed', className)}>
       {children}
     </div>
   </div>
@@ -38,7 +38,7 @@ export const PageTitle = ({
 );
 
 export const Section = ({ title, children }: { title: string; children: ReactNode }) => (
-  <section className="border-t border-[color:var(--nd-line)] py-10">
+  <section className="border-t border-[color:var(--nd-line)] py-10 last:pb-0">
     <h2 className="mb-6 font-sans text-xs font-medium uppercase tracking-[0.14em] text-[color:var(--nd-ink-3)]">
       {title}
     </h2>

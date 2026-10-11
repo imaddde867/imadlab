@@ -252,17 +252,9 @@ const Index = () => {
       </Section>
 
       <Section title="Contact">
-        <p className="text-[color:var(--nd-ink-2)]">
-          I'm open to working with research teams and industrial R&D partners on multimodal
-          industrial AI, procedural knowledge extraction, and AI systems that have to reach
-          deployment.
-        </p>
-        <a href="mailto:ielmouss867@gmail.com" className="nd-link mt-3 inline-block">
+        <a href="mailto:ielmouss867@gmail.com" className="nd-link">
           ielmouss867@gmail.com
         </a>
-        <p className="mt-6 text-sm text-[color:var(--nd-ink-3)]">
-          Based in Turku, Finland. Languages: Arabic, French, English, Finnish (A2).
-        </p>
       </Section>
     </Page>
   );
