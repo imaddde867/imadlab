@@ -72,13 +72,15 @@ const formatMonth = (date: string | null) =>
 const usePrerenderedQuery = <T,>(key: string, queryFn: () => Promise<T[]>) => {
   const initial = useMemo(() => readPrerenderData<T[]>(key), [key]);
   const initialUpdatedAt = useRef<number | undefined>(initial?.length ? Date.now() : undefined);
-  return useQuery({
-    queryKey: [key, 'home'],
-    queryFn,
-    initialData: initial?.length ? initial : undefined,
-    initialDataUpdatedAt: initialUpdatedAt.current,
-    staleTime: 1000 * 60,
-  }).data ?? [];
+  return (
+    useQuery({
+      queryKey: [key, 'home'],
+      queryFn,
+      initialData: initial?.length ? initial : undefined,
+      initialDataUpdatedAt: initialUpdatedAt.current,
+      staleTime: 1000 * 60,
+    }).data ?? []
+  );
 };
 
 const Section = ({ title, children }: { title: string; children: ReactNode }) => (
@@ -153,7 +155,9 @@ const Index = () => {
                 key={l.label}
                 href={l.href}
                 className="nd-link"
-                {...(l.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                {...(l.href.startsWith('http')
+                  ? { target: '_blank', rel: 'noopener noreferrer' }
+                  : {})}
               >
                 {l.label}
               </a>
@@ -174,10 +178,15 @@ const Index = () => {
             <ul className="space-y-7">
               {research.map((p) => (
                 <li key={p.id}>
-                  <Link to={`/projects/${p.id}`} className="nd-link text-lg [font-family:var(--nd-display)]">
+                  <Link
+                    to={`/projects/${p.id}`}
+                    className="nd-link text-lg [font-family:var(--nd-display)]"
+                  >
                     {p.title}
                   </Link>
-                  {p.description && <p className="mt-1 text-[color:var(--nd-ink-2)]">{p.description}</p>}
+                  {p.description && (
+                    <p className="mt-1 text-[color:var(--nd-ink-2)]">{p.description}</p>
+                  )}
                   {p.tech_tags && p.tech_tags.length > 0 && (
                     <p className="mt-1 text-sm text-[color:var(--nd-ink-3)]">
                       {p.tech_tags.slice(0, 4).join(', ')}
@@ -209,7 +218,10 @@ const Index = () => {
           <Section title="Writing">
             <ul className="space-y-3">
               {posts.slice(0, 5).map((p) => (
-                <li key={p.id} className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+                <li
+                  key={p.id}
+                  className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
+                >
                   <Link to={`/blogs/${p.slug}`} className="nd-link">
                     {p.title}
                   </Link>
