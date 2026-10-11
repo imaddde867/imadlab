@@ -1,116 +1,40 @@
-<div align="center">
-  <img src="https://raw.githubusercontent.com/imaddde867/imadlab/refs/heads/master/doc/Hero_section.png" alt="imadlab hero section screenshot" width="800" style="max-width:100%;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.10);margin-bottom:12px;" />
-  <h1>imadlab: Data & AI Systems Portfolio/Personal Website</h1>
-</div>
+# imadlab
 
-## Overview
+Source code for [imadlab.com](https://imadlab.com), the personal site of Imad Eddine El Mouss, Research Engineer at the Cognitive Technologies Research Group (CoRe), Turku University of Applied Sciences. The site lists my research and projects and hosts my technical writing.
 
-imadlab is my personal site, and a worked example of the data-heavy web systems I build end to end. The front end is React 18 with TanStack Query, sitting on Supabase services, custom analytics, and a set of automation scripts that keep content and SEO assets current.
+![imadlab.com homepage](docs/homepage.png)
 
-**Live Demo:** [imadlab.com](https://imadlab.com) | **Source:** [github.com/imaddde867/imadlab](https://github.com/imaddde867/imadlab)
+## How it works
 
-## Quick Start
+- **Front end:** React 18, TypeScript and Vite, styled with Tailwind. Every public page uses one layout component (`src/components/layout/Page.tsx`).
+- **Content:** projects and posts live in Supabase Postgres. Row-level security exposes only published projects to visitors, and an admin area at `/admin` edits content.
+- **Markdown:** project and post bodies are Markdown with GFM tables, KaTeX math and Mermaid diagrams, rendered by `src/components/markdown/`.
+- **Prerendering:** at build time `scripts/prerender.js` fetches the content and writes a static HTML page for each route, with its title and link-preview tags. The sitemap and RSS feed are generated in the same step.
+- **Deployment:** every push to `master` builds the site and publishes it to GitHub Pages (`.github/workflows/deploy.yml`). New database content shows up in the app at once, but link previews only update on the next build.
+- **Edge functions:** Supabase Edge Functions in `supabase/functions/` send newsletter email, handle unsubscribes, add geolocation to consent-gated analytics, and proxy the Strava API.
+
+## Run locally
 
 ```bash
-git clone https://github.com/imaddde867/imadlab.git
-cd imadlab
 npm install
-cp .env.example .env  # set Strava credentials for Edge Functions
+cp .env.example .env
 npm run dev
 ```
 
-- Optional: copy `supabase/.env.local` to configure Supabase CLI or create your own with project keys.
-- Useful scripts: `npm run lint`, `npm run typecheck`, `npm run build`.
+`npm run lint` and `npm run typecheck` check the code. `npm run build` builds and prerenders the site; it deploys edge functions only when `SUPABASE_DEPLOY=1` is set.
 
-## Feature Highlights
+## Repository layout
 
-- **Content & Publishing** - Supabase-backed projects and blog with shadcn/ui admin tools, staged drafts, extended Markdown (GFM, KaTeX, Mermaid), RSS feed, and sitemap generation.
-- **Real-Time Integrations** - Running dashboards powered by Strava Edge Functions with multi-layer caching, Spotify Now Playing, and newsletter forms with automatic tagging.
-- **Automation & Email Ops** - Newsletter queue processed by Supabase Edge Functions, Resend templates, inbound webhooks, unsubscribe tokens, and retry-aware delivery.
-- **Privacy-Aware Analytics** - Consent-gated tracking, Supabase storage for sessions/page views, geolocation enrichment via Edge Functions, and an internal analytics dashboard with period filtering.
-- **Experience & DX** - React Query data fetching, route prefetch, custom cursor/interaction effects, Tailwind + shadcn/ui components, and structured logging for observability.
-
-<video src="https://raw.githubusercontent.com/imaddde867/imadlab/master/doc/admin_demo.mov" controls width="100%" style="border-radius:12px;margin-top:20px;"></video>
-
-## Technology Stack
-
-```mermaid
-graph TD
-    A[Frontend] --> B[React 18 + TypeScript]
-    A --> C[Vite 7]
-    A --> D[Tailwind CSS + shadcn/ui]
-    A --> E[TanStack Query]
-    
-    F[Backend] --> G[Supabase]
-    G --> H[PostgreSQL + RLS]
-    G --> I[Auth + Storage]
-    G --> J[Edge Functions]
-    
-    K[Integrations] --> L[Strava API]
-    K --> M[Spotify API]
-    K --> N[Resend]
-    K --> O[Formspree]
-    
-    P[Content Pipeline] --> Q[React Markdown]
-    Q --> R[Remark/Rehype Plugins]
-    Q --> S[KaTeX]
-    Q --> T[Mermaid]
-    
-    U[DevOps] --> V[GitHub Actions]
-    U --> W[GitHub Pages]
-    U --> X[Sitemap & RSS Automation]
+```
+src/pages/                 routes: home, projects, writing, tags, search, admin
+src/components/layout/     shared page layout
+src/components/markdown/   Markdown renderer and its block components
+src/lib/                   data selects, tags, SEO and analytics helpers
+supabase/migrations/       schema, row-level security and content migrations
+supabase/functions/        edge functions
+scripts/                   prerender, sitemap and feed generation
 ```
 
-## Project Layout
+## License
 
-```bash
-src/
-|-- components/      # UI + animations (Hero, Projects, Markdown, analytics, running dashboards)
-|-- hooks/           # Analytics, intersection observers, motion preferences, toasts
-|-- integrations/    # Supabase and Strava clients with caching helpers
-|-- lib/             # Utilities, analytics helpers, consent, logging, prerender data
-|-- pages/           # Public pages and admin surfaces (blog, projects, dashboards, extras)
-|-- types/           # Shared TypeScript types for content and integrations
-`-- App.tsx          # Route definitions
-
-supabase/
-|-- functions/       # Edge Functions (strava-proxy, spotify-now-playing, newsletters, geolocation)
-`-- migrations/      # Database schema, policies, and triggers
-
-scripts/
-|-- generate-sitemap.js
-|-- generate-feed.js
-`-- prerender.js     # Injects prerendered markup + data into build output
-```
-
-## Edge Functions & Automation
-
-- `strava-proxy`: Authenticates with Strava, caches requests, and serves stats/activities to the Extras page.
-- `spotify-now-playing`: Refreshes Spotify tokens and returns the current track with CDN-friendly caching.
-- `send-newsletter-emails`, `email-webhook`, `handle-unsubscribe`: Manage outbound campaigns, inbound events, and subscriber preferences.
-- `geolocation`: Enriches analytics sessions with country/region/city metadata.
-- Build hooks (`generate-sitemap`, `generate-feed`, `prerender`) keep SEO assets, RSS, and static shells current on every deploy.
-
-## Development Notes
-
-- Fill `.env` and Supabase secrets before invoking Edge Functions locally.
-- Optional SEO verification: set `VITE_GOOGLE_SITE_VERIFICATION` and `VITE_BING_SITE_VERIFICATION` in `.env` (local) and as GitHub Actions repository secrets (deploy).
-- Analytics honors the cookie consent gate; when disabled, no data leaves the browser.
-- Newsletter and contact workflows require Resend + Formspree credentials to send real email.
-- Linting (`npm run lint`) and type checks (`npm run typecheck`) guard pull requests; CI mirrors the same commands.
-
-## Impact
-
-- Full-stack ownership: data ingestion, content operations, and the front end.
-- Analytics run behind a consent gate, with geolocation enrichment and an admin view.
-- API integrations handle rate limits through caching, retries, and fallbacks when a provider is unavailable.
-- Newsletter delivery, Strava dashboards, and the Spotify widget all update from live data.
-- Consistent performance (Lighthouse 95+) and a responsive layout.
-
----
-
-<div align="center" style="margin-top: 40px;">
-  <a href="https://imadlab.com">
-    <img src="https://img.shields.io/badge/Visit_Live_Site-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Site">
-  </a>
-</div>
+MIT, see [LICENSE](LICENSE).

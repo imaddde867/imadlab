@@ -80,3 +80,5 @@ supabase/.temp/
 .mcp.json
 .playwright-mcp/
 opencode.json
+.gitnexus
+output/portfolio-audit/
