@@ -24,8 +24,7 @@ const personSchema = {
 };
 
 const links = [
-  { label: 'Research CV (PDF)', href: '/cv-research.pdf' },
-  { label: 'Industry CV (PDF)', href: '/Resume.pdf' },
+  { label: 'CV (PDF)', href: '/Resume.pdf' },
   { label: 'GitHub', href: 'https://github.com/imaddde867' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/imad-eddine-e-986741262' },
   { label: 'Email', href: 'mailto:ielmouss867@gmail.com' },
@@ -136,8 +135,24 @@ const Index = () => {
                 Imad Eddine El Mouss
               </h1>
               <p className="mt-4 text-[color:var(--nd-ink-2)]">
-                Research Engineer, Cognitive Technologies Research Group (CoRe), Turku University of
-                Applied Sciences
+                Research Engineer,{' '}
+                <a
+                  href="https://www.turkuamk.fi/en/research_groups/cognitive-technologies-research-group-core/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nd-quiet-link"
+                >
+                  Cognitive Technologies Research Group (CoRe)
+                </a>
+                ,{' '}
+                <a
+                  href="https://www.turkuamk.fi/en/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nd-quiet-link"
+                >
+                  Turku University of Applied Sciences
+                </a>
               </p>
             </div>
             <img
