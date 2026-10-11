@@ -2,8 +2,6 @@
 
 Source code for [imadlab.com](https://imadlab.com), the personal site of Imad Eddine El Mouss, Research Engineer at the Cognitive Technologies Research Group (CoRe), Turku University of Applied Sciences. The site lists my research and projects and hosts my technical writing.
 
-![imadlab.com homepage](docs/homepage.png)
-
 ## How it works
 
 - **Front end:** React 18, TypeScript and Vite, styled with Tailwind. Every public page uses one layout component (`src/components/layout/Page.tsx`).
