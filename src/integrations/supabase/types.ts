@@ -276,6 +276,7 @@ export type Database = {
           full_description: string | null
           id: string
           image_url: string | null
+          published: boolean
           repo_url: string | null
           tech_tags: string[] | null
           title: string
@@ -289,6 +290,7 @@ export type Database = {
           full_description?: string | null
           id?: string
           image_url?: string | null
+          published?: boolean
           repo_url?: string | null
           tech_tags?: string[] | null
           title: string
@@ -302,6 +304,7 @@ export type Database = {
           full_description?: string | null
           id?: string
           image_url?: string | null
+          published?: boolean
           repo_url?: string | null
           tech_tags?: string[] | null
           title?: string
