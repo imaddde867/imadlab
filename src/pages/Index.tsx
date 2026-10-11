@@ -56,10 +56,6 @@ const highlights = [
     label: 'Pilots',
     text: 'Delivering partner pilots across two funded programmes: TeoÄly (ERDF, ~EUR 320k) and ADINO (Business Finland, ten industrial partners).',
   },
-  {
-    label: 'Mentoring',
-    text: "Technical lead for the group's student engineering portfolio: more than twenty applied-AI R&D projects across a rotating intern cohort.",
-  },
 ];
 
 const experience = [
