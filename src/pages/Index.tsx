@@ -28,7 +28,7 @@ const links = [
   { label: 'Industry CV (PDF)', href: '/Resume.pdf' },
   { label: 'GitHub', href: 'https://github.com/imaddde867' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/imad-eddine-e-986741262' },
-  { label: 'Email', href: 'mailto:imadeddine200507@gmail.com' },
+  { label: 'Email', href: 'mailto:ielmouss867@gmail.com' },
 ];
 
 const interests = [
@@ -150,8 +150,8 @@ const Index = () => {
           </div>
           <p className="mt-6">
             I am the architect and principal developer of AIOP, the on-premises event-driven AI
-            platform that is the integration backbone for every industrial pilot module the group
-            runs. My thesis,{' '}
+            platform designed to become the integration backbone for the group's industrial pilot
+            modules. My thesis,{' '}
             <a
               href="https://urn.fi/URN:NBN:fi:amk-2025121235460"
               target="_blank"
@@ -268,8 +268,8 @@ const Index = () => {
             industrial AI, procedural knowledge extraction, and AI systems that have to reach
             deployment.
           </p>
-          <a href="mailto:imadeddine200507@gmail.com" className="nd-link mt-3 inline-block">
-            imadeddine200507@gmail.com
+          <a href="mailto:ielmouss867@gmail.com" className="nd-link mt-3 inline-block">
+            ielmouss867@gmail.com
           </a>
         </Section>
       </div>

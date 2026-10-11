@@ -52,8 +52,8 @@ const About = () => {
                 <span className="font-semibold text-white">
                   architect and principal developer of AIOP
                 </span>
-                , the on-premises event-driven AI platform that is the integration backbone for
-                every industrial pilot module the group runs.
+                , the on-premises event-driven AI platform designed to become the integration backbone for
+                the group's industrial pilot modules.
               </p>
             </div>
 
@@ -184,11 +184,11 @@ const About = () => {
                     Imad Eddine El Mouss
                   </a>
                   <a
-                    href="mailto:imadeddine200507@gmail.com"
+                    href="mailto:ielmouss867@gmail.com"
                     className="inline-flex items-center text-white/80 hover:text-white transition-colors"
                   >
                     <Mail className="w-4 h-4 mr-2" />
-                    imadeddine200507@gmail.com
+                    ielmouss867@gmail.com
                   </a>
                 </div>
               </CardContent>

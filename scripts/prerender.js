@@ -370,8 +370,8 @@ const renderAboutMarkup = () => `
     <p class="prerender-summary leading-relaxed">
       I am a Research Engineer at the Cognitive Technologies Research Group (CoRe) in Turku
       University of Applied Sciences, where I am the architect and principal developer of AIOP,
-      the on-premises event-driven AI platform that is the integration backbone for every
-      industrial pilot module the group runs. Named inventor on a European patent application
+      the on-premises event-driven AI platform designed to become the integration backbone for the
+      group's industrial pilot modules. Named inventor on a European patent application
       filed at the EPO on 10 April 2026, and a contributor to Sensor4Food, a EUR 6.98M Horizon
       Europe project.
     </p>
