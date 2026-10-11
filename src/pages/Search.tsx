@@ -2,10 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
-import SectionHeader from '@/components/SectionHeader';
-import CardItem from '@/components/ui/CardItem';
-import ProjectCard from '@/components/ProjectCard';
-import { Loader2 } from 'lucide-react';
+import { EntryList, Page, PageTitle, Section } from '@/components/layout/Page';
+import { formatMonth } from '@/lib/utils';
 import { POST_SEARCH_SELECT, PROJECT_SEARCH_SELECT } from '@/lib/content-selects';
 import type { PostDetail, ProjectDetail } from '@/types/content';
 
@@ -69,11 +67,14 @@ const Search = () => {
   }, [debounced, posts, projects]);
 
   useEffect(() => {
-    if (debounced) import('@/lib/events').then(({ logEvent }) => logEvent('search_query', { q: debounced })).catch(() => {});
+    if (debounced)
+      import('@/lib/events')
+        .then(({ logEvent }) => logEvent('search_query', { q: debounced }))
+        .catch(() => {});
   }, [debounced]);
 
   return (
-    <div className="min-h-screen bg-black text-white section pt-14">
+    <Page>
       <SEO
         title="Search"
         description="Search posts and projects"
@@ -87,72 +88,53 @@ const Search = () => {
         ]}
       />
 
-      <div className="container-site">
-        <SectionHeader title={<span className="text-brand-gradient">Search</span>} />
+      <PageTitle title="Search" />
+      <input
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Search posts and projects by title, tags, or content"
+        aria-label="Search posts and projects"
+        className="mb-10 w-full border-b border-[color:var(--nd-line)] bg-transparent pb-2 text-[color:var(--nd-ink)] placeholder:text-[color:var(--nd-ink-3)] focus:border-[color:var(--nd-link)] focus:outline-none"
+      />
+      {debounced && (postsLoading || projectsLoading) && (
+        <p className="text-[color:var(--nd-ink-3)]">Searching…</p>
+      )}
 
-        <div className="mb-8">
-          <div className="relative">
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search posts and projects..."
-              className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-white/30"
-            />
-            {(postsLoading || projectsLoading) && (
-              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-white/50" />
-            )}
-          </div>
-        </div>
-
-        {!debounced && (
-          <p className="text-white/40 text-sm">
-            Search across posts and projects by title, tags, or content.
-          </p>
-        )}
-
-        {debounced && (
-          <>
-            <h3 className="text-sm text-white/60 mb-3">Posts ({results.posts.length})</h3>
+      {debounced && (
+        <>
+          <Section title={`Writing (${results.posts.length})`}>
             {results.posts.length ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default mb-10">
-                {results.posts.map((post) => (
-                  <CardItem
-                    key={post.id}
-                    title={post.title}
-                    tags={post.tags || []}
-                    date={new Date(post.published_date).toLocaleDateString()}
-                    excerpt={post.excerpt || ''}
-                    linkTo={`/blogs/${post.slug}`}
-                    linkLabel="Read"
-                    readTime={post.read_time || undefined}
-                    isBlog={true}
-                    image_url={post.image_url || undefined}
-                  />
-                ))}
-              </div>
+              <EntryList
+                entries={results.posts.map((post) => ({
+                  key: post.id,
+                  to: `/blogs/${post.slug}`,
+                  title: post.title,
+                  description: post.excerpt,
+                  meta: formatMonth(post.published_date),
+                }))}
+              />
             ) : (
-              <div className="text-white/50 mb-10">No posts found.</div>
+              <p className="text-[color:var(--nd-ink-3)]">No posts found.</p>
             )}
-
-            <h3 className="text-sm text-white/60 mb-3">Projects ({results.projects.length})</h3>
+          </Section>
+          <Section title={`Projects (${results.projects.length})`}>
             {results.projects.length ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
-                {results.projects.map((p) => (
-                  <ProjectCard
-                    key={p.id}
-                    project={p}
-                    linkTo={`/projects/${p.id}`}
-                    linkLabel="View Project"
-                  />
-                ))}
-              </div>
+              <EntryList
+                entries={results.projects.map((p) => ({
+                  key: p.id,
+                  to: `/projects/${p.id}`,
+                  title: p.title,
+                  description: p.description,
+                  meta: p.tech_tags?.slice(0, 4).join(', '),
+                }))}
+              />
             ) : (
-              <div className="text-white/50">No projects found.</div>
+              <p className="text-[color:var(--nd-ink-3)]">No projects found.</p>
             )}
-          </>
-        )}
-      </div>
-    </div>
+          </Section>
+        </>
+      )}
+    </Page>
   );
 };
 

@@ -2,7 +2,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { PageLoader } from '@/components/ui/LoadingStates';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import React, { Suspense } from 'react';
 import HomeBackground from '@/components/HomeBackground';
 import Header from '@/components/Header';
@@ -39,7 +39,6 @@ const AnalyticsDashboard = lazyWithPrefetch(
   () => import('./pages/AnalyticsDashboard')
 );
 const NotFound = lazyWithPrefetch('*', () => import('./pages/NotFound'));
-const About = lazyWithPrefetch('/about', () => import('./pages/About'));
 const Tag = lazyWithPrefetch('/tags/:tag', () => import('./pages/Tag'));
 const TagsIndex = lazyWithPrefetch('/tags', () => import('./pages/TagsIndex'));
 const Search = lazyWithPrefetch('/search', () => import('./pages/Search'));
@@ -115,7 +114,7 @@ const App = () => {
                   <Route path="/blogs/:slug" element={<BlogPost />} />
                   <Route path="/projects/:id" element={<ProjectDetail />} />
                   <Route path="/extras" element={<Extras />} />
-                  <Route path="/about" element={<About />} />
+                  <Route path="/about" element={<Navigate to="/" replace />} />
                   <Route path="/tags" element={<TagsIndex />} />
                   <Route path="/tags/:tag" element={<Tag />} />
                   <Route path="/admin/login" element={<AdminLogin />} />

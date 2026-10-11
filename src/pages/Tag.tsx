@@ -1,12 +1,10 @@
 import { useMemo, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
-import SectionHeader from '@/components/SectionHeader';
-import CardItem from '@/components/ui/CardItem';
-import ProjectCard from '@/components/ProjectCard';
-import { ArrowLeft } from 'lucide-react';
+import { EntryList, Page, PageTitle, Section } from '@/components/layout/Page';
+import { formatMonth } from '@/lib/utils';
 import { tagMatchesSlug } from '@/lib/tags';
 import { POST_SUMMARY_SELECT, PROJECT_LIST_SELECT } from '@/lib/content-selects';
 import type { PostSummary, ProjectSummary } from '@/types/content';
@@ -32,10 +30,13 @@ const logTagView = (slug: string, tag: string) => {
 
 const Tag = () => {
   const { tag: slug } = useParams<{ tag: string }>();
-  const navigate = useNavigate();
   const tagSlugParam = slug ?? '';
 
-  const { data: allPosts = [], isLoading, isFetching } = useQuery({
+  const {
+    data: allPosts = [],
+    isLoading,
+    isFetching,
+  } = useQuery({
     queryKey: ['tag-posts', tagSlugParam],
     enabled: Boolean(tagSlugParam),
     queryFn: async () => {
@@ -69,7 +70,8 @@ const Tag = () => {
   });
 
   const projects = useMemo(
-    () => allProjects.filter((p) => (p.tech_tags || []).some((t) => tagMatchesSlug(t, tagSlugParam))),
+    () =>
+      allProjects.filter((p) => (p.tech_tags || []).some((t) => tagMatchesSlug(t, tagSlugParam))),
     [allProjects, tagSlugParam]
   );
 
@@ -130,7 +132,7 @@ const Tag = () => {
   ].filter(Boolean) as Array<Record<string, unknown>>;
 
   return (
-    <div className="min-h-screen bg-black text-white section pt-14">
+    <Page>
       <SEO
         title={`Tag: ${displayTag}`}
         description={`Content tagged with ${displayTag}.`}
@@ -139,79 +141,53 @@ const Tag = () => {
         breadcrumbs={breadcrumbTrail}
         additionalSchemas={additionalSchemas}
       />
+      <PageTitle title={displayTag} back={{ to: '/tags', label: 'All tags' }} />
 
-      <div className="container-site">
-        <div className="mb-8">
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              const ref = document.referrer;
-              const sameOrigin = ref && ref.startsWith(window.location.origin);
-              if (sameOrigin) {
-                navigate(-1);
-              } else {
-                navigate('/');
-              }
-            }}
-            className="inline-flex items-center text-white/60 hover:text-white mb-8 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </button>
-        </div>
+      {(isSkeletonVisible || hasPosts) && (
+        <Section title="Writing">
+          {isSkeletonVisible ? (
+            <p className="text-[color:var(--nd-ink-3)]">Loading…</p>
+          ) : (
+            <EntryList
+              entries={posts.map((post) => ({
+                key: post.id,
+                to: `/blogs/${post.slug}`,
+                title: post.title,
+                description: post.excerpt,
+                meta: [
+                  formatMonth(post.published_date),
+                  post.read_time ? `${post.read_time} min read` : '',
+                ]
+                  .filter(Boolean)
+                  .join(' · '),
+              }))}
+            />
+          )}
+        </Section>
+      )}
 
-        <SectionHeader title={<span className="text-brand-gradient">#{displayTag}</span>} />
+      {(loadingProjects || hasProjects) && (
+        <Section title="Projects">
+          {loadingProjects ? (
+            <p className="text-[color:var(--nd-ink-3)]">Loading…</p>
+          ) : (
+            <EntryList
+              entries={projects.map((project) => ({
+                key: project.id,
+                to: `/projects/${project.id}`,
+                title: project.title,
+                description: project.description,
+                meta: project.tech_tags?.slice(0, 4).join(', '),
+              }))}
+            />
+          )}
+        </Section>
+      )}
 
-        {isSkeletonVisible ? (
-          <div className="text-center py-12">
-            <div className="text-white/60">Loading posts...</div>
-          </div>
-        ) : hasPosts ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
-            {posts.map((post) => (
-              <CardItem
-                key={post.id}
-                title={post.title}
-                tags={post.tags || []}
-                date={new Date(post.published_date).toLocaleDateString()}
-                excerpt={post.excerpt || ''}
-                linkTo={`/blogs/${post.slug}`}
-                linkLabel="Read"
-                readTime={post.read_time || undefined}
-                isBlog={true}
-                image_url={post.image_url || undefined}
-              />
-            ))}
-          </div>
-        ) : null}
-
-        {(loadingProjects || hasProjects) && (
-          <div className="mt-12">
-            <SectionHeader title={<span className="text-brand-gradient">Projects</span>} />
-            {loadingProjects ? (
-              <div className="text-center py-8 text-white/60">Loading projects...</div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-default">
-                {projects.map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    linkTo={`/projects/${project.id}`}
-                    linkLabel="View Project"
-                    project={project}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {!isSkeletonVisible && !loadingProjects && !hasPosts && !hasProjects && (
-          <div className="text-center py-12">
-            <div className="text-white/60">No posts or projects for this tag yet.</div>
-          </div>
-        )}
-      </div>
-    </div>
+      {!isSkeletonVisible && !loadingProjects && !hasPosts && !hasProjects && (
+        <p className="text-[color:var(--nd-ink-3)]">No posts or projects for this tag yet.</p>
+      )}
+    </Page>
   );
 };
 

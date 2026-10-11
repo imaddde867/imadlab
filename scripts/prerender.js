@@ -363,22 +363,6 @@ const renderPostDetailMarkup = (post) => {
 </main>`;
 };
 
-const renderAboutMarkup = () => `
-<main data-prerender="true" class="prerender-shell">
-  <article class="prerender-article">
-    <h1 class="text-3xl font-bold mb-4">Imad Eddine El Mouss</h1>
-    <p class="prerender-summary leading-relaxed">
-      I am a Research Engineer at the Cognitive Technologies Research Group (CoRe) in Turku
-      University of Applied Sciences, where I am the architect and principal developer of AIOP,
-      the on-premises event-driven AI platform designed to become the integration backbone for the
-      group's industrial pilot modules. Named inventor on a European patent application
-      filed at the EPO on 10 April 2026, and a contributor to Sensor4Food, a EUR 6.98M Horizon
-      Europe project.
-    </p>
-    <a class="prerender-link mt-6 inline-flex" href="/">Back to Home</a>
-  </article>
-</main>`;
-
 const renderExtrasMarkup = () => `
 <main data-prerender="true" class="prerender-shell">
   <article class="prerender-article">
@@ -558,30 +542,6 @@ async function main() {
   const [projects, posts] = await Promise.all([fetchProjects(), fetchPosts()]);
 
   await injectIntoPage({
-    route: 'about',
-    markup: renderAboutMarkup(),
-    baseHtml,
-    seo: {
-      title: 'About Imad Eddine',
-      description:
-        'Research Engineer at CoRe (Turku UAS) and architect of AIOP, an on-premises event-driven AI platform, focused on deployable multimodal industrial AI, procedural knowledge extraction, and Privacy-by-Design systems.',
-      canonicalUrl: `${SITE_URL}/about`,
-      image: DEFAULT_IMAGE,
-      type: 'profile',
-      structuredData: {
-        '@context': 'https://schema.org',
-        '@type': 'ProfilePage',
-        url: `${SITE_URL}/about`,
-        mainEntity: {
-          '@type': 'Person',
-          name: 'Imad Eddine El Mouss',
-          url: `${SITE_URL}/about`,
-        },
-      },
-    },
-  });
-
-  await injectIntoPage({
     route: 'extras',
     markup: renderExtrasMarkup(),
     baseHtml,
@@ -735,7 +695,7 @@ async function main() {
           author: {
             '@type': 'Person',
             name: 'Imad Eddine El Mouss',
-            url: `${SITE_URL}/about`,
+            url: SITE_URL,
           },
         },
       },
@@ -774,12 +734,12 @@ async function main() {
           author: {
             '@type': 'Person',
             name: 'Imad Eddine El Mouss',
-            url: `${SITE_URL}/about`,
+            url: SITE_URL,
           },
           publisher: {
             '@type': 'Person',
             name: 'Imad Eddine El Mouss',
-            url: `${SITE_URL}/about`,
+            url: SITE_URL,
           },
           keywords: Array.isArray(post.tags) ? post.tags.filter(Boolean).join(', ') : undefined,
           mainEntityOfPage: canonicalUrl,

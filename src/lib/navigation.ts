@@ -5,8 +5,7 @@ export type NavigationItem = {
 
 export const PRIMARY_NAV_ITEMS: NavigationItem[] = [
   { path: '/projects', label: 'Projects' },
-  { path: '/blogs', label: 'Blog' },
-  { path: '/about', label: 'About' },
+  { path: '/blogs', label: 'Writing' },
 ];
 
 export const getAbsoluteNavUrl = (baseUrl: string, path: string) =>

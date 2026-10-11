@@ -143,16 +143,22 @@ All colors MUST be HSL.
   }
 
   .prose h1 {
-    @apply text-4xl;
-  }
-  .prose h2 {
     @apply text-3xl;
   }
-  .prose h3 {
+  .prose h2 {
     @apply text-2xl;
   }
-  .prose h4 {
+  .prose h3 {
     @apply text-xl;
+  }
+  .prose h4 {
+    @apply text-lg;
+  }
+
+  .prose h1,
+  .prose h2,
+  .prose h3 {
+    @apply font-display font-semibold;
   }
 
   /* Custom text selection styling */

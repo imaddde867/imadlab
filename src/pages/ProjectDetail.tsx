@@ -1,36 +1,22 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  ArrowLeft,
-  Calendar,
-  ChevronDown,
-  ChevronUp,
-  Code,
-  ExternalLink,
-  Star,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import SEO from '@/components/SEO';
+import { Page, PageTitle } from '@/components/layout/Page';
 import { PageLoader } from '@/components/ui/LoadingStates';
-import BackRow from '@/components/BackRow';
-import ShareBar from '@/components/ShareBar';
 import { stripMarkdown } from '@/lib/markdown-utils';
 import { tagToUrl } from '@/lib/tags';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
-import { RelatedPosts, RelatedProjects } from '@/components/RelatedContent';
 import { getSeoTitle } from '@/lib/seo-utils';
 import { resolveImageUrl } from '@/lib/image-utils';
 import { PROJECT_DETAIL_SELECT } from '@/lib/content-selects';
 import type { ProjectDetail as ProjectDetailType } from '@/types/content';
 import { parseGithubRepo } from '@/lib/github';
-import { useGithubRepoInfo } from '@/hooks/useGithubRepoInfo';
 import { readPrerenderData } from '@/lib/prerender-data';
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [showAllTags, setShowAllTags] = useState(false);
   const initialProject = useMemo(
     () => (id ? readPrerenderData<ProjectDetailType>(`project:${id}`) : undefined),
     [id]
@@ -58,26 +44,19 @@ const ProjectDetail = () => {
     initialDataUpdatedAt: initialUpdatedAt.current,
   });
 
-  const { data: repoInfo } = useGithubRepoInfo(project?.repo_url);
-
   if (isLoading) {
     return <PageLoader text="Loading project..." variant="orbit" />;
   }
 
   if (error || !project) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Project Not Found</h1>
-          <p className="text-white/60 mb-8">The project you're looking for doesn't exist.</p>
-          <Link to="/projects">
-            <Button className="bg-white/10 hover:bg-white/20">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Projects
-            </Button>
-          </Link>
-        </div>
-      </div>
+      <Page>
+        <PageTitle
+          title="Project not found"
+          description="The project you're looking for doesn't exist."
+          back={{ to: '/projects', label: 'Projects' }}
+        />
+      </Page>
     );
   }
 
@@ -133,16 +112,14 @@ const ProjectDetail = () => {
   const enableMermaid = longForm.includes('```mermaid');
   const repoRef = parseGithubRepo(project.repo_url);
   const repository = repoRef ? { owner: repoRef.owner, name: repoRef.repo } : undefined;
-  const repoUpdatedAt = repoInfo?.pushed_at ?? repoInfo?.updated_at ?? null;
-  const repoUpdatedLabel = (() => {
-    if (!repoUpdatedAt) return null;
-    const dateObj = new Date(repoUpdatedAt);
-    if (Number.isNaN(dateObj.getTime())) return null;
-    return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-  })();
+  const logClick = (event: string, data: Record<string, unknown>) => {
+    import('@/lib/events')
+      .then(({ logEvent }) => logEvent(event, { project_id: project.id, ...data }))
+      .catch(() => {});
+  };
 
   return (
-    <div className="min-h-screen bg-black text-white pt-14">
+    <Page>
       <SEO
         title={seoTitle}
         description={metaDescription}
@@ -162,204 +139,79 @@ const ProjectDetail = () => {
         structuredData={projectStructuredData}
         url={projectUrl}
       />
-
-      <BackRow
-        to="/projects"
-        label="Back to Projects"
-        icon={
-          <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
-        }
-        right={
-          project.repo_url || project.demo_url ? (
-            <div className="flex items-center gap-2">
-              {project.demo_url && (
-                <a
-                  href={project.demo_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => {
-                    import('@/lib/events')
-                      .then(({ logEvent }) =>
-                        logEvent('demo_click', { project_id: project.id, demo_url: project.demo_url })
-                      )
-                      .catch(() => {});
-                  }}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md text-white/90 hover:text-white transition-all duration-200 text-sm"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Live Demo
-                </a>
-              )}
-              {project.repo_url && (
-                <a
-                  href={project.repo_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => {
-                    import('@/lib/events')
-                      .then(({ logEvent }) =>
-                        logEvent('repo_click', { project_id: project.id, repo_url: project.repo_url })
-                      )
-                      .catch(() => {});
-                  }}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md text-white/90 hover:text-white transition-all duration-200 text-sm"
-                >
-                  <Code className="w-4 h-4" />
-                  View Code
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
-            </div>
-          ) : undefined
-        }
-      />
-      <div className="container-narrow mt-4">
-        <ShareBar title={seoTitle} />
-      </div>
-
-      {/* Hero Section - Simplified */}
-      <header className="relative pt-8 md:pt-12 pb-10">
-        <div className="container-narrow">
-          {/* Project Title */}
-          <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">{seoTitle}</h1>
-
-          {/* Project Metadata */}
-          <div className="flex flex-wrap items-center gap-y-4 gap-x-6 mb-8">
-            <div className="flex items-center text-sm text-white/70">
-              <Calendar className="w-4 h-4 mr-2" />
-              {new Date(project.created_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </div>
-
-            {repoInfo && (
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/70">
-                <div className="flex items-center gap-1.5">
-                  <Star className="w-4 h-4 text-white/50" />
-                  {repoInfo.stargazers_count}
-                </div>
-                {repoUpdatedLabel && (
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-white/50">Updated</span>
-                    {repoUpdatedLabel}
-                  </div>
-                )}
-              </div>
+      <PageTitle title={seoTitle} back={{ to: '/projects', label: 'Projects' }}>
+        <p className="mt-4 text-sm text-[color:var(--nd-ink-3)]">
+          {new Date(project.created_at).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+          })}
+          {projectTags.length > 0 && ' · '}
+          {projectTags.map((tag, i) => (
+            <span key={tag}>
+              {i > 0 && ', '}
+              <Link to={tagToUrl(tag)} className="nd-quiet-link whitespace-nowrap">
+                {tag}
+              </Link>
+            </span>
+          ))}
+        </p>
+        {project.description && (
+          <p className="mt-6 text-lg text-[color:var(--nd-ink-2)]">{project.description}</p>
+        )}
+        {(project.repo_url || project.demo_url) && (
+          <p className="mt-4 flex gap-5">
+            {project.repo_url && (
+              <a
+                href={project.repo_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => logClick('repo_click', { repo_url: project.repo_url })}
+                className="nd-link"
+              >
+                Source code
+              </a>
             )}
-
-            {projectTags.length > 0 && (
-              <div className="flex flex-wrap gap-2 items-center">
-                <span className="text-sm text-white/70">Technologies:</span>
-                {(showAllTags ? projectTags : projectTags.slice(0, 3)).map((tag, index) => (
-                  <Link
-                    key={index}
-                    to={tagToUrl(tag)}
-                    className="px-2 py-1 text-xs bg-white/10 rounded-md text-white/90 hover:bg-white/20"
-                  >
-                    {tag}
-                  </Link>
-                ))}
-
-                {projectTags.length > 3 && (
-                  <button
-                    onClick={() => setShowAllTags(!showAllTags)}
-                    className="text-xs text-primary hover:text-primary/80 flex items-center"
-                    aria-label={showAllTags ? 'Show fewer tags' : 'Show all tags'}
-                  >
-                    {showAllTags ? (
-                      <>
-                        <ChevronUp className="w-3 h-3 mr-1" />
-                        Show less
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="w-3 h-3 mr-1" />+{projectTags.length - 3} more
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
+            {project.demo_url && (
+              <a
+                href={project.demo_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => logClick('demo_click', { demo_url: project.demo_url })}
+                className="nd-link"
+              >
+                Live demo
+              </a>
             )}
-          </div>
+          </p>
+        )}
+      </PageTitle>
 
-          {/* Project Description */}
-          {project.description && (
-            <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-3xl">
-              {project.description}
-            </p>
-          )}
-        </div>
-      </header>
-
-      {/* Featured Image */}
       {coverImage && (
-        <div className="w-full container-narrow mb-12">
-          <div className="aspect-video w-full overflow-hidden rounded-lg shadow-xl">
-            <img
-              src={coverImage}
-              alt={project.title}
-              width="1200"
-              height="675"
-              className="w-full h-full object-cover"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-        </div>
+        <figure className="mb-10">
+          <img
+            src={coverImage}
+            alt={project.title}
+            className="w-full rounded-md border border-[color:var(--nd-line)]"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
       )}
 
-      {/* Main Content */}
-      <main className="container-narrow pb-16">
+      <article className="border-t border-[color:var(--nd-line)] pt-10">
         {project.full_description ? (
           <GfmMarkdown
             source={project.full_description}
-            className="prose-lg"
             repository={repository}
             config={{ enableMermaid }}
           />
         ) : (
-          <div className="text-center py-12">
-            <div className="text-white/60 mb-4">
-              No detailed description available for this project.
-            </div>
-            {(project.repo_url || project.demo_url) && (
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                {project.demo_url && (
-                  <a
-                    href={project.demo_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-200"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Live Demo
-                  </a>
-                )}
-                {project.repo_url && (
-                  <a
-                    href={project.repo_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-200"
-                  >
-                    <Code className="w-4 h-4" />
-                    View Source Code
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                )}
-              </div>
-            )}
-          </div>
+          <p className="text-[color:var(--nd-ink-3)]">
+            No detailed description available for this project.
+          </p>
         )}
-        {/* Related Projects */}
-        <RelatedProjects currentId={project.id} tags={projectTags} />
-        <RelatedPosts tags={projectTags} />
-      </main>
-
-      {/* Page footer removed; global Footer is used */}
-    </div>
+      </article>
+    </Page>
   );
 };
 

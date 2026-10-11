@@ -1,7 +1,9 @@
-import { useMemo, useRef, type ReactNode } from 'react';
+import { useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import SEO from '@/components/SEO';
+import { EntryList, Page, Section } from '@/components/layout/Page';
+import { formatMonth } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { readPrerenderData } from '@/lib/prerender-data';
 import { POST_SUMMARY_SELECT, PROJECT_LIST_SELECT } from '@/lib/content-selects';
@@ -66,9 +68,6 @@ const experience = [
   { when: 'Feb 2025 to Jun 2025', what: 'Research Intern, AIS (Turku UAS)' },
 ];
 
-const formatMonth = (date: string | null) =>
-  date ? new Date(date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '';
-
 const usePrerenderedQuery = <T,>(key: string, queryFn: () => Promise<T[]>) => {
   const initial = useMemo(() => readPrerenderData<T[]>(key), [key]);
   const initialUpdatedAt = useRef<number | undefined>(initial?.length ? Date.now() : undefined);
@@ -82,15 +81,6 @@ const usePrerenderedQuery = <T,>(key: string, queryFn: () => Promise<T[]>) => {
     }).data ?? []
   );
 };
-
-const Section = ({ title, children }: { title: string; children: ReactNode }) => (
-  <section className="border-t border-[color:var(--nd-line)] py-10">
-    <h2 className="mb-6 text-xs font-medium uppercase tracking-[0.14em] text-[color:var(--nd-ink-3)] [font-family:var(--nd-text)]">
-      {title}
-    </h2>
-    {children}
-  </section>
-);
 
 const Index = () => {
   const projects = usePrerenderedQuery<ProjectSummary>('projects', async () => {
@@ -117,7 +107,7 @@ const Index = () => {
     .slice(0, 4);
 
   return (
-    <div className="theme-night-desk min-h-screen pt-14">
+    <Page>
       <SEO
         title="Home"
         description="Research Engineer at CoRe (Turku UAS) and architect of AIOP, an on-premises event-driven AI platform. I build Privacy-by-Design industrial AI systems that reach deployment and produce auditable decision support."
@@ -127,168 +117,158 @@ const Index = () => {
         url="https://imadlab.com"
         structuredData={personSchema}
       />
-      <div className="mx-auto max-w-[44rem] px-5 pb-20 text-[17px] leading-relaxed">
-        <header className="py-14">
-          <div className="flex flex-col-reverse gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-4xl text-[color:var(--nd-ink)] md:text-5xl">
-                Imad Eddine El Mouss
-              </h1>
-              <p className="mt-4 text-[color:var(--nd-ink-2)]">
-                Research Engineer,{' '}
-                <a
-                  href="https://www.turkuamk.fi/en/research_groups/cognitive-technologies-research-group-core/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="nd-quiet-link"
-                >
-                  Cognitive Technologies Research Group (CoRe)
-                </a>
-                ,{' '}
-                <a
-                  href="https://www.turkuamk.fi/en/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="nd-quiet-link"
-                >
-                  Turku University of Applied Sciences
-                </a>
-              </p>
-            </div>
-            <img
-              src="/images/imad.jpg"
-              alt="Portrait of Imad Eddine El Mouss"
-              width={128}
-              height={128}
-              className="h-24 w-24 shrink-0 rounded-full object-cover sm:h-32 sm:w-32"
-            />
-          </div>
-          <p className="mt-6">
-            I am the architect and principal developer of AIOP, the on-premises event-driven AI
-            platform designed to become the integration backbone for the group's industrial pilot
-            modules. My thesis,{' '}
-            <a
-              href="https://urn.fi/URN:NBN:fi:amk-2025121235460"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="nd-link"
-            >
-              Structured Procedural Knowledge Extraction from Industrial Documentation Using LLMs
-            </a>{' '}
-            (5/5), introduced IPKE, a privacy-preserving pipeline for extracting procedural
-            knowledge graphs from safety-critical manuals.
-          </p>
-          <nav aria-label="Profiles" className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
-            {links.map((l) => (
+      <header className="pb-10 pt-14">
+        <div className="flex flex-col-reverse gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-4xl text-[color:var(--nd-ink)] md:text-5xl">
+              Imad Eddine El Mouss
+            </h1>
+            <p className="mt-4 text-[color:var(--nd-ink-2)]">
+              Research Engineer,{' '}
               <a
-                key={l.label}
-                href={l.href}
-                className="nd-link"
-                {...(l.href.startsWith('http')
-                  ? { target: '_blank', rel: 'noopener noreferrer' }
-                  : {})}
+                href="https://www.turkuamk.fi/en/research_groups/cognitive-technologies-research-group-core/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nd-quiet-link"
               >
-                {l.label}
+                Cognitive Technologies Research Group (CoRe)
               </a>
-            ))}
-          </nav>
-        </header>
+              ,{' '}
+              <a
+                href="https://www.turkuamk.fi/en/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nd-quiet-link"
+              >
+                Turku University of Applied Sciences
+              </a>
+            </p>
+          </div>
+          <img
+            src="/images/imad.jpg"
+            alt="Portrait of Imad Eddine El Mouss"
+            width={128}
+            height={128}
+            className="h-24 w-24 shrink-0 rounded-full object-cover sm:h-32 sm:w-32"
+          />
+        </div>
+        <p className="mt-6">
+          I am the architect and principal developer of AIOP, the on-premises event-driven AI
+          platform designed to become the integration backbone for the group's industrial pilot
+          modules. My thesis,{' '}
+          <a
+            href="https://urn.fi/URN:NBN:fi:amk-2025121235460"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nd-link"
+          >
+            Structured Procedural Knowledge Extraction from Industrial Documentation Using LLMs
+          </a>{' '}
+          (5/5), introduced IPKE, a privacy-preserving pipeline for extracting procedural knowledge
+          graphs from safety-critical manuals.
+        </p>
+        <nav aria-label="Profiles" className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
+          {links.map((l) => (
+            <a
+              key={l.label}
+              href={l.href}
+              className="nd-link"
+              {...(l.href.startsWith('http')
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
+            >
+              {l.label}
+            </a>
+          ))}
+        </nav>
+      </header>
 
-        <Section title="Research interests">
-          <ul className="list-disc space-y-2 pl-5 marker:text-[color:var(--nd-ink-3)]">
-            {interests.map((i) => (
-              <li key={i}>{i}</li>
-            ))}
-          </ul>
-        </Section>
+      <Section title="Research interests">
+        <ul className="list-disc space-y-2 pl-5 marker:text-[color:var(--nd-ink-3)]">
+          {interests.map((i) => (
+            <li key={i}>{i}</li>
+          ))}
+        </ul>
+      </Section>
 
-        {research.length > 0 && (
-          <Section title="Research and projects">
-            <ul className="space-y-7">
-              {research.map((p) => (
-                <li key={p.id}>
-                  <Link
-                    to={`/projects/${p.id}`}
-                    className="nd-link text-lg [font-family:var(--nd-display)]"
-                  >
-                    {p.title}
-                  </Link>
-                  {p.description && (
-                    <p className="mt-1 text-[color:var(--nd-ink-2)]">{p.description}</p>
-                  )}
-                  {p.tech_tags && p.tech_tags.length > 0 && (
-                    <p className="mt-1 text-sm text-[color:var(--nd-ink-3)]">
-                      {p.tech_tags.slice(0, 4).join(', ')}
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ul>
-            <Link to="/projects" className="nd-link mt-7 inline-block text-sm">
-              All projects
-            </Link>
-          </Section>
-        )}
-
-        <Section title="Highlights">
-          <dl className="space-y-5">
-            {highlights.map((h) => (
-              <div key={h.label} className="sm:grid sm:grid-cols-[9rem_1fr] sm:gap-6">
-                <dt className="font-medium text-[color:var(--nd-ink)]">{h.label}</dt>
-                <dd className="text-[color:var(--nd-ink-2)] [font-variant-numeric:tabular-nums]">
-                  {h.text}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </Section>
-
-        {posts.length > 0 && (
-          <Section title="Writing">
-            <ul className="space-y-3">
-              {posts.slice(0, 5).map((p) => (
-                <li
-                  key={p.id}
-                  className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
-                >
-                  <Link to={`/blogs/${p.slug}`} className="nd-link">
-                    {p.title}
-                  </Link>
-                  <span className="shrink-0 text-sm text-[color:var(--nd-ink-3)] [font-variant-numeric:tabular-nums]">
-                    {formatMonth(p.published_date)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </Section>
-        )}
-
-        <Section title="Experience">
-          <dl className="space-y-3">
-            {experience.map((e) => (
-              <div key={e.when} className="sm:grid sm:grid-cols-[11rem_1fr] sm:gap-6">
-                <dt className="text-sm text-[color:var(--nd-ink-3)] sm:text-base">{e.when}</dt>
-                <dd>{e.what}</dd>
-              </div>
-            ))}
-          </dl>
-          <Link to="/about" className="nd-link mt-6 inline-block text-sm">
-            More about me
+      {research.length > 0 && (
+        <Section title="Research and projects">
+          <EntryList
+            entries={research.map((p) => ({
+              key: p.id,
+              to: `/projects/${p.id}`,
+              title: p.title,
+              description: p.description,
+              meta: p.tech_tags?.slice(0, 4).join(', '),
+            }))}
+          />
+          <Link to="/projects" className="nd-link mt-7 inline-block text-sm">
+            All projects
           </Link>
         </Section>
+      )}
 
-        <Section title="Contact">
-          <p className="text-[color:var(--nd-ink-2)]">
-            I'm open to working with research teams and industrial R&D partners on multimodal
-            industrial AI, procedural knowledge extraction, and AI systems that have to reach
-            deployment.
-          </p>
-          <a href="mailto:ielmouss867@gmail.com" className="nd-link mt-3 inline-block">
-            ielmouss867@gmail.com
-          </a>
+      <Section title="Highlights">
+        <dl className="space-y-5">
+          {highlights.map((h) => (
+            <div key={h.label} className="sm:grid sm:grid-cols-[9rem_1fr] sm:gap-6">
+              <dt className="font-medium text-[color:var(--nd-ink)]">{h.label}</dt>
+              <dd className="text-[color:var(--nd-ink-2)] [font-variant-numeric:tabular-nums]">
+                {h.text}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </Section>
+
+      {posts.length > 0 && (
+        <Section title="Writing">
+          <ul className="space-y-3">
+            {posts.slice(0, 5).map((p) => (
+              <li
+                key={p.id}
+                className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
+              >
+                <Link to={`/blogs/${p.slug}`} className="nd-link">
+                  {p.title}
+                </Link>
+                <span className="shrink-0 text-sm text-[color:var(--nd-ink-3)] [font-variant-numeric:tabular-nums]">
+                  {formatMonth(p.published_date)}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <Link to="/blogs" className="nd-link mt-7 inline-block text-sm">
+            All writing
+          </Link>
         </Section>
-      </div>
-    </div>
+      )}
+
+      <Section title="Experience">
+        <dl className="space-y-3">
+          {experience.map((e) => (
+            <div key={e.when} className="sm:grid sm:grid-cols-[11rem_1fr] sm:gap-6">
+              <dt className="text-sm text-[color:var(--nd-ink-3)] sm:text-base">{e.when}</dt>
+              <dd>{e.what}</dd>
+            </div>
+          ))}
+        </dl>
+      </Section>
+
+      <Section title="Contact">
+        <p className="text-[color:var(--nd-ink-2)]">
+          I'm open to working with research teams and industrial R&D partners on multimodal
+          industrial AI, procedural knowledge extraction, and AI systems that have to reach
+          deployment.
+        </p>
+        <a href="mailto:ielmouss867@gmail.com" className="nd-link mt-3 inline-block">
+          ielmouss867@gmail.com
+        </a>
+        <p className="mt-6 text-sm text-[color:var(--nd-ink-3)]">
+          Based in Turku, Finland. Languages: Arabic, French, English, Finnish (A2).
+        </p>
+      </Section>
+    </Page>
   );
 };
 

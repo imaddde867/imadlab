@@ -2,17 +2,13 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Calendar, Clock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import SEO from '@/components/SEO';
+import { Page, PageTitle } from '@/components/layout/Page';
+import { tagToUrl } from '@/lib/tags';
 import { calculateReadingTime, stripMarkdown } from '@/lib/markdown-utils';
 import { resolveImageUrl } from '@/lib/image-utils';
 import { PageLoader } from '@/components/ui/LoadingStates';
-import BackRow from '@/components/BackRow';
-import ShareBar from '@/components/ShareBar';
-import TagList from '@/components/TagList';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
-import { RelatedPosts, RelatedProjects } from '@/components/RelatedContent';
 import { POST_DETAIL_SELECT } from '@/lib/content-selects';
 import { readPrerenderData } from '@/lib/prerender-data';
 import type { PostDetail } from '@/types/content';
@@ -66,18 +62,13 @@ const BlogPost = () => {
 
   if (error || !post) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Post Not Found</h1>
-          <p className="text-white/60 mb-8">The article you're looking for doesn't exist.</p>
-          <Link to="/blogs">
-            <Button className="bg-white/10 hover:bg-white/20">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Blog
-            </Button>
-          </Link>
-        </div>
-      </div>
+      <Page>
+        <PageTitle
+          title="Post not found"
+          description="The article you're looking for doesn't exist."
+          back={{ to: '/blogs', label: 'Writing' }}
+        />
+      </Page>
     );
   }
 
@@ -85,7 +76,7 @@ const BlogPost = () => {
   const metaDescription = buildMetaDescription(post.excerpt, post.body);
   const breadcrumbTrail = [
     { name: 'Home', path: '/' },
-    { name: 'Blog', path: '/blogs' },
+    { name: 'Writing', path: '/blogs' },
     { name: post.title, url: `https://imadlab.com/blogs/${post.slug}` },
   ];
   const articleReadTime = post.read_time || estimatedReadTime || undefined;
@@ -101,8 +92,14 @@ const BlogPost = () => {
   const enableMermaid = body.includes('```mermaid');
   const coverImage = resolveImageUrl(post.image_url);
 
+  const published = new Date(post.published_date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
   return (
-    <div className="min-h-screen bg-black text-white pt-14">
+    <Page>
       <SEO
         title={post.title}
         description={metaDescription}
@@ -120,89 +117,33 @@ const BlogPost = () => {
         breadcrumbs={breadcrumbTrail}
         additionalSchemas={speakableSchema}
       />
+      <PageTitle title={post.title} back={{ to: '/blogs', label: 'Writing' }}>
+        <p className="mt-4 text-sm text-[color:var(--nd-ink-3)]">
+          {published}
+          {articleReadTime ? ` · ${articleReadTime} min read` : ''}
+          {articleTags.length > 0 && ' · '}
+          {articleTags.map((tag, i) => (
+            <span key={tag}>
+              {i > 0 && ', '}
+              <Link to={tagToUrl(tag)} className="nd-quiet-link whitespace-nowrap">
+                {tag}
+              </Link>
+            </span>
+          ))}
+        </p>
+        {post.excerpt && (
+          <p className="mt-6 text-lg text-[color:var(--nd-ink-2)]">{post.excerpt}</p>
+        )}
+      </PageTitle>
 
-      <BackRow
-        to="/blogs"
-        label="Back to Blog"
-        icon={
-          <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
-        }
-        right={
-          articleReadTime ? (
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              {articleReadTime} min read
-            </div>
-          ) : undefined
-        }
-      />
-      <div className="container-narrow mt-4">
-        <ShareBar title={post.title} />
-      </div>
-      {/* Hero Section */}
-      <header className="relative pt-8 md:pt-12 pb-10">
-        <div className="container-narrow">
-          <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">{post.title}</h1>
-          <div className="flex flex-wrap items-center gap-y-4 gap-x-6 mb-8">
-            <div className="flex items-center text-sm text-white/70">
-              <Calendar className="w-4 h-4 mr-2" />
-              {new Date(post.published_date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </div>
-            {articleTags.length > 0 && <TagList tags={articleTags} label="Tags:" />}
-          </div>
-          {post.excerpt && (
-            <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-3xl">
-              {post.excerpt}
-            </p>
-          )}
-        </div>
-      </header>
-
-      {/* Featured Image */}
-      {coverImage && (
-        <div className="w-full container-narrow mb-12">
-          <div className="aspect-video w-full overflow-hidden rounded-lg shadow-xl">
-            <img
-              src={coverImage}
-              alt={post.title}
-              width="1200"
-              height="675"
-              className="w-full h-full object-cover"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Main Content */}
-      <main className="container-narrow pb-16">
+      <article className="border-t border-[color:var(--nd-line)] pt-10">
         {post.body ? (
-          <GfmMarkdown
-            source={post.body}
-            className="prose-lg"
-            config={{ enableMermaid }}
-          />
+          <GfmMarkdown source={post.body} config={{ enableMermaid }} />
         ) : (
-          <div className="text-center py-12">
-            <div className="text-white/60 mb-4">No content available for this article.</div>
-          </div>
+          <p className="text-[color:var(--nd-ink-3)]">No content available for this article.</p>
         )}
-
-        {articleTags.length > 0 && (
-          <>
-            <RelatedPosts currentSlug={post.slug} tags={articleTags} />
-            <RelatedProjects tags={articleTags} />
-          </>
-        )}
-      </main>
-
-      {/* Page footer removed; global Footer is used */}
-    </div>
+      </article>
+    </Page>
   );
 };
 

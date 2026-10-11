@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
-import SectionHeader from '@/components/SectionHeader';
+import { Page, PageTitle } from '@/components/layout/Page';
 import { tagSlug, tagToUrl } from '@/lib/tags';
 import { Link } from 'react-router-dom';
 import type { PostSummary, ProjectSummary } from '@/types/content';
@@ -76,22 +76,24 @@ const TagsIndex = () => {
 
   // ItemList schema for tags
   const tagsSchema = tags.length
-    ? [{
-        '@context': 'https://schema.org',
-        '@type': 'ItemList',
-        name: 'All tags',
-        numberOfItems: tags.length,
-        itemListElement: tags.map((t, i) => ({
-          '@type': 'ListItem',
-          position: i + 1,
-          name: t.label,
-          url: `https://imadlab.com${tagToUrl(t.label)}`,
-        })),
-      }]
+    ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: 'All tags',
+          numberOfItems: tags.length,
+          itemListElement: tags.map((t, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: t.label,
+            url: `https://imadlab.com${tagToUrl(t.label)}`,
+          })),
+        },
+      ]
     : undefined;
 
   return (
-    <div className="min-h-screen bg-black text-white section pt-14">
+    <Page>
       <SEO
         title="Tags"
         description="Every tag used across my posts and projects."
@@ -104,27 +106,30 @@ const TagsIndex = () => {
         additionalSchemas={tagsSchema}
       />
 
-      <div className="container-site">
-        <SectionHeader title={<span className="text-brand-gradient">Tags</span>} />
-        {tags.length === 0 ? (
-          <div className="text-center py-12 text-white/60">No tags yet.</div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            {tags.map((t) => (
+      <PageTitle title="Tags" description="Every tag used across my posts and projects." />
+      {tags.length === 0 ? (
+        <p className="text-[color:var(--nd-ink-3)]">No tags yet.</p>
+      ) : (
+        <ul className="columns-1 gap-8 sm:columns-2">
+          {tags.map((t) => (
+            <li key={t.slug} className="break-inside-avoid py-1">
               <Link
-                key={t.slug}
                 to={tagToUrl(t.label)}
-                onClick={() => { import('@/lib/events').then(({ logEvent }) => logEvent('tag_click', { tag: t.label })).catch(() => {}); }}
-                className="flex items-center justify-between rounded-md border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10 transition"
+                onClick={() => {
+                  import('@/lib/events')
+                    .then(({ logEvent }) => logEvent('tag_click', { tag: t.label }))
+                    .catch(() => {});
+                }}
+                className="nd-link"
               >
-                <span className="text-white/90">#{t.label}</span>
-                <span className="text-xs text-white/60">{t.posts} posts · {t.projects} projects</span>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+                {t.label}
+              </Link>{' '}
+              <span className="text-sm text-[color:var(--nd-ink-3)]">({t.total})</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Page>
   );
 };
 

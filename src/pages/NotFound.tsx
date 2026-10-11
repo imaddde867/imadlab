@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import SEO from '@/components/SEO';
+import { Page, PageTitle } from '@/components/layout/Page';
 
 const NotFound = () => (
-  <>
+  <Page>
     <SEO
       title="404"
-      description="This page does not exist. Try the projects or the blog instead."
+      description="This page does not exist. Try the projects or the writing instead."
       noindex
       nofollow
       schemaType="WebPage"
@@ -14,20 +15,20 @@ const NotFound = () => (
         { name: '404', path: '/404' },
       ]}
     />
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8 pt-14">
-      <h1 className="text-6xl font-black mb-6">404</h1>
-      <h2 className="text-2xl font-bold mb-4">Page Not Found</h2>
-      <p className="text-white/60 mb-8 text-center max-w-md mx-auto">
-        How did you even end up here.. lol
+    <PageTitle title="Page not found" description="This page doesn't exist or has moved.">
+      <p className="mt-6 flex gap-5">
+        <Link to="/" className="nd-link">
+          Home
+        </Link>
+        <Link to="/projects" className="nd-link">
+          Projects
+        </Link>
+        <Link to="/blogs" className="nd-link">
+          Writing
+        </Link>
       </p>
-      <Link
-        to="/"
-        className="px-6 py-3 bg-white text-black rounded-lg font-semibold hover:bg-white/90 transition-colors"
-      >
-        Go Home
-      </Link>
-    </div>
-  </>
+    </PageTitle>
+  </Page>
 );
 
 export default NotFound;
