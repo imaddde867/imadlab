@@ -24,7 +24,8 @@ const personSchema = {
 };
 
 const links = [
-  { label: 'CV (PDF)', href: '/Resume.pdf' },
+  { label: 'Research CV (PDF)', href: '/cv-research.pdf' },
+  { label: 'Industry CV (PDF)', href: '/Resume.pdf' },
   { label: 'GitHub', href: 'https://github.com/imaddde867' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/imad-eddine-e-986741262' },
   { label: 'Email', href: 'mailto:imadeddine200507@gmail.com' },
@@ -129,11 +130,24 @@ const Index = () => {
       />
       <div className="mx-auto max-w-[44rem] px-5 pb-20 text-[17px] leading-relaxed">
         <header className="py-14">
-          <h1 className="text-4xl text-[color:var(--nd-ink)] md:text-5xl">Imad Eddine El Mouss</h1>
-          <p className="mt-4 text-[color:var(--nd-ink-2)]">
-            Research Engineer, Cognitive Technologies Research Group (CoRe), Turku University of
-            Applied Sciences
-          </p>
+          <div className="flex flex-col-reverse gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 className="text-4xl text-[color:var(--nd-ink)] md:text-5xl">
+                Imad Eddine El Mouss
+              </h1>
+              <p className="mt-4 text-[color:var(--nd-ink-2)]">
+                Research Engineer, Cognitive Technologies Research Group (CoRe), Turku University of
+                Applied Sciences
+              </p>
+            </div>
+            <img
+              src="/images/imad.jpg"
+              alt="Portrait of Imad Eddine El Mouss"
+              width={128}
+              height={128}
+              className="h-24 w-24 shrink-0 rounded-full object-cover sm:h-32 sm:w-32"
+            />
+          </div>
           <p className="mt-6">
             I am the architect and principal developer of AIOP, the on-premises event-driven AI
             platform that is the integration backbone for every industrial pilot module the group
