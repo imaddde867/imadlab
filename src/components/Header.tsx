@@ -56,7 +56,7 @@ const Header = () => {
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           {/* Brand */}
           <Link to="/" className="flex items-center gap-2 focus-enhanced">
-            <span className="inline-block w-2 h-2 rounded-full bg-primary mr-1 animate-blink-purple" />
+            <span className="inline-block w-2 h-2 rounded-full bg-primary mr-1" />
             <span className="font-semibold tracking-wide text-white/90 hover:text-white transition-colors">
               imadlab
             </span>
@@ -78,9 +78,9 @@ const Header = () => {
                   <span className="inline-flex items-center">
                     {item.label}
                     <span
-                      className={`pointer-events-none absolute -bottom-1 left-0 h-[3px] rounded-full transition-all duration-300 ${
+                      className={`pointer-events-none absolute -bottom-1 left-0 h-[2px] rounded-full transition-all duration-300 ${
                         isActive || location.pathname.startsWith(item.path)
-                          ? 'w-full bg-primary/80 shadow-[0_0_18px_rgba(148,163,255,0.55)]'
+                          ? 'w-full bg-primary/80'
                           : 'w-0 bg-transparent'
                       }`}
                     />

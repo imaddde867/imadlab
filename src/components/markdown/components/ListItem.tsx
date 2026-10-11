@@ -22,7 +22,7 @@ export const ListItem = ({ checked, className, children, ...props }: ListItemPro
         <span className="mt-1 flex h-5 w-5 items-center justify-center">
           <input
             type="checkbox"
-            className="h-4 w-4 cursor-pointer rounded border border-white/40 bg-black/40 accent-blue-500"
+            className="h-4 w-4 cursor-pointer rounded border border-white/40 bg-black/40 accent-primary"
             checked={Boolean(isChecked)}
             aria-checked={Boolean(isChecked)}
             onChange={() => setIsChecked((value) => !value)}

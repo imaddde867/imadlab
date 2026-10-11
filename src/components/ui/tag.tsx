@@ -12,11 +12,11 @@ const tagVariants = cva(
         subtle: 'bg-white/5 border-white/10 text-white/80',
         outline: 'bg-transparent border-white/25 text-white/80 hover:bg-white/5',
         neutral: 'bg-white/10 border-white/20 text-white/90',
-        accent: 'bg-sky-500/20 border-sky-400/40 text-sky-100',
+        accent: 'bg-white/10 border-white/20 text-white',
         success: 'bg-emerald-500/20 border-emerald-400/40 text-emerald-100',
         warning: 'bg-amber-500/20 border-amber-400/40 text-amber-100',
         danger: 'bg-rose-500/20 border-rose-400/40 text-rose-100',
-        info: 'bg-indigo-500/20 border-indigo-400/40 text-indigo-100',
+        info: 'bg-primary/15 border-primary/30 text-primary',
       },
       size: {
         xs: 'px-2.5 py-0.5 text-[11px]',

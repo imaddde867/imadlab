@@ -225,7 +225,7 @@ const LinkRenderer = ({ href, children, ...props }: AnchorHTMLAttributes<HTMLAnc
   return (
     <a
       href={resolved}
-      className="inline-flex items-center gap-1 text-blue-400 underline decoration-blue-400/40 transition-colors hover:text-blue-200 hover:decoration-blue-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+      className="inline-flex items-center gap-1 text-primary underline decoration-primary/40 transition-colors hover:text-primary/80 hover:decoration-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       target={undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
       {...props}
@@ -296,7 +296,7 @@ const FootnoteReferenceRenderer = ({ identifier }: FootnoteReference & { childre
   <sup id={`fnref-${identifier}`}>
     <a
       href={`#fn-${identifier}`}
-      className="rounded px-1 text-xs font-semibold text-blue-300 no-underline hover:bg-blue-400/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+      className="rounded px-1 text-xs font-semibold text-primary no-underline hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >
       {identifier}
     </a>
@@ -314,7 +314,7 @@ const FootnoteDefinitionRenderer = ({
     </div>
     <a
       href={`#fnref-${identifier}`}
-      className="mt-2 inline-block text-xs text-blue-300 underline hover:text-blue-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+      className="mt-2 inline-block text-xs text-primary underline hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >
       Back to content
     </a>
@@ -526,18 +526,22 @@ export const GfmMarkdown = ({
       tbody: TableBody,
       th: TableHeaderCell,
       td: TableCell,
-      code: ({ inline, className, children, node }) => {
-        const nodeType = (node as { type?: string } | undefined)?.type;
-        const isBlockCode = nodeType === 'code';
+      // Fenced blocks render through CodeBlock/MermaidBlock, which supply their own container.
+      pre: ({ children }) => <>{children}</>,
+      code: ({ className, children, node }) => {
+        const rawCode = String(children ?? '');
+        // react-markdown v10 passes hast nodes, so tell fenced blocks from inline code by their
+        // language class or the trailing newline every fenced block carries.
+        const isBlockCode = /language-/.test(className ?? '') || rawCode.endsWith('\n');
 
-        if (!isBlockCode || inline) {
+        if (!isBlockCode) {
           return <InlineCode>{children}</InlineCode>;
         }
         const language = className?.replace(/language-/, '') ?? '';
         const normalizedLanguage = language.toLowerCase();
         const meta =
           (node && 'data' in node && (node.data as { meta?: string })?.meta) || undefined;
-        const codeString = String(children ?? '');
+        const codeString = rawCode.replace(/\n$/, '');
 
         if (mergedConfig.enableMermaid && language === 'mermaid') {
           return (
@@ -571,7 +575,7 @@ export const GfmMarkdown = ({
       footnoteBackref: ({ href }) => (
         <a
           href={href}
-          className="text-xs text-blue-300 underline hover:text-blue-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+          className="text-xs text-primary underline hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
           Back
         </a>

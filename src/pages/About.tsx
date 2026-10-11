@@ -1,7 +1,6 @@
 import SEO from '@/components/SEO';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Github, Linkedin, Mail, FileText } from 'lucide-react';
-import Stars from '@/components/Stars';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,6 @@ import { Button } from '@/components/ui/button';
 const About = () => {
   return (
     <div className="relative min-h-screen bg-black text-white section pt-14">
-      <Stars />
       <div className="absolute inset-0 opacity-10" />
       <SEO
         title="About Imad Eddine"

@@ -7,90 +7,47 @@ All colors MUST be HSL.
 */
 
 @layer base {
-  :root {
-    --background: 248 69% 6%;
-    --foreground: 0 0% 100%;
+  /* Night Desk theme (Design Lounge): warm near-black, cream ink, one amber accent. */
+  :root,
+  .dark {
+    --background: 40 8% 7%;
+    --foreground: 41 30% 89%;
 
-    --card: 245 65% 18%;
-    --card-foreground: 0 0% 100%;
+    --card: 45 8% 10%;
+    --card-foreground: 41 30% 89%;
 
-    --popover: 246 62% 16%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 45 6% 13%;
+    --popover-foreground: 41 30% 89%;
 
-    --primary: 242 63% 68%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 35 71% 59%;
+    --primary-foreground: 30 11% 7%;
 
-    --secondary: 245 65% 27%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 45 6% 13%;
+    --secondary-foreground: 41 30% 89%;
 
-    --muted: 248 68% 16%;
-    --muted-foreground: 242 35% 82%;
+    --muted: 45 6% 13%;
+    --muted-foreground: 39 9% 62%;
 
-    --accent: 242 63% 68%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 48 5% 21%;
+    --accent-foreground: 41 30% 89%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 41 30% 89%;
 
-    --border: 248 68% 16%;
-    --input: 248 68% 16%;
-    --ring: 242 63% 68%;
+    --border: 40 8% 16%;
+    --input: 40 8% 16%;
+    --ring: 35 71% 59%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 245 65% 16%;
-
-    --sidebar-foreground: 0 0% 100%;
-
-    --sidebar-primary: 242 63% 68%;
-
-    --sidebar-primary-foreground: 0 0% 100%;
-
-    --sidebar-accent: 245 65% 27%;
-
-    --sidebar-accent-foreground: 0 0% 100%;
-
-    --sidebar-border: 245 65% 20%;
-
-    --sidebar-ring: 242 63% 68%;
-  }
-
-  .dark {
-    --background: 248 72% 4%;
-    --foreground: 0 0% 100%;
-
-    --card: 245 65% 14%;
-    --card-foreground: 0 0% 100%;
-
-    --popover: 246 62% 12%;
-    --popover-foreground: 0 0% 100%;
-
-    --primary: 242 63% 68%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 245 65% 21%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 248 68% 14%;
-    --muted-foreground: 242 35% 82%;
-
-    --accent: 242 63% 68%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 245 65% 18%;
-    --input: 245 65% 18%;
-    --ring: 242 63% 70%;
-    --sidebar-background: 245 65% 10%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 242 63% 68%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 245 65% 22%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 245 65% 18%;
-    --sidebar-ring: 242 63% 70%;
+    --sidebar-background: 45 8% 10%;
+    --sidebar-foreground: 41 30% 89%;
+    --sidebar-primary: 35 71% 59%;
+    --sidebar-primary-foreground: 30 11% 7%;
+    --sidebar-accent: 48 5% 21%;
+    --sidebar-accent-foreground: 41 30% 89%;
+    --sidebar-border: 40 8% 16%;
+    --sidebar-ring: 35 71% 59%;
   }
 }
 
@@ -143,7 +100,7 @@ All colors MUST be HSL.
   }
 
   h1 {
-    @apply text-5xl md:text-6xl lg:text-7xl font-black;
+    @apply text-5xl md:text-6xl lg:text-7xl font-display font-semibold;
   }
   h2 {
     @apply text-4xl md:text-5xl lg:text-6xl font-bold;
@@ -200,7 +157,7 @@ All colors MUST be HSL.
 
   /* Custom text selection styling */
   ::selection {
-    background-color: hsla(242, 63%, 68%, 0.3);
+    background-color: hsl(var(--primary) / 0.3);
     color: hsl(var(--foreground));
   }
 
@@ -432,16 +389,16 @@ All colors MUST be HSL.
   animation: fade-in-scale 0.8s ease-out forwards;
 }
 
-/* Homepage palette and type: Night Desk theme with the Academic pairing (Literata, Public Sans), from Design Lounge. */
+/* Homepage aliases for the global Night Desk tokens and Academic type pairing (Literata, Public Sans). */
 .theme-night-desk {
-  --nd-bg: #141311;
-  --nd-ink: #ece7dc;
-  --nd-ink-2: #a7a196;
+  --nd-bg: hsl(var(--background));
+  --nd-ink: hsl(var(--foreground));
+  --nd-ink-2: hsl(var(--muted-foreground));
   --nd-ink-3: #928d83;
-  --nd-line: #2b2925;
-  --nd-link: #e0a34b;
-  --nd-display: 'Literata', Georgia, 'Times New Roman', serif;
-  --nd-text: 'Public Sans', 'Helvetica Neue', Arial, sans-serif;
+  --nd-line: hsl(var(--border));
+  --nd-link: hsl(var(--primary));
+  --nd-display: theme('fontFamily.display');
+  --nd-text: theme('fontFamily.sans');
   background: var(--nd-bg);
   color: var(--nd-ink);
   font-family: var(--nd-text);

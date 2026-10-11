@@ -38,7 +38,7 @@ const TagList = ({ tags, initialVisible = 3, label, variant = 'hash' }: TagListP
       {tags.length > initialVisible && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-xs text-blue-400 hover:text-blue-300 flex items-center"
+          className="text-xs text-primary hover:text-primary/80 flex items-center"
           aria-label={expanded ? 'Show fewer tags' : 'Show all tags'}
         >
           {expanded ? (

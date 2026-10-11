@@ -2,20 +2,30 @@ import { useEffect, useId, useState } from 'react';
 import clsx from 'clsx';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
-type MermaidModule = typeof import('mermaid');
+type MermaidModule = typeof import('mermaid').default;
 
 let mermaidPromise: Promise<MermaidModule> | null = null;
 let mermaidConfigured = false;
 
 const loadMermaid = async () => {
   if (!mermaidPromise) {
-    mermaidPromise = import('mermaid');
+    mermaidPromise = import('mermaid').then((m) => m.default);
   }
   const mermaid = await mermaidPromise;
   if (!mermaidConfigured) {
     mermaid.initialize({
       startOnLoad: false,
-      theme: 'dark',
+      // Night Desk palette so diagrams match the site.
+      theme: 'base',
+      themeVariables: {
+        darkMode: true,
+        background: '#1b1a17',
+        primaryColor: '#242320',
+        primaryTextColor: '#ece7dc',
+        primaryBorderColor: '#74716b',
+        lineColor: '#a7a196',
+        fontFamily: 'Public Sans, system-ui, sans-serif',
+      },
       securityLevel: 'strict',
     });
     mermaidConfigured = true;
@@ -31,7 +41,7 @@ type MermaidBlockProps = {
 export const MermaidBlock = ({ code, maxDiagramSizeKB }: MermaidBlockProps) => {
   const [svg, setSvg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const diagramId = useId();
+  const diagramId = useId().replace(/[^a-zA-Z0-9_-]/g, ''); // mermaid uses it as a CSS selector
   const { ref, isIntersecting } = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px' });
 
   useEffect(() => {
@@ -86,14 +96,14 @@ export const MermaidBlock = ({ code, maxDiagramSizeKB }: MermaidBlockProps) => {
     <div
       ref={ref}
       className={clsx(
-        'my-8 overflow-x-auto rounded-lg border border-white/10 bg-[#0d1016] p-4',
+        'my-8 overflow-x-auto rounded-lg border border-white/10 bg-card p-4',
         svg ? 'text-white' : 'text-white/70'
       )}
       role="img"
       aria-label="Mermaid diagram"
       dangerouslySetInnerHTML={svg ? { __html: svg } : undefined}
     >
-      {!svg && <span>Rendering diagram…</span>}
+      {svg ? undefined : <span>Rendering diagram…</span>}
     </div>
   );
 };

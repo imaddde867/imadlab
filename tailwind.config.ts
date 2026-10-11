@@ -22,7 +22,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+				sans: ['Public Sans', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+				display: ['Literata', 'Georgia', 'Times New Roman', 'serif'],
 				mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
 			},
 			fontSize: {
@@ -65,6 +66,10 @@ export default {
 				'loose': '2',
 			},
 			colors: {
+				// Night Desk: 'white' is the cream ink and 'black' the warm page colour, so the
+				// many text-white/NN and bg-black classes follow the theme without a rewrite.
+				white: '#ece7dc',
+				black: '#141311',
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -135,23 +140,11 @@ export default {
 					from: { opacity: '0' },
 					to: { opacity: '1' }
 				},
-				'blink-purple': {
-					'0%, 100%': {
-						opacity: '0',
-						boxShadow: 'none'
-					},
-					'50%': {
-						opacity: '1',
-						backgroundColor: 'hsl(var(--primary))',
-						boxShadow: '0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary))'
-					}
-				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'fade-in': 'fade-in 1s ease-out forwards',
-				'blink-purple': 'blink-purple 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+				'fade-in': 'fade-in 1s ease-out forwards'
 			}
 		}
 	},

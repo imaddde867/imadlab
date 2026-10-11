@@ -174,7 +174,7 @@ export const CodeBlock = ({ code, language, meta }: CodeBlockProps) => {
   return (
     <div
       ref={ref}
-      className="my-8 min-w-0 max-w-full overflow-hidden rounded-lg border border-white/10 bg-[#0d1016] text-sm text-white/90 shadow-lg"
+      className="my-8 min-w-0 max-w-full overflow-hidden rounded-lg border border-white/10 bg-card text-sm text-white/90 shadow-lg"
       aria-live="polite"
     >
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-white/5 px-4 py-2">
@@ -189,8 +189,8 @@ export const CodeBlock = ({ code, language, meta }: CodeBlockProps) => {
             type="button"
             onClick={toggleLineNumbers}
             className={clsx(
-              'flex items-center gap-1 rounded-md px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400',
-              showLineNumbers ? 'bg-blue-500/20 text-blue-200' : 'bg-white/10 hover:bg-white/20'
+              'flex items-center gap-1 rounded-md px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+              showLineNumbers ? 'bg-primary/20 text-primary' : 'bg-white/10 hover:bg-white/20'
             )}
             aria-pressed={showLineNumbers}
           >
@@ -201,8 +201,8 @@ export const CodeBlock = ({ code, language, meta }: CodeBlockProps) => {
             type="button"
             onClick={toggleWrap}
             className={clsx(
-              'flex items-center gap-1 rounded-md px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400',
-              wrap ? 'bg-blue-500/20 text-blue-200' : 'bg-white/10 hover:bg-white/20'
+              'flex items-center gap-1 rounded-md px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+              wrap ? 'bg-primary/20 text-primary' : 'bg-white/10 hover:bg-white/20'
             )}
             aria-pressed={wrap}
           >
@@ -213,7 +213,7 @@ export const CodeBlock = ({ code, language, meta }: CodeBlockProps) => {
             type="button"
             onClick={handleCopy}
             className={clsx(
-              'flex items-center gap-1 rounded-md px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400',
+              'flex items-center gap-1 rounded-md px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
               copied ? 'bg-emerald-500/20 text-emerald-200' : 'bg-white/10 hover:bg-white/20'
             )}
             aria-live="polite"
@@ -246,7 +246,7 @@ export const CodeBlock = ({ code, language, meta }: CodeBlockProps) => {
                   <tr
                     key={`line-${index + 1}`}
                     className={clsx(
-                      highlight?.has(index + 1) ? 'bg-blue-500/10' : undefined,
+                      highlight?.has(index + 1) ? 'bg-primary/10' : undefined,
                       'align-top'
                     )}
                   >
