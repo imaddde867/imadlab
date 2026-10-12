@@ -13,7 +13,8 @@ const mockBlogPostData = {
     tags: ['JavaScript', 'Testing'],
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png'
   },
-  siteUrl: 'https://imadlab.com'
+  siteUrl: 'https://imadlab.com',
+  functionsBaseUrl: 'https://example.supabase.co/functions/v1'
 };
 
 const mockProjectData = {
@@ -27,7 +28,8 @@ const mockProjectData = {
     repoUrl: 'https://github.com/test/project',
     id: 'project-123'
   },
-  siteUrl: 'https://imadlab.com'
+  siteUrl: 'https://imadlab.com',
+  functionsBaseUrl: 'https://example.supabase.co/functions/v1'
 };
 
 Deno.test("Blog post email template generation", () => {
@@ -147,15 +149,14 @@ Deno.test("Email templates contain proper HTML structure", () => {
     assertEquals(email.includes('<!DOCTYPE html>'), true);
     assertEquals(email.includes('<html lang="en">'), true);
     assertEquals(email.includes('<head>'), true);
-    assertEquals(email.includes('<body>'), true);
+    assertEquals(email.includes('<body'), true);
     assertEquals(email.includes('</html>'), true);
     
     // Test responsive meta tag
     assertEquals(email.includes('viewport'), true);
     
-    // Test CSS styles
-    assertEquals(email.includes('<style>'), true);
-    assertEquals(email.includes('@media'), true);
+    // Styles are inline so mail clients that strip <style> still render them
+    assertEquals(email.includes('style="'), true);
   });
 });
 
@@ -165,10 +166,10 @@ Deno.test("Email templates are mobile responsive", () => {
   
   [blogEmail, projectEmail].forEach(email => {
     // Test mobile breakpoint
-    assertEquals(email.includes('max-width: 600px'), true);
+    assertEquals(email.includes('max-width:560px'), true);
     
     // Test mobile-specific styles
-    assertEquals(email.includes('width: 100%'), true);
+    assertEquals(email.includes('width:100%'), true);
   });
 });
 

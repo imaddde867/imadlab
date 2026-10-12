@@ -61,6 +61,7 @@ serve(async (req) => {
     )
 
     const siteUrl = Deno.env.get('SITE_URL') || 'https://imadlab.com'
+    const functionsBaseUrl = `${Deno.env.get('SUPABASE_URL') ?? ''}/functions/v1`
     const subscriberEmail = 'preview@example.com'
     const unsubscribeToken = 'preview-token'
 
@@ -81,6 +82,7 @@ serve(async (req) => {
         subscriberEmail,
         unsubscribeToken,
         siteUrl,
+        functionsBaseUrl,
         post: {
           title: data.title,
           excerpt: data.excerpt ?? '',
@@ -110,6 +112,7 @@ serve(async (req) => {
       subscriberEmail,
       unsubscribeToken,
       siteUrl,
+      functionsBaseUrl,
       project: {
         title: data.title,
         description: data.description ?? '',

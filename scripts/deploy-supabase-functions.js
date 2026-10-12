@@ -35,6 +35,8 @@ const main = () => {
     // These verify auth themselves (requireAdminOrJobSecret), so non-interactive
     // callers can send x-job-secret without a Supabase-issued bearer token.
     ['functions', 'deploy', 'render-email-preview', 'send-newsletter-emails', '--no-verify-jwt', '--project-ref', projectRef],
+    // Opened from links in email, with no session; it validates the unsubscribe token itself.
+    ['functions', 'deploy', 'handle-unsubscribe', '--no-verify-jwt', '--project-ref', projectRef],
     // Called via supabase-js (attaches anon key as bearer), keep default JWT verification.
     ['functions', 'deploy', 'strava-proxy', '--project-ref', projectRef],
   ];

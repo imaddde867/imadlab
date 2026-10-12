@@ -33,6 +33,7 @@ interface BlogPostContent {
   published_date: string | null;
   created_at: string;
   tags: string[] | null;
+  image_url: string | null;
 }
 
 interface ProjectContent {
@@ -77,6 +78,7 @@ serve(async (req) => {
     }
 
     const siteUrl = Deno.env.get('SITE_URL') || 'https://imadlab.com'
+    const functionsBaseUrl = `${Deno.env.get('SUPABASE_URL') ?? ''}/functions/v1`
     const { generateBlogPostEmail, generateProjectEmail } = await import('../shared/email-templates.ts')
 
     let queueIds: string[] | undefined
@@ -228,12 +230,14 @@ serve(async (req) => {
                 subscriberEmail: subscriber.email,
                 unsubscribeToken: subscriber.unsubscribe_token,
                 siteUrl,
+                functionsBaseUrl,
                 post: {
                   title: blogContent.title,
                   excerpt: blogContent.excerpt ?? '',
                   slug: blogContent.slug,
                   publishedDate: blogContent.published_date ?? blogContent.created_at,
-                  tags: blogContent.tags ?? []
+                  tags: blogContent.tags ?? [],
+                  imageUrl: blogContent.image_url ?? undefined
                 }
               }
               emailHtml = generateBlogPostEmail(emailData)
@@ -244,6 +248,7 @@ serve(async (req) => {
                 subscriberEmail: subscriber.email,
                 unsubscribeToken: subscriber.unsubscribe_token,
                 siteUrl,
+                functionsBaseUrl,
                 project: {
                   title: projectContent.title,
                   description: projectContent.description ?? '',
@@ -258,7 +263,7 @@ serve(async (req) => {
             }
 
             // Send email via Resend
-            const unsubscribeUrl = new URL(`${siteUrl}/functions/v1/handle-unsubscribe`)
+            const unsubscribeUrl = new URL(`${functionsBaseUrl}/handle-unsubscribe`)
             unsubscribeUrl.searchParams.set('token', subscriber.unsubscribe_token)
 
             const emailPayload = {

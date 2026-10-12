@@ -6,20 +6,28 @@ const escapeHtml = (value: string): string =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 
-const safeUrl = (value: string | undefined): string | null => {
+// Accepts absolute http(s) URLs, and resolves site-relative paths (e.g. "/images/x.png")
+// against the site, so cover images stored as relative paths still work in email.
+const safeUrl = (value: string | undefined | null, base?: string): string | null => {
   if (!value) return null;
   try {
-    const url = new URL(value);
+    const url = base ? new URL(value, base) : new URL(value);
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
-    return escapeHtml(value);
+    return escapeHtml(url.toString());
   } catch {
     return null;
   }
 };
 
-const buildUnsubscribeUrl = (siteUrl: string, token: string): string | null => {
+const withUTM = (url: string, campaign: string) => {
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}utm_source=newsletter&utm_medium=email&utm_campaign=${campaign}`;
+};
+
+// Unsubscribe is an edge function, so it lives on the Supabase functions host, not the site.
+const buildUnsubscribeUrl = (functionsBaseUrl: string, token: string): string | null => {
   try {
-    const url = new URL(`${siteUrl}/functions/v1/handle-unsubscribe`);
+    const url = new URL(`${functionsBaseUrl.replace(/\/$/, '')}/handle-unsubscribe`);
     url.searchParams.set('token', token);
     return safeUrl(url.toString());
   } catch {
@@ -27,35 +35,22 @@ const buildUnsubscribeUrl = (siteUrl: string, token: string): string | null => {
   }
 };
 
-// Shared styles and constants to keep the design consistent
-const THEME = {
-  colors: {
-    background: '#000000',
-    card: '#0b0b0b',
-    text: '#ffffff',
-    muted: '#b7b7b7',
-    border: '#1b1b1b',
-    accent: '#ffffff',
-    accentSoft: 'rgba(255, 255, 255, 0.1)',
-    button: '#ffffff',
-    buttonText: '#000000',
-  },
-  socials: {
-    github: 'https://github.com/yourusername',
-    discord: 'https://discord.com/users/766969796579295232',
-    linkedin: 'https://linkedin.com/in/yourusername'
-  }
+// Light palette taken from the site's Night Desk theme pair; dark email backgrounds get
+// inverted unpredictably by mail clients, so email stays light.
+const C = {
+  page: '#f6f3ec',
+  text: '#1f1d1a',
+  muted: '#6b665c',
+  line: '#e2ddd1',
+  link: '#9a5f12',
 };
+const SERIF = "Literata, Georgia, 'Times New Roman', serif";
+const SANS = "'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif";
 
-// Helper to add UTM tags for analytics
-const withUTM = (url: string, campaign: string) => {
-  const separator = url.includes('?') ? '&' : '?';
-  return `${url}${separator}utm_source=newsletter&utm_medium=email&utm_campaign=${campaign}`;
-};
-
-// ---------------------------------------------
-// INTERFACES
-// ---------------------------------------------
+const SOCIALS = [
+  ['GitHub', 'https://github.com/imaddde867'],
+  ['LinkedIn', 'https://www.linkedin.com/in/imad-eddine-e-986741262'],
+] as const;
 
 export interface BlogPostEmailData {
   subscriberEmail: string;
@@ -69,6 +64,7 @@ export interface BlogPostEmailData {
     imageUrl?: string;
   };
   siteUrl: string;
+  functionsBaseUrl: string;
 }
 
 export interface ProjectEmailData {
@@ -83,305 +79,92 @@ export interface ProjectEmailData {
     id: string;
   };
   siteUrl: string;
+  functionsBaseUrl: string;
 }
 
-// ---------------------------------------------
-// SHARED CSS (Injected into head)
-// ---------------------------------------------
-const getSharedCSS = () => `
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    background-color: ${THEME.colors.background};
-    color: ${THEME.colors.text};
-    margin: 0;
-    padding: 0;
-    -webkit-text-size-adjust: none;
-    width: 100% !important;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-    letter-spacing: -0.01em;
-  }
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: ${THEME.colors.background};
-  }
-  .card {
-    background-color: ${THEME.colors.card};
-    border: 1px solid ${THEME.colors.border};
-    border-radius: 12px;
-    overflow: hidden;
-    margin: 20px auto;
-    box-shadow: none;
-  }
-  .header {
-    padding: 30px 30px 20px;
-    text-align: center;
-    border-bottom: 1px solid ${THEME.colors.border};
-    background: ${THEME.colors.card};
-  }
-  .logo {
-    font-size: 24px;
-    font-weight: 700;
-    color: ${THEME.colors.text};
-    letter-spacing: -0.03em;
-    text-decoration: none;
-  }
-  .badge {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: ${THEME.colors.muted};
-    background: transparent;
-    padding: 0;
-    border-radius: 0;
-    margin-top: 12px;
-  }
-  .content {
-    padding: 30px;
-  }
-  .hero-image {
-    width: 100%;
-    height: auto;
-    max-height: 300px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 24px;
-    border: 1px solid ${THEME.colors.border};
-    display: block;
-  }
-  h1 {
-    font-size: 24px;
-    font-weight: 700;
-    margin: 0 0 16px;
-    line-height: 1.3;
-    color: ${THEME.colors.text};
-    letter-spacing: -0.02em;
-  }
-  p {
-    font-size: 16px;
-    line-height: 1.6;
-    color: ${THEME.colors.muted};
-    margin: 0 0 24px;
-  }
-  .meta {
-    font-size: 13px;
-    color: ${THEME.colors.muted};
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .tag {
-    display: inline-block;
-    background-color: transparent;
-    border: 1px solid ${THEME.colors.border};
-    color: ${THEME.colors.text};
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 100px;
-    margin-right: 6px;
-    margin-bottom: 6px;
-  }
-  .btn {
-    display: inline-block;
-    background-color: ${THEME.colors.button};
-    color: ${THEME.colors.buttonText};
-    padding: 14px 28px;
-    border-radius: 8px;
-    font-weight: 600;
-    text-decoration: none;
-    text-align: center;
-    font-size: 14px;
-    transition: all 0.2s;
-    box-shadow: none;
-    border: 1px solid ${THEME.colors.button};
-  }
-  .btn:hover {
-    opacity: 0.9;
-  }
-  .btn-outline {
-    background-color: transparent;
-    color: ${THEME.colors.text};
-    border: 1px solid ${THEME.colors.border};
-    margin-left: 10px;
-  }
-  .footer {
-    padding: 20px;
-    text-align: center;
-  }
-  .footer-text {
-    font-size: 12px;
-    color: ${THEME.colors.muted};
-    margin-bottom: 12px;
-  }
-  .social-links {
-    margin-bottom: 20px;
-  }
-  .social-link {
-    color: ${THEME.colors.muted};
-    text-decoration: none;
-    margin: 0 8px;
-    font-size: 12px;
-  }
-  .unsubscribe {
-    color: ${THEME.colors.muted};
-    font-size: 11px;
-    text-decoration: underline;
-  }
-  /* Utilities */
-  .preheader { display: none !important; visibility: hidden; opacity: 0; color: transparent; height: 0; width: 0; }
-  
-  @media only screen and (max-width: 600px) {
-    .container { width: 100% !important; }
-    .card { margin: 0 !important; border-radius: 0 !important; border: none !important; border-bottom: 1px solid ${THEME.colors.border} !important; }
-    .btn { display: block; width: 100%; margin-bottom: 10px; margin-left: 0; }
-  }
-`;
+type Layout = {
+  siteUrl: string;
+  kicker: string;
+  title: string;
+  date?: string;
+  summary: string;
+  meta?: string;
+  imageUrl: string | null;
+  primary: { href: string | null; label: string };
+  secondary?: { href: string | null; label: string };
+  unsubscribeUrl: string | null;
+};
 
-// ---------------------------------------------
-// TEMPLATE GENERATORS
-// ---------------------------------------------
-
-export function generateBlogPostEmail(data: BlogPostEmailData): string {
-  const { post, siteUrl, unsubscribeToken } = data;
-  const postUrl = safeUrl(withUTM(`${siteUrl}/blogs/${post.slug}`, 'blog_post'));
-  const unsubscribeUrl = buildUnsubscribeUrl(siteUrl, unsubscribeToken);
-  const safeImageUrl = safeUrl(post.imageUrl);
-  const safeTitle = escapeHtml(post.title);
-  const safeExcerpt = escapeHtml(post.excerpt || '');
-  const previewText = escapeHtml(post.excerpt || `Read the latest article: ${post.title}`);
-
-  return `
-<!DOCTYPE html>
+const render = (l: Layout) => {
+  const site = escapeHtml(l.siteUrl);
+  const link = (href: string | null, label: string) =>
+    href
+      ? `<a href="${href}" style="color:${C.link};text-decoration:underline;font-weight:600;">${label}</a>`
+      : '';
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${safeTitle}</title>
-    <style>${getSharedCSS()}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>${l.title}</title>
 </head>
-<body>
-    <span class="preheader">${previewText}</span>
-    <div class="container">
-        <div class="card">
-            <div class="header">
-                <a href="${escapeHtml(siteUrl)}" class="logo">imadlab<span style="color:${THEME.colors.muted}">.me</span></a>
-                <div><span class="badge">New Article</span></div>
-            </div>
-
-            <div class="content">
-                ${safeImageUrl && postUrl ? `
-                <a href="${postUrl}">
-                    <img src="${safeImageUrl}" alt="${safeTitle}" class="hero-image">
-                </a>` : ''}
-
-                <div class="meta">
-                    <span>${new Date(post.publishedDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                </div>
-
-                <h1>${safeTitle}</h1>
-
-                <p>${safeExcerpt || 'Check out my latest insights on software engineering and development.'}</p>
-
-                ${post.tags && post.tags.length > 0 ? `
-                <div style="margin-bottom: 24px;">
-                    ${post.tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('')}
-                </div>
-                ` : ''}
-
-                ${postUrl ? `
-                <div style="margin-top: 32px;">
-                    <a href="${postUrl}" class="btn">Read Article</a>
-                </div>` : ''}
-            </div>
-        </div>
-
-        <div class="footer">
-            <div class="social-links">
-                <a href="${THEME.socials.github}" class="social-link">GitHub</a> •
-                <a href="${THEME.socials.discord}" class="social-link">Discord</a> •
-                <a href="${THEME.socials.linkedin}" class="social-link">LinkedIn</a>
-            </div>
-            <div class="footer-text">
-                Crafted with care at imadlab.com
-            </div>
-            ${unsubscribeUrl ? `<a href="${unsubscribeUrl}" class="unsubscribe">Unsubscribe</a>` : ''}
-        </div>
-    </div>
+<body style="margin:0;padding:0;background:${C.page};color:${C.text};font-family:${SANS};-webkit-text-size-adjust:none;">
+<span style="display:none;max-height:0;overflow:hidden;">${l.summary}</span>
+<div style="max-width:560px;margin:0 auto;padding:40px 24px;">
+  <p style="margin:0 0 32px;font-family:${SERIF};font-size:17px;font-weight:600;">
+    <a href="${site}" style="color:${C.text};text-decoration:none;">Imad Eddine El Mouss</a>
+  </p>
+  <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:${C.muted};">${l.kicker}${l.date ? ` · ${l.date}` : ''}</p>
+  <h1 style="margin:0 0 16px;font-family:${SERIF};font-size:26px;line-height:1.25;font-weight:600;color:${C.text};">${l.title}</h1>
+  <p style="margin:0 0 20px;font-size:16px;line-height:1.65;color:${C.text};">${l.summary}</p>
+  ${l.imageUrl && l.primary.href ? `<a href="${l.primary.href}"><img src="${l.imageUrl}" alt="${l.title}" width="512" style="display:block;width:100%;max-width:512px;height:auto;border:1px solid ${C.line};border-radius:4px;margin:0 0 20px;"></a>` : ''}
+  ${l.meta ? `<p style="margin:0 0 24px;font-size:13px;color:${C.muted};">${l.meta}</p>` : ''}
+  <p style="margin:0 0 40px;font-size:16px;">
+    ${link(l.primary.href, l.primary.label)}${l.secondary?.href ? `&nbsp;&nbsp;·&nbsp;&nbsp;${link(l.secondary.href, l.secondary.label)}` : ''}
+  </p>
+  <p style="margin:0;padding-top:20px;border-top:1px solid ${C.line};font-size:12px;line-height:1.6;color:${C.muted};">
+    You receive this because you subscribed at <a href="${site}" style="color:${C.muted};">imadlab.com</a>.
+    ${SOCIALS.map(([name, url]) => `<a href="${url}" style="color:${C.muted};">${name}</a>`).join(' · ')}${l.unsubscribeUrl ? ` · <a href="${l.unsubscribeUrl}" style="color:${C.muted};">Unsubscribe</a>` : ''}
+  </p>
+</div>
 </body>
-</html>
-  `.trim();
+</html>`;
+};
+
+export function generateBlogPostEmail(data: BlogPostEmailData): string {
+  const { post, siteUrl, functionsBaseUrl, unsubscribeToken } = data;
+  const postUrl = safeUrl(withUTM(`${siteUrl}/blogs/${post.slug}`, 'blog_post'));
+  return render({
+    siteUrl,
+    kicker: 'New writing',
+    title: escapeHtml(post.title),
+    date: new Date(post.publishedDate).toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    }),
+    summary: escapeHtml(post.excerpt || post.title),
+    meta: post.tags?.length ? post.tags.map(escapeHtml).join(', ') : undefined,
+    imageUrl: safeUrl(post.imageUrl, siteUrl),
+    primary: { href: postUrl, label: 'Read the post' },
+    unsubscribeUrl: buildUnsubscribeUrl(functionsBaseUrl, unsubscribeToken),
+  });
 }
 
 export function generateProjectEmail(data: ProjectEmailData): string {
-  const { project, siteUrl, unsubscribeToken } = data;
+  const { project, siteUrl, functionsBaseUrl, unsubscribeToken } = data;
   const projectUrl = safeUrl(withUTM(`${siteUrl}/projects/${project.id}`, 'new_project'));
   const repoUrl = project.repoUrl ? safeUrl(withUTM(project.repoUrl, 'new_project_repo')) : null;
-  const unsubscribeUrl = buildUnsubscribeUrl(siteUrl, unsubscribeToken);
-  const safeImageUrl = safeUrl(project.imageUrl);
-  const safeTitle = escapeHtml(project.title);
-  const safeDescription = escapeHtml(project.description || '');
-  const previewText = escapeHtml(project.description || `Check out my new project: ${project.title}`);
-
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Project: ${safeTitle}</title>
-    <style>${getSharedCSS()}</style>
-</head>
-<body>
-    <span class="preheader">${previewText}</span>
-    <div class="container">
-        <div class="card">
-            <div class="header">
-                <a href="${escapeHtml(siteUrl)}" class="logo">imadlab<span style="color:${THEME.colors.muted}">.me</span></a>
-                <div><span class="badge">Project Launch</span></div>
-            </div>
-
-            <div class="content">
-                ${safeImageUrl && projectUrl ? `
-                <a href="${projectUrl}">
-                    <img src="${safeImageUrl}" alt="${safeTitle}" class="hero-image">
-                </a>` : ''}
-
-                <h1>${safeTitle}</h1>
-
-                <p>${safeDescription || 'I just shipped a new project. Click below to see the tech stack and details.'}</p>
-
-                ${project.techTags && project.techTags.length > 0 ? `
-                <div style="margin-bottom: 24px;">
-                    <div style="font-size: 11px; text-transform: uppercase; color: ${THEME.colors.muted}; margin-bottom: 8px; font-weight: 700;">Built With</div>
-                    ${project.techTags.map(tech => `<span class="tag">${escapeHtml(tech)}</span>`).join('')}
-                </div>
-                ` : ''}
-
-                ${projectUrl ? `
-                <div style="margin-top: 32px;">
-                    <a href="${projectUrl}" class="btn">View Project</a>
-                    ${repoUrl ? `<a href="${repoUrl}" class="btn btn-outline">Source Code</a>` : ''}
-                </div>` : ''}
-            </div>
-        </div>
-
-        <div class="footer">
-            <div class="social-links">
-                <a href="${THEME.socials.github}" class="social-link">GitHub</a> •
-                <a href="${THEME.socials.discord}" class="social-link">Discord</a> •
-                <a href="${THEME.socials.linkedin}" class="social-link">LinkedIn</a>
-            </div>
-            <div class="footer-text">
-                Building cool things at imadlab.com
-            </div>
-            ${unsubscribeUrl ? `<a href="${unsubscribeUrl}" class="unsubscribe">Unsubscribe</a>` : ''}
-        </div>
-    </div>
-</body>
-</html>
-  `.trim();
+  return render({
+    siteUrl,
+    kicker: 'New project',
+    title: escapeHtml(project.title),
+    summary: escapeHtml(project.description || project.title),
+    meta: project.techTags?.length ? project.techTags.map(escapeHtml).join(', ') : undefined,
+    imageUrl: safeUrl(project.imageUrl, siteUrl),
+    primary: { href: projectUrl, label: 'View the project' },
+    secondary: repoUrl ? { href: repoUrl, label: 'Source code' } : undefined,
+    unsubscribeUrl: buildUnsubscribeUrl(functionsBaseUrl, unsubscribeToken),
+  });
 }
