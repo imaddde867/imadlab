@@ -19,7 +19,20 @@ const lazyWithPrefetch = <T extends React.ComponentType<unknown>>(
   loader: () => Promise<{ default: T }>
 ) => {
   registerRoutePrefetch(path, loader);
-  return React.lazy(loader);
+  // After a deploy, an old page can ask for script files that no longer exist.
+  // Reload once to fetch the current build instead of showing an error.
+  return React.lazy(() =>
+    loader().catch((error) => {
+      const key = 'chunk-reload-at';
+      const last = Number(sessionStorage.getItem(key) || 0);
+      if (Date.now() - last > 30_000) {
+        sessionStorage.setItem(key, String(Date.now()));
+        window.location.reload();
+        return new Promise<never>(() => {});
+      }
+      throw error;
+    })
+  );
 };
 
 // Lazy load all pages for better code splitting and register them for prefetching

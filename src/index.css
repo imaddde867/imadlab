@@ -56,8 +56,9 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
-  html,
-  body {
+  /* Only on html: on body too, body becomes its own scroll container, and with
+     overscroll-behavior: none it swallows mouse-wheel scrolling for the page. */
+  html {
     overscroll-behavior: none; /* Prevent rubber-banding/bounce scroll */
     overflow-x: hidden; /* Prevent horizontal scroll */
   }
