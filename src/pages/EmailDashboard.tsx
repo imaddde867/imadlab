@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,7 +24,9 @@ type QueueRow = {
 type Subscriber = { email: string; status: string; created_at: string };
 
 const fmt = (d: string | null) =>
-  d ? new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+  d
+    ? new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+    : '';
 
 const EmailDashboard = () => {
   const navigate = useNavigate();
@@ -33,7 +35,10 @@ const EmailDashboard = () => {
   const [queue, setQueue] = useState<QueueRow[]>([]);
   const [subs, setSubs] = useState<Subscriber[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [confirmItem, setConfirmItem] = useState<Item | null>(null);
+  // The item to confirm, plus the failed queue row when this is a retry.
+  const [confirmItem, setConfirmItem] = useState<{ item: Item; failed: QueueRow | null } | null>(
+    null
+  );
   const [removeSub, setRemoveSub] = useState<Subscriber | null>(null);
   const [preview, setPreview] = useState<{ title: string; html: string } | null>(null);
 
@@ -112,7 +117,6 @@ const EmailDashboard = () => {
   };
 
   const send = async (item: Item) => {
-    setConfirmItem(null);
     setBusyId(item.id);
     const { data, error } = await supabase
       .from('email_queue')
@@ -129,7 +133,11 @@ const EmailDashboard = () => {
 
   const retry = async (item: Item, row: QueueRow) => {
     setBusyId(item.id);
-    const { error } = await supabase.from('email_queue').update({ status: 'pending' }).eq('id', row.id);
+    // The send function skips rows with retry_count >= 3, so a manual retry starts fresh.
+    const { error } = await supabase
+      .from('email_queue')
+      .update({ status: 'pending', retry_count: 0 })
+      .eq('id', row.id);
     if (error) {
       setBusyId(null);
       toast({ title: 'Could not retry', description: error.message, variant: 'destructive' });
@@ -152,7 +160,8 @@ const EmailDashboard = () => {
   const remove = async (sub: Subscriber) => {
     setRemoveSub(null);
     const { error } = await supabase.from('newsletter_subscribers').delete().eq('email', sub.email);
-    if (error) toast({ title: 'Remove failed', description: error.message, variant: 'destructive' });
+    if (error)
+      toast({ title: 'Remove failed', description: error.message, variant: 'destructive' });
     await load();
   };
 
@@ -160,7 +169,10 @@ const EmailDashboard = () => {
     <div className="min-h-screen bg-background text-foreground py-12">
       <div className="container-site max-w-3xl space-y-12">
         <header>
-          <h1 className="text-3xl font-semibold">Newsletter</h1>
+          <Link to="/admin" className="text-sm text-muted-foreground hover:text-foreground">
+            ← Admin
+          </Link>
+          <h1 className="mt-4 text-3xl font-semibold">Newsletter</h1>
           <p className="mt-1 text-sm text-muted-foreground">{activeCount} active subscribers</p>
         </header>
 
@@ -173,7 +185,10 @@ const EmailDashboard = () => {
               const failed = !sent && rows[0]?.status === 'failed' ? rows[0] : null;
               const busy = busyId === item.id;
               return (
-                <li key={item.type + item.id} className="flex items-center justify-between gap-4 py-3">
+                <li
+                  key={item.type + item.id}
+                  className="flex items-center justify-between gap-4 py-3"
+                >
                   <div className="min-w-0">
                     <p className="truncate font-medium">{item.title}</p>
                     <p className="text-sm text-muted-foreground">
@@ -191,13 +206,18 @@ const EmailDashboard = () => {
                     </span>
                   ) : (
                     <div className="flex shrink-0 gap-2">
-                      <Button variant="outline" size="sm" onClick={() => showPreview(item)} disabled={busy}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => showPreview(item)}
+                        disabled={busy}
+                      >
                         Preview
                       </Button>
                       <Button
                         size="sm"
                         disabled={busy}
-                        onClick={() => (failed ? retry(item, failed) : setConfirmItem(item))}
+                        onClick={() => setConfirmItem({ item, failed })}
                       >
                         {busy ? 'Sending…' : failed ? 'Try again' : `Send to ${activeCount}`}
                       </Button>
@@ -217,7 +237,10 @@ const EmailDashboard = () => {
                 <span className="min-w-0 truncate">{s.email}</span>
                 <span className="flex shrink-0 items-center gap-4 text-muted-foreground">
                   {s.status} · {fmt(s.created_at)}
-                  <button className="underline hover:text-foreground" onClick={() => setRemoveSub(s)}>
+                  <button
+                    className="underline hover:text-foreground"
+                    onClick={() => setRemoveSub(s)}
+                  >
                     Remove
                   </button>
                 </span>
@@ -232,14 +255,23 @@ const EmailDashboard = () => {
           <DialogHeader>
             <DialogTitle>Send newsletter</DialogTitle>
             <DialogDescription>
-              Send “{confirmItem?.title}” to {activeCount} subscribers? This can't be undone.
+              Send “{confirmItem?.item.title}” to {activeCount} subscribers? This can't be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmItem(null)}>
               Cancel
             </Button>
-            <Button onClick={() => confirmItem && send(confirmItem)}>Send</Button>
+            <Button
+              onClick={() => {
+                if (!confirmItem) return;
+                const { item, failed } = confirmItem;
+                setConfirmItem(null);
+                void (failed ? retry(item, failed) : send(item));
+              }}
+            >
+              Send
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -265,7 +297,12 @@ const EmailDashboard = () => {
             <DialogTitle>{preview?.title}</DialogTitle>
             <DialogDescription>Email preview</DialogDescription>
           </DialogHeader>
-          <iframe title="Email preview" sandbox="" srcDoc={preview?.html} className="h-[70vh] w-full rounded bg-white" />
+          <iframe
+            title="Email preview"
+            sandbox=""
+            srcDoc={preview?.html}
+            className="h-[70vh] w-full rounded bg-white"
+          />
         </DialogContent>
       </Dialog>
     </div>
