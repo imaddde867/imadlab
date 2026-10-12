@@ -43,7 +43,7 @@ const interests = [
 const highlights = [
   {
     label: 'Platform',
-    text: 'Architect and principal developer of AIOP (Python, NATS JetStream, Docker, FastAPI). Reproducible stress audits: 200 events/s sustained at 0% loss, 10ms p99 latency (and 75 events/s at 5ms p99).',
+    text: 'Lead developer of AIOP (Python, NATS JetStream, Docker, FastAPI): core services, plugin interface, pilot modules and stress-audit tooling. Reproducible stress audits: 200 events/s sustained at 0% loss, 10ms p99 latency (and 75 events/s at 5ms p99).',
   },
   {
     label: 'Patent pending',
@@ -150,9 +150,10 @@ const Index = () => {
           />
         </div>
         <p className="mt-6">
-          I am the architect and principal developer of AIOP, the on-premises event-driven AI
+          I am the lead developer of AIOP, the on-premises event-driven AI
           platform designed to become the integration backbone for the group's industrial pilot
-          modules. My thesis,{' '}
+          modules. I built its core services, plugin interface and pilot modules, and its
+          stress-audit tooling. My thesis,{' '}
           <a
             href="https://urn.fi/URN:NBN:fi:amk-2025121235460"
             target="_blank"
