@@ -114,8 +114,8 @@ const AdminDashboard = () => {
             to="/admin/emails"
             className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-white hover:border-white/20"
           >
-            <span>Email</span>
-            <span className="text-xs font-normal text-white/50">Queue + subscribers</span>
+            <span>Newsletter</span>
+            <span className="text-xs font-normal text-white/50">Send posts and projects to subscribers</span>
           </Link>
           <Link
             to="/admin/analytics"
