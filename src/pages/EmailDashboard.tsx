@@ -166,8 +166,8 @@ const EmailDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground py-12">
-      <div className="container-site max-w-3xl space-y-12">
+    <div className="min-h-screen bg-background text-foreground pb-16 pt-28">
+      <div className="mx-auto max-w-[44rem] space-y-12 px-5">
         <header>
           <Link to="/admin" className="text-sm text-muted-foreground hover:text-foreground">
             ← Admin
