@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
+import SubscribeForm from '@/components/SubscribeForm';
 import { Page, PageTitle } from '@/components/layout/Page';
 import { tagToUrl } from '@/lib/tags';
 import { calculateReadingTime, stripMarkdown } from '@/lib/markdown-utils';
@@ -143,6 +144,10 @@ const BlogPost = () => {
           <p className="text-[color:var(--nd-ink-3)]">No content available for this article.</p>
         )}
       </article>
+
+      <aside className="mt-14 border-t border-[color:var(--nd-line)] pt-10">
+        <SubscribeForm />
+      </aside>
     </Page>
   );
 };

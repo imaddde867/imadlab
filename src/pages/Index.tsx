@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import SEO from '@/components/SEO';
+import SubscribeForm from '@/components/SubscribeForm';
 import { EntryList, Page, Section } from '@/components/layout/Page';
 import { formatMonth } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -239,6 +240,10 @@ const Index = () => {
           </Link>
         </Section>
       )}
+
+      <Section title="Newsletter">
+        <SubscribeForm />
+      </Section>
 
       <Section title="Experience">
         <dl className="space-y-3">
