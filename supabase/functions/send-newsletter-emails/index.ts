@@ -190,6 +190,14 @@ serve(async (req) => {
           continue
         }
 
+        // On a retry, skip people this queue item already reached.
+        const { data: deliveredRows } = await supabaseClient
+          .from('email_analytics')
+          .select('subscriber_email')
+          .eq('email_queue_id', queueItem.id)
+        const delivered = new Set((deliveredRows ?? []).map((row) => row.subscriber_email.toLowerCase()))
+        const recipients = activeSubscribers.filter((subscriber) => !delivered.has(subscriber.email.toLowerCase()))
+
         // Mark as processing
         await supabaseClient
           .from('email_queue')
@@ -219,7 +227,7 @@ serve(async (req) => {
         }
 
         // Send emails to all subscribers
-        const emailPromises = activeSubscribers.map(async (subscriber: NewsletterSubscriber) => {
+        const emailPromises = recipients.map(async (subscriber: NewsletterSubscriber) => {
           try {
             let emailHtml = ''
             let subject = ''
@@ -267,7 +275,7 @@ serve(async (req) => {
             unsubscribeUrl.searchParams.set('token', subscriber.unsubscribe_token)
 
             const emailPayload = {
-              from: 'imadlab <onboarding@resend.dev>',
+              from: Deno.env.get('NEWSLETTER_FROM') || 'imadlab <onboarding@resend.dev>',
               to: [subscriber.email],
               subject: subject,
               html: emailHtml,
@@ -316,9 +324,13 @@ serve(async (req) => {
         const successCount = emailResults.filter(result => 
           result.status === 'fulfilled' && result.value.success
         ).length
+        const deliveredTotal = delivered.size + successCount
+        const firstError = emailResults
+          .map((result) => (result.status === 'fulfilled' ? result.value.error : String(result.reason)))
+          .find(Boolean)
 
-        // Update queue item status
-        if (successCount > 0) {
+        // Only call it sent when every recipient got it; otherwise keep it retryable.
+        if (successCount === recipients.length) {
           await supabaseClient
             .from('email_queue')
             .update({ 
@@ -333,7 +345,7 @@ serve(async (req) => {
             .update({ 
               status: 'failed',
               retry_count: queueItem.retry_count + 1,
-              error_message: 'All email sends failed'
+              error_message: `Delivered to ${deliveredTotal} of ${activeSubscribers.length}. ${firstError ?? ''}`.slice(0, 500)
             })
             .eq('id', queueItem.id)
         }
@@ -342,7 +354,7 @@ serve(async (req) => {
           queueItemId: queueItem.id,
           contentType: queueItem.content_type,
           contentTitle: contentData.title,
-          successCount,
+          successCount: deliveredTotal,
           totalSubscribers: activeSubscribers.length
         })
 
