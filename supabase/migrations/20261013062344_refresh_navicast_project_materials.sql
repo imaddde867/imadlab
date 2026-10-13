@@ -1,7 +1,7 @@
 update public.projects
 set
   description = 'A live Baltic vessel explorer with Digitraffic AIS positions, 30-minute constant-course projections, and a public API. Hosted on Cloudflare Workers, with an optional MQTT/PostgreSQL collection pipeline.',
-  image_url = '/images/projects/navicast-live-2026-10.jpg',
+  image_url = '/images/projects/navicast-live-2026-10.jpg?v=20261013',
   demo_url = 'https://navicast.imadlab.com/',
   updated_at = now(),
   full_description = $navicast$
