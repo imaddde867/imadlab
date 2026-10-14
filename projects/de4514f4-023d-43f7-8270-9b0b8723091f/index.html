@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Meta tags dynamically injected by <Seo /> component via react-helmet-async -->
+    <!-- Static fallbacks only for crawlers that don't execute JS -->
+    <script>
+      (function () {
+        var host = window.location.hostname.toLowerCase();
+        if (host === 'imadlab.me' || host === 'www.imadlab.me') {
+          var target =
+            'https://imadlab.com' +
+            window.location.pathname +
+            window.location.search +
+            window.location.hash;
+          window.location.replace(target);
+        }
+      })();
+    </script>
+    <title>Mellum2.1 on Apple Silicon: Quantized Builds Measured Against BF16 | Imadlab | Research Engineer, On-Premises Industrial AI</title>
+    <meta name="description" content="MLX builds of JetBrains&#39; Mellum2.1 coding model for 16 GB and 24 GB Macs, checked against BF16 on the full HumanEval+ and timed on an M4." />
+    <!-- prerender-seo:start -->
+    <link rel="canonical" href="https://imadlab.com/projects/de4514f4-023d-43f7-8270-9b0b8723091f" />
+    <meta property="og:title" content="Mellum2.1 on Apple Silicon: Quantized Builds Measured Against BF16 | Imadlab | Research Engineer, On-Premises Industrial AI" />
+    <meta property="og:description" content="MLX builds of JetBrains&#39; Mellum2.1 coding model for 16 GB and 24 GB Macs, checked against BF16 on the full HumanEval+ and timed on an M4." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://imadlab.com/projects/de4514f4-023d-43f7-8270-9b0b8723091f" />
+    <meta property="og:image" content="https://imadlab.com/images/mellum-solved-by-budget.png" />
+    <meta property="og:image:type" content="image/png" />
+    
+    
+    <meta property="og:image:alt" content="Mellum2.1 on Apple Silicon: Quantized Builds Measured Against BF16" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Imadlab" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@imadlab" />
+    <meta name="twitter:creator" content="@imadlab" />
+    <meta name="twitter:title" content="Mellum2.1 on Apple Silicon: Quantized Builds Measured Against BF16 | Imadlab | Research Engineer, On-Premises Industrial AI" />
+    <meta name="twitter:description" content="MLX builds of JetBrains&#39; Mellum2.1 coding model for 16 GB and 24 GB Macs, checked against BF16 on the full HumanEval+ and timed on an M4." />
+    <meta name="twitter:image" content="https://imadlab.com/images/mellum-solved-by-budget.png" />
+    <meta name="twitter:image:alt" content="Mellum2.1 on Apple Silicon: Quantized Builds Measured Against BF16" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Mellum2.1 on Apple Silicon: Quantized Builds Measured Against BF16","description":"MLX builds of JetBrains' Mellum2.1 coding model for 16 GB and 24 GB Macs, checked against BF16 on the full HumanEval+ and timed on an M4.","url":"https://imadlab.com/projects/de4514f4-023d-43f7-8270-9b0b8723091f","image":"https://imadlab.com/images/mellum-solved-by-budget.png","codeRepository":"https://github.com/imaddde867/mellum-mlx","sameAs":["https://github.com/imaddde867/mellum-mlx"],"datePublished":"2026-10-11T16:41:56.644292+00:00","dateModified":"2026-10-11T17:32:59.954545+00:00","author":{"@type":"Person","name":"Imad Eddine El Mouss","url":"https://imadlab.com"}}</script>
+    <!-- prerender-seo:end -->
+
+    <!-- Favicon and Theme Color -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#141311" />
+
+    <!-- Font Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Load fonts with font-display: swap for better performance -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Literata:ital,wght@0,400;0,600;1,400&family=Public+Sans:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Literata:ital,wght@0,400;0,600;1,400&family=Public+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    </noscript>
+    
+    <!-- DNS prefetch for Supabase and Cloudflare Analytics -->
+    <link rel="dns-prefetch" href="https://mpkgugcasxpanhrkpkhs.supabase.co">
+    <link rel="preconnect" href="https://mpkgugcasxpanhrkpkhs.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://static.cloudflareinsights.com">
+    <link rel="preconnect" href="https://static.cloudflareinsights.com" crossorigin>
+    
+    <!-- RSS/JSON Feeds -->
+    <link rel="alternate" type="application/rss+xml" title="Imadlab Blog RSS Feed" href="/feed.xml" />
+    <link rel="alternate" type="application/feed+json" title="Imadlab Blog JSON Feed" href="/feed.json" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <!-- site-verification:start -->
+    <!-- site-verification:end -->
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://imadlab.com",
+      "name": "Imadlab",
+      "description": "Applied research and engineering work by Imad Eddine El Mouss on multimodal industrial AI, procedural knowledge extraction, and deployable systems.",
+      "publisher": {
+        "@type": "Person",
+        "name": "Imad Eddine El Mouss",
+        "url": "https://imadlab.com/about",
+        "sameAs": [
+          "https://github.com/imaddde867",
+          "https://www.linkedin.com/in/imad-eddine-e-986741262"
+        ]
+      }
+    }
+    </script>
+    <script type="module" crossorigin src="/assets/js/index-D83JW5-X.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cep-hw9-.css">
+  </head>
+
+  <body>
+    <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Imadlab | Research Engineer, On-Premises Industrial AI</h1>
+    <div id="root">
+<main data-prerender="true" class="prerender-shell">
+  <article class="prerender-article">
+    <p class="prerender-meta text-sm text-white/60">October 11, 2026</p>
+    <h1 class="text-3xl font-bold mb-4">Mellum2.1 on Apple Silicon: Quantized Builds Measured Against BF16</h1>
+    <p class="prerender-tags">Tech: quantization, mlx, llm-evaluation, apple-silicon, mixture-of-experts, local-llm</p>
+    <div class="prerender-image"><img src="/images/mellum-solved-by-budget.png" alt="Mellum2.1 on Apple Silicon: Quantized Builds Measured Against BF16" loading="lazy" decoding="async" /></div>
+    <p class="prerender-summary leading-relaxed">## What I built
+
+I converted and compared several MLX quantization recipes for JetBrains&#39; Mellum2.1, then released two builds: NVFP4 for 16 GB Macs and 6-bit for Macs with 24 GB or more.
+
+| Your Mac | Build | Weights |
+| --- | --- | ---: |
+| 16 GB | [NVFP4](https://huggingface.co/imaadd05/Mellum2.1-12B-A2.5B-Thinking-mlx-nvfp4) | 6.84 GB |
+| 24 GB or more | [6-bit](https://huggingface.co/imaadd05/Mellum2.1-12B-A2....</p>
+    <p class="prerender-meta mt-4">Source: <a class="prerender-link inline" href="https://github.com/imaddde867/mellum-mlx" rel="noopener">View repository</a></p>
+    <a class="prerender-link mt-6 inline-flex" href="/projects/de4514f4-023d-43f7-8270-9b0b8723091f">Continue exploring</a>
+  </article>
+</main>
+</div>
+    
+  <script>window.__PRERENDERED_DATA__ = window.__PRERENDERED_DATA__ || {}; window.__PRERENDERED_DATA__["project:de4514f4-023d-43f7-8270-9b0b8723091f"] = {"id":"de4514f4-023d-43f7-8270-9b0b8723091f","title":"Mellum2.1 on Apple Silicon: Quantized Builds Measured Against BF16","description":"MLX builds of JetBrains' Mellum2.1 coding model for 16 GB and 24 GB Macs, checked against BF16 on the full HumanEval+ and timed on an M4.","full_description":"## What I built\n\nI converted and compared several MLX quantization recipes for JetBrains' Mellum2.1, then released two builds: NVFP4 for 16 GB Macs and 6-bit for Macs with 24 GB or more.\n\n| Your Mac | Build | Weights |\n| --- | --- | ---: |\n| 16 GB | [NVFP4](https://huggingface.co/imaadd05/Mellum2.1-12B-A2.5B-Thinking-mlx-nvfp4) | 6.84 GB |\n| 24 GB or more | [6-bit](https://huggingface.co/imaadd05/Mellum2.1-12B-A2.5B-Thinking-mlx-6bit-g64) | 9.87 GB |\n\n## Try it\n\n```sh\npip install 'mlx-lm==0.32.0'\npython -m mlx_lm generate --model imaadd05/Mellum2.1-12B-A2.5B-Thinking-mlx-nvfp4 \\\n  --prompt 'Find the bug: def mean(xs): return sum(xs) / len(xs) - 1' \\\n  --temp 0.6 --top-p 0.95 --top-k 20 --max-tokens 16384\n```\n\nAlways set `--max-tokens`: reasoning and the answer share the budget, and the MLX-LM server defaults to 512 tokens.\n\n## The problem\n\n[Mellum2.1-12B-A2.5B-Thinking](https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking) is JetBrains' 12B mixture-of-experts coding model, with 2.5B parameters active per token. Its BF16 weights are 24.3 GB, too large for most laptops. I wanted builds that run on a 16 GB and a 24 GB Mac, with what each one loses against the original measured on real tasks.\n\n## How it was measured\n\nEach build ran the full 164-task HumanEval+ on a CUDA GPU with the upstream chat template, greedy decoding, one sample per task and an 8,192-token budget that includes the model's reasoning. Speed and memory were measured on a 14-inch MacBook Pro with an M4 and 16 GB. Each build was timed in the same session as MXFP4, and NVFP4 was interleaved with it run by run. Every experiment that could change what I shipped had its decision rule written down before it ran. Conversion, generation and evaluation each write a receipt with the source revision, package versions and SHA-256 checksums.\n\n## Results\n\n| Build | Weights | HumanEval+ | Budget hits | Median tokens | M4 decode tok/s, 1K / 16K |\n| --- | ---: | ---: | ---: | ---: | ---: |\n| BF16 original | 24.3 GB | 153 (93.3%) | 3 | 1,571 | n/a |\n| NVFP4 (released) | 6.84 GB | 145 (88.4%) | 6 | 1,674 | 63.9 / 55.8 |\n| 6-bit (released) | 9.87 GB | 146 (89.0%) | 3 | 1,521 | 47.2 / 42.8 |\n| MXFP4 (randmaru) | 6.46 GB | 144 (87.8%) | 6 | 1,544 | 66.7 / 57.4 |\n| Affine 4-bit (not released) | 6.84 GB | 133 (81.1%) | 18 | 3,242 | n/a |\n\nLong context runs on the 16 GB M4: NVFP4's MLX allocator peaks at 8.33 GB at 64K and 9.40 GB at 128K, decoding at 39.6 and 29.0 tok/s, though a 128K prompt takes about 9 minutes to read in and swap grew from 2.8 to 5.0 GB across the two runs. These figures exclude the operating system, other applications and swap. The long-context runs used synthetic repeated-code prompts and measured throughput and memory, not long-context coding accuracy.\n\nThe finding I did not expect: affine 4-bit wrote completions 2.2 times as long as BF16 on the same tasks (Wilcoxon p = 5×10⁻²⁵) and ran out of budget mid-reasoning on 18 of them. MXFP4 is smaller and kept BF16's length. A pass@1 table hides this, so the write-up [Quantization format and reasoning length in Mellum2.1](/blogs/quantization-format-and-reasoning-length-in-mellum2-1) covers it in detail.\n\nTwo other results shaped the release. On the held-out Python corpus, NVFP4 had 29 to 34% lower KL divergence from BF16 than MXFP4 in the reasoning, answer and tool-call regions, and 19.2% lower KL overall. It decoded at 95 to 96% of MXFP4's speed on the M4. HumanEval+ scores were 145 versus 144 out of 164, with no statistically significant difference. Raising attention to 8-bit on top of MXFP4 cost 14 to 17% of decode speed with no measurable accuracy gain, because in a model this sparse, attention is about a quarter of the weights read for every token. Four attempts to beat MXFP4 (mixed 4/6-bit, group-32 experts, DWQ calibration, 8-bit attention) tied or lost under their pre-written rules, and all four are documented.\n\nA copy of the 6-bit build is also on mlx-community. While testing tool use I found that MLX-LM 0.32.0 silently drops tool calls it cannot parse, keeping `finish_reason: \"tool_calls\"` with an empty list. The repository carries a tested patch; another contributor's fix is open upstream as [mlx-lm#1957](https://github.com/ml-explore/mlx-lm/pull/1957).\n\n## Limits\n\nOne model, one benchmark, one greedy sample per task. HumanEval+ may overlap the training data, so these are regression results, not a general coding score. The KL comparison uses a small Python corpus of 32 trajectories. The M4 numbers come from a single machine. The quantization methods are upstream; my contribution is the conversion, measurement, integration and analysis.\n\n## Links\n\n- Repository with scripts, raw outputs, receipts and every failed experiment: [imaddde867/mellum-mlx](https://github.com/imaddde867/mellum-mlx)\n- Models: [NVFP4](https://huggingface.co/imaadd05/Mellum2.1-12B-A2.5B-Thinking-mlx-nvfp4), [6-bit](https://huggingface.co/imaadd05/Mellum2.1-12B-A2.5B-Thinking-mlx-6bit-g64), [mlx-community 6-bit](https://huggingface.co/mlx-community/Mellum2.1-12B-A2.5B-Thinking-6bit)\n","tech_tags":["quantization","mlx","llm-evaluation","apple-silicon","mixture-of-experts","local-llm"],"created_at":"2026-10-11T16:41:56.644292+00:00","updated_at":"2026-10-11T17:32:59.954545+00:00","image_url":"/images/mellum-solved-by-budget.png","repo_url":"https://github.com/imaddde867/mellum-mlx","demo_url":null,"featured":true};</script>
+</body>
+</html>
