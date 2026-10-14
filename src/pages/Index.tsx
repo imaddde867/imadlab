@@ -142,7 +142,7 @@ const Index = () => {
             </p>
           </div>
           <img
-            src="/images/imad.jpg"
+            src="/images/imad-2026.jpg"
             alt="Portrait of Imad Eddine El Mouss"
             width={128}
             height={128}
