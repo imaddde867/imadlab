@@ -60,10 +60,13 @@ const toAbsoluteUrl = (value?: string) => {
   return `${SITE_URL}${value.startsWith('/') ? value : `/${value}`}`;
 };
 
+// GitHub Pages 301s every page to its trailing-slash URL, so that is the canonical form.
+const withSlash = (value: string) => (value.endsWith('/') ? value : `${value}/`);
+
 const toAbsolutePageUrl = (value?: string) => {
   if (!value) return undefined;
-  if (value.startsWith('http://') || value.startsWith('https://')) return value;
-  return `${SITE_URL}${value.startsWith('/') ? value : `/${value}`}`;
+  if (value.startsWith('http://') || value.startsWith('https://')) return withSlash(value);
+  return withSlash(`${SITE_URL}${value.startsWith('/') ? value : `/${value}`}`);
 };
 
 const normaliseDate = (value?: string) => {
@@ -107,7 +110,7 @@ const Seo = ({
   const location = useLocation();
   const defaultTitle = `${SITE_NAME} | Research Engineer, On-Premises Industrial AI`;
   const fullTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
-  const currentUrl = `${SITE_URL}${location.pathname}`;
+  const currentUrl = withSlash(`${SITE_URL}${location.pathname}`);
   const canonicalUrl = toAbsolutePageUrl(url || canonical) || currentUrl;
   const ogImage = toAbsoluteUrl(image);
   const ogImageType = inferImageMimeType(ogImage);

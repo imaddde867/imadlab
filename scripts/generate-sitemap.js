@@ -60,10 +60,10 @@ async function generateSitemap() {
   // Static pages with their priorities and change frequencies
   const staticPages = [
     { url: '/', priority: '1.0', changefreq: 'daily', lastmod: today },
-    { url: '/projects', priority: '0.8', changefreq: 'weekly', lastmod: today },
-    { url: '/blogs', priority: '0.8', changefreq: 'weekly', lastmod: today },
-    { url: '/tags', priority: '0.7', changefreq: 'weekly', lastmod: today },
-    { url: '/extras', priority: '0.7', changefreq: 'monthly', lastmod: today }
+    { url: '/projects/', priority: '0.8', changefreq: 'weekly', lastmod: today },
+    { url: '/blogs/', priority: '0.8', changefreq: 'weekly', lastmod: today },
+    { url: '/tags/', priority: '0.7', changefreq: 'weekly', lastmod: today },
+    { url: '/extras/', priority: '0.7', changefreq: 'monthly', lastmod: today }
   ];
 
   const SAFE_SEGMENT = /^[a-zA-Z0-9_-]+$/;
@@ -78,7 +78,7 @@ async function generateSitemap() {
     if (Array.isArray(pr.tech_tags)) for (const t of pr.tech_tags) if (t && typeof t === 'string') tagSet.add(slugify(t));
   }
   const tagUrls = Array.from(tagSet).map((slug) => ({
-    url: `/tags/${encodeURIComponent(slug)}`,
+    url: `/tags/${encodeURIComponent(slug)}/`,
     priority: '0.6',
     changefreq: 'weekly',
     lastmod: today,
@@ -101,7 +101,7 @@ ${posts
   .filter((post) => isSafeSegment(post.slug))
   .map(
     (post) => `  <url>
-    <loc>${escapeXml(`${SITE_URL}/blogs/${encodeURIComponent(post.slug)}`)}</loc>
+    <loc>${escapeXml(`${SITE_URL}/blogs/${encodeURIComponent(post.slug)}/`)}</loc>
     <lastmod>${new Date(post.updated_at || post.published_date).toISOString().split('T')[0]}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -113,7 +113,7 @@ ${projects
   .filter((project) => isSafeSegment(project.id))
   .map(
     (project) => `  <url>
-    <loc>${escapeXml(`${SITE_URL}/projects/${encodeURIComponent(project.id)}`)}</loc>
+    <loc>${escapeXml(`${SITE_URL}/projects/${encodeURIComponent(project.id)}/`)}</loc>
     <lastmod>${new Date(project.updated_at || project.created_at).toISOString().split('T')[0]}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

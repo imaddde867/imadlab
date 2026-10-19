@@ -78,7 +78,7 @@ const ProjectDetail = () => {
   ];
   const seoTitle = getSeoTitle(project.title);
   const coverImage = resolveImageUrl(project.image_url);
-  const projectUrl = `https://imadlab.com/projects/${project.id}`;
+  const projectUrl = `https://imadlab.com/projects/${project.id}/`;
   const projectStructuredData = {
     '@context': 'https://schema.org',
     '@type': project.repo_url ? 'SoftwareApplication' : 'TechArticle',

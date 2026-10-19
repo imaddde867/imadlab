@@ -585,7 +585,7 @@ async function main() {
     seo: {
       title: 'Running Journey',
       description: 'My running log: distances and recent activities, pulled from Strava',
-      canonicalUrl: `${SITE_URL}/extras`,
+      canonicalUrl: `${SITE_URL}/extras/`,
       image: DEFAULT_IMAGE,
       type: 'website',
     },
@@ -623,7 +623,7 @@ async function main() {
     seo: {
       title: 'Tags',
       description: 'Every tag used across my posts and projects.',
-      canonicalUrl: `${SITE_URL}/tags`,
+      canonicalUrl: `${SITE_URL}/tags/`,
       image: DEFAULT_IMAGE,
       type: 'website',
     },
@@ -644,7 +644,7 @@ async function main() {
       seo: {
         title: `Tag: ${label}`,
         description: `Content tagged with ${label}.`,
-        canonicalUrl: `${SITE_URL}/tags/${encodeURIComponent(slug)}`,
+        canonicalUrl: `${SITE_URL}/tags/${encodeURIComponent(slug)}/`,
         image: DEFAULT_IMAGE,
         type: 'website',
       },
@@ -661,14 +661,14 @@ async function main() {
       title: 'Projects',
       description:
         'Selected applied research projects in multimodal industrial AI, procedural knowledge extraction, and deployable data/ML systems.',
-      canonicalUrl: `${SITE_URL}/projects`,
+      canonicalUrl: `${SITE_URL}/projects/`,
       image: DEFAULT_IMAGE,
       type: 'website',
       structuredData: {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
         name: 'Projects',
-        url: `${SITE_URL}/projects`,
+        url: `${SITE_URL}/projects/`,
       },
     },
   });
@@ -683,14 +683,14 @@ async function main() {
       title: 'Blog',
       description:
         'Technical notes on industrial AI systems, local LLM extraction pipelines, architecture tradeoffs, and evaluation.',
-      canonicalUrl: `${SITE_URL}/blogs`,
+      canonicalUrl: `${SITE_URL}/blogs/`,
       image: DEFAULT_IMAGE,
       type: 'website',
       structuredData: {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
         name: 'Blog',
-        url: `${SITE_URL}/blogs`,
+        url: `${SITE_URL}/blogs/`,
       },
     },
   });
@@ -703,7 +703,7 @@ async function main() {
     const description = descriptionSource
       ? plainDescription.slice(0, 180) + (plainDescription.length > 180 ? '...' : '')
       : 'Explore a highlighted data or AI project delivered by Imad Eddine El Mouss.';
-    const canonicalUrl = `${SITE_URL}/projects/${project.id}`;
+    const canonicalUrl = `${SITE_URL}/projects/${project.id}/`;
     const image = toAbsoluteUrl(project.image_url);
     await injectIntoPage({
       route: path.join('projects', project.id),
@@ -743,7 +743,7 @@ async function main() {
     if (!post?.slug || !isSafeSegment(post.slug)) continue;
     const descriptionSource = post.excerpt || stripMarkdown(post.body || '');
     const description = descriptionSource.length > 155 ? `${descriptionSource.slice(0, 152)}...` : descriptionSource;
-    const canonicalUrl = `${SITE_URL}/blogs/${post.slug}`;
+    const canonicalUrl = `${SITE_URL}/blogs/${post.slug}/`;
     const image = toAbsoluteUrl(post.image_url);
     await injectIntoPage({
       route: path.join('blogs', post.slug),
