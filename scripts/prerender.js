@@ -369,7 +369,7 @@ const renderHomeMarkup = (posts) => `
     <h1 class="text-3xl font-bold mb-4">Imad Eddine El Mouss</h1>
     <p class="prerender-summary leading-relaxed">
       Research Engineer, Cognitive Technologies Research Group (CoRe), Turku University of Applied Sciences.
-      I am the lead developer of AIOP, an on-premises event-driven AI platform for industrial pilot modules.
+      I created AIOP and lead its development: an on-premises event-driven AI platform for industrial pilot modules.
       My thesis, Structured Procedural Knowledge Extraction from Industrial Documentation Using LLMs, introduced IPKE,
       a privacy-preserving pipeline for extracting procedural knowledge graphs from safety-critical manuals.
     </p>
