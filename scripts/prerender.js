@@ -363,6 +363,30 @@ const renderPostDetailMarkup = (post) => {
 </main>`;
 };
 
+const renderHomeMarkup = (posts) => `
+<main data-prerender="true" class="prerender-shell">
+  <article class="prerender-article">
+    <h1 class="text-3xl font-bold mb-4">Imad Eddine El Mouss</h1>
+    <p class="prerender-summary leading-relaxed">
+      Research Engineer, Cognitive Technologies Research Group (CoRe), Turku University of Applied Sciences.
+      I am the lead developer of AIOP, an on-premises event-driven AI platform for industrial pilot modules.
+      My thesis, Structured Procedural Knowledge Extraction from Industrial Documentation Using LLMs, introduced IPKE,
+      a privacy-preserving pipeline for extracting procedural knowledge graphs from safety-critical manuals.
+    </p>
+    <nav aria-label="Site">
+      <a class="prerender-link" href="/projects">Projects</a>
+      <a class="prerender-link" href="/blogs">Blog</a>
+      <a class="prerender-link" href="https://github.com/imaddde867">GitHub</a>
+    </nav>
+    <ul class="prerender-grid">
+      ${posts
+        .slice(0, 4)
+        .map((post) => `<li><a href="/blogs/${encodeURIComponent(post.slug)}">${escapeHtml(post.title)}</a></li>`)
+        .join('\n      ')}
+    </ul>
+  </article>
+</main>`;
+
 const renderExtrasMarkup = () => `
 <main data-prerender="true" class="prerender-shell">
   <article class="prerender-article">
@@ -540,6 +564,19 @@ async function main() {
   await fs.writeFile(path.join(DIST_DIR, 'index.html'), baseHtml, 'utf8');
 
   const [projects, posts] = await Promise.all([fetchProjects(), fetchPosts()]);
+
+  await injectIntoPage({
+    route: '.',
+    markup: renderHomeMarkup(posts),
+    baseHtml,
+    seo: {
+      title: 'Imad Eddine El Mouss',
+      description: 'Research Engineer at CoRe (Turku UAS) and architect of AIOP, an on-premises event-driven AI platform for Privacy-by-Design industrial AI.',
+      canonicalUrl: `${SITE_URL}/`,
+      image: DEFAULT_IMAGE,
+      type: 'website',
+    },
+  });
 
   await injectIntoPage({
     route: 'extras',
