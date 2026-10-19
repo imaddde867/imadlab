@@ -167,3 +167,26 @@ Deno.test(
     },
   ),
 );
+
+Deno.test(
+  "authorizes the site administrator allowed by database RLS without an app_metadata role",
+  withMockAuthServer(
+    {
+      'site-admin-token': {
+        status: 200,
+        body: { user: {
+          id: 'cd614e51-7734-4685-b021-d27a24b1655e',
+          app_metadata: {},
+          user_metadata: { role: 'admin' },
+        } },
+      },
+    },
+    async () => {
+      const req = new Request('https://example.com', {
+        method: 'POST',
+        headers: { authorization: 'Bearer site-admin-token' },
+      });
+      assertEquals((await requireAdminOrJobSecret(req)).authorized, true);
+    },
+  ),
+);

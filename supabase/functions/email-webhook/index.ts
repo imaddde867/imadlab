@@ -33,43 +33,34 @@ async function verifyWebhookSignature(
   payload: string,
   signature: string,
   timestamp: string,
-  secret: string
+  secret: string,
+  webhookId: string
 ): Promise<boolean> {
   try {
-    // Resend uses Svix for webhook signatures
-    // The signature format is: t=timestamp,v1=signature
-    const elements = signature.split(',')
-    const timestampElement = elements.find(el => el.startsWith('t='))
-    const signatureElement = elements.find(el => el.startsWith('v1='))
-    
-    if (!timestampElement || !signatureElement) {
-      return false
-    }
-    
-    const webhookTimestamp = timestampElement.split('=')[1]
-    const webhookSignature = signatureElement.split('=')[1]
-    
-    // Check timestamp tolerance (5 minutes)
+    if (!/^\d+$/.test(timestamp)) return false
     const now = Math.floor(Date.now() / 1000)
-    const webhookTime = parseInt(webhookTimestamp)
-    if (Math.abs(now - webhookTime) > 300) {
+    const webhookTime = Number(timestamp)
+    if (!Number.isSafeInteger(webhookTime) || Math.abs(now - webhookTime) > 300) {
       return false
     }
-    
-    // Create expected signature
-    const signedPayload = `${webhookTimestamp}.${payload}`
+
+    const secretBytes = Uint8Array.from(atob(secret.replace(/^whsec_/, '')), char => char.charCodeAt(0))
     const key = await crypto.subtle.importKey(
       'raw',
-      new TextEncoder().encode(secret),
+      secretBytes,
       { name: 'HMAC', hash: 'SHA-256' },
       false,
-      ['sign']
+      ['verify']
     )
-    
-    const signature_bytes = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signedPayload))
-    const expectedSignature = btoa(String.fromCharCode(...new Uint8Array(signature_bytes)))
-    
-    return expectedSignature === webhookSignature
+    const signedPayload = new TextEncoder().encode(`${webhookId}.${timestamp}.${payload}`)
+    // Svix can include multiple signatures during signing-key rotation.
+    for (const candidate of signature.split(/\s+/)) {
+      const [version, encoded] = candidate.split(',')
+      if (version !== 'v1' || !encoded) continue
+      const bytes = Uint8Array.from(atob(encoded), char => char.charCodeAt(0))
+      if (await crypto.subtle.verify('HMAC', key, bytes, signedPayload)) return true
+    }
+    return false
   } catch (error) {
     console.error('Signature verification error:', error)
     return false
@@ -102,9 +93,9 @@ serve(async (req) => {
     // Get webhook headers
     const signature = req.headers.get('svix-signature')
     const timestamp = req.headers.get('svix-timestamp')
-    const _webhookId = req.headers.get('svix-id')
+    const webhookId = req.headers.get('svix-id')
 
-    if (!signature || !timestamp) {
+    if (!signature || !timestamp || !webhookId) {
       return new Response('Missing required webhook headers', { 
         status: 400,
         headers: corsHeaders 
@@ -115,7 +106,7 @@ serve(async (req) => {
     const payload = await req.text()
     
     // Verify webhook signature
-    const isValid = await verifyWebhookSignature(payload, signature, timestamp, webhookSecret)
+    const isValid = await verifyWebhookSignature(payload, signature, timestamp, webhookSecret, webhookId)
     if (!isValid) {
       console.error('Invalid webhook signature')
       return new Response('Invalid signature', { 

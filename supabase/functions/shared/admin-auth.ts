@@ -28,7 +28,8 @@ export async function requireAdminOrJobSecret(req: Request): Promise<AuthResult>
   }
 
   const appMeta = data.user.app_metadata as Record<string, unknown>
-  const isAdmin = appMeta?.role === 'admin'
+  // The site owner is already authorized by UID in the database RLS policies.
+  const isAdmin = data.user.id === 'cd614e51-7734-4685-b021-d27a24b1655e' || appMeta?.role === 'admin'
   if (!isAdmin) {
     return { authorized: false, status: 403, message: 'Admin access required' }
   }

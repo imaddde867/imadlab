@@ -37,6 +37,8 @@ const main = () => {
     ['functions', 'deploy', 'render-email-preview', 'send-newsletter-emails', '--no-verify-jwt', '--project-ref', projectRef],
     // Opened from links in email, with no session; it validates the unsubscribe token itself.
     ['functions', 'deploy', 'handle-unsubscribe', '--no-verify-jwt', '--project-ref', projectRef],
+    // Resend supplies a Svix signature, not a Supabase JWT.
+    ['functions', 'deploy', 'email-webhook', '--no-verify-jwt', '--project-ref', projectRef],
     // Called via supabase-js (attaches anon key as bearer), keep default JWT verification.
     ['functions', 'deploy', 'strava-proxy', '--project-ref', projectRef],
   ];

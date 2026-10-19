@@ -76,6 +76,10 @@ serve(async (req) => {
     if (!resendApiKey) {
       throw new Error('RESEND_API_KEY environment variable is required')
     }
+    const newsletterFrom = Deno.env.get('NEWSLETTER_FROM')?.trim()
+    if (!newsletterFrom) {
+      throw new Error('NEWSLETTER_FROM must be configured with a verified Resend sender')
+    }
 
     const siteUrl = Deno.env.get('SITE_URL') || 'https://imadlab.com'
     const functionsBaseUrl = `${Deno.env.get('SUPABASE_URL') ?? ''}/functions/v1`
@@ -86,12 +90,12 @@ serve(async (req) => {
     if (req.headers.get('content-type')?.includes('application/json')) {
       const payload = await req.json().catch(() => null)
       if (payload && Array.isArray(payload.queueIds)) {
-        queueIds = payload.queueIds.filter((value): value is string => typeof value === 'string' && value.length > 0)
+        queueIds = payload.queueIds.filter((value: unknown): value is string => typeof value === 'string' && value.length > 0)
       }
       if (payload && Array.isArray(payload.recipientEmails)) {
         recipientEmails = payload.recipientEmails
-          .filter((value): value is string => typeof value === 'string' && value.length > 0)
-          .map((value) => value.toLowerCase())
+          .filter((value: unknown): value is string => typeof value === 'string' && value.length > 0)
+          .map((value: string) => value.toLowerCase())
       }
     }
 
@@ -227,7 +231,7 @@ serve(async (req) => {
         }
 
         // Send emails to all subscribers
-        const emailPromises = recipients.map(async (subscriber: NewsletterSubscriber) => {
+        const sendEmail = async (subscriber: NewsletterSubscriber) => {
           try {
             let emailHtml = ''
             let subject = ''
@@ -275,7 +279,7 @@ serve(async (req) => {
             unsubscribeUrl.searchParams.set('token', subscriber.unsubscribe_token)
 
             const emailPayload = {
-              from: Deno.env.get('NEWSLETTER_FROM') || 'imadlab <onboarding@resend.dev>',
+              from: newsletterFrom,
               to: [subscriber.email],
               subject: subject,
               html: emailHtml,
@@ -318,15 +322,18 @@ serve(async (req) => {
             console.error(`Failed to send email to ${subscriber.email}:`, error)
             return { success: false, email: subscriber.email, error: message }
           }
-        })
+        }
 
-        const emailResults = await Promise.allSettled(emailPromises)
-        const successCount = emailResults.filter(result => 
-          result.status === 'fulfilled' && result.value.success
-        ).length
+        const emailResults = []
+        for (const subscriber of recipients) {
+          emailResults.push(await sendEmail(subscriber))
+          // Keep this invocation below Resend's default 10 requests per second.
+          await new Promise(resolve => setTimeout(resolve, 110))
+        }
+        const successCount = emailResults.filter(result => result.success).length
         const deliveredTotal = delivered.size + successCount
         const firstError = emailResults
-          .map((result) => (result.status === 'fulfilled' ? result.value.error : String(result.reason)))
+          .map((result) => result.error)
           .find(Boolean)
 
         // Only call it sent when every recipient got it; otherwise keep it retryable.
