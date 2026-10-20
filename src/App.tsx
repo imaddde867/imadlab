@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import React, { Suspense } from 'react';
 import HomeBackground from '@/components/HomeBackground';
+import AdminRoute from '@/components/AdminRoute';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -132,11 +133,13 @@ const App = () => {
                   <Route path="/tags/:tag" element={<Tag />} />
                   <Route path="/admin/login" element={<AdminLogin />} />
                   <Route path="/search" element={<Search />} />
-                  <Route path="/admin" element={<AdminDashboard />} />
-                  <Route path="/admin/posts" element={<ManagePosts />} />
-                  <Route path="/admin/projects" element={<ManageProjects />} />
-                  <Route path="/admin/emails" element={<EmailDashboard />} />
-                  <Route path="/admin/analytics" element={<AnalyticsDashboard />} />
+                  <Route element={<AdminRoute />}>
+                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/admin/posts" element={<ManagePosts />} />
+                    <Route path="/admin/projects" element={<ManageProjects />} />
+                    <Route path="/admin/emails" element={<EmailDashboard />} />
+                    <Route path="/admin/analytics" element={<AnalyticsDashboard />} />
+                  </Route>
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

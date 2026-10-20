@@ -9,7 +9,7 @@ const generateSessionId = (): string => {
   const stored = sessionStorage.getItem('analytics_session_id');
   if (stored) return stored;
 
-  const newId = `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+  const newId = crypto.randomUUID();
   sessionStorage.setItem('analytics_session_id', newId);
   return newId;
 };
@@ -17,9 +17,7 @@ const generateSessionId = (): string => {
 export const useAnalytics = () => {
   const location = useLocation();
   const sessionIdRef = useRef<string | null>(null);
-  const sessionInitialized = useRef<boolean>(false);
   const sessionReadyRef = useRef<{ resolve: () => void; promise: Promise<void> } | null>(null);
-  const pageViewIdRef = useRef<string | null>(null);
   const metadataRef = useRef<Awaited<ReturnType<typeof getAnalyticsMetadata>> | null>(null);
   const isProductionHost =
     typeof window !== 'undefined' &&
@@ -38,7 +36,7 @@ export const useAnalytics = () => {
     const sessionId = sessionIdRef.current ?? generateSessionId();
     sessionIdRef.current = sessionId;
 
-    // Create or update session
+    // Register the session without changing an existing record.
     const initSession = async () => {
       // Create the session-ready promise before any async work
       let resolveReady!: () => void;
@@ -48,6 +46,10 @@ export const useAnalytics = () => {
       sessionReadyRef.current = { promise: readyPromise, resolve: resolveReady };
 
       const metadata = await getMetadata();
+      if (!isAllowed('analytics')) {
+        sessionReadyRef.current?.resolve();
+        return;
+      }
 
       logger.debug('📊 Analytics metadata collected:', metadata);
 
@@ -66,27 +68,8 @@ export const useAnalytics = () => {
         logger.error('❌ Analytics session error:', error);
         sessionReadyRef.current?.resolve();
       } else {
-        logger.debug('✅ Analytics session created/updated:', sessionId);
-        sessionInitialized.current = true;
+        logger.debug('✅ Analytics session registered:', sessionId);
         sessionReadyRef.current?.resolve();
-
-        // Call geolocation edge function to enrich session with location data
-        try {
-          const { data: functionData, error: functionError } = await supabase.functions.invoke(
-            'geolocation',
-            {
-              body: { session_id: sessionId },
-            }
-          );
-
-          if (functionError) {
-            logger.warn('⚠️ Geolocation function error:', functionError);
-          } else if (functionData?.location) {
-            logger.debug('✅ Geolocation data retrieved:', functionData.location);
-          }
-        } catch (geoError) {
-          logger.warn('⚠️ Failed to fetch geolocation:', geoError);
-        }
       }
     };
 
@@ -98,8 +81,6 @@ export const useAnalytics = () => {
 
     const sessionId = sessionIdRef.current ?? generateSessionId();
     sessionIdRef.current = sessionId;
-    const startTime = Date.now();
-    pageViewIdRef.current = null;
 
     // Track page view - ensure session exists first
     const trackPageView = async () => {
@@ -126,7 +107,8 @@ export const useAnalytics = () => {
         ...utmParams,
       });
 
-      const { data: insertedId, error } = await supabase.rpc('track_page_view', {
+      if (!isAllowed('analytics')) return;
+      const { error } = await supabase.rpc('track_page_view', {
         p_session_id: sessionId,
         p_path: location.pathname,
         p_referrer: referrer,
@@ -144,26 +126,10 @@ export const useAnalytics = () => {
       if (error) {
         logger.error('❌ Analytics page view error:', error);
       } else {
-        pageViewIdRef.current = insertedId ?? null;
         logger.debug('✅ Page view tracked:', location.pathname, { trafficSource, ...utmParams });
       }
     };
 
     trackPageView();
-
-    return () => {
-      const duration = Math.floor((Date.now() - startTime) / 1000);
-      if (duration > 0 && isAllowed('analytics') && pageViewIdRef.current) {
-        supabase
-          .rpc('set_page_view_duration', { p_id: pageViewIdRef.current, p_duration: duration })
-          .then(({ error }) => {
-            if (error) {
-              logger.error('❌ Duration update error:', error);
-            } else {
-              logger.debug('✅ Duration updated:', duration, 's');
-            }
-          });
-      }
-    };
   }, [getMetadata, isProductionHost, location.pathname]);
 };
