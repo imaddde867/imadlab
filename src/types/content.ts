@@ -19,6 +19,7 @@ export type PostAdmin = PostDetail & {
 };
 
 export type ProjectSummary = {
+  featured?: boolean;
   id: string;
   title: string;
   description: string | null;

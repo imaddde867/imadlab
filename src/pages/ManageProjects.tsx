@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,6 +25,7 @@ import { PROJECT_ADMIN_SELECT, PROJECT_DETAIL_SELECT } from '@/lib/content-selec
 import type { ProjectDetail as ProjectAdmin } from '@/types/content';
 
 type ProjectFormState = {
+  featured: boolean;
   title: string;
   description: string;
   full_description: string;
@@ -34,6 +36,7 @@ type ProjectFormState = {
 };
 
 const createEmptyProjectForm = (): ProjectFormState => ({
+  featured: false,
   title: '',
   description: '',
   full_description: '',
@@ -78,7 +81,7 @@ const ManageProjects = () => {
     isLoading,
     isFetching,
   } = useQuery({
-    queryKey: ['projects'],
+    queryKey: ['projects', 'admin'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
@@ -162,7 +165,7 @@ const ManageProjects = () => {
   const isProjectsLoading = isLoading || isFetching;
 
   const addProjectMutation = useMutation({
-    mutationFn: async (newProject: Omit<ProjectAdmin, 'id' | 'created_at'>) => {
+    mutationFn: async (newProject: Omit<ProjectAdmin, 'id' | 'created_at' | 'updated_at'>) => {
       const { data, error } = await supabase
         .from('projects')
         .insert([
@@ -192,6 +195,7 @@ const ManageProjects = () => {
       const { data, error } = await supabase
         .from('projects')
         .update({
+          featured: updatedProject.featured ?? false,
           title: updatedProject.title,
           description: updatedProject.description,
           full_description: updatedProject.full_description,
@@ -226,7 +230,7 @@ const ManageProjects = () => {
 
   const deleteProjectMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('projects').delete().eq('id', id);
+      const { error } = await supabase.from('projects').delete().eq('id', id).select('id').single();
 
       if (error) throw error;
     },
@@ -258,6 +262,7 @@ const ManageProjects = () => {
       const record = data ?? project;
       if (requestId !== editRequestId.current) return;
       setFormData({
+        featured: record.featured ?? false,
         title: record.title,
         description: record.description || '',
         full_description: record.full_description || '',
@@ -270,6 +275,7 @@ const ManageProjects = () => {
       console.warn('Failed to load full project content', error);
       if (requestId !== editRequestId.current) return;
       setFormData({
+        featured: project.featured ?? false,
         title: project.title,
         description: project.description || '',
         full_description: project.full_description || '',
@@ -309,6 +315,7 @@ const ManageProjects = () => {
       .filter((tag) => tag.length > 0);
 
     const projectData = {
+      featured: formData.featured,
       title: formData.title,
       description: formData.description || null,
       full_description: formData.full_description || null,
@@ -374,6 +381,15 @@ const ManageProjects = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <Switch
+                    id="project-featured"
+                    checked={formData.featured}
+                    disabled={isFormBusy}
+                    onCheckedChange={(featured) => setFormData({ ...formData, featured })}
+                  />
+                  <label htmlFor="project-featured">Featured on homepage</label>
+                </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-white/80">Project Title</label>
                   <Input

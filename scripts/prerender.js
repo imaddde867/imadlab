@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { SITE_URL } from './utils/site.js';
 import { createSupabaseClient, SUPABASE_URL } from './utils/supabase.js';
+import { selectHomeProjects } from '../src/lib/home-projects.js';
 import { stripMarkdown } from './utils/markdown.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -363,7 +364,7 @@ const renderPostDetailMarkup = (post) => {
 </main>`;
 };
 
-const renderHomeMarkup = (posts) => `
+const renderHomeMarkup = (posts, projects) => `
 <main data-prerender="true" class="prerender-shell">
   <article class="prerender-article">
     <h1 class="text-3xl font-bold mb-4">Imad Eddine El Mouss</h1>
@@ -378,6 +379,9 @@ const renderHomeMarkup = (posts) => `
       <a class="prerender-link" href="/blogs">Blog</a>
       <a class="prerender-link" href="https://github.com/imaddde867">GitHub</a>
     </nav>
+    ${projects.length ? `<section><h2>Research and projects</h2><ul class="prerender-grid">
+      ${selectHomeProjects(projects).map((project) => `<li><a href="/projects/${encodeURIComponent(project.id)}">${escapeHtml(project.title)}</a></li>`).join('\n')}
+    </ul><a href="/projects">All projects</a></section>` : ''}
     <ul class="prerender-grid">
       ${posts
         .slice(0, 4)
@@ -519,9 +523,10 @@ async function fetchProjects() {
     .select(
       'id,title,description,full_description,tech_tags,created_at,updated_at,image_url,repo_url,demo_url,featured'
     )
+    .eq('published', true)
     .order('featured', { ascending: false })
     .order('created_at', { ascending: false })
-    .limit(30);
+    .order('id', { ascending: true });
 
   if (error) {
     console.error('Failed to fetch projects for prerendering:', error);
@@ -567,7 +572,9 @@ async function main() {
 
   await injectIntoPage({
     route: '.',
-    markup: renderHomeMarkup(posts),
+    markup: renderHomeMarkup(posts, projects),
+    dataKey: 'projects',
+    data: projects,
     baseHtml,
     seo: {
       title: 'Imad Eddine El Mouss',

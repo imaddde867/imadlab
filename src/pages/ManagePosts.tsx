@@ -193,7 +193,7 @@ const ManagePosts = () => {
 
   const deletePostMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('posts').delete().eq('id', id);
+      const { error } = await supabase.from('posts').delete().eq('id', id).select('id').single();
 
       if (error) throw error;
     },

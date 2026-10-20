@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import SEO from '@/components/SEO';
@@ -8,6 +8,7 @@ import { formatMonth } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { readPrerenderData } from '@/lib/prerender-data';
 import { POST_SUMMARY_SELECT, PROJECT_LIST_SELECT } from '@/lib/content-selects';
+import { selectHomeProjects } from '@/lib/home-projects.js';
 import type { PostSummary, ProjectSummary } from '@/types/content';
 
 const personSchema = {
@@ -67,13 +68,12 @@ const experience = [
 
 const usePrerenderedQuery = <T,>(key: string, queryFn: () => Promise<T[]>) => {
   const initial = useMemo(() => readPrerenderData<T[]>(key), [key]);
-  const initialUpdatedAt = useRef<number | undefined>(initial?.length ? Date.now() : undefined);
   return (
     useQuery({
       queryKey: [key, 'home'],
       queryFn,
-      initialData: initial?.length ? initial : undefined,
-      initialDataUpdatedAt: initialUpdatedAt.current,
+      initialData: initial,
+      initialDataUpdatedAt: 0,
       staleTime: 1000 * 60,
     }).data ?? []
   );
@@ -84,8 +84,10 @@ const Index = () => {
     const { data, error } = await supabase
       .from('projects')
       .select(PROJECT_LIST_SELECT)
+      .eq('published', true)
       .order('featured', { ascending: false })
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .order('id', { ascending: true });
     if (error) throw error;
     return data as ProjectSummary[];
   });
@@ -98,10 +100,7 @@ const Index = () => {
     return data as PostSummary[];
   });
 
-  // The thesis leads the research list, the way an academic CV would order it.
-  const research = [...projects]
-    .sort((a, b) => Number(b.title.startsWith('IPKE')) - Number(a.title.startsWith('IPKE')))
-    .slice(0, 4);
+  const research = selectHomeProjects(projects);
 
   return (
     <Page>

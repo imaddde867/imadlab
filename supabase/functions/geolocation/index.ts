@@ -1,3 +1,4 @@
+import { requireAdminOrJobSecret } from '../shared/admin-auth.ts'
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
@@ -10,6 +11,13 @@ serve(async (req) => {
   // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
+  }
+
+  const authorization = await requireAdminOrJobSecret(req)
+  if (!authorization.authorized) {
+    return new Response(JSON.stringify({ error: authorization.message }), {
+      status: authorization.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
 
   try {
@@ -111,7 +119,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in geolocation function:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
