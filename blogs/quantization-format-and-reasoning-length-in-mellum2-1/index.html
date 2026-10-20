@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Meta tags dynamically injected by <Seo /> component via react-helmet-async -->
+    <!-- Static fallbacks only for crawlers that don't execute JS -->
+    <script>
+      (function () {
+        var host = window.location.hostname.toLowerCase();
+        if (host === 'imadlab.me' || host === 'www.imadlab.me') {
+          var target =
+            'https://imadlab.com' +
+            window.location.pathname +
+            window.location.search +
+            window.location.hash;
+          window.location.replace(target);
+        }
+      })();
+    </script>
+    <title>Quantization format and reasoning length in Mellum2.1 | Imadlab | Research Engineer, On-Premises Industrial AI</title>
+    <meta name="description" content="Affine 4-bit and MXFP4 builds of a 12B coding model differ by 0.3 GB. On HumanEval+ one wrote completions 2.2 times as long as BF16 and ran out of budge..." />
+    <!-- prerender-seo:start -->
+    <link rel="canonical" href="https://imadlab.com/blogs/quantization-format-and-reasoning-length-in-mellum2-1/" />
+    <meta property="og:title" content="Quantization format and reasoning length in Mellum2.1 | Imadlab | Research Engineer, On-Premises Industrial AI" />
+    <meta property="og:description" content="Affine 4-bit and MXFP4 builds of a 12B coding model differ by 0.3 GB. On HumanEval+ one wrote completions 2.2 times as long as BF16 and ran out of budge..." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://imadlab.com/blogs/quantization-format-and-reasoning-length-in-mellum2-1/" />
+    <meta property="og:image" content="https://imadlab.com/images/mellum-solved-by-budget.png" />
+    <meta property="og:image:type" content="image/png" />
+    
+    
+    <meta property="og:image:alt" content="Quantization format and reasoning length in Mellum2.1" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Imadlab" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@imadlab" />
+    <meta name="twitter:creator" content="@imadlab" />
+    <meta name="twitter:title" content="Quantization format and reasoning length in Mellum2.1 | Imadlab | Research Engineer, On-Premises Industrial AI" />
+    <meta name="twitter:description" content="Affine 4-bit and MXFP4 builds of a 12B coding model differ by 0.3 GB. On HumanEval+ one wrote completions 2.2 times as long as BF16 and ran out of budge..." />
+    <meta name="twitter:image" content="https://imadlab.com/images/mellum-solved-by-budget.png" />
+    <meta name="twitter:image:alt" content="Quantization format and reasoning length in Mellum2.1" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Quantization format and reasoning length in Mellum2.1","name":"Quantization format and reasoning length in Mellum2.1","description":"Affine 4-bit and MXFP4 builds of a 12B coding model differ by 0.3 GB. On HumanEval+ one wrote completions 2.2 times as long as BF16 and ran out of budge...","url":"https://imadlab.com/blogs/quantization-format-and-reasoning-length-in-mellum2-1/","image":"https://imadlab.com/images/mellum-solved-by-budget.png","datePublished":"2026-10-11T00:00:00+00:00","dateModified":"2026-10-11T17:32:59.954545+00:00","author":{"@type":"Person","name":"Imad Eddine El Mouss","url":"https://imadlab.com"},"publisher":{"@type":"Person","name":"Imad Eddine El Mouss","url":"https://imadlab.com"},"keywords":"quantization, mlx, llm-evaluation, local-llm","mainEntityOfPage":"https://imadlab.com/blogs/quantization-format-and-reasoning-length-in-mellum2-1/"}</script>
+    <!-- prerender-seo:end -->
+
+    <!-- Favicon and Theme Color -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#141311" />
+
+    <!-- Font Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Load fonts with font-display: swap for better performance -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Literata:ital,wght@0,400;0,600;1,400&family=Public+Sans:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Literata:ital,wght@0,400;0,600;1,400&family=Public+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    </noscript>
+    
+    <!-- DNS prefetch for Supabase and Cloudflare Analytics -->
+    <link rel="dns-prefetch" href="https://mpkgugcasxpanhrkpkhs.supabase.co">
+    <link rel="preconnect" href="https://mpkgugcasxpanhrkpkhs.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://static.cloudflareinsights.com">
+    <link rel="preconnect" href="https://static.cloudflareinsights.com" crossorigin>
+    
+    <!-- RSS/JSON Feeds -->
+    <link rel="alternate" type="application/rss+xml" title="Imadlab Blog RSS Feed" href="/feed.xml" />
+    <link rel="alternate" type="application/feed+json" title="Imadlab Blog JSON Feed" href="/feed.json" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <!-- site-verification:start -->
+    <!-- site-verification:end -->
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://imadlab.com",
+      "name": "Imadlab",
+      "description": "Applied research and engineering work by Imad Eddine El Mouss on multimodal industrial AI, procedural knowledge extraction, and deployable systems.",
+      "publisher": {
+        "@type": "Person",
+        "name": "Imad Eddine El Mouss",
+        "url": "https://imadlab.com/about",
+        "sameAs": [
+          "https://github.com/imaddde867",
+          "https://www.linkedin.com/in/imad-eddine-e-986741262"
+        ]
+      }
+    }
+    </script>
+    <script type="module" crossorigin src="/assets/js/index-rqn6xTAL.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cep-hw9-.css">
+  </head>
+
+  <body>
+    <div id="root">
+<main data-prerender="true" class="prerender-shell">
+  <article class="prerender-article">
+    <p class="prerender-meta text-sm text-white/60">October 11, 2026</p>
+    <h1 class="text-3xl font-bold mb-4">Quantization format and reasoning length in Mellum2.1</h1>
+    <p class="prerender-tags">Tags: quantization, mlx, llm-evaluation, local-llm</p>
+    <p class="prerender-summary leading-relaxed">Affine 4-bit and MXFP4 builds of a 12B coding model differ by 0.3 GB. On HumanEval+ one wrote completions 2.2 times as long as BF16 and ran out of budget mid-reasoning on 18 tasks.</p>
+    <a class="prerender-link mt-6 inline-flex" href="/blogs">Back to Blog</a>
+  </article>
+</main>
+</div>
+    
+  <script>window.__PRERENDERED_DATA__ = window.__PRERENDERED_DATA__ || {}; window.__PRERENDERED_DATA__["post:quantization-format-and-reasoning-length-in-mellum2-1"] = {"id":"b7f2ce26-0ea1-4b32-b096-d6aaf75c2254","title":"Quantization format and reasoning length in Mellum2.1","slug":"quantization-format-and-reasoning-length-in-mellum2-1","excerpt":"Affine 4-bit and MXFP4 builds of a 12B coding model differ by 0.3 GB. On HumanEval+ one wrote completions 2.2 times as long as BF16 and ran out of budget mid-reasoning on 18 tasks.","body":"Two 4-bit versions of JetBrains' Mellum2.1 behaved very differently on the same coding tasks. With affine 4-bit quantization, completions were about 2.2× as long as BF16's on the 144 tasks where both runs finished. Across all 164 tasks, it exhausted the token budget 18 times. MXFP4 stayed close to BF16 in completion length.\n\nI compared BF16, affine 6-bit, MXFP4 and affine 4-bit on all 164 HumanEval+ problems, using the same prompts, greedy decoding and an 8,192-token output budget. Completion tokens include both reasoning and the final answer.\n\n| | Weights | HumanEval+ | Hit the budget | Median completion tokens |\n|---|---:|---:|---:|---:|\n| BF16 original | 24.3 GB | 153 / 164 | 3 | 1,571 |\n| MLX 6-bit (affine, g64) | 9.9 GB | 146 / 164 | 3 | 1,521 |\n| MXFP4 (randmaru) | 6.5 GB | 144 / 164 | 6 | 1,544 |\n| MLX 4-bit (affine, g64) | 6.8 GB | 133 / 164 | 18 | 3,242 |\n\nBoth 4-bit builds fit on a 16 GB Mac. One loses 9 tasks to BF16 and the other loses 20, and on a pass@1 table that gap looks like ordinary quantization damage. The completion lengths show something else.\n\n![HumanEval+ tasks solved within a token budget](/images/mellum-solved-by-budget.svg)\n\n## The 4-bit model second-guesses itself\n\nOn the 144 tasks where both runs finished, the affine 4-bit model's completions were **2.2× longer than BF16's** (paired geometric mean; Wilcoxon p ≈ 5×10⁻²⁵). The 6-bit and MXFP4 runs stayed within a few percent of BF16 (1.04× and 0.98×, neither significant).\n\nMost of the extra tokens are hesitation. The word \"But\" shows up 22 times per reasoning trace on 4-bit, against 8 or 9 for every other build, and \"Actually\" 3.9 times against 1.4 to 2.2. All 18 budget truncations ran out mid-reasoning, before any code was written.\n\nCap the budget at 2,048 tokens and the scores look very different. BF16 solves 120 tasks, 6-bit 108, MXFP4 109, and affine 4-bit **21**.\n\n## Why length matters on a laptop\n\nEvery token costs time. At 50 to 65 tokens/s on an M4, an extra 1,700 tokens adds roughly half a minute to every answer. A quantization can keep its score under a generous budget and still be much worse to use. If you quantize a reasoning model, report completion length or pass@budget next to accuracy.\n\n## What helped and what didn't\n\nThe expert format mattered most. MXFP4 stores each block of 32 weights as 4-bit floats with one shared 8-bit exponent. It comes out *smaller* than affine 4-bit with group 64 (6.5 vs 6.8 GB) and keeps BF16's reasoning length. Most of this model's weights sit in its 64 experts.\n\nOn a 24-task development screen, raising both attention and embedding/output precision to 6-bit, while keeping the experts at affine 4-bit, passed 22 tasks versus MXFP4's 21. That build was about 10% larger and took 24% more generation time. This combined change does not isolate the effect of attention precision. At 8-bit on top of MXFP4 experts, it bought nothing: 145/164 against 144 (p = 1.0), and 14 to 17% slower decoding on the M4. In a 2.5B-active MoE, attention is about a quarter of the weights read for every token, so its extra bits cost speed on every token. I had written the ship rule down before that run, and it failed the speed gate.\n\nA bounded DWQ calibration run on scales and biases made held-out loss worse and moved task results by no more than noise.\n\n## What I shipped\n\nThe [6-bit](https://huggingface.co/imaadd05/Mellum2.1-12B-A2.5B-Thinking-mlx-6bit-g64) (146/164, 9.9 GB) solves the most tasks, but MXFP4 ties it and decodes 41% faster on the M4. So for 16 GB Macs I tried one more format. [NVFP4](https://huggingface.co/imaadd05/Mellum2.1-12B-A2.5B-Thinking-mlx-nvfp4) uses groups of 16 weights with FP8 scales. On the held-out Python corpus, NVFP4 had 29 to 34% lower KL divergence from BF16 than MXFP4 in the reasoning, answer and tool-call regions, and 19.2% lower KL overall. It decoded at 95 to 96% of MXFP4's speed on the M4. HumanEval+ scores were 145 versus 144 out of 164, with no statistically significant difference. It's my pick for 16 GB when fidelity matters. MXFP4 still gives the fastest finished answers.\n\n## Open questions and limits\n\nI expected NVFP4 to settle the length question. It's measurably closer to BF16 than MXFP4, so it should think more like BF16. Instead it writes completions 1.09× as long as BF16's (Wilcoxon p = 0.0005), while MXFP4, which is further from BF16, stays at 0.98×. In this comparison, lower KL did not translate into completion lengths closer to BF16's. I don't know which part of the rounding pushes a model toward the extra \"But\"s.\n\nThe evidence also has limits:\n\n- One model, one benchmark, one greedy sample per task. HumanEval+ may overlap the training data, so treat these as regression results, not a general coding score.\n- The KL comparison uses a small Python corpus of 32 trajectories.\n- Raw responses, per-task outcomes, the scripts and every failed experiment are in [the repository](https://github.com/imaddde867/mellum-mlx). `python scripts/length_audit.py results/coding/humaneval-plus` reproduces the statistics.\n\nTo try Mellum locally, start with the [NVFP4 build](https://huggingface.co/imaadd05/Mellum2.1-12B-A2.5B-Thinking-mlx-nvfp4) for 16 GB Macs, or the [6-bit build](https://huggingface.co/imaadd05/Mellum2.1-12B-A2.5B-Thinking-mlx-6bit-g64) for Macs with 24 GB or more. Both model cards include the commands. The [project page](/projects/de4514f4-023d-43f7-8270-9b0b8723091f) brings together the measurements, limitations and source code.\n","tags":["quantization","mlx","llm-evaluation","local-llm"],"published_date":"2026-10-11T00:00:00+00:00","updated_at":"2026-10-11T17:32:59.954545+00:00","read_time":4,"image_url":"/images/mellum-solved-by-budget.png"};</script>
+</body>
+</html>
