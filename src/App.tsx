@@ -12,7 +12,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import CookieConsent from '@/components/CookieConsent';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { registerRoutePrefetch } from '@/lib/routePrefetch';
-import { loadScriptIfConsented, onConsentChange } from '@/lib/consent';
+import { loadScriptIfConsented, onConsentChange, removeScriptBySrc } from '@/lib/consent';
 import { HelmetProvider } from 'react-helmet-async';
 
 const lazyWithPrefetch = <T extends React.ComponentType<unknown>>(
@@ -77,7 +77,7 @@ const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
 const App = () => {
   const [cookieConsentIsOpen, setCookieConsentIsOpen] = React.useState<boolean>(false);
 
-  // Load Cloudflare Analytics when consented; also fires if user accepts later
+  // Load Cloudflare Analytics when consented; remove when withdrawn
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
     const hostname = window.location.hostname;
@@ -98,9 +98,20 @@ const App = () => {
         });
     };
 
+    const tryUnload = () => {
+      if (loaded) {
+        removeScriptBySrc('cloudflareinsights.com/beacon.min.js');
+        loaded = false;
+      }
+    };
+
     tryLoad();
     return onConsentChange((state) => {
-      if (state.analytics) tryLoad();
+      if (state.analytics) {
+        tryLoad();
+      } else {
+        tryUnload();
+      }
     });
   }, []);
 

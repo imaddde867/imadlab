@@ -67,7 +67,7 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
               Privacy
             </DialogTitle>
             <DialogDescription className="mt-2 text-[17px] leading-relaxed text-[color:var(--nd-ink-2)]">
-              No ads, no trackers. Anonymous analytics is {analyticsOn ? 'on' : 'off'}.
+              No ads, no trackers. Anonymous analytics (device type, browser, pages visited) is {analyticsOn ? 'on' : 'off'}. No personal identifiers.
             </DialogDescription>
           </DialogHeader>
 

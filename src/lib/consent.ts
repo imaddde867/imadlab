@@ -143,7 +143,7 @@ export function acceptAll() {
 }
 
 export function rejectAll() {
-  // Only keep functional cookies, reject analytics and marketing
+  // Reject analytics and marketing; keep functional for essential functionality
   setConsent({ analytics: false, marketing: false, functional: true });
 }
 
@@ -162,6 +162,13 @@ export async function loadScriptIfConsented(
     s.onerror = (e) => reject(e);
     document.head.appendChild(s);
   });
+}
+
+export function removeScriptBySrc(src: string): void {
+  if (typeof document === 'undefined') return;
+  const scripts = document.querySelectorAll(`script[src*="${src}"]`);
+  scripts.forEach((script) => script.remove());
+  logger.debug(`Removed script matching: ${src}`);
 }
 
 export function hasDecision(): boolean {

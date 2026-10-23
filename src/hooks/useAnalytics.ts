@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { isAllowed } from '@/lib/consent';
+import { isAllowed, onConsentChange } from '@/lib/consent';
 import { logger } from '@/lib/logger';
 import { getAnalyticsMetadata, extractUTMParams, getTrafficSource } from '@/lib/analytics-utils';
 
@@ -19,6 +19,7 @@ export const useAnalytics = () => {
   const sessionIdRef = useRef<string | null>(null);
   const sessionReadyRef = useRef<{ resolve: () => void; promise: Promise<void> } | null>(null);
   const metadataRef = useRef<Awaited<ReturnType<typeof getAnalyticsMetadata>> | null>(null);
+  const consentGrantedRef = useRef(false);
   const isProductionHost =
     typeof window !== 'undefined' &&
     (window.location.hostname === 'imadlab.com' || window.location.hostname === 'www.imadlab.com');
@@ -30,14 +31,18 @@ export const useAnalytics = () => {
     return metadata;
   }, []);
 
+  // Consent-reactive session initialization
   useEffect(() => {
-    if (!isProductionHost || !isAllowed('analytics')) return;
+    if (!isProductionHost) return;
 
     const sessionId = sessionIdRef.current ?? generateSessionId();
     sessionIdRef.current = sessionId;
 
     // Register the session without changing an existing record.
     const initSession = async () => {
+      // Check consent before initializing
+      if (!isAllowed('analytics')) return;
+
       // Create the session-ready promise before any async work
       let resolveReady!: () => void;
       const readyPromise = new Promise<void>((resolve) => {
@@ -73,17 +78,38 @@ export const useAnalytics = () => {
       }
     };
 
-    initSession();
+    // Initialize on mount if consent is already granted
+    if (isAllowed('analytics')) {
+      consentGrantedRef.current = true;
+      initSession();
+    }
+
+    // React to consent changes
+    const unsubscribe = onConsentChange((state) => {
+      if (state.analytics && !consentGrantedRef.current) {
+        consentGrantedRef.current = true;
+        initSession();
+      } else if (!state.analytics && consentGrantedRef.current) {
+        consentGrantedRef.current = false;
+        // Note: We don't clear sessionReadyRef to allow re-initialization if consent is re-granted
+      }
+    });
+
+    return unsubscribe;
   }, [getMetadata, isProductionHost]);
 
+  // Consent-reactive page view tracking
   useEffect(() => {
-    if (!isProductionHost || !isAllowed('analytics')) return;
+    if (!isProductionHost) return;
 
     const sessionId = sessionIdRef.current ?? generateSessionId();
     sessionIdRef.current = sessionId;
 
     // Track page view - ensure session exists first
     const trackPageView = async () => {
+      // Check consent before tracking
+      if (!isAllowed('analytics')) return;
+
       // Wait for session to be initialized
       await sessionReadyRef.current?.promise;
 
@@ -107,7 +133,6 @@ export const useAnalytics = () => {
         ...utmParams,
       });
 
-      if (!isAllowed('analytics')) return;
       const { error } = await supabase.rpc('track_page_view', {
         p_session_id: sessionId,
         p_path: location.pathname,
@@ -130,6 +155,18 @@ export const useAnalytics = () => {
       }
     };
 
-    trackPageView();
+    // Track on route change if consent is granted
+    if (isAllowed('analytics')) {
+      trackPageView();
+    }
+
+    // Track when consent is granted during session (after session is ready)
+    const unsubscribe = onConsentChange((state) => {
+      if (state.analytics && sessionReadyRef.current) {
+        sessionReadyRef.current.promise.then(() => trackPageView());
+      }
+    });
+
+    return unsubscribe;
   }, [getMetadata, isProductionHost, location.pathname]);
 };
