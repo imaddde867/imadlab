@@ -6,4 +6,3 @@ export const tagSlug = (tag: string): string =>
     .replace(/^-+|-+$/g, '');
 export const tagToUrl = (tag: string): string => `/tags/${encodeURIComponent(tagSlug(tag))}`;
 export const tagMatchesSlug = (tag: string, slug: string): boolean => tagSlug(tag) === slug;
-

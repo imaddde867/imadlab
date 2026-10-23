@@ -12,7 +12,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import CookieConsent from '@/components/CookieConsent';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { registerRoutePrefetch } from '@/lib/routePrefetch';
-import { loadScriptIfConsented, onConsentChange, removeScriptBySrc } from '@/lib/consent';
+import { isAllowed, loadScriptIfConsented, onConsentChange } from '@/lib/consent';
 import { HelmetProvider } from 'react-helmet-async';
 
 const lazyWithPrefetch = <T extends React.ComponentType<unknown>>(
@@ -77,41 +77,62 @@ const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
 const App = () => {
   const [cookieConsentIsOpen, setCookieConsentIsOpen] = React.useState<boolean>(false);
 
-  // Load Cloudflare Analytics when consented; remove when withdrawn
+  // A running Cloudflare SPA beacon cannot be stopped by removing its script
+  // element. A document reload after withdrawal clears its instrumentation.
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
     const hostname = window.location.hostname;
     if (hostname !== 'imadlab.com' && hostname !== 'www.imadlab.com') return;
 
+    let wasAllowed = isAllowed('analytics');
+    let loading = false;
     let loaded = false;
     const tryLoad = () => {
-      if (loaded) return;
-      loadScriptIfConsented('analytics', 'https://static.cloudflareinsights.com/beacon.min.js', {
-        'data-cf-beacon': '{"token": "e8df18bc2d9d4512835bc2f9798f4b24"}',
-        defer: 'true',
-      })
-        .then((el) => {
-          if (el) loaded = true;
+      if (!wasAllowed || loading || loaded) return;
+      loading = true;
+      void loadScriptIfConsented(
+        'analytics',
+        'https://static.cloudflareinsights.com/beacon.min.js',
+        {
+          'data-cf-beacon': '{"token": "e8df18bc2d9d4512835bc2f9798f4b24"}',
+          defer: 'true',
+        }
+      )
+        .then((element) => {
+          loaded = !!element;
         })
         .catch(() => {
-          /* ignore */
+          // Do not collect analytics when the beacon is unavailable.
+        })
+        .finally(() => {
+          loading = false;
         });
     };
 
-    const tryUnload = () => {
-      if (loaded) {
-        removeScriptBySrc('cloudflareinsights.com/beacon.min.js');
-        loaded = false;
+    if (wasAllowed) tryLoad();
+    return onConsentChange(() => {
+      const allowed = isAllowed('analytics');
+      if (wasAllowed && !allowed) {
+        wasAllowed = false;
+        try {
+          sessionStorage.removeItem('analytics_session_id');
+        } catch {
+          // Storage is optional in restricted browsing modes.
+        }
+        // Best-effort fallback if the document reload is blocked. The reload is
+        // what clears a beacon that has already patched the History API.
+        document
+          .querySelectorAll('script[src*="cloudflareinsights.com/beacon.min.js"]')
+          .forEach((script) => script.remove());
+        try {
+          window.location.reload();
+        } catch {
+          // Embedded or sandboxed contexts can refuse navigation.
+        }
+        return;
       }
-    };
-
-    tryLoad();
-    return onConsentChange((state) => {
-      if (state.analytics) {
-        tryLoad();
-      } else {
-        tryUnload();
-      }
+      wasAllowed = allowed;
+      if (allowed) tryLoad();
     });
   }, []);
 

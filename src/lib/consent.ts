@@ -13,10 +13,23 @@ export type ConsentState = {
 
 const CONSENT_COOKIE = 'imadlab_consent';
 const CONSENT_VERSION = 1;
-const CONSENT_MAX_AGE_DAYS = 180; // GDPR-friendly renewal period
+const CONSENT_MAX_AGE_DAYS = 180;
+const CONSENT_MAX_AGE_MS = CONSENT_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
 
 type Subscriber = (state: ConsentState) => void;
 const subscribers: Subscriber[] = [];
+let removeStorageListener: (() => void) | null = null;
+
+const notify = (state: ConsentState) => {
+  // One failing subscriber must not stop revocation from reaching the rest.
+  for (const subscriber of [...subscribers]) {
+    try {
+      subscriber(state);
+    } catch (error) {
+      logger.warn('imadlab: consent subscriber failed', error);
+    }
+  }
+};
 
 const daysToExpires = (days: number) => {
   const d = new Date();
@@ -37,16 +50,44 @@ const encode = (obj: ConsentState) => encodeURIComponent(JSON.stringify(obj));
 const decode = (str: string): ConsentState => JSON.parse(decodeURIComponent(str)) as ConsentState;
 
 export function getConsent(): ConsentState | null {
+  // Prefer the most recent valid decision. The cookie can be stale if a write
+  // fails, and localStorage can outlive the cookie without an explicit expiry.
+  let cookie: string | null = null;
+  let stored: string | null = null;
   try {
-    const fromCookie = getCookie(CONSENT_COOKIE);
-    const raw = fromCookie || localStorage.getItem(CONSENT_COOKIE);
-    if (!raw) return null;
-    const parsed = decode(raw) as ConsentState;
-    if (!parsed || parsed.version !== CONSENT_VERSION) return null;
-    return parsed;
+    cookie = getCookie(CONSENT_COOKIE);
   } catch {
-    return null;
+    // Cookies may be blocked.
   }
+  try {
+    stored = localStorage.getItem(CONSENT_COOKIE);
+  } catch {
+    // Storage may be blocked.
+  }
+
+  const now = Date.now();
+  const candidates: ConsentState[] = [];
+  for (const raw of [stored, cookie]) {
+    if (!raw) continue;
+    try {
+      const parsed = decode(raw);
+      if (
+        parsed.version !== CONSENT_VERSION ||
+        parsed.essential !== true ||
+        typeof parsed.analytics !== 'boolean' ||
+        typeof parsed.marketing !== 'boolean' ||
+        typeof parsed.functional !== 'boolean' ||
+        !Number.isFinite(parsed.timestamp) ||
+        parsed.timestamp > now + 5 * 60 * 1000 ||
+        now - parsed.timestamp >= CONSENT_MAX_AGE_MS
+      )
+        continue;
+      candidates.push(parsed);
+    } catch {
+      // Ignore malformed records.
+    }
+  }
+  return candidates.sort((a, b) => b.timestamp - a.timestamp)[0] ?? null;
 }
 
 export function setConsent(
@@ -66,8 +107,12 @@ export function setConsent(
   } catch (error) {
     logger.warn('imadlab: unable to persist consent in localStorage', error);
   }
-  setCookie(CONSENT_COOKIE, encoded, CONSENT_MAX_AGE_DAYS);
-  subscribers.forEach((cb) => cb(state));
+  try {
+    setCookie(CONSENT_COOKIE, encoded, CONSENT_MAX_AGE_DAYS);
+  } catch (error) {
+    logger.warn('imadlab: unable to persist consent cookie', error);
+  }
+  notify(state);
   try {
     window.dispatchEvent(new CustomEvent('imadlab:consentchange', { detail: state }));
   } catch (error) {
@@ -77,9 +122,31 @@ export function setConsent(
 
 export function onConsentChange(cb: Subscriber) {
   subscribers.push(cb);
+  if (!removeStorageListener && typeof window !== 'undefined') {
+    const onStorage = (event: StorageEvent) => {
+      // A null key means the other tab cleared storage.
+      if (event.key !== CONSENT_COOKIE && event.key !== null) return;
+      const state: ConsentState = getConsent() ?? {
+        version: CONSENT_VERSION,
+        timestamp: Date.now(),
+        essential: true,
+        analytics: false,
+        marketing: false,
+        functional: false,
+      };
+      // Revocation in another tab must stop analytics here too.
+      notify(state);
+    };
+    window.addEventListener('storage', onStorage);
+    removeStorageListener = () => window.removeEventListener('storage', onStorage);
+  }
   return () => {
     const idx = subscribers.indexOf(cb);
     if (idx >= 0) subscribers.splice(idx, 1);
+    if (subscribers.length === 0) {
+      removeStorageListener?.();
+      removeStorageListener = null;
+    }
   };
 }
 
@@ -126,25 +193,25 @@ export function includeInAnalytics(): void {
 
 export function isAllowed(category: ConsentCategory): boolean {
   if (category === 'essential') return true;
-  
+
   // If this is the site owner/developer, exclude from analytics/marketing
   if ((category === 'analytics' || category === 'marketing') && isOwnerExcluded()) {
     return false;
   }
-  
+
   const c = getConsent();
   // No decision yet — deny until explicit opt-in (GDPR default)
   if (!c) return false;
   return !!c[category];
 }
 
+// The site does not use marketing cookies. Never opt into them implicitly.
 export function acceptAll() {
-  setConsent({ analytics: true, marketing: true, functional: true });
+  setConsent({ analytics: true, marketing: false, functional: getConsent()?.functional ?? false });
 }
 
 export function rejectAll() {
-  // Reject analytics and marketing; keep functional for essential functionality
-  setConsent({ analytics: false, marketing: false, functional: true });
+  setConsent({ analytics: false, marketing: false, functional: false });
 }
 
 export async function loadScriptIfConsented(
@@ -162,13 +229,6 @@ export async function loadScriptIfConsented(
     s.onerror = (e) => reject(e);
     document.head.appendChild(s);
   });
-}
-
-export function removeScriptBySrc(src: string): void {
-  if (typeof document === 'undefined') return;
-  const scripts = document.querySelectorAll(`script[src*="${src}"]`);
-  scripts.forEach((script) => script.remove());
-  logger.debug(`Removed script matching: ${src}`);
 }
 
 export function hasDecision(): boolean {

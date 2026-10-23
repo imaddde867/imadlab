@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { getConsent, setConsent } from '@/lib/consent';
+import { getConsent, onConsentChange, setConsent } from '@/lib/consent';
 
 interface CookieConsentProps {
   isOpen: boolean;
@@ -20,7 +20,15 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
   const [analyticsOn, setAnalyticsOn] = useState(false);
 
   useEffect(() => {
-    setShowChip(!getConsent());
+    const sync = () => {
+      const consent = getConsent();
+      setShowChip(!consent);
+      setAnalyticsOn(!!consent?.analytics);
+    };
+    const unsubscribe = onConsentChange(sync);
+    // Catch a change that landed between render and subscription.
+    sync();
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
@@ -28,8 +36,14 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
   }, [isOpen]);
 
   const choose = (analytics: boolean) => {
-    setConsent({ analytics, marketing: false, functional: true });
-    setShowChip(false);
+    const previous = getConsent();
+    setConsent({
+      analytics,
+      marketing: false,
+      // Opting into analytics preserves an existing functional choice.
+      // Essential only disables all optional categories.
+      functional: analytics ? (previous?.functional ?? false) : false,
+    });
     onOpenChange(false);
   };
 
@@ -67,7 +81,9 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
               Privacy
             </DialogTitle>
             <DialogDescription className="mt-2 text-[17px] leading-relaxed text-[color:var(--nd-ink-2)]">
-              No ads, no trackers. Anonymous analytics (device type, browser, pages visited) is {analyticsOn ? 'on' : 'off'}. No personal identifiers.
+              No ads. Optional analytics records page visits, searches, item clicks, referral
+              source, approximate location, device and performance details, and a session ID.
+              Currently {analyticsOn ? 'on' : 'off'}.
             </DialogDescription>
           </DialogHeader>
 

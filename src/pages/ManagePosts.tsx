@@ -482,9 +482,7 @@ const ManagePosts = () => {
         <Card className="rounded-2xl border border-white/10 bg-white/[0.03] shadow-none">
           <CardHeader>
             <CardTitle className="text-white">All Posts</CardTitle>
-            <CardDescription className="text-white/70">
-              Manage your blog posts
-            </CardDescription>
+            <CardDescription className="text-white/70">Manage your blog posts</CardDescription>
           </CardHeader>
           <CardContent>
             {isPostsLoading ? (

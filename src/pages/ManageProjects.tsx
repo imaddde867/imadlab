@@ -11,16 +11,7 @@ import { Tag as TagChip } from '@/components/ui/tag';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  Calendar,
-  Code,
-  ExternalLink,
-  FolderOpen,
-} from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Calendar, Code, ExternalLink, FolderOpen } from 'lucide-react';
 import { PROJECT_ADMIN_SELECT, PROJECT_DETAIL_SELECT } from '@/lib/content-selects';
 import type { ProjectDetail as ProjectAdmin } from '@/types/content';
 
