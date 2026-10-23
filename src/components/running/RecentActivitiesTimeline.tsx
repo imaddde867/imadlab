@@ -117,7 +117,6 @@ const RecentActivitiesTimeline = ({ activities }: RecentActivitiesTimelineProps)
                     <div className="text-[10px] text-white/25 mt-0.5">meters</div>
                   </div>
                 </div>
-
               </div>
             </div>
           </div>

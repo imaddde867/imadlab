@@ -1,21 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Shield, X } from 'lucide-react';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { acceptAll, rejectAll, setConsent, getConsent, ConsentState } from '@/lib/consent';
-
-declare global {
-  interface Window {
-    imadlabOpenCookiePrefs?: () => void;
-  }
-}
-
-type Prefs = Pick<ConsentState, 'analytics' | 'marketing' | 'functional'>;
+import { getConsent, onConsentChange, setConsent } from '@/lib/consent';
 
 interface CookieConsentProps {
   isOpen: boolean;
@@ -23,189 +16,92 @@ interface CookieConsentProps {
 }
 
 const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
-  const [showBanner, setShowBanner] = useState(false);
-  const [prefs, setPrefs] = useState<Prefs>({ analytics: false, marketing: false, functional: true });
+  const [showChip, setShowChip] = useState(false);
+  const [analyticsOn, setAnalyticsOn] = useState(false);
 
   useEffect(() => {
-    const current = getConsent();
-    if (!current) {
-      setShowBanner(true);
-      setPrefs({ analytics: false, marketing: false, functional: true });
-    } else {
-      setPrefs({
-        analytics: current.analytics,
-        marketing: current.marketing,
-        functional: current.functional,
-      });
-    }
-    // expose global opener for footer or settings link
-    if (typeof window !== 'undefined') {
-      window.imadlabOpenCookiePrefs = () => {
-        onOpenChange(true);
-      };
-    }
-  }, [onOpenChange]);
+    const sync = () => {
+      const consent = getConsent();
+      setShowChip(!consent);
+      setAnalyticsOn(!!consent?.analytics);
+    };
+    const unsubscribe = onConsentChange(sync);
+    // Catch a change that landed between render and subscription.
+    sync();
+    return unsubscribe;
+  }, []);
 
-  const handleAcceptAll = () => {
-    acceptAll();
-    setShowBanner(false);
-  };
+  useEffect(() => {
+    if (isOpen) setAnalyticsOn(!!getConsent()?.analytics);
+  }, [isOpen]);
 
-  const handleRejectAll = () => {
-    rejectAll();
-    setShowBanner(false);
-  };
-
-  const handleSavePrefs = () => {
+  const choose = (analytics: boolean) => {
+    const previous = getConsent();
     setConsent({
-      analytics: prefs.analytics,
-      marketing: prefs.marketing,
-      functional: prefs.functional,
+      analytics,
+      marketing: false,
+      // Opting into analytics preserves an existing functional choice.
+      // Essential only disables all optional categories.
+      functional: analytics ? (previous?.functional ?? false) : false,
     });
     onOpenChange(false);
-    setShowBanner(false);
   };
-
-  const Toggle = ({
-    id,
-    label,
-    desc,
-    disabled,
-    checked,
-    onChange,
-  }: {
-    id: string;
-    label: string;
-    desc: string;
-    disabled?: boolean;
-    checked: boolean;
-    onChange: (v: boolean) => void;
-  }) => (
-    <div className="flex items-start justify-between gap-4 py-3">
-      <div>
-        <label htmlFor={id} className="font-medium text-white">
-          {label}
-        </label>
-        <p className="text-white/60 text-sm mt-1">{desc}</p>
-      </div>
-      <button
-        id={id}
-        role="switch"
-        aria-checked={checked}
-        aria-disabled={disabled}
-        disabled={!!disabled}
-        onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-enhanced border ${
-          disabled
-            ? 'bg-white/10 border-white/10 cursor-not-allowed'
-            : checked
-              ? 'bg-white/80 border-white/80'
-              : 'bg-white/20 border-white/20'
-        }`}
-      >
-        <span
-          className={`inline-block h-5 w-5 transform rounded-full bg-black transition-transform ${checked ? 'translate-x-5' : 'translate-x-1'}`}
-        />
-      </button>
-    </div>
-  );
 
   return (
     <>
-      {/* Banner */}
-      {showBanner && (
-        <div className="fixed inset-x-0 bottom-0 z-50" role="dialog" aria-label="Cookie consent">
-          <div className="mx-auto max-w-5xl m-4 rounded-xl border border-white/10 bg-black/70 backdrop-blur px-5 py-4 shadow-2xl">
-            <div className="flex flex-col md:flex-row md:items-center gap-4">
-              <div className="flex-1">
-                <p className="text-white font-semibold mb-1">I respect your privacy</p>
-                <p className="text-white/70 text-sm leading-relaxed">
-                  I use cookies to keep the site working and to see roughly how much traffic it
-                  gets. You can accept all, reject the non-essential ones, or set your own
-                  preferences.
-                </p>
-              </div>
-              <div className="flex gap-2 md:ml-4">
-                <Button
-                  variant="ghost"
-                  className="bg-white/10 hover:bg-white/20 text-white"
-                  onClick={() => onOpenChange(true)}
-                >
-                  Manage
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="bg-white/5 hover:bg-white/15 text-white"
-                  onClick={handleRejectAll}
-                >
-                  Reject
-                </Button>
-                <Button className="bg-white text-black hover:bg-white/90" onClick={handleAcceptAll}>
-                  Accept
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+      {showChip && (
+        <button
+          type="button"
+          onClick={() => onOpenChange(true)}
+          aria-haspopup="dialog"
+          aria-label="Privacy choices"
+          className="theme-night-desk fixed bottom-4 right-4 z-50 inline-flex min-h-10 animate-in items-center gap-2 rounded-lg border border-[color:var(--nd-line)] bg-[hsl(var(--card))] px-3 text-sm text-[color:var(--nd-ink-2)] shadow-lg transition-colors fade-in slide-in-from-bottom-1 duration-300 hover:text-[color:var(--nd-ink)] focus-enhanced motion-reduce:animate-none"
+        >
+          <span className="relative sm:hidden" aria-hidden="true">
+            <Shield className="h-4 w-4" strokeWidth={1.75} />
+            <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-[hsl(var(--primary))]" />
+          </span>
+          <span
+            aria-hidden="true"
+            className="hidden h-1.5 w-1.5 rounded-full bg-[hsl(var(--primary))] sm:inline-block"
+          />
+          <span className="hidden sm:inline">Privacy</span>
+        </button>
       )}
 
-      {/* Preferences Modal */}
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="bg-black text-white border border-white/10">
-          <DialogHeader>
-            <DialogTitle>Cookie preferences</DialogTitle>
-            <DialogDescription className="text-white/70">
-              Choose which categories of cookies you want to allow. Essential cookies are always on.
+        <DialogContent className="theme-night-desk max-w-sm rounded-lg border border-[color:var(--nd-line)] bg-[hsl(var(--card))] p-6 text-[color:var(--nd-ink)] max-sm:w-[calc(100%-1.5rem)]">
+          <DialogClose className="absolute right-4 top-4 rounded p-1 text-[color:var(--nd-ink-3)] transition-colors hover:text-[color:var(--nd-ink)] focus-enhanced cursor-pointer">
+            <X className="h-4 w-4" strokeWidth={1.75} />
+            <span className="sr-only">Close</span>
+          </DialogClose>
+
+          <DialogHeader className="pr-6 text-left">
+            <DialogTitle className="font-display text-2xl font-semibold tracking-tight text-[color:var(--nd-ink)]">
+              Privacy
+            </DialogTitle>
+            <DialogDescription className="mt-2 text-[17px] leading-relaxed text-[color:var(--nd-ink-2)]">
+              No ads. Optional analytics records page visits, searches, item clicks, referral
+              source, approximate location, device and performance details, and a session ID.
+              Currently {analyticsOn ? 'on' : 'off'}.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="mt-4 divide-y divide-white/10">
-            <Toggle
-              id="consent-essential"
-              label="Essential"
-              desc="Required for basic site functionality, security, and network routing."
-              disabled
-              checked
-              onChange={() => {}}
-            />
-            <Toggle
-              id="consent-functional"
-              label="Functional"
-              desc="Remember preferences such as UI state."
-              checked={prefs.functional}
-              onChange={(v) => setPrefs((p) => ({ ...p, functional: v }))}
-            />
-            <Toggle
-              id="consent-analytics"
-              label="Analytics"
-              desc="Helps me understand site usage to improve content and performance."
-              checked={prefs.analytics}
-              onChange={(v) => setPrefs((p) => ({ ...p, analytics: v }))}
-            />
-            <Toggle
-              id="consent-marketing"
-              label="Marketing"
-              desc="Personalize content or measure campaign effectiveness."
-              checked={prefs.marketing}
-              onChange={(v) => setPrefs((p) => ({ ...p, marketing: v }))}
-            />
-          </div>
-
-          <div className="mt-6 flex justify-end gap-2">
-            <Button
-              variant="ghost"
-              className="bg-white/5 hover:bg-white/15 text-white"
-              onClick={handleRejectAll}
+          <div className="mt-5 flex flex-wrap items-baseline gap-x-5 gap-y-2 text-[17px]">
+            <button type="button" onClick={() => choose(true)} className="nd-link cursor-pointer">
+              Allow analytics
+            </button>
+            <button
+              type="button"
+              onClick={() => choose(false)}
+              className="nd-quiet-link cursor-pointer text-[color:var(--nd-ink-2)]"
             >
-              Reject all
-            </Button>
-            <Button className="bg-white text-black hover:bg-white/90" onClick={handleSavePrefs}>
-              Save preferences
-            </Button>
+              Essential only
+            </button>
           </div>
 
-          <p className="mt-3 text-xs text-white/50">
-            You can update your preferences anytime via the "Manage cookies" link in the footer.
+          <p className="mt-4 text-sm text-[color:var(--nd-ink-3)]">
+            Change this anytime from the footer.
           </p>
         </DialogContent>
       </Dialog>

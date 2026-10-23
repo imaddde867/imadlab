@@ -137,7 +137,9 @@ const EmailDashboard = () => {
     const { error } = await supabase
       .from('email_queue')
       .update({ status: 'pending', retry_count: 0 })
-      .eq('id', row.id).select('id').single();
+      .eq('id', row.id)
+      .select('id')
+      .single();
     if (error) {
       setBusyId(null);
       toast({ title: 'Could not retry', description: error.message, variant: 'destructive' });
@@ -159,7 +161,12 @@ const EmailDashboard = () => {
 
   const remove = async (sub: Subscriber) => {
     setRemoveSub(null);
-    const { error } = await supabase.from('newsletter_subscribers').delete().eq('email', sub.email).select('id').single();
+    const { error } = await supabase
+      .from('newsletter_subscribers')
+      .delete()
+      .eq('email', sub.email)
+      .select('id')
+      .single();
     if (error)
       toast({ title: 'Remove failed', description: error.message, variant: 'destructive' });
     await load();

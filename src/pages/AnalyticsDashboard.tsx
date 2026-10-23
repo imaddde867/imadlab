@@ -39,7 +39,6 @@ type PageView = {
   city: string | null;
 };
 
-
 type PathStats = {
   path: string;
   views: number;
@@ -766,7 +765,6 @@ const AnalyticsDashboard = () => {
                 )}
               </CardContent>
             </Card>
-
           </>
         )}
       </div>
