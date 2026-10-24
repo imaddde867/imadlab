@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { getConsent, onConsentChange, setConsent } from '@/lib/consent';
+import { acceptAll, getConsent, onConsentChange, rejectAll } from '@/lib/consent';
 
 interface CookieConsentProps {
   isOpen: boolean;
@@ -36,14 +36,8 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
   }, [isOpen]);
 
   const choose = (analytics: boolean) => {
-    const previous = getConsent();
-    setConsent({
-      analytics,
-      marketing: false,
-      // Opting into analytics preserves an existing functional choice.
-      // Essential only disables all optional categories.
-      functional: analytics ? (previous?.functional ?? false) : false,
-    });
+    if (analytics) acceptAll();
+    else rejectAll();
     onOpenChange(false);
   };
 
