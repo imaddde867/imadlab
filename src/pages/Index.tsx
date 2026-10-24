@@ -106,7 +106,7 @@ const Index = () => {
     <Page>
       <SEO
         title="Imad Eddine El Mouss"
-        description="Research Engineer at CoRe (Turku UAS) and architect of AIOP, an on-premises event-driven AI platform for Privacy-by-Design industrial AI."
+        description="Data and AI engineer at Turku UAS (CoRe). Come explore my projects, blog posts and background."
         keywords="research engineer portfolio, aiop platform, industrial ai systems, multimodal data fusion, procedural knowledge extraction, privacy-by-design ai, edge-to-cloud ai"
         type="website"
         schemaType="WebSite"

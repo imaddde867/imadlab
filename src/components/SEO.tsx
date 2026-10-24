@@ -108,7 +108,7 @@ const Seo = ({
   twitterHandle,
 }: SEOProps) => {
   const location = useLocation();
-  const defaultTitle = `${SITE_NAME} | Research Engineer, On-Premises Industrial AI`;
+  const defaultTitle = `${SITE_NAME} | Data and AI Engineer`;
   const fullTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
   const currentUrl = withSlash(`${SITE_URL}${location.pathname}`);
   const canonicalUrl = toAbsolutePageUrl(url || canonical) || currentUrl;

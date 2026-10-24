@@ -31,7 +31,7 @@ const isSafeHttpUrl = (value) => {
   }
 };
 const SITE_NAME = 'Imadlab';
-const DEFAULT_TITLE = `${SITE_NAME} | Research Engineer, On-Premises Industrial AI`;
+const DEFAULT_TITLE = `${SITE_NAME} | Data and AI Engineer`;
 const DEFAULT_IMAGE = `${SITE_URL}/images/og-default.jpg`;
 const DEFAULT_TWITTER = '@imadlab';
 const SEO_BLOCK_PATTERN = /<!-- prerender-seo:start -->[\s\S]*?<!-- prerender-seo:end -->/;
@@ -578,7 +578,7 @@ async function main() {
     baseHtml,
     seo: {
       title: 'Imad Eddine El Mouss',
-      description: 'Research Engineer at CoRe (Turku UAS) and architect of AIOP, an on-premises event-driven AI platform for Privacy-by-Design industrial AI.',
+      description: 'Data and AI engineer at Turku UAS (CoRe). Come explore my projects, blog posts and background.',
       canonicalUrl: `${SITE_URL}/`,
       image: DEFAULT_IMAGE,
       type: 'website',
