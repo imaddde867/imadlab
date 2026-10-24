@@ -75,13 +75,12 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
               Privacy
             </DialogTitle>
             <DialogDescription className="mt-2 text-[17px] leading-relaxed text-[color:var(--nd-ink-2)]">
-              No ads. Optional analytics records page visits, searches, item clicks, referral
-              source, approximate location, device details, and a session ID. Currently{' '}
+              No ads. Optional analytics measures how the site is used. Currently{' '}
               {analyticsOn ? 'on' : 'off'}.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="mt-5 flex flex-wrap items-baseline gap-x-5 gap-y-2 text-[17px]">
+          <div className="mt-6 flex items-baseline gap-6 text-[17px]">
             <button type="button" onClick={() => choose(true)} className="nd-link cursor-pointer">
               Allow analytics
             </button>
@@ -95,7 +94,7 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
           </div>
 
           <p className="mt-4 text-sm text-[color:var(--nd-ink-3)]">
-            Change this anytime from the footer.
+            Change anytime in Cookie settings in the footer.
           </p>
         </DialogContent>
       </Dialog>
