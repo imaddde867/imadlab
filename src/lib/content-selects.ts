@@ -1,4 +1,5 @@
-export const POST_SUMMARY_SELECT = 'id,title,slug,excerpt,tags,published_date,read_time,image_url';
+export const POST_SUMMARY_SELECT =
+  'id,title,slug,excerpt,tags,published_date,read_time,image_url';
 export const POST_DETAIL_SELECT =
   'id,title,slug,body,excerpt,tags,published_date,updated_at,read_time,image_url';
 export const POST_SEARCH_SELECT =

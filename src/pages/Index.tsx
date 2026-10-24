@@ -149,10 +149,10 @@ const Index = () => {
           />
         </div>
         <p className="mt-6">
-          I created AIOP and lead its development: the on-premises event-driven AI platform designed
-          to become the integration backbone for the group's industrial pilot modules. I built its
-          core services, plugin interface, several of its modules and its stress-audit tooling. My
-          thesis,{' '}
+          I created AIOP and lead its development: the on-premises event-driven AI
+          platform designed to become the integration backbone for the group's industrial pilot
+          modules. I built its core services, plugin interface, several of its modules and its
+          stress-audit tooling. My thesis,{' '}
           <a
             href="https://urn.fi/URN:NBN:fi:amk-2025121235460"
             target="_blank"

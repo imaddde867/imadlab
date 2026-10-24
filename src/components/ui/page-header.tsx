@@ -32,7 +32,10 @@ export const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
     return (
       <div
         ref={ref}
-        className={cn('rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8', className)}
+        className={cn(
+          'rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8',
+          className
+        )}
         {...props}
       >
         <div className="space-y-6">

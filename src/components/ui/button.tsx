@@ -8,7 +8,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        default:
+          'bg-primary text-primary-foreground hover:bg-primary/90',
         destructive: 'bg-rose-500 text-white hover:bg-rose-400 focus-visible:ring-rose-300/80',
         outline:
           'border border-primary/40 bg-background/80 text-white/80 hover:border-primary/60 hover:bg-primary/10 hover:text-white',
@@ -16,7 +17,8 @@ const buttonVariants = cva(
           'border border-primary/35 bg-primary/20 text-white hover:border-primary/50 hover:bg-primary/30',
         soft: 'border border-primary/25 bg-background/70 text-white hover:bg-primary/15 hover:border-primary/40',
         ghost: 'text-white/80 hover:text-white hover:bg-white/10',
-        inverted: 'bg-white text-black hover:bg-white/90',
+        inverted:
+          'bg-white text-black hover:bg-white/90',
         link: 'text-white/80 underline-offset-4 hover:text-white hover:underline',
         cta: 'relative overflow-hidden border border-primary/40 bg-primary/10 text-white transition-colors duration-200 hover:bg-primary/20',
       },
