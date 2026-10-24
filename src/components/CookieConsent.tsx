@@ -76,8 +76,8 @@ const CookieConsent = ({ isOpen, onOpenChange }: CookieConsentProps) => {
             </DialogTitle>
             <DialogDescription className="mt-2 text-[17px] leading-relaxed text-[color:var(--nd-ink-2)]">
               No ads. Optional analytics records page visits, searches, item clicks, referral
-              source, approximate location, device and performance details, and a session ID.
-              Currently {analyticsOn ? 'on' : 'off'}.
+              source, approximate location, device details, and a session ID. Currently{' '}
+              {analyticsOn ? 'on' : 'off'}.
             </DialogDescription>
           </DialogHeader>
 
