@@ -112,9 +112,9 @@ try {
       assert.deepEqual(f.calls, []);
       await f.page.getByRole('button', { name: 'Privacy choices' }).click();
       const disclosure = await f.page.getByRole('dialog').innerText();
-      assert.match(disclosure, /session ID/i);
-      assert.match(disclosure, /searches/i);
-      assert.match(disclosure, /approximate location/i);
+      assert.match(disclosure, /No ads/i);
+      assert.match(disclosure, /Optional analytics/i);
+      assert.match(disclosure, /Currently off/i);
       const pageView = f.page.waitForResponse((r) => r.url().includes('/rpc/track_page_view'));
       await f.page.getByRole('button', { name: 'Allow analytics' }).click();
       await pageView;
