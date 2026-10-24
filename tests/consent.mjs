@@ -11,8 +11,6 @@ async function fixture(initialConsent = null, options = {}) {
   const context = await browser.newContext();
   const calls = [];
   const eventWrites = [];
-  const beaconRequests = [];
-  let beaconLoads = 0;
   let releaseSession;
   let sessionStarted;
   const sessionStartedPromise = new Promise((resolve) => {
@@ -21,7 +19,7 @@ async function fixture(initialConsent = null, options = {}) {
 
   if (initialConsent) {
     // Seed the initial cookie exactly once. An addInitScript would reapply the
-    // original opt-in after withdrawal and silently invalidate the reload test.
+    // original opt-in after withdrawal.
     await context.addCookies([
       {
         name: 'imadlab_consent',
@@ -81,27 +79,6 @@ async function fixture(initialConsent = null, options = {}) {
       // makes list pages fail before the consent assertions run.
       return route.fulfill({ json: [] });
     }
-    if (url.hostname === 'static.cloudflareinsights.com' && url.pathname === '/beacon.min.js') {
-      beaconLoads++;
-      // A deliberately active SPA beacon: deleting its <script> cannot undo the
-      // already-installed History API interception; a document reload can.
-      return route.fulfill({
-        contentType: 'application/javascript',
-        body: `
-        window.__fakeBeaconReady = true;
-        const previousPushState = history.pushState;
-        history.pushState = function (...args) {
-          const result = previousPushState.apply(this, args);
-          fetch('https://cloudflareinsights.com/cdn-cgi/rum', {method: 'POST', body: 'test'});
-          return result;
-        };
-      `,
-      });
-    }
-    if (url.hostname === 'cloudflareinsights.com' && url.pathname === '/cdn-cgi/rum') {
-      beaconRequests.push(url.pathname);
-      return route.fulfill({ status: 204, body: '' });
-    }
     // Block every other external request, including fonts and third-party scripts.
     return route.fulfill({ status: 204, body: '' });
   });
@@ -112,10 +89,8 @@ async function fixture(initialConsent = null, options = {}) {
     page,
     calls,
     eventWrites,
-    beaconRequests,
     sessionStartedPromise,
     releaseSession: () => releaseSession?.(),
-    beaconLoads: () => beaconLoads,
     close: () => context.close(),
   };
 }
@@ -163,40 +138,37 @@ try {
     }
   }
 
-  // Withdrawal must shut down an already-executed SPA beacon, not merely remove
-  // its script node. The reload clears the beacon's History API patch.
+  // Withdrawal must stop telemetry in the same document, without a reload.
   {
     const f = await fixture({ analytics: true, functional: true });
     try {
       await f.page.goto(BASE_URL);
-      await f.page.waitForFunction(() => window.__fakeBeaconReady === true);
-      const beaconResponse = f.page.waitForResponse((r) => r.url().includes('/cdn-cgi/rum'));
       await f.page.getByRole('link', { name: 'Projects', exact: true }).first().click();
-      await beaconResponse;
       await f.page.getByRole('heading', { name: 'Projects', exact: true }).waitFor();
-      assert.ok(f.beaconRequests.length > 0, 'beacon active before withdrawal');
       const oldSessionId = await f.page.evaluate(() =>
         sessionStorage.getItem('analytics_session_id')
       );
       assert.ok(oldSessionId, 'analytics session ID exists before withdrawal');
+      await f.page.evaluate(() => {
+        window.__sameDocument = true;
+      });
       await f.page.getByRole('button', { name: 'Cookie settings' }).click();
-      await Promise.all([
-        f.page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
-        f.page.getByRole('button', { name: 'Essential only' }).click(),
-      ]);
+      await f.page.getByRole('button', { name: 'Essential only' }).click();
       await f.page.getByRole('heading', { name: 'Projects', exact: true }).waitFor();
-      assert.equal(await f.page.evaluate(() => !!window.__fakeBeaconReady), false);
+      assert.equal(
+        await f.page.evaluate(() => window.__sameDocument === true),
+        true,
+        'withdrawal does not reload the page'
+      );
       assert.equal(
         await f.page.evaluate(() => sessionStorage.getItem('analytics_session_id')),
         null,
         'revocation clears the analytics session ID'
       );
-      const before = f.beaconRequests.length;
       const beforeSupabase = f.calls.length;
       await f.page.getByRole('link', { name: 'Imad Eddine El Mouss', exact: true }).first().click();
       await f.page.getByRole('heading', { name: 'Research interests' }).waitFor();
       await f.page.waitForTimeout(50);
-      assert.equal(f.beaconRequests.length, before, 'no beacon requests after withdrawal');
       assert.equal(f.calls.length, beforeSupabase, 'no Supabase requests after withdrawal');
       assert.equal((await storedConsent(f.page)).functional, false);
 
@@ -216,17 +188,11 @@ try {
       );
       await f.page.getByRole('button', { name: 'Allow analytics' }).click();
       await pageViewAfterOptIn;
-      await f.page.waitForFunction(() => window.__fakeBeaconReady === true);
       const newSessionId = await f.page.evaluate(() =>
         sessionStorage.getItem('analytics_session_id')
       );
       assert.ok(newSessionId, 're-opt-in creates a session ID');
       assert.notEqual(newSessionId, oldSessionId, 're-opt-in does not reuse the withdrawn session');
-      const beaconAfterOptIn = f.page.waitForResponse((r) => r.url().includes('/cdn-cgi/rum'));
-      await f.page.getByRole('link', { name: 'Projects', exact: true }).first().click();
-      await beaconAfterOptIn;
-      await f.page.getByRole('heading', { name: 'Projects', exact: true }).waitFor();
-      assert.ok(f.beaconRequests.length > before, 'beacon resumes after re-opt-in');
       assert.ok(f.calls.length > beforeSupabase, 'Supabase resumes after re-opt-in');
     } finally {
       await f.close();
@@ -271,23 +237,18 @@ try {
       other.setDefaultTimeout(10000);
       await f.page.goto(BASE_URL);
       await other.goto(BASE_URL);
-      await f.page.waitForFunction(() => window.__fakeBeaconReady === true);
-      await other.waitForFunction(() => window.__fakeBeaconReady === true);
+      await f.page.getByRole('heading', { name: 'Research interests' }).waitFor();
       await f.page.waitForTimeout(100);
       const beforeCalls = f.calls.length;
-      const beforeBeacon = f.beaconRequests.length;
       await other.getByRole('button', { name: 'Cookie settings' }).click();
-      const otherNavigation = other.waitForNavigation({ waitUntil: 'domcontentloaded' });
-      const firstNavigation = f.page.waitForNavigation({ waitUntil: 'domcontentloaded' });
       await other.getByRole('button', { name: 'Essential only' }).click();
-      await Promise.all([otherNavigation, firstNavigation]);
-      await f.page.getByRole('heading', { name: 'Research interests' }).waitFor();
-      assert.equal(await f.page.evaluate(() => !!window.__fakeBeaconReady), false);
-      assert.equal((await storedConsent(f.page)).analytics, false);
+      await f.page.waitForFunction(() => {
+        const raw = localStorage.getItem('imadlab_consent');
+        return raw && JSON.parse(decodeURIComponent(raw)).analytics === false;
+      });
       await f.page.getByRole('link', { name: 'Projects', exact: true }).first().click();
       await f.page.getByRole('heading', { name: 'Projects', exact: true }).waitFor();
       await f.page.waitForTimeout(50);
-      assert.equal(f.beaconRequests.length, beforeBeacon, 'cross-tab withdrawal stops beacon');
       assert.equal(f.calls.length, beforeCalls, 'cross-tab withdrawal stops Supabase');
     } finally {
       await f.close();
@@ -324,10 +285,7 @@ try {
       await f.page.getByRole('button', { name: 'Allow analytics' }).click();
       await f.sessionStartedPromise;
       await f.page.getByRole('button', { name: 'Cookie settings' }).click();
-      await Promise.all([
-        f.page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
-        f.page.getByRole('button', { name: 'Essential only' }).click(),
-      ]);
+      await f.page.getByRole('button', { name: 'Essential only' }).click();
       f.releaseSession();
       await f.page.getByRole('heading', { name: 'Research interests' }).waitFor();
       assert.ok(!f.calls.includes('track_page_view'), 'no page view after abort');

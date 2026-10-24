@@ -214,23 +214,6 @@ export function rejectAll() {
   setConsent({ analytics: false, marketing: false, functional: false });
 }
 
-export async function loadScriptIfConsented(
-  category: ConsentCategory,
-  src: string,
-  attrs: Record<string, string> = {}
-) {
-  if (!isAllowed(category)) return null;
-  return new Promise<HTMLScriptElement>((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = src;
-    s.async = true;
-    Object.entries(attrs).forEach(([k, v]) => s.setAttribute(k, v));
-    s.onload = () => resolve(s);
-    s.onerror = (e) => reject(e);
-    document.head.appendChild(s);
-  });
-}
-
 export function hasDecision(): boolean {
   return !!getConsent();
 }
