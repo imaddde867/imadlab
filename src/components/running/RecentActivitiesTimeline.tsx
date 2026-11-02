@@ -56,7 +56,8 @@ const RecentActivitiesTimeline = ({ activities }: RecentActivitiesTimelineProps)
                       {(activity.kudos_count ?? 0) > 0 && (
                         <span className="flex items-center gap-1">
                           <Heart className="w-3 h-3 fill-white/15" />
-                          {activity.kudos_count ?? 0}                        </span>
+                          {activity.kudos_count ?? 0}
+                        </span>
                       )}
                     </div>
                   </div>

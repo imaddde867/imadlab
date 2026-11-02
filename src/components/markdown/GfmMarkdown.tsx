@@ -557,7 +557,8 @@ export const GfmMarkdown = ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       footnoteReference: (props: any) => <FootnoteReferenceRenderer {...props} />,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      footnoteDefinition: (props: any) => <FootnoteDefinitionRenderer {...props} />,      footnoteLabel: ({ children }: { children: ReactNode }) => (
+      footnoteDefinition: (props: any) => <FootnoteDefinitionRenderer {...props} />,
+      footnoteLabel: ({ children }: { children: ReactNode }) => (
         <span className="text-xs font-semibold uppercase tracking-wide text-white/60">
           {children}
         </span>
