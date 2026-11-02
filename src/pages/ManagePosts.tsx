@@ -131,6 +131,7 @@ const ManagePosts = () => {
           {
             ...newPost,
             tags: newPost.tags?.length ? newPost.tags : null,
+            updated_at: newPost.updated_at ?? undefined,
           },
         ])
         .select()

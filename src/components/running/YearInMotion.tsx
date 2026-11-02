@@ -1,7 +1,7 @@
 import { StravaStats, StravaActivity } from '@/integrations/strava/client';
 
 interface YearInMotionProps {
-  stats: StravaStats;
+  stats?: StravaStats;
   activities: StravaActivity[]; // Keep for future use
 }
 

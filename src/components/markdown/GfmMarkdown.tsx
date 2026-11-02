@@ -189,7 +189,7 @@ const HeadingRenderer = ({
   node?: Heading;
   children: ReactNode;
 }) => {
-  const Tag = `h${level}` as const;
+  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
   const slugger = useSlugger();
   const text = node ? getNodeText(node) : extractTextFromChildren(children);
   const id = slugger.slug(text);
@@ -480,12 +480,12 @@ export const GfmMarkdown = ({
 
   const components = useMemo<Components>(() => {
     const mapping = {
-      h1: (props) => <HeadingRenderer level={1} {...props} />,
-      h2: (props) => <HeadingRenderer level={2} {...props} />,
-      h3: (props) => <HeadingRenderer level={3} {...props} />,
-      h4: (props) => <HeadingRenderer level={4} {...props} />,
-      h5: (props) => <HeadingRenderer level={5} {...props} />,
-      h6: (props) => <HeadingRenderer level={6} {...props} />,
+      h1: ({ node, children }) => <HeadingRenderer level={1} node={node as unknown as Heading}>{children}</HeadingRenderer>,
+      h2: ({ node, children }) => <HeadingRenderer level={2} node={node as unknown as Heading}>{children}</HeadingRenderer>,
+      h3: ({ node, children }) => <HeadingRenderer level={3} node={node as unknown as Heading}>{children}</HeadingRenderer>,
+      h4: ({ node, children }) => <HeadingRenderer level={4} node={node as unknown as Heading}>{children}</HeadingRenderer>,
+      h5: ({ node, children }) => <HeadingRenderer level={5} node={node as unknown as Heading}>{children}</HeadingRenderer>,
+      h6: ({ node, children }) => <HeadingRenderer level={6} node={node as unknown as Heading}>{children}</HeadingRenderer>,
       // A paragraph holding only an image would wrap a <figure> in a <p>; render the figure alone.
       p: ({ node, children, ...props }) => {
         const kids =
@@ -504,7 +504,8 @@ export const GfmMarkdown = ({
       hr: ThematicBreak,
       ul: UnorderedList,
       ol: OrderedList,
-      li: ({ checked, children, ...props }) => (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      li: ({ checked, children, ...props }: any) => (
         <ListItem checked={checked} {...props}>
           {children}
         </ListItem>
@@ -553,14 +554,15 @@ export const GfmMarkdown = ({
         ) : (
           <ImageRenderer {...props} />
         ),
-      footnoteReference: (props) => <FootnoteReferenceRenderer {...props} />,
-      footnoteDefinition: (props) => <FootnoteDefinitionRenderer {...props} />,
-      footnoteLabel: ({ children }) => (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      footnoteReference: (props: any) => <FootnoteReferenceRenderer {...props} />,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      footnoteDefinition: (props: any) => <FootnoteDefinitionRenderer {...props} />,      footnoteLabel: ({ children }: { children: ReactNode }) => (
         <span className="text-xs font-semibold uppercase tracking-wide text-white/60">
           {children}
         </span>
       ),
-      footnoteBackref: ({ href }) => (
+      footnoteBackref: ({ href }: { href?: string }) => (
         <a
           href={href}
           className="text-xs text-primary underline hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"

@@ -392,14 +392,14 @@ export type Database = {
           p_device_type: string
           p_os: string
           p_path: string
-          p_referrer: string
+          p_referrer: string | null
           p_session_id: string
           p_traffic_source: string
-          p_utm_campaign: string
-          p_utm_content: string
-          p_utm_medium: string
-          p_utm_source: string
-          p_utm_term: string
+          p_utm_campaign: string | null
+          p_utm_content: string | null
+          p_utm_medium: string | null
+          p_utm_source: string | null
+          p_utm_term: string | null
         }
         Returns: string
       }

@@ -35,14 +35,15 @@ export async function logEvent(name: string, data: Record<string, unknown> = {})
       // Storage is optional in restricted browsing modes.
     }
     const path = typeof window !== 'undefined' ? window.location.pathname : null;
-    await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any)
       .from('events')
       .insert({
         name,
         data,
         path,
         session_id: sessionId,
-      } as unknown as Record<string, unknown>)
+      })
       .abortSignal(controller.signal);
   } catch {
     // Analytics must never break the page.
