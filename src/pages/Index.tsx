@@ -162,7 +162,7 @@ const Index = () => {
             Structured Procedural Knowledge Extraction from Industrial Documentation Using LLMs
           </a>{' '}
           (5/5), introduced IPKE, a privacy-preserving pipeline for extracting procedural knowledge
-          graphs from safety-critical manuals.
+          graphs from industrial documentation.
         </p>
         <nav aria-label="Profiles" className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
           {links.map((l) => (

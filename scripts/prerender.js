@@ -372,7 +372,7 @@ const renderHomeMarkup = (posts, projects) => `
       Research Engineer, Cognitive Technologies Research Group (CoRe), Turku University of Applied Sciences.
       I created AIOP and lead its development: an on-premises event-driven AI platform for industrial pilot modules.
       My thesis, Structured Procedural Knowledge Extraction from Industrial Documentation Using LLMs, introduced IPKE,
-      a privacy-preserving pipeline for extracting procedural knowledge graphs from safety-critical manuals.
+      a privacy-preserving pipeline for extracting procedural knowledge graphs from industrial documentation.
     </p>
     <nav aria-label="Site">
       <a class="prerender-link" href="/projects">Projects</a>
