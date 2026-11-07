@@ -22,7 +22,7 @@ const AdminDashboard = () => {
           variant: 'destructive',
         });
       } else {
-        setUser({ email: user.email });
+        setUser({ email: user.email ?? '' });
       }
     };
     checkUser();
@@ -38,7 +38,7 @@ const AdminDashboard = () => {
           variant: 'destructive',
         });
       } else {
-        setUser(session.user ? { email: session.user.email } : null);
+        setUser(session.user ? { email: session.user.email ?? '' } : null);
       }
     });
 
