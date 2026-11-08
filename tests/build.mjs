@@ -43,6 +43,10 @@ const postBody = [
   'x^2 + y^2',
   '~~~',
   '![Recorded demonstration](https://example.org/demo.mp4)',
+  'Before ![inline icon](/icon.svg) after',
+  'Before [![linked icon](/icon.svg)](https://example.org/icon) after',
+  '![Standalone icon](/icon.svg "Standalone caption")',
+  '[![Standalone linked icon](/icon.svg "Linked caption")](https://example.org/linked-icon)',
   '| Result | Status |\n| --- | --- |\n| Test | Passed |',
   '## Conclusions',
   'POST_END_MARKER',
@@ -159,7 +163,27 @@ try {
   assert.match(visiblePost, /class="md-block prerender-math"/, 'fenced LaTeX must render as KaTeX HTML');
   assert.match(visiblePost, /<video[^>]*src="https:\/\/example.org\/demo\.mp4"/);
   assert.doesNotMatch(visiblePost, /<img[^>]*src="https:\/\/example.org\/demo\.mp4"/);
-  assert.doesNotMatch(visiblePost, /<p>\s*<figure/, 'image-only paragraphs must be unwrapped');
+  assert.doesNotMatch(visiblePost, /<p\b[^>]*>(?:(?!<\/p>)[\s\S])*<figure\b/,
+    'figures must never appear inside HTML paragraphs');
+  const inlineImage = renderMarkdownForStaticHtml('Before ![icon](/icon.svg) after');
+  assert.match(inlineImage, /<p>Before <img\b[^>]*src="\/icon\.svg"[^>]*\/> after<\/p>/,
+    'an inline image must stay inside its paragraph');
+  const inlineLinkImage = renderMarkdownForStaticHtml(
+    'Before [![icon](/icon.svg)](https://example.org/icon) after');
+  assert.match(inlineLinkImage,
+    /<p>Before <a\b[^>]*href="https:\/\/example\.org\/icon"[^>]*><img\b[^>]*src="\/icon\.svg"[^>]*\/><\/a> after<\/p>/,
+    'a linked inline image must stay inside its paragraph');
+  const standaloneImage = renderMarkdownForStaticHtml('![icon](/icon.svg "Caption")');
+  assert.match(standaloneImage,
+    /<figure class="md-block prerender-media"><img\b[^>]*\/><figcaption>Caption<\/figcaption><\/figure>/,
+    'standalone images must retain a block figure and caption');
+  const standaloneLinkedImage = renderMarkdownForStaticHtml(
+    '[![icon](/icon.svg "Linked caption")](https://example.org/icon)');
+  assert.match(standaloneLinkedImage,
+    /<a\b[^>]*href="https:\/\/example\.org\/icon"[^>]*><figure class="md-block prerender-media"><img\b[^>]*\/><figcaption>Linked caption<\/figcaption><\/figure><\/a>/,
+    'standalone linked images must not be enclosed by paragraphs');
+  assert.match(visiblePost, /<p>Before <img\b[^>]*alt="inline icon"[^>]*\/> after<\/p>/);
+  assert.match(visiblePost, /<p>Before <a\b[^>]*href="https:\/\/example\.org\/icon"[^>]*><img\b[^>]*alt="linked icon"[^>]*\/><\/a> after<\/p>/);
   assert.match(postHtml, /<link rel="canonical" href="https:\/\/imadlab.com\/blogs\/synthetic-article\/"\s*\/>/);
   assert.match(postHtml, /<title>Synthetic technical article/);
   assert.match(postHtml, /<meta name="description" content="Synthetic article summary"/);

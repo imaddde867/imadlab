@@ -649,6 +649,12 @@ All colors MUST be HSL.
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
 }
+.prerender-content .article-body p :is(img, video) {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
 .prerender-content .article-body .prerender-media figcaption {
   margin-top: 0.5rem;
   font-size: 0.85rem;

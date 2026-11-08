@@ -75,3 +75,21 @@ export const selectProjectMarkdown = (project) => {
   const short = typeof project?.description === 'string' ? project.description : '';
   return short.trim() ? short : '';
 };
+
+/**
+ * Recognize paragraphs made entirely of Markdown images, including images
+ * wrapped in links. All other images must remain phrasing content inside <p>.
+ */
+export const isStandaloneMediaParagraph = (node) => {
+  const meaningfulChildren = (children) =>
+    (children ?? []).filter((child) => child.type !== 'text' || Boolean(child.value?.trim()));
+  const isImage = (child) => {
+    if (child.type !== 'element') return false;
+    if (child.tagName === 'img') return true;
+    if (child.tagName !== 'a') return false;
+    const linked = meaningfulChildren(child.children);
+    return linked.length === 1 && linked[0].type === 'element' && linked[0].tagName === 'img';
+  };
+  const children = meaningfulChildren(node?.children);
+  return children.length > 0 && children.every(isImage);
+};

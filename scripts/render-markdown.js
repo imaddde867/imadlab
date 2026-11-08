@@ -12,7 +12,23 @@ import rehypeKatex from 'rehype-katex';
 import GithubSlugger from 'github-slugger';
 import hljs from 'highlight.js/lib/common';
 import katex from 'katex';
-import { markdownSanitizeSchema, normalizeMathBlocks } from '../src/lib/markdown-shared.js';
+import { markdownSanitizeSchema, normalizeMathBlocks, isStandaloneMediaParagraph } from '../src/lib/markdown-shared.js';
+
+// A paragraph that consists solely of media opts into block figures.
+// Media embedded in prose, links, headings, and table cells stays inline.
+const BlockMediaContext = React.createContext(false);
+
+const StaticMediaRenderer = ({ src, alt, title }) => {
+  const isBlock = React.useContext(BlockMediaContext);
+  const isVideo = typeof src === 'string' && /[.](mp4|webm|ogg|mov)$/i.test(src.split('?')[0]);
+  const media = isVideo
+    ? createElement('video', { src, title, controls: true, preload: 'metadata', 'aria-label': alt || undefined })
+    : createElement('img', { src, title, alt: alt || '', loading: 'lazy', decoding: 'async' });
+  return isBlock
+    ? createElement('figure', { className: 'md-block prerender-media' },
+        media, title ? createElement('figcaption', null, title) : null)
+    : media;
+};
 
 const getText = (node) => {
   if (!node) return '';
@@ -42,22 +58,10 @@ export const renderMarkdownForStaticHtml = (markdown, { repositoryUrl } = {}) =>
     return createElement(`h${level}`, { id, className: 'group relative scroll-mt-24' }, children);
   };
   const components = {
-    // An image-only Markdown paragraph must not wrap a figure inside a <p>.
-    p: ({ node, children }) => {
-      const nodes = node?.children ?? [];
-      const imageOnly = nodes.length > 0 && nodes.every((child) =>
-        (child.type === 'element' && child.tagName === 'img') ||
-        (child.type === 'text' && !child.value?.trim()));
-      return imageOnly ? createElement(React.Fragment, null, children) : createElement('p', null, children);
-    },
-    img: ({ src, alt, title }) => {
-      const video = typeof src === 'string' && /[.](mp4|webm|ogg|mov)$/i.test(src.split('?')[0]);
-      return createElement('figure', { className: 'md-block prerender-media' },
-        video
-          ? createElement('video', { src, title, controls: true, preload: 'metadata', 'aria-label': alt || undefined })
-          : createElement('img', { src, title, alt: alt || '', loading: 'lazy', decoding: 'async' }),
-        title ? createElement('figcaption', null, title) : null);
-    },
+    p: ({ node, children }) => isStandaloneMediaParagraph(node)
+      ? createElement(BlockMediaContext.Provider, { value: true }, children)
+      : createElement('p', null, children),
+    img: StaticMediaRenderer,
     table: ({ children }) => createElement('div',
       { className: 'md-block prerender-table-scroll', role: 'region', 'aria-label': 'Markdown table' },
       createElement('table', { className: 'prerender-table' }, children)),

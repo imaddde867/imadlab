@@ -72,6 +72,18 @@ try {
       for (const marker of expected) {
         assert.ok(articleText.includes(marker), kind + ' (js=' + enabled + '): missing ' + marker);
       }
+      if (kind === 'post') {
+        const inline = article.locator('p:has(img[alt="inline icon"])');
+        assert.equal(await inline.count(), 1, 'inline image must remain in its paragraph (js=' + enabled + ')');
+        assert.match((await inline.textContent()) || '', /^Before\s+after$/);
+        const linked = article.locator('p:has(a[href="https://example.org/icon"] img[alt="linked icon"])');
+        assert.equal(await linked.count(), 1, 'linked inline image must remain in its paragraph (js=' + enabled + ')');
+        assert.match((await linked.textContent()) || '', /^Before\s+after$/);
+        assert.equal(await article.locator('figure:has(img[alt="Standalone icon"])').count(), 1,
+          'standalone image retains its figure (js=' + enabled + ')');
+        assert.equal(await article.locator('a[href="https://example.org/linked-icon"] figure:has(img[alt="Standalone linked icon"])').count(), 1,
+          'standalone linked image retains its figure (js=' + enabled + ')');
+      }
       if (enabled) {
         assert.equal(await page.locator('#root [data-prerender="true"]').count(), 0, 'React must replace the static root');
         assert.deepEqual(errors, [], kind + ': browser page errors');
