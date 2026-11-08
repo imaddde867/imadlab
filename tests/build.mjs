@@ -3,6 +3,7 @@ import http from 'node:http';
 import { readFile, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { selectHomeProjects } from '../src/lib/home-projects.js';
+import { renderMarkdownForStaticHtml } from '../scripts/render-markdown.js';
 
 const projects = Array.from({ length: 35 }, (_, i) => ({
   id: `00000000-0000-0000-0000-${String(i + 1).padStart(12, '0')}`,
@@ -11,12 +12,55 @@ const projects = Array.from({ length: 35 }, (_, i) => ({
   published: true,
   created_at: '2026-01-01T00:00:00Z',
   description: 'Fixture',
-  full_description: 'Fixture',
+  full_description: [
+    '# Project methods',
+    'PROJECT_BEGIN_MARKER',
+    'A'.repeat(700),
+    '## Project validation',
+    'PROJECT_MIDDLE_MARKER',
+    '| Metric | Value |',
+    '| --- | --- |',
+    '| Accuracy | 0.95 |',
+    'PROJECT_END_MARKER',
+  ].join('\n\n'),
   tech_tags: [],
 })).reverse();
+const postBody = [
+  '# Research overview',
+  'POST_BEGIN_MARKER',
+  'B'.repeat(800),
+  '## Evaluation',
+  'POST_MIDDLE_MARKER',
+  '- First check',
+  '- Second check',
+  '~~~js',
+  'const safe = 42;',
+  '~~~',
+  '| Result | Status |',
+  '| --- | --- |',
+  '| Test | Passed |',
+  '## Conclusions',
+  'POST_END_MARKER',
+  '<script>alert("danger")</script>',
+  '<img src="x" onerror="alert(1)">',
+  '[unsafe](javascript:alert(1))',
+  '[safe](https://example.org/)',
+].join('\n\n');
+const posts = [{
+  id: '00000000-0000-0000-0000-000000009999',
+  slug: 'synthetic-article',
+  title: 'Synthetic technical article',
+  excerpt: 'Synthetic article summary',
+  body: postBody,
+  published_date: '2026-01-01T00:00:00Z',
+  updated_at: '2026-01-02T00:00:00Z',
+  tags: ['Research'],
+  read_time: 5,
+  image_url: null,
+}];
 const server = http.createServer((req, res) => {
   res.setHeader('content-type', 'application/json');
-  res.end(JSON.stringify(req.url.startsWith('/rest/v1/projects') ? projects : []));
+  res.end(JSON.stringify(req.url.startsWith('/rest/v1/projects') ? projects : req.url.startsWith('/rest/v1/posts') ? posts : []));
 });
 await new Promise((resolve) => server.listen(55440, '127.0.0.1', resolve));
 const generated = ['public/sitemap.xml', 'public/feed.xml', 'public/feed.json'];
@@ -43,6 +87,35 @@ try {
   assert.match(html, /window\.__PRERENDERED_DATA__\["projects"\]/);
   const archive = await readFile('dist/projects/index.html', 'utf8');
   for (const project of projects) assert.ok(archive.includes(project.id), 'complete archive');
+  const postHtml = await readFile('dist/blogs/synthetic-article/index.html', 'utf8');
+  const projectHtml = await readFile('dist/projects/00000000-0000-0000-0000-000000000001/index.html', 'utf8');
+  const visibleRoot = (page) => {
+    const match = page.match(/<div id="root">([\s\S]*?)<\/div>\s*<script[^>]*src=/);
+    assert.ok(match, 'server-rendered root must precede the client script');
+    return match[1];
+  };
+  const visiblePost = visibleRoot(postHtml);
+  const visibleProject = visibleRoot(projectHtml);
+  for (const marker of ['POST_BEGIN_MARKER', 'POST_MIDDLE_MARKER', 'POST_END_MARKER']) {
+    assert.ok(visiblePost.includes(marker), `visible article content missing: ${marker}`);
+  }
+  for (const marker of ['PROJECT_BEGIN_MARKER', 'PROJECT_MIDDLE_MARKER', 'PROJECT_END_MARKER']) {
+    assert.ok(visibleProject.includes(marker), `visible project content missing: ${marker}`);
+  }
+  assert.match(visiblePost, /<h2 id="evaluation"/);
+  assert.match(visiblePost, /<table/);
+  assert.match(visiblePost, /<ul/);
+  assert.match(visiblePost, /<code/);
+  assert.match(postHtml, /<link rel="canonical" href="https:\/\/imadlab.com\/blogs\/synthetic-article\/"\s*\/>/);
+  assert.match(postHtml, /<title>Synthetic technical article/);
+  assert.match(projectHtml, /<link rel="canonical" href="https:\/\/imadlab.com\/projects\/00000000-0000-0000-0000-000000000001\/"\s*\/>/);
+  assert.doesNotMatch(visiblePost, /<script|onerror=|href="javascript:/i);
+  assert.match(visiblePost, /href="https:\/\/example.org\//);
+  const empty = renderMarkdownForStaticHtml('');
+  assert.match(empty, /article-body/);
+  assert.doesNotMatch(renderMarkdownForStaticHtml('<script>alert(1)</script>'), /<script/);
+  assert.match(renderMarkdownForStaticHtml('## Same\n\n## Same'), /id="same-1"/);
+  console.log('PASS full visible Markdown, middle/end markers, canonical metadata and XSS fixtures');
   console.log(
     'PASS actual build, synthetic prerender/runtime agreement and complete 35-project archive'
   );
