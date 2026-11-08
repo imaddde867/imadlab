@@ -240,7 +240,7 @@ try {
   assert.equal(sawPaginatedPostQuery, true, 'posts must be retrieved across multiple pages');
   assert.equal(sawPaginatedProjectQuery, true, 'projects must be retrieved across multiple pages');
   const sitemap = await readFile('dist/sitemap.xml', 'utf8');
-  const urls = [...sitemap.matchAll(/<url>\\s*<loc>([^<]+)<\\/loc>/g)].map((m) => m[1]);
+  const urls = [...sitemap.matchAll(/<url>\s*<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
   assert.equal(urls.length, new Set(urls).size, 'sitemap URLs must be unique');
   assert.equal(urls.length, 5 + 1 + projects.length + posts.length, 'complete route inventory');
   for (const post of posts) {
