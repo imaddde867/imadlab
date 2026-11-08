@@ -479,6 +479,31 @@ const ensureDistExists = async () => {
   }
 };
 
+
+const summarizePosts = (posts) => posts.map((post) => ({
+  id: post.id,
+  title: post.title,
+  slug: post.slug,
+  excerpt: post.excerpt || stripMarkdown(post.body || '').slice(0, 220),
+  tags: post.tags,
+  published_date: post.published_date,
+  read_time: post.read_time,
+  image_url: post.image_url,
+}));
+
+const summarizeProjects = (projects) => projects.map((project) => ({
+  id: project.id,
+  title: project.title,
+  description: project.description || stripMarkdown(selectProjectMarkdown(project)).slice(0, 220),
+  tech_tags: project.tech_tags,
+  image_url: project.image_url,
+  repo_url: project.repo_url,
+  demo_url: project.demo_url,
+  featured: project.featured,
+  created_at: project.created_at,
+  updated_at: project.updated_at,
+}));
+
 async function main() {
   if (!(await ensureDistExists())) {
     throw new Error('Vite dist directory is required for prerendering');
@@ -496,12 +521,14 @@ async function main() {
   await fs.writeFile(path.join(DIST_DIR, 'index.html'), baseHtml, 'utf8');
 
   const { projects, posts, tags: tagEntries } = await readPublicContent();
+  const summaryProjects = summarizeProjects(projects);
+  const summaryPosts = summarizePosts(posts);
 
   await injectIntoPage({
     route: '.',
-    markup: renderHomeMarkup(posts, projects),
+    markup: renderHomeMarkup(summaryPosts, summaryProjects),
     dataKey: 'projects',
-    data: projects,
+    data: summaryProjects,
     baseHtml,
     seo: {
       title: 'Imad Eddine El Mouss',
@@ -562,9 +589,9 @@ async function main() {
 
   await injectIntoPage({
     route: 'projects',
-    markup: renderProjectsMarkup(projects),
+    markup: renderProjectsMarkup(summaryProjects),
     dataKey: 'projects',
-    data: projects,
+    data: summaryProjects,
     baseHtml,
     seo: {
       title: 'Projects',
@@ -584,9 +611,9 @@ async function main() {
 
   await injectIntoPage({
     route: 'blogs',
-    markup: renderPostsMarkup(posts),
+    markup: renderPostsMarkup(summaryPosts),
     dataKey: 'posts',
-    data: posts,
+    data: summaryPosts,
     baseHtml,
     seo: {
       title: 'Blog',

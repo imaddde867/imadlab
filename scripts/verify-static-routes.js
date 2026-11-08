@@ -3,6 +3,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { SITE_URL } from './utils/site.js';
 import { readPublicContent } from './public-content.js';
+import { assertWellFormedXml } from './utils/strict-xml.js';
 
 const inventory = await readPublicContent();
 const dist = path.resolve('dist');
@@ -11,6 +12,7 @@ const expectedSet = new Set(expected);
 assert.equal(expectedSet.size, expected.length, 'duplicate inventory route');
 
 const xml = await readFile(path.join(dist, 'sitemap.xml'), 'utf8');
+assertWellFormedXml(xml, 'urlset');
 const actual = [...xml.matchAll(/<url>\s*<loc>([^<]+)<\/loc>/g)]
   .map((match) => match[1].replace(/&amp;/g, '&'));
 assert.equal(actual.length, expected.length, 'sitemap URL count mismatch');
@@ -23,7 +25,10 @@ const postUrls = inventory.posts.map(({ slug }) => SITE_URL + '/blogs/' + slug +
 assert.equal(new Set(feedUrls).size, feedUrls.length, 'duplicate feed URL');
 assert.deepEqual(new Set(feedUrls), new Set(postUrls), 'JSON feed differs from public posts');
 const rss = await readFile(path.join(dist, 'feed.xml'), 'utf8');
+assertWellFormedXml(rss, 'rss');
 const rssUrls = [...rss.matchAll(/<item>[\s\S]*?<link>([^<]+)<\/link>/g)].map((match) => match[1]);
+assert.equal(rssUrls.length, postUrls.length, 'RSS feed URL count mismatch');
+assert.equal(new Set(rssUrls).size, rssUrls.length, 'duplicate RSS item');
 assert.deepEqual(new Set(rssUrls), new Set(postUrls), 'RSS feed differs from public posts');
 
 const titles = new Set();
@@ -31,8 +36,8 @@ for (const url of expected) {
   const route = new URL(url).pathname;
   const file = path.join(dist, route.slice(1), 'index.html');
   const html = await readFile(file, 'utf8');
-  assert.ok(html.includes('<link rel="canonical" href="' + url + '"'),
-    'missing or incorrect canonical: ' + route);
+  const canonicals = [...html.matchAll(/<link\s+rel="canonical"\s+href="([^"]+)"[^>]*>/g)].map((match) => match[1]);
+  assert.deepEqual(canonicals, [url], 'missing, duplicate or incorrect canonical: ' + route);
   assert.match(html, /<div id="root">[\s\S]*?<main data-prerender="true"[\s\S]*?<h1\b/,
     'missing visible static HTML content: ' + route);
   const title = html.match(/<title>([^<]+)<\/title>/)?.[1];

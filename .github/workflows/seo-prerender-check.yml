@@ -9,6 +9,11 @@ on:
       - 'scripts/generate-sitemap.js'
       - 'scripts/generate-feed.js'
       - 'scripts/verify-static-routes.js'
+      - 'scripts/utils/strict-xml.js'
+      - 'src/lib/public-pagination.*'
+      - 'src/lib/public-collections.ts'
+      - 'src/pages/**'
+      - 'src/lib/content-selects.ts'
       - 'scripts/render-markdown.js'
       - 'src/lib/markdown-shared.*'
       - 'src/components/markdown/GfmMarkdown.tsx'
@@ -17,6 +22,8 @@ on:
       - 'src/pages/ProjectDetail.tsx'
       - 'tests/build.mjs'
       - 'tests/public-content.test.mjs'
+      - 'tests/public-pagination.test.mjs'
+      - 'tests/strict-xml.test.mjs'
       - 'tests/prerender-browser.mjs'
       - 'package*.json'
       - '.github/workflows/seo-prerender-check.yml'
@@ -43,10 +50,14 @@ jobs:
           node --check scripts/generate-sitemap.js
           node --check scripts/generate-feed.js
           node --check scripts/verify-static-routes.js
+          node --check scripts/utils/strict-xml.js
+          node --check src/lib/public-pagination.js
           node --check scripts/prerender.js
           node --check src/lib/markdown-shared.js
           node --check tests/build.mjs
           node --check tests/public-content.test.mjs
+          node --check tests/public-pagination.test.mjs
+          node --check tests/strict-xml.test.mjs
       - name: Run Node regression tests
         run: node --test tests/*.test.mjs
       - name: Run static Markdown and generated-page regression tests
