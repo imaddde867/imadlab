@@ -90,7 +90,7 @@ try {
   const postHtml = await readFile('dist/blogs/synthetic-article/index.html', 'utf8');
   const projectHtml = await readFile('dist/projects/00000000-0000-0000-0000-000000000001/index.html', 'utf8');
   const visibleRoot = (page) => {
-    const match = page.match(/<div id="root">([\s\S]*?)<\/div>\s*<script[^>]*src=/);
+    const match = page.match(/<div id="root">([\s\S]*?)<\/main>\s*<\/div>/);
     assert.ok(match, 'server-rendered root must precede the client script');
     return match[1];
   };
