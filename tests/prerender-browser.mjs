@@ -73,6 +73,9 @@ try {
         assert.ok(articleText.includes(marker), kind + ' (js=' + enabled + '): missing ' + marker);
       }
       if (kind === 'post') {
+        const signedVideo = article.locator('video[src="https://example.org/demo.mp4?token=fixture#t=1"]');
+        assert.equal(await signedVideo.count(), 1,
+          'signed video must remain a video with JavaScript ' + enabled);
         const inline = article.locator('p:has(img[alt="inline icon"])');
         assert.equal(await inline.count(), 1, 'inline image must remain in its paragraph (js=' + enabled + ')');
         assert.match((await inline.textContent()) || '', /^Before\s+after$/);
@@ -101,6 +104,14 @@ try {
           assert.ok(decoration.includes('underline'), kind + ': no-JS links must be recognizable');
         }
         if (kind === 'post') {
+          const keyword = article.locator('pre code .hljs-keyword').first();
+          assert.equal(await keyword.count(), 1, 'static JS block must contain highlighted keywords');
+          const colors = await keyword.evaluate((el) => ({
+            token: getComputedStyle(el).color,
+            base: getComputedStyle(el.closest('code')).color,
+          }));
+          assert.notEqual(colors.token, colors.base,
+            'highlight.js token colors must survive the production Tailwind build');
           assert.equal(await page.locator('.prerender-table').count(), 1, 'no-JS table must be present');
           assert.equal(await page.locator('.prerender-math .katex').count(), 1, 'fenced latex must render without JavaScript');
           assert.equal(await page.locator('.prerender-media video').count(), 1, 'Markdown video should have native controls');

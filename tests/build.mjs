@@ -4,7 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { selectHomeProjects } from '../src/lib/home-projects.js';
 import { renderMarkdownForStaticHtml } from '../scripts/render-markdown.js';
-import { selectProjectMarkdown } from '../src/lib/markdown-shared.js';
+import { selectProjectMarkdown, normalizeMathBlocks, resolveMediaType } from '../src/lib/markdown-shared.js';
 
 const projects = Array.from({ length: 35 }, (_, i) => ({
   id: `00000000-0000-0000-0000-${String(i + 1).padStart(12, '0')}`,
@@ -43,6 +43,8 @@ const postBody = [
   'x^2 + y^2',
   '~~~',
   '![Recorded demonstration](https://example.org/demo.mp4)',
+  '![Signed demonstration](https://example.org/demo.mp4?token=fixture#t=1)',
+  '~~~text\n\\alpha + \\beta\n~~~',
   'Before ![inline icon](/icon.svg) after',
   'Before [![linked icon](/icon.svg)](https://example.org/icon) after',
   '![Standalone icon](/icon.svg "Standalone caption")',
@@ -120,6 +122,18 @@ try {
   assert.equal(selectProjectMarkdown({ full_description: '  ', description: '**Fallback**' }), '**Fallback**');
   assert.equal(selectProjectMarkdown({ full_description: null, description: null }), '');
   assert.equal(selectProjectMarkdown({ full_description: 'Full', description: 'Short' }), 'Full');
+  const tildeFence = '~~~text\n\\alpha + \\beta\n~~~';
+  assert.equal(normalizeMathBlocks(tildeFence, true), tildeFence,
+    'math normalization must not rewrite code inside tilde fences');
+  const ticks = String.fromCharCode(96);
+  const longFence = [ticks.repeat(4) + 'text', ticks.repeat(3), '\\alpha', ticks.repeat(4)].join('\n');
+  assert.equal(normalizeMathBlocks(longFence, true), longFence,
+    'a shorter backtick run must not close a longer fence');
+  assert.equal(normalizeMathBlocks('    \\alpha', true), '    \\alpha',
+    'indented code must not be rewritten as math');
+  assert.equal(resolveMediaType('demo.mp4?token=x#t=1'), 'video');
+  assert.equal(resolveMediaType('demo.MP4#t=1'), 'video');
+  assert.equal(resolveMediaType('icon.svg?file=demo.mp4'), 'image');
   for (const marker of ['POST_BEGIN_MARKER', 'POST_MIDDLE_MARKER', 'POST_END_MARKER']) {
     assert.ok(visiblePost.includes(marker), `visible article content missing: ${marker}`);
   }
@@ -142,6 +156,9 @@ try {
     assert.match(css, /\.katex\s*\{/, label + ': linked CSS lacks KaTeX layout rules');
     assert.match(css, /\.katex-display\s*\{/, label + ': linked CSS lacks display math rules');
     assert.match(css, /\.katex\s+\.katex-mathml\s*\{/, label + ': linked CSS must hide duplicate MathML');
+    for (const tokenClass of ['.hljs-keyword,', '.hljs-number,', '.hljs-string,']) {
+      assert.ok(css.includes(tokenClass), label + ': generated CSS must retain ' + tokenClass);
+    }
     // These static HTML selectors are not visible to Tailwind's TSX scan.
     for (const selector of [
       '.prerender-shell{',
@@ -162,6 +179,9 @@ try {
   assert.match(visiblePost, /class="prerender-table"/);
   assert.match(visiblePost, /class="md-block prerender-math"/, 'fenced LaTeX must render as KaTeX HTML');
   assert.match(visiblePost, /<video[^>]*src="https:\/\/example.org\/demo\.mp4"/);
+  assert.match(visiblePost, /<video[^>]*src="https:\/\/example\.org\/demo\.mp4\?token=fixture#t=1"/,
+    'signed video URLs with queries/fragments must prerender as video');
+  assert.doesNotMatch(visiblePost, /<img[^>]*src="https:\/\/example\.org\/demo\.mp4\?/);
   assert.doesNotMatch(visiblePost, /<img[^>]*src="https:\/\/example.org\/demo\.mp4"/);
   assert.doesNotMatch(visiblePost, /<p\b[^>]*>(?:(?!<\/p>)[\s\S])*<figure\b/,
     'figures must never appear inside HTML paragraphs');

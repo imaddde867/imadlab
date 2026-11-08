@@ -35,26 +35,43 @@ export const markdownSanitizeSchema = {
 
 const looksLikeMathLine = (line) => line.startsWith('\\') && /\\[A-Za-z]+/.test(line);
 
+// Normalization must not interpret LaTeX commands inside fenced or indented code.
+// CommonMark fences may use backticks or tildes, with a closing run at least as long.
 export const normalizeMathBlocks = (source, enableMath) => {
   if (!enableMath) return source;
   const lines = source.split('\n');
-  let inFence = false;
+  let fence = null;
   let inMathBlock = false;
   const output = [];
 
   for (const line of lines) {
     const trimmed = line.trim();
-    if (trimmed.startsWith('```')) {
-      inFence = !inFence;
+    const match = /^ {0,3}(\x60{3,}|~{3,})(.*)$/.exec(line);
+
+    if (fence) {
+      if (match && match[1][0] === fence.marker &&
+          match[1].length >= fence.length && !match[2].trim()) {
+        fence = null;
+      }
       output.push(line);
       continue;
     }
-    if (!inFence && trimmed === '$$') {
-      inMathBlock = !inMathBlock;
+    if (inMathBlock) {
+      if (trimmed === '$$') inMathBlock = false;
       output.push(line);
       continue;
     }
-    if (inFence || inMathBlock) {
+    if (match && (match[1][0] === '~' || !match[2].includes('\x60'))) {
+      fence = { marker: match[1][0], length: match[1].length };
+      output.push(line);
+      continue;
+    }
+    if (trimmed === '$$') {
+      inMathBlock = true;
+      output.push(line);
+      continue;
+    }
+    if (/^(?: {4}|\t)/.test(line)) {
       output.push(line);
       continue;
     }
@@ -67,13 +84,19 @@ export const normalizeMathBlocks = (source, enableMath) => {
   return output.join('\n');
 };
 
-
 /** Consistent published project body for build-time HTML and the React detail page. */
 export const selectProjectMarkdown = (project) => {
   const full = typeof project?.full_description === 'string' ? project.full_description : '';
   if (full.trim()) return full;
   const short = typeof project?.description === 'string' ? project.description : '';
   return short.trim() ? short : '';
+};
+
+/** Classify video Markdown media consistently in static and client renderers. */
+export const resolveMediaType = (src) => {
+  if (typeof src !== 'string') return 'image';
+  const pathname = src.split(/[?#]/, 1)[0].toLowerCase();
+  return /\.(mp4|webm|ogg|mov)$/.test(pathname) ? 'video' : 'image';
 };
 
 /**

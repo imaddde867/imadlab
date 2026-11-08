@@ -188,54 +188,7 @@ All colors MUST be HSL.
     margin-top: 0.35em;
   }
 
-  .hljs {
-    @apply text-white/90;
-  }
 
-  .hljs-comment,
-  .hljs-quote {
-    @apply text-white/40 italic;
-  }
-
-  .hljs-keyword,
-  .hljs-selector-tag,
-  .hljs-subst {
-    @apply text-sky-300;
-  }
-
-  .hljs-number,
-  .hljs-literal,
-  .hljs-variable,
-  .hljs-template-variable {
-    @apply text-amber-300;
-  }
-
-  .hljs-string,
-  .hljs-doctag {
-    @apply text-emerald-300;
-  }
-
-  .hljs-title,
-  .hljs-section {
-    @apply text-indigo-300;
-  }
-
-  .hljs-type,
-  .hljs-class {
-    @apply text-purple-300;
-  }
-
-  .hljs-meta,
-  .hljs-built_in,
-  .hljs-builtin-name {
-    @apply text-fuchsia-300;
-  }
-
-  .hljs-attr,
-  .hljs-attribute,
-  .hljs-symbol {
-    @apply text-rose-300;
-  }
 }
 
 @layer components {
@@ -674,4 +627,54 @@ All colors MUST be HSL.
   }
   .prerender-card { padding: 1.1rem; }
   .prerender-content .article-body { font-size: 1rem; }
+}
+
+/* Kept outside Tailwind @layer so runtime-generated hljs-* tokens survive JIT purging. */
+.hljs {
+  @apply text-white/90;
+}
+
+.hljs-comment,
+.hljs-quote {
+  @apply text-white/40 italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  @apply text-sky-300;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable {
+  @apply text-amber-300;
+}
+
+.hljs-string,
+.hljs-doctag {
+  @apply text-emerald-300;
+}
+
+.hljs-title,
+.hljs-section {
+  @apply text-indigo-300;
+}
+
+.hljs-type,
+.hljs-class {
+  @apply text-purple-300;
+}
+
+.hljs-meta,
+.hljs-built_in,
+.hljs-builtin-name {
+  @apply text-fuchsia-300;
+}
+
+.hljs-attr,
+.hljs-attribute,
+.hljs-symbol {
+  @apply text-rose-300;
 }

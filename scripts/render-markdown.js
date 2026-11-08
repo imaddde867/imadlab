@@ -12,7 +12,7 @@ import rehypeKatex from 'rehype-katex';
 import GithubSlugger from 'github-slugger';
 import hljs from 'highlight.js/lib/common';
 import katex from 'katex';
-import { markdownSanitizeSchema, normalizeMathBlocks, isStandaloneMediaParagraph } from '../src/lib/markdown-shared.js';
+import { markdownSanitizeSchema, normalizeMathBlocks, isStandaloneMediaParagraph, resolveMediaType } from '../src/lib/markdown-shared.js';
 
 // A paragraph that consists solely of media opts into block figures.
 // Media embedded in prose, links, headings, and table cells stays inline.
@@ -20,7 +20,7 @@ const BlockMediaContext = React.createContext(false);
 
 const StaticMediaRenderer = ({ src, alt, title }) => {
   const isBlock = React.useContext(BlockMediaContext);
-  const isVideo = typeof src === 'string' && /[.](mp4|webm|ogg|mov)$/i.test(src.split('?')[0]);
+  const isVideo = resolveMediaType(src) === 'video';
   const media = isVideo
     ? createElement('video', { src, title, controls: true, preload: 'metadata', 'aria-label': alt || undefined })
     : createElement('img', { src, title, alt: alt || '', loading: 'lazy', decoding: 'async' });

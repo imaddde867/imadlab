@@ -24,7 +24,7 @@ import rehypeRaw from 'rehype-raw';
 import rehypeKatex from 'rehype-katex';
 import rehypeSanitize from 'rehype-sanitize';
 import GithubSlugger from 'github-slugger';
-import { markdownSanitizeSchema, normalizeMathBlocks, isStandaloneMediaParagraph } from '@/lib/markdown-shared';
+import { markdownSanitizeSchema, normalizeMathBlocks, isStandaloneMediaParagraph, resolveMediaType } from '@/lib/markdown-shared';
 import { Hash } from 'lucide-react';
 import clsx from 'clsx';
 import type { Literal, Parent } from 'unist';
@@ -267,17 +267,6 @@ const FootnotesContainer = ({ children }: { children: ReactNode }) => (
     <ol className="list-decimal pl-6">{children}</ol>
   </section>
 );
-
-const absoluteVideoExtensions = new Set(['.mp4', '.webm', '.ogg', '.mov']);
-
-const resolveMediaType = (src?: string | null) => {
-  if (!src) return 'image';
-  const lower = src.toLowerCase();
-  for (const ext of absoluteVideoExtensions) {
-    if (lower.endsWith(ext)) return 'video';
-  }
-  return 'image';
-};
 
 const OrderedList = ({
   className,

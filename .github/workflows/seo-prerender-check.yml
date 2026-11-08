@@ -14,6 +14,7 @@ on:
       - 'tests/prerender-browser.mjs'
       - 'package*.json'
       - '.github/workflows/seo-prerender-check.yml'
+      - '.github/workflows/deploy.yml'
 
 permissions:
   contents: read
