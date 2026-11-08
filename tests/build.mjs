@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, unlink } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { selectHomeProjects } from '../src/lib/home-projects.js';
 import { renderMarkdownForStaticHtml } from '../scripts/render-markdown.js';
@@ -92,28 +92,40 @@ const server = http.createServer((req, res) => {
   if (isProjectQuery && url.searchParams.get('published') === 'eq.true') {
     sawPublishedProjectQuery = true;
   }
-  const range = (req.headers.range || '0-').split('-');
-  const offset = Number(url.searchParams.get('offset') ?? range[0]);
-  const limit = Number(url.searchParams.get('limit') ?? (
-    range[1] ? Number(range[1]) - offset + 1 : 250
-  ));
-  if (isPostQuery && offset > 0) sawPaginatedPostQuery = true;
-  if (isProjectQuery && offset > 0) sawPaginatedProjectQuery = true;
-  if (failPostPage && isPostQuery && offset >= 16) {
+  const cursorFilter = url.searchParams.get('id') ?? '';
+  const cursor = cursorFilter.startsWith('gt.') ? cursorFilter.slice(3) : null;
+  if (isPostQuery && cursor) sawPaginatedPostQuery = true;
+  if (isProjectQuery && cursor) sawPaginatedProjectQuery = true;
+  if (failPostPage && isPostQuery && cursor) {
     res.statusCode = 503;
     res.setHeader('content-type', 'application/json');
     res.end(JSON.stringify({ message: 'Simulated paginated query failure', code: 'TEST_FAILURE' }));
     return;
   }
-  const rows = isProjectQuery
+  const source = isProjectQuery
     ? projects.filter((item) => url.searchParams.get('published') !== 'eq.true' || item.published)
     : isPostQuery ? posts : [];
+  const rows = source.filter((row) => !cursor || row.id > cursor)
+    .sort((a, b) => a.id.localeCompare(b.id));
+  const range = (req.headers.range || '0-').split('-');
+  const offset = Number(url.searchParams.get('offset') ?? range[0]);
+  const limit = Number(url.searchParams.get('limit') ?? (
+    range[1] ? Number(range[1]) - offset + 1 : 250
+  ));
+  const selected = rows.slice(offset, offset + limit);
   res.setHeader('content-type', 'application/json');
-  res.end(JSON.stringify(rows.slice(offset, offset + limit)));
+  res.setHeader('content-range', selected.length ? offset + '-' + (offset + selected.length - 1) +
+    '/' + rows.length : '*/' + rows.length);
+  res.setHeader('access-control-expose-headers', 'content-range');
+  res.end(req.method === 'HEAD' ? undefined : JSON.stringify(selected));
 });
 await new Promise((resolve) => server.listen(55440, '127.0.0.1', resolve));
 const generated = ['public/sitemap.xml', 'public/feed.xml', 'public/feed.json'];
 const original = await Promise.all(generated.map((p) => readFile(p)));
+const cachedSnapshot = await readFile('.cache/public-content.json').catch((error) => {
+  if (error.code === 'ENOENT') return null;
+  throw error;
+});
 const buildEnv = {
   ...process.env,
   SUPABASE_URL: 'http://127.0.0.1:55440',
@@ -143,6 +155,16 @@ try {
     selectHomeProjects(projects).map((p) => p.id)
   );
   assert.match(html, /window\.__PRERENDERED_DATA__\["projects"\]/);
+  assert.doesNotMatch(html, /PROJECT_BEGIN_MARKER/,
+    'homepage must not embed complete project Markdown in its initial JSON');
+  const blogIndexHtml = await readFile('dist/blogs/index.html', 'utf8');
+  const projectIndexHtml = await readFile('dist/projects/index.html', 'utf8');
+  assert.doesNotMatch(blogIndexHtml, /POST_BEGIN_MARKER/,
+    'blog index must not serialize full article bodies');
+  assert.doesNotMatch(projectIndexHtml, /PROJECT_BEGIN_MARKER/,
+    'project index must not serialize full project descriptions');
+  assert.ok(Buffer.byteLength(blogIndexHtml) < 200_000,
+    '35-post blog listing should remain compact');
   const archive = await readFile('dist/projects/index.html', 'utf8');
   for (const project of projects) assert.ok(archive.includes(project.id), 'complete archive');
   const postHtml = await readFile('dist/blogs/synthetic-article/index.html', 'utf8');
@@ -301,6 +323,26 @@ try {
     failPostPage = false;
     await writeFile('.cache/public-content.json', cachedInventory);
   }
+  // Invalid XML must be rejected even if its extracted sitemap URLs still match.
+  const originalSitemap = await readFile('dist/sitemap.xml', 'utf8');
+  try {
+    await writeFile('dist/sitemap.xml', originalSitemap.replace('</urlset>', ''));
+    const badXml = await runForCode(process.execPath, ['scripts/verify-static-routes.js']);
+    assert.notEqual(badXml.code, 0, 'unterminated XML must fail');
+    assert.match(badXml.output, /Unclosed XML document/);
+  } finally {
+    await writeFile('dist/sitemap.xml', originalSitemap);
+  }
+  const originalRss = await readFile('dist/feed.xml', 'utf8');
+  try {
+    const duplicateItem = '<item><link>https://imadlab.com/blogs/synthetic-article/</link></item>';
+    await writeFile('dist/feed.xml', originalRss.replace('</channel>', duplicateItem + '</channel>'));
+    const dup = await runForCode(process.execPath, ['scripts/verify-static-routes.js']);
+    assert.notEqual(dup.code, 0, 'duplicate RSS item must fail');
+    assert.match(dup.output, /RSS feed URL count mismatch|duplicate RSS item/);
+  } finally {
+    await writeFile('dist/feed.xml', originalRss);
+  }
   console.log('PASS fail-closed prebuild and negative sitemap-to-HTML parity checks');
   console.log('PASS full visible Markdown, no-JS styles, media/math parity, fallback content and XSS fixtures');
   console.log(
@@ -308,5 +350,9 @@ try {
   );
 } finally {
   await Promise.all(generated.map((p, i) => writeFile(p, original[i])));
+  if (cachedSnapshot === null) await unlink('.cache/public-content.json').catch((error) => {
+    if (error.code !== 'ENOENT') throw error;
+  });
+  else await writeFile('.cache/public-content.json', cachedSnapshot);
   server.close();
 }
