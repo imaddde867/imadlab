@@ -1,6 +1,6 @@
 import { useMemo, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchPublicPosts } from '@/lib/public-collections';
 import SEO from '@/components/SEO';
 import { EntryList, Page, PageTitle } from '@/components/layout/Page';
 import { formatMonth } from '@/lib/utils';
@@ -17,13 +17,7 @@ const Blogs = () => {
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ['posts'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('posts')
-        .select(POST_SUMMARY_SELECT)
-        .order('published_date', { ascending: false });
-
-      if (error) throw error;
-      return data as PostSummary[];
+      return fetchPublicPosts<PostSummary>(POST_SUMMARY_SELECT);
     },
     initialData: initialPosts?.length ? initialPosts : undefined,
     initialDataUpdatedAt: initialUpdatedAt.current,

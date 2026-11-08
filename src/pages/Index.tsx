@@ -5,7 +5,7 @@ import SEO from '@/components/SEO';
 import SubscribeForm from '@/components/SubscribeForm';
 import { EntryList, Page, Section } from '@/components/layout/Page';
 import { formatMonth } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchPublicPosts, fetchPublicProjects } from '@/lib/public-collections';
 import { readPrerenderData } from '@/lib/prerender-data';
 import { POST_SUMMARY_SELECT, PROJECT_LIST_SELECT } from '@/lib/content-selects';
 import { selectHomeProjects } from '@/lib/home-projects.js';
@@ -81,23 +81,10 @@ const usePrerenderedQuery = <T,>(key: string, queryFn: () => Promise<T[]>) => {
 
 const Index = () => {
   const projects = usePrerenderedQuery<ProjectSummary>('projects', async () => {
-    const { data, error } = await supabase
-      .from('projects')
-      .select(PROJECT_LIST_SELECT)
-      .eq('published', true)
-      .order('featured', { ascending: false })
-      .order('created_at', { ascending: false })
-      .order('id', { ascending: true });
-    if (error) throw error;
-    return data as ProjectSummary[];
+    return fetchPublicProjects<ProjectSummary>(PROJECT_LIST_SELECT);
   });
   const posts = usePrerenderedQuery<PostSummary>('posts', async () => {
-    const { data, error } = await supabase
-      .from('posts')
-      .select(POST_SUMMARY_SELECT)
-      .order('published_date', { ascending: false });
-    if (error) throw error;
-    return data as PostSummary[];
+    return fetchPublicPosts<PostSummary>(POST_SUMMARY_SELECT);
   });
 
   const research = selectHomeProjects(projects);

@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { createSupabaseClient, SUPABASE_URL } from './utils/supabase.js';
 import { SITE_URL } from './utils/site.js';
+import { fetchAllById } from '../src/lib/public-pagination.js';
 
 export const INVENTORY_FILE = new URL('../.cache/public-content.json', import.meta.url);
 export const STATIC_ROUTES = ['/', '/projects/', '/blogs/', '/tags/', '/extras/'];
@@ -53,25 +54,31 @@ const isoDate = (value, label) => {
 // Use stable secondary ID ordering and a page size smaller than the PostgREST row cap.
 // Fail rather than silently treating a failed request as an empty result.
 async function fetchPages(client, table, fields, pageSize) {
-  const rows = [];
-  for (let offset = 0; ; offset += pageSize) {
-    let query = client.from(table).select(fields);
-    if (table === 'projects') {
-      query = query.eq('published', true)
-        .order('featured', { ascending: false })
-        .order('created_at', { ascending: false })
-        .order('id', { ascending: true });
-    } else {
-      query = query.order('published_date', { ascending: false })
-        .order('id', { ascending: true });
-    }
-    const { data, error } = await query.range(offset, offset + pageSize - 1);
-    if (error) throw new Error('Failed to fetch ' + table + ' at offset ' + offset + ': ' + (error.message || String(error)));
-    if (!Array.isArray(data)) throw new Error('Invalid ' + table + ' response at offset ' + offset);
-    if (data.length > pageSize) throw new Error('Unbounded ' + table + ' page at offset ' + offset);
-    rows.push(...data);
-    if (data.length < pageSize) return rows;
+  const publishedOnly = table === 'projects';
+  const records = await fetchAllById(
+    (cursor, size) => {
+      let query = client.from(table).select(fields, { count: 'exact' });
+      if (publishedOnly) query = query.eq('published', true);
+      if (cursor) query = query.gt('id', cursor);
+      return query.order('id', { ascending: true }).range(0, size - 1);
+    },
+    () => {
+      let query = client.from(table).select('id', { count: 'exact', head: true });
+      if (publishedOnly) query = query.eq('published', true);
+      return query;
+    },
+    { label: table, pageSize },
+  );
+  if (publishedOnly) {
+    return records.sort(
+      (a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)) ||
+        Date.parse(b.created_at) - Date.parse(a.created_at) ||
+        a.id.localeCompare(b.id)
+    );
   }
+  return records.sort(
+    (a, b) => Date.parse(b.published_date) - Date.parse(a.published_date) || a.id.localeCompare(b.id)
+  );
 }
 
 export function buildPublicContentInventory(posts, projects) {

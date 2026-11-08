@@ -1,6 +1,6 @@
 import { useMemo, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchPublicProjects } from '@/lib/public-collections';
 import SEO from '@/components/SEO';
 import { EntryList, Page, PageTitle } from '@/components/layout/Page';
 import { readPrerenderData } from '@/lib/prerender-data';
@@ -16,13 +16,7 @@ const Projects = () => {
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('projects')
-        .select(PROJECT_LIST_SELECT)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data as ProjectSummary[];
+      return fetchPublicProjects<ProjectSummary>(PROJECT_LIST_SELECT);
     },
     initialData: initialProjects?.length ? initialProjects : undefined,
     initialDataUpdatedAt: initialUpdatedAt.current,
