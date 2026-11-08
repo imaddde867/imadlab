@@ -84,6 +84,7 @@ const posts = [{
 let sawPublishedProjectQuery = false;
 let sawPaginatedPostQuery = false;
 let sawPaginatedProjectQuery = false;
+let failPostPage = false;
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, 'http://127.0.0.1');
   const isProjectQuery = url.pathname === '/rest/v1/projects';
@@ -98,6 +99,12 @@ const server = http.createServer((req, res) => {
   ));
   if (isPostQuery && offset > 0) sawPaginatedPostQuery = true;
   if (isProjectQuery && offset > 0) sawPaginatedProjectQuery = true;
+  if (failPostPage && isPostQuery && offset >= 16) {
+    res.statusCode = 503;
+    res.setHeader('content-type', 'application/json');
+    res.end(JSON.stringify({ message: 'Simulated paginated query failure', code: 'TEST_FAILURE' }));
+    return;
+  }
   const rows = isProjectQuery
     ? projects.filter((item) => url.searchParams.get('published') !== 'eq.true' || item.published)
     : isPostQuery ? posts : [];
@@ -107,16 +114,24 @@ const server = http.createServer((req, res) => {
 await new Promise((resolve) => server.listen(55440, '127.0.0.1', resolve));
 const generated = ['public/sitemap.xml', 'public/feed.xml', 'public/feed.json'];
 const original = await Promise.all(generated.map((p) => readFile(p)));
+const buildEnv = {
+  ...process.env,
+  SUPABASE_URL: 'http://127.0.0.1:55440',
+  SUPABASE_ANON_KEY: 'synthetic',
+  SUPABASE_DEPLOY: '0',
+  PUBLIC_CONTENT_PAGE_SIZE: '16',
+};
+async function runForCode(command, args, env = buildEnv) {
+  const child = spawn(command, args, { env, stdio: ['ignore', 'pipe', 'pipe'] });
+  let output = '';
+  child.stdout.on('data', (chunk) => { output += chunk; });
+  child.stderr.on('data', (chunk) => { output += chunk; });
+  return await new Promise((resolve) => child.on('close', (code) => resolve({ code, output })));
+}
 try {
   const child = spawn('npm', ['run', 'build'], {
     stdio: 'inherit',
-    env: {
-      ...process.env,
-      SUPABASE_URL: 'http://127.0.0.1:55440',
-      SUPABASE_ANON_KEY: 'synthetic',
-      SUPABASE_DEPLOY: '0',
-      PUBLIC_CONTENT_PAGE_SIZE: '16',
-    },
+    env: buildEnv,
   });
   const code = await new Promise((resolve) => child.on('exit', resolve));
   assert.equal(code, 0, 'actual npm build');
@@ -258,6 +273,35 @@ try {
   assert.match(empty, /article-body/);
   assert.doesNotMatch(renderMarkdownForStaticHtml('<script>alert(1)</script>'), /<script/);
   assert.match(renderMarkdownForStaticHtml('## Same\n\n## Same'), /id="same-1"/);
+  // A sitemap-only route must fail CI even if it points at a valid-looking URL.
+  const cleanSitemap = await readFile('dist/sitemap.xml', 'utf8');
+  try {
+    await writeFile('dist/sitemap.xml', cleanSitemap.replace('</urlset>',
+      '<url><loc>https://imadlab.com/blogs/not-generated/</loc></url>\n</urlset>'));
+    const mismatch = await runForCode(process.execPath, ['scripts/verify-static-routes.js']);
+    assert.notEqual(mismatch.code, 0, 'sitemap without a matching HTML page must fail');
+    assert.match(mismatch.output, /sitemap URL count mismatch|sitemap URLs differ/);
+  } finally {
+    await writeFile('dist/sitemap.xml', cleanSitemap);
+  }
+
+  // A failing later Supabase page must fail before replacing old sitemap/feed assets.
+  const cachedInventory = await readFile('.cache/public-content.json');
+  const beforeFailedBuildSitemap = await readFile('public/sitemap.xml');
+  try {
+    failPostPage = true;
+    const failure = await runForCode('npm', ['run', 'prebuild']);
+    assert.notEqual(failure.code, 0, 'partial Supabase content query must fail the prebuild');
+    assert.match(failure.output, /Simulated paginated query failure/);
+    await assert.rejects(readFile('.cache/public-content.json'), { code: 'ENOENT' },
+      'failed fetch must invalidate the previous content snapshot');
+    assert.deepEqual(await readFile('public/sitemap.xml'), beforeFailedBuildSitemap,
+      'failed prebuild must not overwrite the previous sitemap');
+  } finally {
+    failPostPage = false;
+    await writeFile('.cache/public-content.json', cachedInventory);
+  }
+  console.log('PASS fail-closed prebuild and negative sitemap-to-HTML parity checks');
   console.log('PASS full visible Markdown, no-JS styles, media/math parity, fallback content and XSS fixtures');
   console.log(
     'PASS actual build, synthetic prerender/runtime agreement and complete 35-project archive'
