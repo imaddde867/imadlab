@@ -5,6 +5,7 @@ import { SITE_URL } from './utils/site.js';
 import { createSupabaseClient, SUPABASE_URL } from './utils/supabase.js';
 import { selectHomeProjects } from '../src/lib/home-projects.js';
 import { stripMarkdown } from './utils/markdown.js';
+import { renderMarkdownForStaticHtml } from './render-markdown.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -251,10 +252,12 @@ ${items}
 
 const renderProjectDetailMarkup = (project) => {
   const descriptiveTitle = escapeHtml(getSeoTitle(project.title));
-  const detailSource = project.full_description || project.description || '';
-  const summary =
-    detailSource.length > 420 ? `${detailSource.slice(0, 417)}...` : detailSource;
-  const safeSummary = escapeHtml(summary);
+  const detailSource = project.full_description || '';
+  const detailHtml = detailSource.trim()
+    ? renderMarkdownForStaticHtml(detailSource, { repositoryUrl: project.repo_url })
+    : project.description?.trim()
+      ? renderMarkdownForStaticHtml(project.description)
+      : '<p>No detailed description available for this project.</p>';
   const tags = Array.isArray(project.tech_tags)
     ? project.tech_tags.filter(Boolean).slice(0, 6)
     : [];
@@ -280,11 +283,7 @@ const renderProjectDetailMarkup = (project) => {
           )}" alt="${descriptiveTitle}" loading="lazy" decoding="async" /></div>`
         : ''
     }
-    ${
-      safeSummary
-        ? `<p class="prerender-summary leading-relaxed">${safeSummary}</p>`
-        : '<p class="prerender-summary">Full project details will load after hydration.</p>'
-    }
+    <div class="prerender-content">${detailHtml}</div>
     ${
       isSafeHttpUrl(project.repo_url)
         ? `<p class="prerender-meta mt-4">Source: <a class="prerender-link inline" href="${escapeHtml(project.repo_url)}" rel="noopener">View repository</a></p>`
@@ -341,8 +340,9 @@ ${items}
 
 const renderPostDetailMarkup = (post) => {
   const headline = escapeHtml(post.title || 'Blog post');
-  const summarySource = post.excerpt || stripMarkdown(post.body || '');
-  const summary = escapeHtml(summarySource.length > 420 ? `${summarySource.slice(0, 417)}...` : summarySource);
+  const bodyHtml = post.body?.trim()
+    ? renderMarkdownForStaticHtml(post.body)
+    : '<p>No content available for this article.</p>';
   const published = post.published_date
     ? new Date(post.published_date).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -358,7 +358,8 @@ const renderPostDetailMarkup = (post) => {
     ${published ? `<p class="prerender-meta text-sm text-white/60">${escapeHtml(published)}</p>` : ''}
     <h1 class="text-3xl font-bold mb-4">${headline}</h1>
     ${tags.length ? `<p class="prerender-tags">Tags: ${escapeHtml(tags.join(', '))}</p>` : ''}
-    ${summary ? `<p class="prerender-summary leading-relaxed">${summary}</p>` : ''}
+    ${post.excerpt ? `<p class="prerender-summary leading-relaxed">${escapeHtml(post.excerpt)}</p>` : ''}
+    <div class="prerender-content">${bodyHtml}</div>
     <a class="prerender-link mt-6 inline-flex" href="/blogs">Back to Blog</a>
   </article>
 </main>`;
@@ -463,8 +464,7 @@ const renderTagDetailMarkup = (label, matchedPosts, matchedProjects) => {
 const injectIntoPage = async ({ route, markup, dataKey, data, baseHtml, seo }) => {
   const routeDir = path.resolve(DIST_DIR, route);
   if (!isInsideDist(routeDir)) {
-    console.error(`⛔ Blocked unsafe route path: ${route}`);
-    return;
+    throw new Error(`Blocked unsafe route path: ${route}`);
   }
   const targetPath = path.join(routeDir, 'index.html');
 
@@ -486,8 +486,7 @@ const injectIntoPage = async ({ route, markup, dataKey, data, baseHtml, seo }) =
     // Replace root container content
     const rootPattern = /<div id="root">[\s\S]*?<\/div>/;
     if (!rootPattern.test(html)) {
-      console.warn(`⚠️  Unable to locate root container in ${targetPath}. Skipping prerender injection.`);
-      return;
+      throw new Error(`Missing root container in ${targetPath}`);
     }
 
     html = html.replace(rootPattern, `<div id="root">${markup}\n</div>`);
@@ -503,7 +502,7 @@ const injectIntoPage = async ({ route, markup, dataKey, data, baseHtml, seo }) =
     await fs.writeFile(targetPath, html, 'utf8');
     console.log(`✅ Prerendered content injected into ${route}/index.html`);
   } catch (error) {
-    console.error(`❌ Failed to inject prerender content for ${route}:`, error);
+    throw new Error(`Failed to prerender ${route}`, { cause: error });
   }
 };
 
@@ -529,8 +528,7 @@ async function fetchProjects() {
     .order('id', { ascending: true });
 
   if (error) {
-    console.error('Failed to fetch projects for prerendering:', error);
-    return [];
+    throw new Error('Failed to fetch published projects for prerendering', { cause: error });
   }
 
   return data ?? [];
@@ -544,8 +542,7 @@ async function fetchPosts() {
     .limit(30);
 
   if (error) {
-    console.error('Failed to fetch posts for prerendering:', error);
-    return [];
+    throw new Error('Failed to fetch posts for prerendering', { cause: error });
   }
 
   return data ?? [];
@@ -553,7 +550,7 @@ async function fetchPosts() {
 
 async function main() {
   if (!(await ensureDistExists())) {
-    return;
+    throw new Error('Vite dist directory is required for prerendering');
   }
 
   console.log('🛠️  Starting prerender pass for key routes...');
@@ -562,8 +559,7 @@ async function main() {
   try {
     baseHtml = await fs.readFile(path.join(DIST_DIR, 'index.html'), 'utf8');
   } catch (error) {
-    console.error('❌ Unable to read dist/index.html. Ensure the Vite build completed successfully.', error);
-    return;
+    throw new Error('Unable to read dist/index.html', { cause: error });
   }
   baseHtml = applySiteVerificationToHtml(baseHtml);
   await fs.writeFile(path.join(DIST_DIR, 'index.html'), baseHtml, 'utf8');
