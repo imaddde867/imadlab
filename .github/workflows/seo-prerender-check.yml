@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - 'scripts/prerender.js'
+      - 'scripts/public-content.js'
+      - 'scripts/build-public-content.js'
+      - 'scripts/generate-sitemap.js'
+      - 'scripts/generate-feed.js'
+      - 'scripts/verify-static-routes.js'
       - 'scripts/render-markdown.js'
       - 'src/lib/markdown-shared.*'
       - 'src/components/markdown/GfmMarkdown.tsx'
@@ -11,6 +16,7 @@ on:
       - 'src/index.css'
       - 'src/pages/ProjectDetail.tsx'
       - 'tests/build.mjs'
+      - 'tests/public-content.test.mjs'
       - 'tests/prerender-browser.mjs'
       - 'package*.json'
       - '.github/workflows/seo-prerender-check.yml'
@@ -32,9 +38,15 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check scripts/render-markdown.js
+          node --check scripts/public-content.js
+          node --check scripts/build-public-content.js
+          node --check scripts/generate-sitemap.js
+          node --check scripts/generate-feed.js
+          node --check scripts/verify-static-routes.js
           node --check scripts/prerender.js
           node --check src/lib/markdown-shared.js
           node --check tests/build.mjs
+          node --check tests/public-content.test.mjs
       - name: Run Node regression tests
         run: node --test tests/*.test.mjs
       - name: Run static Markdown and generated-page regression tests
