@@ -114,7 +114,8 @@ try {
             'highlight.js token colors must survive the production Tailwind build');
           assert.equal(await page.locator('.prerender-table').count(), 1, 'no-JS table must be present');
           assert.equal(await page.locator('.prerender-math .katex').count(), 1, 'fenced latex must render without JavaScript');
-          assert.equal(await page.locator('.prerender-media video').count(), 1, 'Markdown video should have native controls');
+          assert.equal(await page.locator('.prerender-media video[controls]').count(), 2,
+            'plain and signed Markdown videos should both retain native controls');
         }
       }
       await page.close();
