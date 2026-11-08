@@ -106,6 +106,7 @@ try {
   assert.match(visiblePost, /<table/);
   assert.match(visiblePost, /<ul/);
   assert.match(visiblePost, /<code/);
+  assert.match(visiblePost, /class="hljs language-js"/);
   assert.match(postHtml, /<link rel="canonical" href="https:\/\/imadlab.com\/blogs\/synthetic-article\/"\s*\/>/);
   assert.match(postHtml, /<title>Synthetic technical article/);
   assert.match(projectHtml, /<link rel="canonical" href="https:\/\/imadlab.com\/projects\/00000000-0000-0000-0000-000000000001\/"\s*\/>/);
