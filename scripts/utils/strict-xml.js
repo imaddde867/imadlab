@@ -15,6 +15,17 @@ export function assertWellFormedXml(xml, expectedRoot) {
     if (/&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)/.test(value)) {
       throw new Error('Unescaped XML entity');
     }
+    for (const match of value.matchAll(/&#(x[0-9a-fA-F]+|\d+);/g)) {
+      const number = match[1].startsWith('x')
+        ? Number.parseInt(match[1].slice(1), 16)
+        : Number.parseInt(match[1], 10);
+      if (!(number === 9 || number === 10 || number === 13 ||
+        (number >= 32 && number <= 0xD7FF) ||
+        (number >= 0xE000 && number <= 0xFFFD) ||
+        (number >= 0x10000 && number <= 0x10FFFF))) {
+        throw new Error('Invalid XML character reference');
+      }
+    }
   };
 
   while (i < xml.length) {
@@ -63,7 +74,9 @@ export function assertWellFormedXml(xml, expectedRoot) {
         const match = remaining.match(/^\s+([A-Za-z_:][\w.:-]*)\s*=\s*("[^"]*"|'[^']*')/);
         if (!match || names.has(match[1])) throw new Error('Invalid or duplicate XML attribute');
         names.add(match[1]);
-        checkEntities(match[2].slice(1, -1));
+        const attributeValue = match[2].slice(1, -1);
+        if (attributeValue.includes('<')) throw new Error('Unescaped XML attribute content');
+        checkEntities(attributeValue);
         remaining = remaining.slice(match[0].length);
       }
       if (!stack.length) {

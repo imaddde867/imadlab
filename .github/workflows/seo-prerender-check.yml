@@ -60,6 +60,8 @@ jobs:
           node --check tests/strict-xml.test.mjs
       - name: Run Node regression tests
         run: node --test tests/*.test.mjs
+      - name: Lint changed application code
+        run: npx eslint src/lib/public-collections.ts src/pages/Index.tsx src/pages/Blog.tsx src/pages/Projects.tsx src/pages/Tag.tsx src/pages/TagsIndex.tsx src/pages/Search.tsx
       - name: Type-check app (including new public content loaders)
         run: npx tsc --noEmit -p tsconfig.app.json
       - name: Run static Markdown and generated-page regression tests

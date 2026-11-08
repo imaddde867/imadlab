@@ -21,5 +21,10 @@ test('strict parser rejects unclosed, malformed and unsafe XML', () => {
     xml + '<urlset><![CDATA[broken</urlset>',
     xml + '<urlset>text\u0001</urlset>',
     xml + '<!DOCTYPE x><urlset></urlset>',
+    xml + '<urlset broken="<"></urlset>',
+    xml + '<urlset bad="&#0;"></urlset>',
+    xml + '<urlset bad="&#xD800;"></urlset>',
+    xml + '<urlset bad="&#x110000;"></urlset>',
+    xml + '<urlset>&#x1;</urlset>',
   ]) assert.throws(() => assertWellFormedXml(value, 'urlset'));
 });
