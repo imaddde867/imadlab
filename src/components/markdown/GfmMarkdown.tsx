@@ -24,8 +24,7 @@ import rehypeRaw from 'rehype-raw';
 import rehypeKatex from 'rehype-katex';
 import rehypeSanitize from 'rehype-sanitize';
 import GithubSlugger from 'github-slugger';
-import type { Schema } from 'hast-util-sanitize';
-import { defaultSchema } from 'hast-util-sanitize';
+import { markdownSanitizeSchema, normalizeMathBlocks } from '@/lib/markdown-shared';
 import { Hash } from 'lucide-react';
 import clsx from 'clsx';
 import type { Literal, Parent } from 'unist';
@@ -71,57 +70,6 @@ const defaultConfig: Required<MarkdownConfig> = {
 };
 
 const isAbsoluteUrl = (url: string) => /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(url);
-
-const mathSchemaExtensions: Schema = {
-  ...defaultSchema,
-  attributes: {
-    ...defaultSchema.attributes,
-    code: [...(defaultSchema.attributes?.code ?? []), ['className', 'math-inline', 'math-display']],
-    details: [...(defaultSchema.attributes?.details ?? []), 'open'],
-    video: [
-      ...(defaultSchema.attributes?.video ?? []),
-      'src',
-      'controls',
-      'autoplay',
-      'loop',
-      'muted',
-      'playsInline',
-      'poster',
-      'preload',
-      'height',
-      'width',
-    ],
-    source: [...(defaultSchema.attributes?.source ?? []), 'src', 'type'],
-    audio: [
-      ...(defaultSchema.attributes?.audio ?? []),
-      'controls',
-      'autoplay',
-      'loop',
-      'muted',
-      'preload',
-    ],
-    track: ['default', 'kind', 'label', 'srcLang', 'src'],
-    figure: [...(defaultSchema.attributes?.figure ?? []), 'role'],
-    figcaption: defaultSchema.attributes?.figcaption ?? [],
-  },
-  tagNames: Array.from(
-    new Set([
-      ...(defaultSchema.tagNames ?? []),
-      'details',
-      'summary',
-      'figure',
-      'figcaption',
-      'video',
-      'audio',
-      'track',
-    ])
-  ),
-  protocols: {
-    ...defaultSchema.protocols,
-    src: ['http', 'https', 'data'],
-    poster: ['http', 'https'],
-  },
-};
 
 const SluggerContext = createContext<GithubSlugger | null>(null);
 
@@ -327,45 +275,6 @@ const resolveMediaType = (src?: string | null) => {
   return 'image';
 };
 
-const looksLikeMathLine = (line: string) => {
-  if (!line) return false;
-  if (!line.startsWith('\\')) return false;
-  return /\\[A-Za-z]+/.test(line);
-};
-
-const normalizeMathBlocks = (source: string, enableMath: boolean) => {
-  if (!enableMath) return source;
-  const lines = source.split('\n');
-  let inFence = false;
-  let inMathBlock = false;
-  const output: string[] = [];
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (trimmed.startsWith('```')) {
-      inFence = !inFence;
-      output.push(line);
-      continue;
-    }
-    if (!inFence && trimmed === '$$') {
-      inMathBlock = !inMathBlock;
-      output.push(line);
-      continue;
-    }
-    if (inFence || inMathBlock) {
-      output.push(line);
-      continue;
-    }
-    if (looksLikeMathLine(trimmed)) {
-      output.push('$$', trimmed, '$$');
-      continue;
-    }
-    output.push(line);
-  }
-
-  return output.join('\n');
-};
-
 const OrderedList = ({
   className,
   children,
@@ -444,7 +353,7 @@ export const GfmMarkdown = ({
   const rehypePlugins = useMemo<PluggableList>(() => {
     const plugins: PluggableList = [rehypeRaw];
     if (mergedConfig.sanitizeHtml) {
-      plugins.push([rehypeSanitize, mathSchemaExtensions]);
+      plugins.push([rehypeSanitize, markdownSanitizeSchema]);
     }
     if (mergedConfig.enableMath) {
       plugins.push(rehypeKatex);
