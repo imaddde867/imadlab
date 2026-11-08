@@ -44,7 +44,7 @@ export const normalizeMathBlocks = (source, enableMath) => {
 
   for (const line of lines) {
     const trimmed = line.trim();
-    if (trimmed.startsWith('``')) {
+    if (trimmed.startsWith('```')) {
       inFence = !inFence;
       output.push(line);
       continue;
@@ -64,6 +64,5 @@ export const normalizeMathBlocks = (source, enableMath) => {
     }
     output.push(line);
   }
-  return output.join('
-');
+  return output.join('\n');
 };
