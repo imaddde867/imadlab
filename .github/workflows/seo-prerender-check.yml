@@ -1,0 +1,34 @@
+name: SEO prerender regression checks
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/prerender.js'
+      - 'scripts/render-markdown.js'
+      - 'src/lib/markdown-shared.*'
+      - 'src/components/markdown/GfmMarkdown.tsx'
+      - 'tests/build.mjs'
+      - 'package*.json'
+      - '.github/workflows/seo-prerender-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  prerender:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+          cache: npm
+      - run: npm ci
+      - name: Validate JavaScript syntax
+        run: |
+          node --check scripts/render-markdown.js
+          node --check scripts/prerender.js
+          node --check src/lib/markdown-shared.js
+          node --check tests/build.mjs
+      - name: Run static Markdown and generated-page regression tests
+        run: node tests/build.mjs
