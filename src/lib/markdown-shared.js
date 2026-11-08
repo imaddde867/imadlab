@@ -6,7 +6,7 @@ export const markdownSanitizeSchema = {
   ...defaultSchema,
   attributes: {
     ...defaultSchema.attributes,
-    code: [...(defaultSchema.attributes?.code ?? []), ['className', 'math-inline', 'math-display']],
+    code: [...(defaultSchema.attributes?.code ?? []), ['className', /^language-[a-zA-Z0-9_+-]+$/, 'math-inline', 'math-display']],
     details: [...(defaultSchema.attributes?.details ?? []), 'open'],
     video: [
       ...(defaultSchema.attributes?.video ?? []),
