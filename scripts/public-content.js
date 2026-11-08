@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
-import { createSupabaseClient } from './utils/supabase.js';
+import { createSupabaseClient, SUPABASE_URL } from './utils/supabase.js';
+import { SITE_URL } from './utils/site.js';
 
 export const INVENTORY_FILE = new URL('../.cache/public-content.json', import.meta.url);
 export const STATIC_ROUTES = ['/', '/projects/', '/blogs/', '/tags/', '/extras/'];
@@ -11,6 +12,30 @@ export const isSafeSegment = (value) =>
 
 export const tagSlug = (value) =>
   value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+
+export const resolvePublicImageUrl = (value) => {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  const trimmed = value.trim();
+  if (/^\/?public\//.test(trimmed)) return '/' + trimmed.replace(/^\/?public\//, '');
+  if (/^(https?:|data:|blob:)/i.test(trimmed)) return trimmed;
+  if (trimmed.startsWith('/')) return trimmed;
+  if (SUPABASE_URL && trimmed.startsWith('storage/')) {
+    return SUPABASE_URL.replace(/\/$/, '') + '/' + trimmed;
+  }
+  return '/' + trimmed;
+};
+
+export const toAbsolutePublicImageUrl = (value) => {
+  const resolved = resolvePublicImageUrl(value);
+  if (!resolved || /^(data:|blob:)/i.test(resolved)) return null;
+  try {
+    const url = new URL(resolved, SITE_URL);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null;
+  } catch {
+    return null;
+  }
+};
 
 const isoDate = (value, label) => {
   if (typeof value !== 'string' || !value.trim()) {
@@ -74,6 +99,9 @@ export function buildPublicContentInventory(posts, projects) {
     if (!post || !isSafeSegment(post.slug)) {
       throw new Error('Unsafe or missing blog slug: ' + String(post?.slug));
     }
+    if (typeof post.title !== 'string' || !post.title.trim()) {
+      throw new Error('Missing blog title for ' + post.slug);
+    }
     const route = '/blogs/' + post.slug + '/';
     ensureRoute(route);
     const lastmod = isoDate(post.updated_at || post.published_date, route);
@@ -88,6 +116,9 @@ export function buildPublicContentInventory(posts, projects) {
     if (project?.published !== true) continue;
     if (!isSafeSegment(project.id)) {
       throw new Error('Unsafe or missing project ID: ' + String(project?.id));
+    }
+    if (typeof project.title !== 'string' || !project.title.trim()) {
+      throw new Error('Missing project title for ' + project.id);
     }
     const route = '/projects/' + project.id + '/';
     ensureRoute(route);
