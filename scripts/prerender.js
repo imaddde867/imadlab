@@ -6,6 +6,7 @@ import { createSupabaseClient, SUPABASE_URL } from './utils/supabase.js';
 import { selectHomeProjects } from '../src/lib/home-projects.js';
 import { stripMarkdown } from './utils/markdown.js';
 import { renderMarkdownForStaticHtml } from './render-markdown.js';
+import { selectProjectMarkdown } from '../src/lib/markdown-shared.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -252,12 +253,10 @@ ${items}
 
 const renderProjectDetailMarkup = (project) => {
   const descriptiveTitle = escapeHtml(getSeoTitle(project.title));
-  const detailSource = project.full_description || '';
-  const detailHtml = detailSource.trim()
+  const detailSource = selectProjectMarkdown(project);
+  const detailHtml = detailSource
     ? renderMarkdownForStaticHtml(detailSource, { repositoryUrl: project.repo_url })
-    : project.description?.trim()
-      ? renderMarkdownForStaticHtml(project.description)
-      : '<p>No detailed description available for this project.</p>';
+    : '<p>No detailed description available for this project.</p>';
   const tags = Array.isArray(project.tech_tags)
     ? project.tech_tags.filter(Boolean).slice(0, 6)
     : [];

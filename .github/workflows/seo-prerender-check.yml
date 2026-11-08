@@ -8,7 +8,10 @@ on:
       - 'src/lib/markdown-shared.*'
       - 'src/components/markdown/GfmMarkdown.tsx'
       - 'src/main.tsx'
+      - 'src/index.css'
+      - 'src/pages/ProjectDetail.tsx'
       - 'tests/build.mjs'
+      - 'tests/prerender-browser.mjs'
       - 'package*.json'
       - '.github/workflows/seo-prerender-check.yml'
 
@@ -35,3 +38,7 @@ jobs:
         run: node --test tests/*.test.mjs
       - name: Run static Markdown and generated-page regression tests
         run: node tests/build.mjs
+      - name: Install Chromium for JS/no-JS smoke tests
+        run: npx playwright install --with-deps chromium
+      - name: Verify browser rendering and React root replacement
+        run: node tests/prerender-browser.mjs

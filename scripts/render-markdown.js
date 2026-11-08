@@ -11,6 +11,7 @@ import rehypeSanitize from 'rehype-sanitize';
 import rehypeKatex from 'rehype-katex';
 import GithubSlugger from 'github-slugger';
 import hljs from 'highlight.js/lib/common';
+import katex from 'katex';
 import { markdownSanitizeSchema, normalizeMathBlocks } from '../src/lib/markdown-shared.js';
 
 const getText = (node) => {
@@ -41,6 +42,25 @@ export const renderMarkdownForStaticHtml = (markdown, { repositoryUrl } = {}) =>
     return createElement(`h${level}`, { id, className: 'group relative scroll-mt-24' }, children);
   };
   const components = {
+    // An image-only Markdown paragraph must not wrap a figure inside a <p>.
+    p: ({ node, children }) => {
+      const nodes = node?.children ?? [];
+      const imageOnly = nodes.length > 0 && nodes.every((child) =>
+        (child.type === 'element' && child.tagName === 'img') ||
+        (child.type === 'text' && !child.value?.trim()));
+      return imageOnly ? createElement(React.Fragment, null, children) : createElement('p', null, children);
+    },
+    img: ({ src, alt, title }) => {
+      const video = typeof src === 'string' && /[.](mp4|webm|ogg|mov)$/i.test(src.split('?')[0]);
+      return createElement('figure', { className: 'md-block prerender-media' },
+        video
+          ? createElement('video', { src, title, controls: true, preload: 'metadata', 'aria-label': alt || undefined })
+          : createElement('img', { src, title, alt: alt || '', loading: 'lazy', decoding: 'async' }),
+        title ? createElement('figcaption', null, title) : null);
+    },
+    table: ({ children }) => createElement('div',
+      { className: 'md-block prerender-table-scroll', role: 'region', 'aria-label': 'Markdown table' },
+      createElement('table', { className: 'prerender-table' }, children)),
     h1: heading(1), h2: heading(2), h3: heading(3),
     h4: heading(4), h5: heading(5), h6: heading(6),
     pre: ({ children }) => children,
@@ -54,8 +74,15 @@ export const renderMarkdownForStaticHtml = (markdown, { repositoryUrl } = {}) =>
         return createElement('pre', { className: 'md-block overflow-x-auto', 'data-mermaid-source': 'true' },
           createElement('code', { className: 'language-mermaid' }, code));
       }
-      // KaTeX is rendered by rehypeKatex for $...$ and $$...$$.
-      // Preserve fenced math source for clients that do not run JavaScript.
+      // rehypeKatex handles dollar-delimited math and language-math fences.
+      // The browser also renders fenced latex/tex/katex via MathRenderer.
+      if (['math', 'latex', 'tex', 'katex'].includes(language)) {
+        const html = katex.renderToString(code, {
+          displayMode: true, throwOnError: false, trust: false, output: 'htmlAndMathml',
+        });
+        return createElement('div', { className: 'md-block prerender-math', role: 'math', 'aria-label': code },
+          createElement('span', { dangerouslySetInnerHTML: { __html: html } }));
+      }
       const highlighted = language && code.length < 200000 && hljs.getLanguage(language)
         ? hljs.highlight(code, { language }).value : null;
       return createElement('pre', { className: 'md-block overflow-x-auto rounded-md border border-white/10 p-4' },

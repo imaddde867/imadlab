@@ -4,6 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { selectHomeProjects } from '../src/lib/home-projects.js';
 import { renderMarkdownForStaticHtml } from '../scripts/render-markdown.js';
+import { selectProjectMarkdown } from '../src/lib/markdown-shared.js';
 
 const projects = Array.from({ length: 35 }, (_, i) => ({
   id: `00000000-0000-0000-0000-${String(i + 1).padStart(12, '0')}`,
@@ -11,8 +12,8 @@ const projects = Array.from({ length: 35 }, (_, i) => ({
   featured: i < 5,
   published: true,
   created_at: '2026-01-01T00:00:00Z',
-  description: 'Fixture',
-  full_description: [
+  description: i === 1 ? 'FALLBACK_PROJECT_DESCRIPTION_MARKER with **bold** text' : i === 2 ? null : 'Fixture',
+  full_description: i === 1 || i === 2 ? null : [
     '# Project methods',
     'PROJECT_BEGIN_MARKER',
     'A'.repeat(700),
@@ -38,6 +39,10 @@ const postBody = [
   '~~~js',
   'const safe = 42;',
   '~~~',
+  '~~~latex',
+  'x^2 + y^2',
+  '~~~',
+  '![Recorded demonstration](https://example.org/demo.mp4)',
   '| Result | Status |\n| --- | --- |\n| Test | Passed |',
   '## Conclusions',
   'POST_END_MARKER',
@@ -93,6 +98,8 @@ try {
   for (const project of projects) assert.ok(archive.includes(project.id), 'complete archive');
   const postHtml = await readFile('dist/blogs/synthetic-article/index.html', 'utf8');
   const projectHtml = await readFile('dist/projects/00000000-0000-0000-0000-000000000001/index.html', 'utf8');
+  const fallbackProjectHtml = await readFile('dist/projects/00000000-0000-0000-0000-000000000002/index.html', 'utf8');
+  const emptyProjectHtml = await readFile('dist/projects/00000000-0000-0000-0000-000000000003/index.html', 'utf8');
   const visibleRoot = (page) => {
     const match = page.match(/<div id="root">([\s\S]*?)<\/main>\s*<\/div>/);
     assert.ok(match, 'server-rendered root must precede the client script');
@@ -100,6 +107,15 @@ try {
   };
   const visiblePost = visibleRoot(postHtml);
   const visibleProject = visibleRoot(projectHtml);
+  const visibleFallback = visibleRoot(fallbackProjectHtml);
+  const visibleEmpty = visibleRoot(emptyProjectHtml);
+  assert.match(visibleFallback, /FALLBACK_PROJECT_DESCRIPTION_MARKER/);
+  assert.match(visibleFallback, /<strong>bold<\/strong>/);
+  assert.doesNotMatch(visibleFallback, /No detailed description available/);
+  assert.match(visibleEmpty, /No detailed description available for this project/);
+  assert.equal(selectProjectMarkdown({ full_description: '  ', description: '**Fallback**' }), '**Fallback**');
+  assert.equal(selectProjectMarkdown({ full_description: null, description: null }), '');
+  assert.equal(selectProjectMarkdown({ full_description: 'Full', description: 'Short' }), 'Full');
   for (const marker of ['POST_BEGIN_MARKER', 'POST_MIDDLE_MARKER', 'POST_END_MARKER']) {
     assert.ok(visiblePost.includes(marker), `visible article content missing: ${marker}`);
   }
@@ -122,12 +138,28 @@ try {
     assert.match(css, /\.katex\s*\{/, label + ': linked CSS lacks KaTeX layout rules');
     assert.match(css, /\.katex-display\s*\{/, label + ': linked CSS lacks display math rules');
     assert.match(css, /\.katex\s+\.katex-mathml\s*\{/, label + ': linked CSS must hide duplicate MathML');
+    // These static HTML selectors are not visible to Tailwind's TSX scan.
+    for (const selector of [
+      '.prerender-shell{',
+      '.prerender-link,',
+      '.prerender-content .article-body a{',
+      '.prerender-content .article-body ul{',
+      '.prerender-content .article-body ol{',
+      '.prerender-content .article-body .prerender-table{',
+    ]) {
+      assert.ok(css.includes(selector), label + ': missing no-JS style ' + selector);
+    }
   }
   assert.match(visiblePost, /<h2 id="evaluation"/);
   assert.match(visiblePost, /<table/);
   assert.match(visiblePost, /<ul/);
   assert.match(visiblePost, /<code/);
   assert.match(visiblePost, /class="hljs language-js"/);
+  assert.match(visiblePost, /class="prerender-table"/);
+  assert.match(visiblePost, /class="md-block prerender-math"/, 'fenced LaTeX must render as KaTeX HTML');
+  assert.match(visiblePost, /<video[^>]*src="https:\/\/example.org\/demo\.mp4"/);
+  assert.doesNotMatch(visiblePost, /<img[^>]*src="https:\/\/example.org\/demo\.mp4"/);
+  assert.doesNotMatch(visiblePost, /<p>\s*<figure/, 'image-only paragraphs must be unwrapped');
   assert.match(postHtml, /<link rel="canonical" href="https:\/\/imadlab.com\/blogs\/synthetic-article\/"\s*\/>/);
   assert.match(postHtml, /<title>Synthetic technical article/);
   assert.match(postHtml, /<meta name="description" content="Synthetic article summary"/);
@@ -140,7 +172,7 @@ try {
   assert.match(empty, /article-body/);
   assert.doesNotMatch(renderMarkdownForStaticHtml('<script>alert(1)</script>'), /<script/);
   assert.match(renderMarkdownForStaticHtml('## Same\n\n## Same'), /id="same-1"/);
-  console.log('PASS full visible Markdown, middle/end markers, canonical metadata and XSS fixtures');
+  console.log('PASS full visible Markdown, no-JS styles, media/math parity, fallback content and XSS fixtures');
   console.log(
     'PASS actual build, synthetic prerender/runtime agreement and complete 35-project archive'
   );

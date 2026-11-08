@@ -66,3 +66,12 @@ export const normalizeMathBlocks = (source, enableMath) => {
   }
   return output.join('\n');
 };
+
+
+/** Consistent published project body for build-time HTML and the React detail page. */
+export const selectProjectMarkdown = (project) => {
+  const full = typeof project?.full_description === 'string' ? project.full_description : '';
+  if (full.trim()) return full;
+  const short = typeof project?.description === 'string' ? project.description : '';
+  return short.trim() ? short : '';
+};

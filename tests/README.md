@@ -52,4 +52,11 @@ node --test tests/*.test.mjs
 node tests/build.mjs
 ```
 
-Inspect `dist/blogs/synthetic-article/index.html` and `dist/projects/00000000-0000-0000-0000-000000000001/index.html` after the synthetic build. Compare their `#root` article text to the same routes with JavaScript enabled in a separate browser smoke test. Deployment to production requires explicit owner approval.
+Inspect `dist/blogs/synthetic-article/index.html`, `dist/projects/00000000-0000-0000-0000-000000000001/index.html`, and the fallback-only project `dist/projects/00000000-0000-0000-0000-000000000002/index.html` after the synthetic build. The build assertions verify semantic content and actual no-JS styles in the linked CSS. Browser/React parity is checked with:
+
+```sh
+npx playwright install chromium
+node tests/prerender-browser.mjs
+```
+
+The browser test serves the synthetic `dist` locally, verifies content and mobile list/link styles without JavaScript, and checks that React replaces the static root while retaining article text with JavaScript. It makes no production Supabase requests. Deployment to production requires explicit owner approval.
