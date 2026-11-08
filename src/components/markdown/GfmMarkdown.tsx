@@ -24,8 +24,7 @@ import rehypeRaw from 'rehype-raw';
 import rehypeKatex from 'rehype-katex';
 import rehypeSanitize from 'rehype-sanitize';
 import GithubSlugger from 'github-slugger';
-import type { Schema } from 'hast-util-sanitize';
-import { defaultSchema } from 'hast-util-sanitize';
+import { markdownSanitizeSchema, normalizeMathBlocks, isStandaloneMediaParagraph, resolveMediaType } from '@/lib/markdown-shared';
 import { Hash } from 'lucide-react';
 import clsx from 'clsx';
 import type { Literal, Parent } from 'unist';
@@ -39,7 +38,6 @@ import { ListItem } from './components/ListItem';
 import { ThematicBreak } from './components/ThematicBreak';
 import { MathRenderer } from './components/MathRenderer';
 import { MermaidBlock } from './components/MermaidBlock';
-import 'katex/dist/katex.min.css';
 
 type RepositoryContext = {
   owner: string;
@@ -72,58 +70,8 @@ const defaultConfig: Required<MarkdownConfig> = {
 
 const isAbsoluteUrl = (url: string) => /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(url);
 
-const mathSchemaExtensions: Schema = {
-  ...defaultSchema,
-  attributes: {
-    ...defaultSchema.attributes,
-    code: [...(defaultSchema.attributes?.code ?? []), ['className', 'math-inline', 'math-display']],
-    details: [...(defaultSchema.attributes?.details ?? []), 'open'],
-    video: [
-      ...(defaultSchema.attributes?.video ?? []),
-      'src',
-      'controls',
-      'autoplay',
-      'loop',
-      'muted',
-      'playsInline',
-      'poster',
-      'preload',
-      'height',
-      'width',
-    ],
-    source: [...(defaultSchema.attributes?.source ?? []), 'src', 'type'],
-    audio: [
-      ...(defaultSchema.attributes?.audio ?? []),
-      'controls',
-      'autoplay',
-      'loop',
-      'muted',
-      'preload',
-    ],
-    track: ['default', 'kind', 'label', 'srcLang', 'src'],
-    figure: [...(defaultSchema.attributes?.figure ?? []), 'role'],
-    figcaption: defaultSchema.attributes?.figcaption ?? [],
-  },
-  tagNames: Array.from(
-    new Set([
-      ...(defaultSchema.tagNames ?? []),
-      'details',
-      'summary',
-      'figure',
-      'figcaption',
-      'video',
-      'audio',
-      'track',
-    ])
-  ),
-  protocols: {
-    ...defaultSchema.protocols,
-    src: ['http', 'https', 'data'],
-    poster: ['http', 'https'],
-  },
-};
-
 const SluggerContext = createContext<GithubSlugger | null>(null);
+const BlockMediaContext = createContext(false);
 
 const AssetContext = createContext<{
   resolveUrl: (href?: string | null) => string | undefined;
@@ -225,22 +173,24 @@ const LinkRenderer = ({ href, children, ...props }: AnchorHTMLAttributes<HTMLAnc
 
 const ImageRenderer = ({ alt, src, title, ...props }: ImgHTMLAttributes<HTMLImageElement>) => {
   const { resolveUrl } = useAssetContext();
+  const isBlock = useContext(BlockMediaContext);
   const resolved = resolveUrl(src);
-
+  const image = (
+    <img
+      src={resolved}
+      alt={alt || ''}
+      title={title}
+      loading="lazy"
+      decoding="async"
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 60vw"
+      className={isBlock ? 'h-auto w-full object-cover' : 'inline-block h-auto max-w-full align-middle'}
+      {...props}
+    />
+  );
+  if (!isBlock) return image;
   return (
     <figure className="md-block w-full max-w-full">
-      <div className="w-full overflow-hidden rounded-md border border-white/10">
-        <img
-          src={resolved}
-          alt={alt || ''}
-          title={title}
-          loading="lazy"
-          decoding="async"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 60vw"
-          className="h-auto w-full object-cover"
-          {...props}
-        />
-      </div>
+      <div className="w-full overflow-hidden rounded-md border border-white/10">{image}</div>
       {title && <figcaption className="mt-2 text-sm text-white/55">{title}</figcaption>}
     </figure>
   );
@@ -253,22 +203,24 @@ const VideoRenderer = ({
   ...props
 }: VideoHTMLAttributes<HTMLVideoElement>) => {
   const { resolveUrl } = useAssetContext();
+  const isBlock = useContext(BlockMediaContext);
   const resolved = resolveUrl(src);
-
+  const video = (
+    <video
+      controls
+      preload="metadata"
+      src={resolved}
+      poster={poster ? resolveUrl(poster) : undefined}
+      className={isBlock ? 'h-auto w-full' : 'inline-block h-auto max-w-full align-middle'}
+      {...props}
+    >
+      {children}
+    </video>
+  );
+  if (!isBlock) return video;
   return (
     <figure className="md-block w-full max-w-full">
-      <div className="w-full overflow-hidden rounded-md border border-white/10">
-        <video
-          controls
-          preload="metadata"
-          src={resolved}
-          poster={poster ? resolveUrl(poster) : undefined}
-          className="h-auto w-full"
-          {...props}
-        >
-          {children}
-        </video>
-      </div>
+      <div className="w-full overflow-hidden rounded-md border border-white/10">{video}</div>
       {poster && (
         <figcaption className="mt-2 text-sm text-white/55">Video preview available</figcaption>
       )}
@@ -315,56 +267,6 @@ const FootnotesContainer = ({ children }: { children: ReactNode }) => (
     <ol className="list-decimal pl-6">{children}</ol>
   </section>
 );
-
-const absoluteVideoExtensions = new Set(['.mp4', '.webm', '.ogg', '.mov']);
-
-const resolveMediaType = (src?: string | null) => {
-  if (!src) return 'image';
-  const lower = src.toLowerCase();
-  for (const ext of absoluteVideoExtensions) {
-    if (lower.endsWith(ext)) return 'video';
-  }
-  return 'image';
-};
-
-const looksLikeMathLine = (line: string) => {
-  if (!line) return false;
-  if (!line.startsWith('\\')) return false;
-  return /\\[A-Za-z]+/.test(line);
-};
-
-const normalizeMathBlocks = (source: string, enableMath: boolean) => {
-  if (!enableMath) return source;
-  const lines = source.split('\n');
-  let inFence = false;
-  let inMathBlock = false;
-  const output: string[] = [];
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (trimmed.startsWith('```')) {
-      inFence = !inFence;
-      output.push(line);
-      continue;
-    }
-    if (!inFence && trimmed === '$$') {
-      inMathBlock = !inMathBlock;
-      output.push(line);
-      continue;
-    }
-    if (inFence || inMathBlock) {
-      output.push(line);
-      continue;
-    }
-    if (looksLikeMathLine(trimmed)) {
-      output.push('$$', trimmed, '$$');
-      continue;
-    }
-    output.push(line);
-  }
-
-  return output.join('\n');
-};
 
 const OrderedList = ({
   className,
@@ -444,7 +346,7 @@ export const GfmMarkdown = ({
   const rehypePlugins = useMemo<PluggableList>(() => {
     const plugins: PluggableList = [rehypeRaw];
     if (mergedConfig.sanitizeHtml) {
-      plugins.push([rehypeSanitize, mathSchemaExtensions]);
+      plugins.push([rehypeSanitize, markdownSanitizeSchema]);
     }
     if (mergedConfig.enableMath) {
       plugins.push(rehypeKatex);
@@ -486,20 +388,14 @@ export const GfmMarkdown = ({
       h4: ({ node, children }) => <HeadingRenderer level={4} node={node as unknown as Heading}>{children}</HeadingRenderer>,
       h5: ({ node, children }) => <HeadingRenderer level={5} node={node as unknown as Heading}>{children}</HeadingRenderer>,
       h6: ({ node, children }) => <HeadingRenderer level={6} node={node as unknown as Heading}>{children}</HeadingRenderer>,
-      // A paragraph holding only an image would wrap a <figure> in a <p>; render the figure alone.
-      p: ({ node, children, ...props }) => {
-        const kids =
-          (node as { children?: Array<{ type: string; tagName?: string; value?: string }> })
-            ?.children ?? [];
-        const imageOnly =
-          kids.length > 0 &&
-          kids.every(
-            (k) =>
-              (k.type === 'element' && k.tagName === 'img') ||
-              (k.type === 'text' && !k.value?.trim())
-          );
-        return imageOnly ? <>{children}</> : <Paragraph {...props}>{children}</Paragraph>;
-      },
+      // Standalone media is rendered as figures; linked or unlinked inline media
+      // must remain phrasing content inside valid paragraph markup.
+      p: ({ node, children, ...props }) =>
+        isStandaloneMediaParagraph(node) ? (
+          <BlockMediaContext.Provider value>{children}</BlockMediaContext.Provider>
+        ) : (
+          <Paragraph {...props}>{children}</Paragraph>
+        ),
       blockquote: Blockquote,
       hr: ThematicBreak,
       ul: UnorderedList,

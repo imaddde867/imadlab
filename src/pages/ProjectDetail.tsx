@@ -14,6 +14,7 @@ import { PROJECT_DETAIL_SELECT } from '@/lib/content-selects';
 import type { ProjectDetail as ProjectDetailType } from '@/types/content';
 import { parseGithubRepo } from '@/lib/github';
 import { readPrerenderData } from '@/lib/prerender-data';
+import { selectProjectMarkdown } from '@/lib/markdown-shared';
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -108,7 +109,8 @@ const ProjectDetail = () => {
     codeRepository: project.repo_url || undefined,
   };
 
-  const longForm = project.full_description ?? '';
+  const longForm = selectProjectMarkdown(project);
+  const hasFullDescription = Boolean(project.full_description?.trim());
   const enableMermaid = longForm.includes('```mermaid');
   const repoRef = parseGithubRepo(project.repo_url);
   const repository = repoRef ? { owner: repoRef.owner, name: repoRef.repo } : undefined;
@@ -155,7 +157,7 @@ const ProjectDetail = () => {
             </span>
           ))}
         </p>
-        {project.description && (
+        {project.description && hasFullDescription && (
           <p className="mt-6 text-lg text-[color:var(--nd-ink-2)]">{project.description}</p>
         )}
         {(project.repo_url || project.demo_url) && (
@@ -199,9 +201,9 @@ const ProjectDetail = () => {
       )}
 
       <article className="border-t border-[color:var(--nd-line)] pt-10">
-        {project.full_description ? (
+        {longForm ? (
           <GfmMarkdown
-            source={project.full_description}
+            source={longForm}
             repository={repository}
             config={{ enableMermaid }}
           />

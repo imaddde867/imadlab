@@ -1,0 +1,45 @@
+name: SEO prerender regression checks
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/prerender.js'
+      - 'scripts/render-markdown.js'
+      - 'src/lib/markdown-shared.*'
+      - 'src/components/markdown/GfmMarkdown.tsx'
+      - 'src/main.tsx'
+      - 'src/index.css'
+      - 'src/pages/ProjectDetail.tsx'
+      - 'tests/build.mjs'
+      - 'tests/prerender-browser.mjs'
+      - 'package*.json'
+      - '.github/workflows/seo-prerender-check.yml'
+      - '.github/workflows/deploy.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  prerender:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+          cache: npm
+      - run: npm ci
+      - name: Validate JavaScript syntax
+        run: |
+          node --check scripts/render-markdown.js
+          node --check scripts/prerender.js
+          node --check src/lib/markdown-shared.js
+          node --check tests/build.mjs
+      - name: Run Node regression tests
+        run: node --test tests/*.test.mjs
+      - name: Run static Markdown and generated-page regression tests
+        run: node tests/build.mjs
+      - name: Install Chromium for JS/no-JS smoke tests
+        run: npx playwright install --with-deps chromium
+      - name: Verify browser rendering and React root replacement
+        run: node tests/prerender-browser.mjs
