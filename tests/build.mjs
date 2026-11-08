@@ -54,7 +54,11 @@ const posts = [{
   read_time: 5,
   image_url: null,
 }];
+let sawPublishedProjectQuery = false;
 const server = http.createServer((req, res) => {
+  if (req.url.startsWith('/rest/v1/projects') && req.url.includes('published=eq.true')) {
+    sawPublishedProjectQuery = true;
+  }
   res.setHeader('content-type', 'application/json');
   res.end(JSON.stringify(req.url.startsWith('/rest/v1/projects') ? projects : req.url.startsWith('/rest/v1/posts') ? posts : []));
 });
@@ -105,6 +109,9 @@ try {
   assert.match(visiblePost, /class="hljs language-js"/);
   assert.match(postHtml, /<link rel="canonical" href="https:\/\/imadlab.com\/blogs\/synthetic-article\/"\s*\/>/);
   assert.match(postHtml, /<title>Synthetic technical article/);
+  assert.match(postHtml, /<meta name="description" content="Synthetic article summary"/);
+  assert.match(projectHtml, /<meta name="description" content="Fixture"/);
+  assert.equal(sawPublishedProjectQuery, true, 'projects must be fetched with published=true');
   assert.match(projectHtml, /<link rel="canonical" href="https:\/\/imadlab.com\/projects\/00000000-0000-0000-0000-000000000001\/"\s*\/>/);
   assert.doesNotMatch(visiblePost, /<script|onerror=|href="javascript:/i);
   assert.match(visiblePost, /href="https:\/\/example.org\//);
