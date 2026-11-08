@@ -5,6 +5,8 @@ import { SITE_URL } from './utils/site.js';
 export const INVENTORY_FILE = new URL('../.cache/public-content.json', import.meta.url);
 export const STATIC_ROUTES = ['/', '/projects/', '/blogs/', '/tags/', '/extras/'];
 export const PAGE_SIZE = 250;
+const CONFIGURED_PAGE_SIZE = process.env.PUBLIC_CONTENT_PAGE_SIZE
+  ? Number(process.env.PUBLIC_CONTENT_PAGE_SIZE) : PAGE_SIZE;
 const SAFE_SEGMENT = /^[a-zA-Z0-9_-]+$/;
 
 export const isSafeSegment = (value) =>
@@ -139,7 +141,7 @@ export function buildPublicContentInventory(posts, projects) {
   return { version: 1, posts: safePosts, projects: safeProjects, tags: tagEntries, routes };
 }
 
-export async function fetchPublicContent(client = createSupabaseClient(), { pageSize = PAGE_SIZE } = {}) {
+export async function fetchPublicContent(client = createSupabaseClient(), { pageSize = CONFIGURED_PAGE_SIZE } = {}) {
   if (!Number.isInteger(pageSize) || pageSize < 1 || pageSize > 1000) {
     throw new Error('pageSize must be an integer from 1 to 1000');
   }
