@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { SITE_URL } from './utils/site.js';
-import { isSafeSegment, readPublicContent, resolvePublicImageUrl, toAbsolutePublicImageUrl } from './public-content.js';
+import { isSafeSegment, readPublicContent, resolvePublicImageUrl, tagSlug, toAbsolutePublicImageUrl } from './public-content.js';
 import { selectHomeProjects } from '../src/lib/home-projects.js';
 import { stripMarkdown } from './utils/markdown.js';
 import { renderMarkdownForStaticHtml } from './render-markdown.js';
