@@ -1,6 +1,8 @@
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
+// Eager CSS link in the built HTML also styles prerendered math without JavaScript.
+import 'katex/dist/katex.min.css';
 import { excludeFromAnalytics, includeInAnalytics, isOwnerExcluded } from './lib/consent';
 
 // Expose analytics exclusion functions globally for the site owner

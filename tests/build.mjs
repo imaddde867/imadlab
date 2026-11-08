@@ -18,6 +18,8 @@ const projects = Array.from({ length: 35 }, (_, i) => ({
     'A'.repeat(700),
     '## Project validation',
     'PROJECT_MIDDLE_MARKER',
+    'Project inline math: $a^2 + b^2 = c^2$.',
+    '$$\n\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}\n$$',
     '| Metric | Value |\n| --- | --- |\n| Accuracy | 0.95 |',
     'PROJECT_END_MARKER',
   ].join('\n\n'),
@@ -29,6 +31,8 @@ const postBody = [
   'B'.repeat(800),
   '## Evaluation',
   'POST_MIDDLE_MARKER',
+  'Inline formula $E = mc^2$.',
+  '$$\n\\int_0^1 x^2\\,dx = \\frac{1}{3}\n$$',
   '- First check',
   '- Second check',
   '~~~js',
@@ -101,6 +105,23 @@ try {
   }
   for (const marker of ['PROJECT_BEGIN_MARKER', 'PROJECT_MIDDLE_MARKER', 'PROJECT_END_MARKER']) {
     assert.ok(visibleProject.includes(marker), `visible project content missing: ${marker}`);
+  }
+  // KaTeX is generated server-side; its CSS must also be linked in the HTML,
+  // not deferred to the lazy Markdown component and a JavaScript-loaded CSS chunk.
+  for (const [label, page, visible] of [
+    ['post', postHtml, visiblePost],
+    ['project', projectHtml, visibleProject],
+  ]) {
+    assert.match(visible, /class="katex"/, label + ': missing prerendered inline math');
+    assert.match(visible, /class="katex-display"/, label + ': missing prerendered display math');
+    assert.match(visible, /class="katex-mathml"/, label + ': missing accessible MathML');
+    const cssPaths = [...page.matchAll(/<link\b[^>]*\brel="stylesheet"[^>]*\bhref="(\/assets\/[^"]+\.css)"/g)]
+      .map((match) => match[1]);
+    assert.ok(cssPaths.length > 0, label + ': no stylesheet linked without JavaScript');
+    const css = (await Promise.all(cssPaths.map((href) => readFile('dist' + href, 'utf8')))).join('\n');
+    assert.match(css, /\.katex\s*\{/, label + ': linked CSS lacks KaTeX layout rules');
+    assert.match(css, /\.katex-display\s*\{/, label + ': linked CSS lacks display math rules');
+    assert.match(css, /\.katex\s+\.katex-mathml\s*\{/, label + ': linked CSS must hide duplicate MathML');
   }
   assert.match(visiblePost, /<h2 id="evaluation"/);
   assert.match(visiblePost, /<table/);
