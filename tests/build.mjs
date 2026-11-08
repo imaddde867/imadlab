@@ -68,14 +68,41 @@ const posts = [{
   tags: ['Research'],
   read_time: 5,
   image_url: null,
-}];
+},
+  ...Array.from({ length: 34 }, (_, i) => ({
+    id: '00000000-0000-0000-0001-' + String(i + 1).padStart(12, '0'),
+    slug: 'additional-article-' + (i + 1),
+    title: 'Additional synthetic article ' + (i + 1),
+    excerpt: 'Additional synthetic content',
+    body: 'A fully readable, additional article fixture #' + (i + 1),
+    published_date: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-02T00:00:00Z',
+    tags: ['Research'],
+    image_url: null
+  }))
+];
 let sawPublishedProjectQuery = false;
+let sawPaginatedPostQuery = false;
+let sawPaginatedProjectQuery = false;
 const server = http.createServer((req, res) => {
-  if (req.url.startsWith('/rest/v1/projects') && req.url.includes('published=eq.true')) {
+  const url = new URL(req.url, 'http://127.0.0.1');
+  const isProjectQuery = url.pathname === '/rest/v1/projects';
+  const isPostQuery = url.pathname === '/rest/v1/posts';
+  if (isProjectQuery && url.searchParams.get('published') === 'eq.true') {
     sawPublishedProjectQuery = true;
   }
+  const range = (req.headers.range || '0-').split('-');
+  const offset = Number(url.searchParams.get('offset') ?? range[0]);
+  const limit = Number(url.searchParams.get('limit') ?? (
+    range[1] ? Number(range[1]) - offset + 1 : 250
+  ));
+  if (isPostQuery && offset > 0) sawPaginatedPostQuery = true;
+  if (isProjectQuery && offset > 0) sawPaginatedProjectQuery = true;
+  const rows = isProjectQuery
+    ? projects.filter((item) => url.searchParams.get('published') !== 'eq.true' || item.published)
+    : isPostQuery ? posts : [];
   res.setHeader('content-type', 'application/json');
-  res.end(JSON.stringify(req.url.startsWith('/rest/v1/projects') ? projects : req.url.startsWith('/rest/v1/posts') ? posts : []));
+  res.end(JSON.stringify(rows.slice(offset, offset + limit)));
 });
 await new Promise((resolve) => server.listen(55440, '127.0.0.1', resolve));
 const generated = ['public/sitemap.xml', 'public/feed.xml', 'public/feed.json'];
@@ -88,6 +115,7 @@ try {
       SUPABASE_URL: 'http://127.0.0.1:55440',
       SUPABASE_ANON_KEY: 'synthetic',
       SUPABASE_DEPLOY: '0',
+      PUBLIC_CONTENT_PAGE_SIZE: '16',
     },
   });
   const code = await new Promise((resolve) => child.on('exit', resolve));
@@ -209,6 +237,20 @@ try {
   assert.match(postHtml, /<meta name="description" content="Synthetic article summary"/);
   assert.match(projectHtml, /<meta name="description" content="Fixture"/);
   assert.equal(sawPublishedProjectQuery, true, 'projects must be fetched with published=true');
+  assert.equal(sawPaginatedPostQuery, true, 'posts must be retrieved across multiple pages');
+  assert.equal(sawPaginatedProjectQuery, true, 'projects must be retrieved across multiple pages');
+  const sitemap = await readFile('dist/sitemap.xml', 'utf8');
+  const urls = [...sitemap.matchAll(/<url>\\s*<loc>([^<]+)<\\/loc>/g)].map((m) => m[1]);
+  assert.equal(urls.length, new Set(urls).size, 'sitemap URLs must be unique');
+  assert.equal(urls.length, 5 + 1 + projects.length + posts.length, 'complete route inventory');
+  for (const post of posts) {
+    assert.ok(urls.includes('https://imadlab.com/blogs/' + post.slug + '/'),
+      'sitemap must list article: ' + post.slug);
+    const page = await readFile('dist/blogs/' + post.slug + '/index.html', 'utf8');
+    assert.ok(page.includes('<link rel="canonical" href="https://imadlab.com/blogs/' + post.slug + '/"'),
+      'article must have matching canonical: ' + post.slug);
+  }
+  console.log('PASS all ' + posts.length + ' articles, paginated project/post fetching and sitemap parity');
   assert.match(projectHtml, /<link rel="canonical" href="https:\/\/imadlab.com\/projects\/00000000-0000-0000-0000-000000000001\/"\s*\/>/);
   assert.doesNotMatch(visiblePost, /<script|onerror=|href="javascript:/i);
   assert.match(visiblePost, /href="https:\/\/example.org\//);
