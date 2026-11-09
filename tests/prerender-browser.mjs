@@ -89,6 +89,12 @@ try {
       }
       if (enabled) {
         assert.equal(await page.locator('#root [data-prerender="true"]').count(), 0, 'React must replace the static root');
+        if (kind === 'project') {
+          await page.waitForTimeout(500); // let Helmet apply its rAF update before counting
+          const types = await page.evaluate(() => [...document.querySelectorAll('script[type="application/ld+json"]')]
+            .map((el) => JSON.parse(el.textContent)['@type']));
+          assert.equal(types.filter((t) => t === 'CreativeWork').length, 1, 'exactly one CreativeWork after hydration: ' + types);
+        }
         assert.deepEqual(errors, [], kind + ': browser page errors');
       } else {
         const width = await article.evaluate((el) => el.getBoundingClientRect().width);
