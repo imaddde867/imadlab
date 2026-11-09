@@ -80,34 +80,6 @@ const ProjectDetail = () => {
   const seoTitle = getSeoTitle(project.title);
   const coverImage = resolveImageUrl(project.image_url);
   const projectUrl = `https://imadlab.com/projects/${project.id}/`;
-  const projectStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': project.repo_url ? 'SoftwareApplication' : 'TechArticle',
-    name: seoTitle,
-    headline: seoTitle,
-    description: metaDescription,
-    url: projectUrl,
-    image: coverImage || undefined,
-    keywords: projectTags.length ? projectTags.join(', ') : undefined,
-    datePublished: project.created_at,
-    dateModified: project.updated_at ?? project.created_at,
-    author: {
-      '@type': 'Person',
-      name: 'Imad Eddine',
-      url: 'https://imadlab.com',
-    },
-    sameAs: [project.repo_url, project.demo_url].filter(Boolean),
-    applicationCategory: project.repo_url ? 'DeveloperApplication' : undefined,
-    operatingSystem: project.repo_url ? 'Cross-platform' : undefined,
-    offers: project.repo_url
-      ? {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'USD',
-        }
-      : undefined,
-    codeRepository: project.repo_url || undefined,
-  };
 
   const longForm = selectProjectMarkdown(project);
   const hasFullDescription = Boolean(project.full_description?.trim());
@@ -125,11 +97,6 @@ const ProjectDetail = () => {
       <SEO
         title={seoTitle}
         description={metaDescription}
-        keywords={
-          projectTags.length
-            ? projectTags.join(', ')
-            : 'data engineering, machine learning, ai, programming'
-        }
         type="project"
         schemaType="CreativeWork"
         publishedTime={project.created_at}
@@ -138,7 +105,6 @@ const ProjectDetail = () => {
         imageAlt={seoTitle}
         tags={projectTags}
         breadcrumbs={breadcrumbTrail}
-        structuredData={projectStructuredData}
         url={projectUrl}
       />
       <PageTitle title={seoTitle} back={{ to: '/projects', label: 'Projects' }}>

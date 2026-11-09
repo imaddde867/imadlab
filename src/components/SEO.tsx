@@ -22,7 +22,6 @@ type JsonLd = Record<string, unknown>;
 type SEOProps = {
   title: string;
   description: string;
-  keywords?: string;
   image?: string;
   imageAlt?: string;
   url?: string;
@@ -46,13 +45,10 @@ const SITE_URL = 'https://imadlab.com';
 const SITE_NAME = 'Imadlab';
 const DEFAULT_IMAGE = `${SITE_URL}/images/og-default.jpg`;
 const DEFAULT_AUTHOR = 'Imad Eddine El Mouss';
-const DEFAULT_TWITTER = '@imadlab';
 const GOOGLE_SITE_VERIFICATION =
   (import.meta.env.VITE_GOOGLE_SITE_VERIFICATION as string | undefined)?.trim() || '';
 const BING_SITE_VERIFICATION =
   (import.meta.env.VITE_BING_SITE_VERIFICATION as string | undefined)?.trim() || '';
-const DEFAULT_KEYWORDS =
-  'imadlab, imad eddine el mouss, research engineer, aiop, applied research, industrial ai, multimodal data fusion, procedural knowledge extraction, privacy-by-design, auditable decision support, edge-to-cloud systems';
 
 const toAbsoluteUrl = (value?: string) => {
   if (!value) return DEFAULT_IMAGE;
@@ -88,7 +84,6 @@ const inferImageMimeType = (url: string) => {
 const Seo = ({
   title,
   description,
-  keywords,
   image,
   imageAlt,
   url,
@@ -108,16 +103,18 @@ const Seo = ({
   twitterHandle,
 }: SEOProps) => {
   const location = useLocation();
-  const defaultTitle = `${SITE_NAME} | Data and AI Engineer`;
-  const fullTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
+  // Page subject first; brand suffix only when the title does not already carry the owner's name.
+  const fullTitle = !title
+    ? SITE_NAME
+    : title.includes(DEFAULT_AUTHOR)
+      ? title
+      : `${title} | ${SITE_NAME}`;
   const currentUrl = withSlash(`${SITE_URL}${location.pathname}`);
   const canonicalUrl = toAbsolutePageUrl(url || canonical) || currentUrl;
   const ogImage = toAbsoluteUrl(image);
   const ogImageType = inferImageMimeType(ogImage);
   const isDefaultOgImage = ogImage === DEFAULT_IMAGE;
-  const twitter = twitterHandle || DEFAULT_TWITTER;
 
-  const keywordsContent = keywords ? `${keywords}, ${DEFAULT_KEYWORDS}` : DEFAULT_KEYWORDS;
   const robotsDirectives = noindex
     ? 'noindex, nofollow'
     : nofollow
@@ -143,7 +140,7 @@ const Seo = ({
       author: {
         '@type': 'Person',
         name: author,
-        url: `${SITE_URL}/about`,
+        url: `${SITE_URL}/`,
         sameAs: [
           'https://github.com/imaddde867',
           'https://www.linkedin.com/in/imad-eddine-e-986741262',
@@ -159,7 +156,7 @@ const Seo = ({
       baseSchema.publisher = {
         '@type': 'Person',
         name: author,
-        url: `${SITE_URL}/about`,
+        url: `${SITE_URL}/`,
         sameAs: [
           'https://github.com/imaddde867',
           'https://www.linkedin.com/in/imad-eddine-e-986741262',
@@ -212,9 +209,7 @@ const Seo = ({
           '@type': 'ListItem',
           position: index + 1,
           name: crumb.name,
-          item: crumb.url
-            ? crumb.url
-            : `${SITE_URL}${crumb.path && crumb.path.startsWith('/') ? crumb.path : `/${crumb.path ?? ''}`}`,
+          item: toAbsolutePageUrl(crumb.url ?? crumb.path ?? '/'),
         })),
       });
     }
@@ -248,7 +243,6 @@ const Seo = ({
     <Helmet>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
-      <meta name="keywords" content={keywordsContent} />
       <meta name="author" content={author} />
       <meta name="robots" content={robotsDirectives} />
       {GOOGLE_SITE_VERIFICATION && (
@@ -293,8 +287,8 @@ const Seo = ({
       ))}
 
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content={twitter} />
-      <meta name="twitter:creator" content={twitter} />
+      {twitterHandle && <meta name="twitter:site" content={twitterHandle} />}
+      {twitterHandle && <meta name="twitter:creator" content={twitterHandle} />}
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />

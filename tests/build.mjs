@@ -207,7 +207,10 @@ try {
   assert.match(visiblePost, /<p>Before <img\b[^>]*alt="inline icon"[^>]*\/> after<\/p>/);
   assert.match(visiblePost, /<p>Before <a\b[^>]*href="https:\/\/example\.org\/icon"[^>]*><img\b[^>]*alt="linked icon"[^>]*\/><\/a> after<\/p>/);
   assert.match(postHtml, /<link rel="canonical" href="https:\/\/imadlab.com\/blogs\/synthetic-article\/"\s*\/>/);
-  assert.match(postHtml, /<title>Synthetic technical article/);
+  assert.match(postHtml, /<title>Synthetic technical article \| Imadlab<\/title>/);
+  assert.doesNotMatch(postHtml, /Data and AI Engineer|name="keywords"|SoftwareApplication|"offers"/);
+  assert.equal((postHtml.match(/rel="canonical"/g) || []).length, 1);
+  assert.doesNotMatch(projectHtml, /SoftwareApplication|"offers"/);
   assert.match(postHtml, /<meta name="description" content="Synthetic article summary"/);
   assert.match(projectHtml, /<meta name="description" content="Fixture"/);
   const sitemap = await readFile('public/sitemap.xml', 'utf8');

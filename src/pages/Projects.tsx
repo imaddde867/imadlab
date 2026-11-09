@@ -65,7 +65,6 @@ const Projects = () => {
       <SEO
         title="Projects"
         description="Selected applied research projects in multimodal industrial AI, procedural knowledge extraction, and deployable data/ML systems."
-        keywords="industrial ai projects, applied research engineering, multimodal data fusion projects, procedural knowledge extraction, deployable ai systems, edge-to-cloud architecture"
         type="website"
         schemaType="CollectionPage"
         breadcrumbs={[
