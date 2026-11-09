@@ -8,7 +8,7 @@ Source code for [imadlab.com](https://imadlab.com), the personal site of Imad Ed
 - **Content:** projects and posts live in Supabase Postgres. Row-level security exposes only published projects to visitors, and an admin area at `/admin` edits content.
 - **Markdown:** project and post bodies are Markdown with GFM tables, KaTeX math and Mermaid diagrams, rendered by `src/components/markdown/`.
 - **Prerendering:** at build time `scripts/prerender.js` fetches the content and writes a static HTML page for each route, with its title and link-preview tags. The sitemap and RSS feed are generated in the same step.
-- **Deployment:** every push to `master` builds the site and publishes it to GitHub Pages (`.github/workflows/deploy.yml`). New database content shows up in the app at once, but link previews only update on the next build.
+- **Deployment:** every push to `master` builds the site and publishes it to GitHub Pages (`.github/workflows/deploy.yml`). New database content shows up in the app at once, but the sitemap, feed and link previews only update on the next build. After editing content in `/admin`, run the workflow manually (Actions, Deploy to GitHub Pages, Run workflow, or `gh workflow run deploy.yml`) to refresh them. Any automatic trigger (webhook or schedule) needs owner approval first.
 - **Edge functions:** Supabase Edge Functions in `supabase/functions/` send newsletter email, handle unsubscribes, add geolocation to consent-gated analytics, and proxy the Strava API.
 
 ## Run locally

@@ -81,13 +81,6 @@ const BlogPost = () => {
     { name: post.title, url: `https://imadlab.com/blogs/${post.slug}` },
   ];
   const articleReadTime = post.read_time || estimatedReadTime || undefined;
-  const speakableSchema = [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'SpeakableSpecification',
-      xpath: ["//*[@id='main']//h1", "//*[@id='main']//p[1]"],
-    },
-  ];
 
   const body = post.body ?? '';
   const enableMermaid = body.includes('```mermaid');
@@ -104,11 +97,6 @@ const BlogPost = () => {
       <SEO
         title={post.title}
         description={metaDescription}
-        keywords={
-          articleTags.length
-            ? articleTags.join(', ')
-            : 'data engineering, machine learning, ai, programming'
-        }
         type="article"
         publishedTime={post.published_date}
         modifiedTime={post.updated_at ?? post.published_date}
@@ -116,7 +104,6 @@ const BlogPost = () => {
         imageAlt={post.title}
         tags={articleTags}
         breadcrumbs={breadcrumbTrail}
-        additionalSchemas={speakableSchema}
       />
       <PageTitle title={post.title} back={{ to: '/blogs', label: 'Writing' }}>
         <p className="mt-4 text-sm text-[color:var(--nd-ink-3)]">

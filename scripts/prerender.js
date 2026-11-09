@@ -24,9 +24,8 @@ const isSafeHttpUrl = (value) => {
   }
 };
 const SITE_NAME = 'Imadlab';
-const DEFAULT_TITLE = `${SITE_NAME} | Data and AI Engineer`;
+const AUTHOR_NAME = 'Imad Eddine El Mouss';
 const DEFAULT_IMAGE = `${SITE_URL}/images/og-default.jpg`;
-const DEFAULT_TWITTER = '@imadlab';
 const SEO_BLOCK_PATTERN = /<!-- prerender-seo:start -->[\s\S]*?<!-- prerender-seo:end -->/;
 const SITE_VERIFICATION_BLOCK_PATTERN =
   /<!-- site-verification:start -->[\s\S]*?<!-- site-verification:end -->/;
@@ -93,7 +92,8 @@ const toAbsoluteUrl = (value) => toAbsolutePublicImageUrl(value) || DEFAULT_IMAG
 
 const getFullTitle = (title) => {
   const trimmed = typeof title === 'string' ? title.trim() : '';
-  return trimmed ? `${trimmed} | ${DEFAULT_TITLE}` : DEFAULT_TITLE;
+  if (!trimmed) return SITE_NAME;
+  return trimmed.includes(AUTHOR_NAME) ? trimmed : `${trimmed} | ${SITE_NAME}`;
 };
 
 const buildSeoBlock = ({
@@ -113,7 +113,6 @@ const buildSeoBlock = ({
   const ogImageType = inferImageMimeType(ogImage);
   const isDefaultOgImage = ogImage === DEFAULT_IMAGE;
   const alt = imageAlt || fullTitle;
-  const twitter = twitterHandle || DEFAULT_TWITTER;
 
   const jsonLd = structuredData
     ? Array.isArray(structuredData)
@@ -146,8 +145,7 @@ const buildSeoBlock = ({
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content="${escapeHtml(SITE_NAME)}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="${escapeHtml(twitter)}" />
-    <meta name="twitter:creator" content="${escapeHtml(twitter)}" />
+${twitterHandle ? `    <meta name="twitter:site" content="${escapeHtml(twitterHandle)}" />\n    <meta name="twitter:creator" content="${escapeHtml(twitterHandle)}" />\n` : ''}
     <meta name="twitter:title" content="${escapeHtml(fullTitle)}" />
     <meta name="twitter:description" content="${escapeHtml(metaDescription)}" />
     <meta name="twitter:image" content="${escapeHtml(ogImage)}" />
@@ -531,8 +529,9 @@ async function main() {
     data: summaryProjects,
     baseHtml,
     seo: {
-      title: 'Imad Eddine El Mouss',
-      description: 'Data and AI engineer at Turku UAS (CoRe). Come explore my projects, blog posts and background.',
+      title: 'Imad Eddine El Mouss | Industrial AI and LLM Evaluation',
+      description:
+        'Research engineer at Turku UAS (CoRe). Work on industrial AI, privacy-preserving data systems and LLM evaluation, with projects and writing.',
       canonicalUrl: `${SITE_URL}/`,
       image: DEFAULT_IMAGE,
       type: 'website',
@@ -656,19 +655,18 @@ async function main() {
         type: 'website',
         structuredData: {
           '@context': 'https://schema.org',
-          '@type': project.repo_url ? 'SoftwareApplication' : 'CreativeWork',
+          '@type': 'CreativeWork',
           name: seoTitle,
           description,
           url: canonicalUrl,
           image,
-          codeRepository: project.repo_url || undefined,
           sameAs: [project.repo_url, project.demo_url].filter(Boolean),
           datePublished: project.created_at,
           dateModified: project.updated_at ?? project.created_at,
           author: {
             '@type': 'Person',
             name: 'Imad Eddine El Mouss',
-            url: SITE_URL,
+            url: `${SITE_URL}/`,
           },
         },
       },
@@ -707,12 +705,12 @@ async function main() {
           author: {
             '@type': 'Person',
             name: 'Imad Eddine El Mouss',
-            url: SITE_URL,
+            url: `${SITE_URL}/`,
           },
           publisher: {
             '@type': 'Person',
             name: 'Imad Eddine El Mouss',
-            url: SITE_URL,
+            url: `${SITE_URL}/`,
           },
           keywords: Array.isArray(post.tags) ? post.tags.filter(Boolean).join(', ') : undefined,
           mainEntityOfPage: canonicalUrl,
