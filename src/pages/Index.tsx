@@ -14,8 +14,8 @@ import type { PostSummary, ProjectSummary } from '@/types/content';
 const personSchema = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: 'Imad Eddine',
-  url: 'https://imadlab.com',
+  name: 'Imad Eddine El Mouss',
+  url: 'https://imadlab.com/',
   jobTitle: 'Research Engineer',
   knowsAbout: [
     'Applied industrial AI',
@@ -105,9 +105,8 @@ const Index = () => {
   return (
     <Page>
       <SEO
-        title="Imad Eddine El Mouss"
-        description="Data and AI engineer at Turku UAS (CoRe). Come explore my projects, blog posts and background."
-        keywords="research engineer portfolio, aiop platform, industrial ai systems, multimodal data fusion, procedural knowledge extraction, privacy-by-design ai, edge-to-cloud ai"
+        title="Imad Eddine El Mouss | Industrial AI and LLM Evaluation"
+        description="Research engineer at Turku UAS (CoRe). Work on industrial AI, privacy-preserving data systems and LLM evaluation, with projects and writing."
         type="website"
         schemaType="WebSite"
         url="https://imadlab.com"

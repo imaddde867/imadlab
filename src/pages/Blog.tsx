@@ -55,7 +55,6 @@ const Blogs = () => {
       <SEO
         title="Writing"
         description="Technical notes on industrial AI systems, local LLM extraction pipelines, architecture tradeoffs, and evaluation."
-        keywords="industrial ai blog, applied research engineering notes, local llm pipelines, procedural knowledge extraction, ai system architecture, evaluation methodology"
         type="website"
         schemaType="CollectionPage"
         breadcrumbs={[
