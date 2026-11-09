@@ -69,13 +69,15 @@ const posts = [{
   read_time: 5,
   image_url: null,
 }];
+const draftProject = { ...projects[0], id: '00000000-0000-0000-0000-00000000dead', title: 'Unpublished draft', published: false };
 let sawPublishedProjectQuery = false;
 const server = http.createServer((req, res) => {
   if (req.url.startsWith('/rest/v1/projects') && req.url.includes('published=eq.true')) {
     sawPublishedProjectQuery = true;
   }
   res.setHeader('content-type', 'application/json');
-  res.end(JSON.stringify(req.url.startsWith('/rest/v1/projects') ? projects : req.url.startsWith('/rest/v1/posts') ? posts : []));
+  const projectRows = req.url.includes('published=eq.true') ? projects : [...projects, draftProject];
+  res.end(JSON.stringify(req.url.startsWith('/rest/v1/projects') ? projectRows : req.url.startsWith('/rest/v1/posts') ? posts : []));
 });
 await new Promise((resolve) => server.listen(55440, '127.0.0.1', resolve));
 const generated = ['public/sitemap.xml', 'public/feed.xml', 'public/feed.json'];
@@ -208,6 +210,9 @@ try {
   assert.match(postHtml, /<title>Synthetic technical article/);
   assert.match(postHtml, /<meta name="description" content="Synthetic article summary"/);
   assert.match(projectHtml, /<meta name="description" content="Fixture"/);
+  const sitemap = await readFile('public/sitemap.xml', 'utf8');
+  assert.ok(sitemap.includes(projects[0].id), 'sitemap lists published projects');
+  assert.ok(!sitemap.includes(draftProject.id), 'sitemap must not list unpublished projects');
   assert.equal(sawPublishedProjectQuery, true, 'projects must be fetched with published=true');
   assert.match(projectHtml, /<link rel="canonical" href="https:\/\/imadlab.com\/projects\/00000000-0000-0000-0000-000000000001\/"\s*\/>/);
   assert.doesNotMatch(visiblePost, /<script|onerror=|href="javascript:/i);
