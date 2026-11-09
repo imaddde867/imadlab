@@ -1,0 +1,10 @@
+# Robots.txt for imadlab.com
+User-agent: *
+Allow: /
+
+# Keep admin and internal tooling out of search indices
+Disallow: /admin/
+Disallow: /admin/*
+
+# Primary sitemap
+Sitemap: https://imadlab.com/sitemap.xml
