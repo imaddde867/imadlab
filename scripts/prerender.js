@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { SITE_URL } from './utils/site.js';
-import { createSupabaseClient, SUPABASE_URL } from './utils/supabase.js';
+import { isSafeSegment, readPublicContent, resolvePublicImageUrl, tagSlug, toAbsolutePublicImageUrl } from './public-content.js';
 import { selectHomeProjects } from '../src/lib/home-projects.js';
 import { stripMarkdown } from './utils/markdown.js';
 import { renderMarkdownForStaticHtml } from './render-markdown.js';
@@ -13,15 +13,6 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
 
-const SAFE_SEGMENT = /^[a-zA-Z0-9_-]+$/;
-const isSafeSegment = (segment) =>
-  typeof segment === 'string' && SAFE_SEGMENT.test(segment) && segment.length > 0;
-const tagSlug = (tag) =>
-  tag
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
 const isInsideDist = (resolved) => resolved.startsWith(DIST_DIR + path.sep) || resolved === DIST_DIR;
 const isSafeHttpUrl = (value) => {
   if (typeof value !== 'string' || !value.trim()) return false;
@@ -38,11 +29,9 @@ const DEFAULT_IMAGE = `${SITE_URL}/images/og-default.jpg`;
 const SEO_BLOCK_PATTERN = /<!-- prerender-seo:start -->[\s\S]*?<!-- prerender-seo:end -->/;
 const SITE_VERIFICATION_BLOCK_PATTERN =
   /<!-- site-verification:start -->[\s\S]*?<!-- site-verification:end -->/;
-const ABSOLUTE_PREFIXES = ['http://', 'https://', 'data:', 'blob:'];
 const GOOGLE_SITE_VERIFICATION = process.env.VITE_GOOGLE_SITE_VERIFICATION?.trim() || '';
 const BING_SITE_VERIFICATION = process.env.VITE_BING_SITE_VERIFICATION?.trim() || '';
 
-const supabase = createSupabaseClient();
 const SEO_TITLE_MAP = {
   Explainium: 'Explainium: Local LLM Procedural Knowledge Extraction',
   InfiniteChessAI: 'InfiniteChessAI: Self-Improving Chess Engine in SwiftUI',
@@ -98,33 +87,8 @@ const applySiteVerificationToHtml = (html) => {
   return html;
 };
 
-const resolveImageUrl = (value) => {
-  if (!value || typeof value !== 'string') return null;
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-  if (/^\/?public\//.test(trimmed)) {
-    return `/${trimmed.replace(/^\/?public\//, '')}`;
-  }
-  if (ABSOLUTE_PREFIXES.some((prefix) => trimmed.startsWith(prefix))) {
-    return trimmed;
-  }
-  if (trimmed.startsWith('/')) {
-    return trimmed;
-  }
-
-  if (SUPABASE_URL && (trimmed.startsWith('storage/') || trimmed.startsWith('storage/v1/'))) {
-    return `${SUPABASE_URL.replace(/\/$/, '')}/${trimmed}`;
-  }
-
-  return `/${trimmed}`;
-};
-
-const toAbsoluteUrl = (value) => {
-  const resolved = resolveImageUrl(value);
-  if (!resolved) return DEFAULT_IMAGE;
-  if (ABSOLUTE_PREFIXES.some((prefix) => resolved.startsWith(prefix))) return resolved;
-  return `${SITE_URL}${resolved.startsWith('/') ? resolved : `/${resolved}`}`;
-};
+const resolveImageUrl = resolvePublicImageUrl;
+const toAbsoluteUrl = (value) => toAbsolutePublicImageUrl(value) || DEFAULT_IMAGE;
 
 const getFullTitle = (title) => {
   const trimmed = typeof title === 'string' ? title.trim() : '';
@@ -513,37 +477,30 @@ const ensureDistExists = async () => {
   }
 };
 
-async function fetchProjects() {
-  const { data, error } = await supabase
-    .from('projects')
-    .select(
-      'id,title,description,full_description,tech_tags,created_at,updated_at,image_url,repo_url,demo_url,featured'
-    )
-    .eq('published', true)
-    .order('featured', { ascending: false })
-    .order('created_at', { ascending: false })
-    .order('id', { ascending: true });
 
-  if (error) {
-    throw new Error('Failed to fetch published projects for prerendering', { cause: error });
-  }
+const summarizePosts = (posts) => posts.map((post) => ({
+  id: post.id,
+  title: post.title,
+  slug: post.slug,
+  excerpt: post.excerpt || stripMarkdown(post.body || '').slice(0, 220),
+  tags: post.tags,
+  published_date: post.published_date,
+  read_time: post.read_time,
+  image_url: post.image_url,
+}));
 
-  return data ?? [];
-}
-
-async function fetchPosts() {
-  const { data, error } = await supabase
-    .from('posts')
-    .select('id,title,slug,excerpt,body,tags,published_date,updated_at,read_time,image_url')
-    .order('published_date', { ascending: false })
-    .limit(30);
-
-  if (error) {
-    throw new Error('Failed to fetch posts for prerendering', { cause: error });
-  }
-
-  return data ?? [];
-}
+const summarizeProjects = (projects) => projects.map((project) => ({
+  id: project.id,
+  title: project.title,
+  description: project.description || stripMarkdown(selectProjectMarkdown(project)).slice(0, 220),
+  tech_tags: project.tech_tags,
+  image_url: project.image_url,
+  repo_url: project.repo_url,
+  demo_url: project.demo_url,
+  featured: project.featured,
+  created_at: project.created_at,
+  updated_at: project.updated_at,
+}));
 
 async function main() {
   if (!(await ensureDistExists())) {
@@ -561,13 +518,15 @@ async function main() {
   baseHtml = applySiteVerificationToHtml(baseHtml);
   await fs.writeFile(path.join(DIST_DIR, 'index.html'), baseHtml, 'utf8');
 
-  const [projects, posts] = await Promise.all([fetchProjects(), fetchPosts()]);
+  const { projects, posts, tags: tagEntries } = await readPublicContent();
+  const summaryProjects = summarizeProjects(projects);
+  const summaryPosts = summarizePosts(posts);
 
   await injectIntoPage({
     route: '.',
-    markup: renderHomeMarkup(posts, projects),
+    markup: renderHomeMarkup(summaryPosts, summaryProjects),
     dataKey: 'projects',
-    data: projects,
+    data: summaryProjects,
     baseHtml,
     seo: {
       title: 'Imad Eddine El Mouss | Industrial AI and LLM Evaluation',
@@ -591,31 +550,6 @@ async function main() {
       type: 'website',
     },
   });
-
-  const tagLabels = new Map();
-  for (const post of posts) {
-    if (Array.isArray(post.tags)) {
-      for (const t of post.tags) {
-        if (t && typeof t === 'string') {
-          const slug = tagSlug(t);
-          if (slug && !tagLabels.has(slug)) tagLabels.set(slug, t.trim());
-        }
-      }
-    }
-  }
-  for (const project of projects) {
-    if (Array.isArray(project.tech_tags)) {
-      for (const t of project.tech_tags) {
-        if (t && typeof t === 'string') {
-          const slug = tagSlug(t);
-          if (slug && !tagLabels.has(slug)) tagLabels.set(slug, t.trim());
-        }
-      }
-    }
-  }
-  const tagEntries = Array.from(tagLabels.entries())
-    .filter(([slug]) => isSafeSegment(slug))
-    .map(([slug, label]) => ({ slug, label }));
 
   await injectIntoPage({
     route: 'tags',
@@ -654,9 +588,9 @@ async function main() {
 
   await injectIntoPage({
     route: 'projects',
-    markup: renderProjectsMarkup(projects),
+    markup: renderProjectsMarkup(summaryProjects),
     dataKey: 'projects',
-    data: projects,
+    data: summaryProjects,
     baseHtml,
     seo: {
       title: 'Projects',
@@ -676,9 +610,9 @@ async function main() {
 
   await injectIntoPage({
     route: 'blogs',
-    markup: renderPostsMarkup(posts),
+    markup: renderPostsMarkup(summaryPosts),
     dataKey: 'posts',
-    data: posts,
+    data: summaryPosts,
     baseHtml,
     seo: {
       title: 'Blog',

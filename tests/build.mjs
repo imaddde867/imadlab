@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, unlink } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { selectHomeProjects } from '../src/lib/home-projects.js';
 import { renderMarkdownForStaticHtml } from '../scripts/render-markdown.js';
@@ -68,29 +68,83 @@ const posts = [{
   tags: ['Research'],
   read_time: 5,
   image_url: null,
-}];
+},
+  ...Array.from({ length: 34 }, (_, i) => ({
+    id: '00000000-0000-0000-0001-' + String(i + 1).padStart(12, '0'),
+    slug: 'additional-article-' + (i + 1),
+    title: 'Additional synthetic article ' + (i + 1),
+    excerpt: 'Additional synthetic content',
+    body: 'A fully readable, additional article fixture #' + (i + 1),
+    published_date: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-02T00:00:00Z',
+    tags: ['Research'],
+    image_url: null
+  }))
+];
 const draftProject = { ...projects[0], id: '00000000-0000-0000-0000-00000000dead', title: 'Unpublished draft', published: false };
 let sawPublishedProjectQuery = false;
+let sawPaginatedPostQuery = false;
+let sawPaginatedProjectQuery = false;
+let failPostPage = false;
 const server = http.createServer((req, res) => {
-  if (req.url.startsWith('/rest/v1/projects') && req.url.includes('published=eq.true')) {
+  const url = new URL(req.url, 'http://127.0.0.1');
+  const isProjectQuery = url.pathname === '/rest/v1/projects';
+  const isPostQuery = url.pathname === '/rest/v1/posts';
+  if (isProjectQuery && url.searchParams.get('published') === 'eq.true') {
     sawPublishedProjectQuery = true;
   }
+  const cursorFilter = url.searchParams.get('id') ?? '';
+  const cursor = cursorFilter.startsWith('gt.') ? cursorFilter.slice(3) : null;
+  if (isPostQuery && cursor) sawPaginatedPostQuery = true;
+  if (isProjectQuery && cursor) sawPaginatedProjectQuery = true;
+  if (failPostPage && isPostQuery && cursor) {
+    res.statusCode = 503;
+    res.setHeader('content-type', 'application/json');
+    res.end(JSON.stringify({ message: 'Simulated paginated query failure', code: 'TEST_FAILURE' }));
+    return;
+  }
+  const source = isProjectQuery
+    ? [...projects, draftProject].filter((item) => url.searchParams.get('published') !== 'eq.true' || item.published)
+    : isPostQuery ? posts : [];
+  const rows = source.filter((row) => !cursor || row.id > cursor)
+    .sort((a, b) => a.id.localeCompare(b.id));
+  const range = (req.headers.range || '0-').split('-');
+  const offset = Number(url.searchParams.get('offset') ?? range[0]);
+  const limit = Number(url.searchParams.get('limit') ?? (
+    range[1] ? Number(range[1]) - offset + 1 : 250
+  ));
+  const selected = rows.slice(offset, offset + limit);
   res.setHeader('content-type', 'application/json');
-  const projectRows = req.url.includes('published=eq.true') ? projects : [...projects, draftProject];
-  res.end(JSON.stringify(req.url.startsWith('/rest/v1/projects') ? projectRows : req.url.startsWith('/rest/v1/posts') ? posts : []));
+  res.setHeader('content-range', selected.length ? offset + '-' + (offset + selected.length - 1) +
+    '/' + rows.length : '*/' + rows.length);
+  res.setHeader('access-control-expose-headers', 'content-range');
+  res.end(req.method === 'HEAD' ? undefined : JSON.stringify(selected));
 });
 await new Promise((resolve) => server.listen(55440, '127.0.0.1', resolve));
 const generated = ['public/sitemap.xml', 'public/feed.xml', 'public/feed.json'];
 const original = await Promise.all(generated.map((p) => readFile(p)));
+const cachedSnapshot = await readFile('.cache/public-content.json').catch((error) => {
+  if (error.code === 'ENOENT') return null;
+  throw error;
+});
+const buildEnv = {
+  ...process.env,
+  SUPABASE_URL: 'http://127.0.0.1:55440',
+  SUPABASE_ANON_KEY: 'synthetic',
+  SUPABASE_DEPLOY: '0',
+  PUBLIC_CONTENT_PAGE_SIZE: '16',
+};
+async function runForCode(command, args, env = buildEnv) {
+  const child = spawn(command, args, { env, stdio: ['ignore', 'pipe', 'pipe'] });
+  let output = '';
+  child.stdout.on('data', (chunk) => { output += chunk; });
+  child.stderr.on('data', (chunk) => { output += chunk; });
+  return await new Promise((resolve) => child.on('close', (code) => resolve({ code, output })));
+}
 try {
   const child = spawn('npm', ['run', 'build'], {
     stdio: 'inherit',
-    env: {
-      ...process.env,
-      SUPABASE_URL: 'http://127.0.0.1:55440',
-      SUPABASE_ANON_KEY: 'synthetic',
-      SUPABASE_DEPLOY: '0',
-    },
+    env: buildEnv,
   });
   const code = await new Promise((resolve) => child.on('exit', resolve));
   assert.equal(code, 0, 'actual npm build');
@@ -102,6 +156,16 @@ try {
     selectHomeProjects(projects).map((p) => p.id)
   );
   assert.match(html, /window\.__PRERENDERED_DATA__\["projects"\]/);
+  assert.doesNotMatch(html, /PROJECT_BEGIN_MARKER/,
+    'homepage must not embed complete project Markdown in its initial JSON');
+  const blogIndexHtml = await readFile('dist/blogs/index.html', 'utf8');
+  const projectIndexHtml = await readFile('dist/projects/index.html', 'utf8');
+  assert.doesNotMatch(blogIndexHtml, /POST_BEGIN_MARKER/,
+    'blog index must not serialize full article bodies');
+  assert.doesNotMatch(projectIndexHtml, /PROJECT_BEGIN_MARKER/,
+    'project index must not serialize full project descriptions');
+  assert.ok(Buffer.byteLength(blogIndexHtml) < 200_000,
+    '35-post blog listing should remain compact');
   const archive = await readFile('dist/projects/index.html', 'utf8');
   for (const project of projects) assert.ok(archive.includes(project.id), 'complete archive');
   const postHtml = await readFile('dist/blogs/synthetic-article/index.html', 'utf8');
@@ -213,10 +277,24 @@ try {
   assert.doesNotMatch(projectHtml, /SoftwareApplication|"offers"/);
   assert.match(postHtml, /<meta name="description" content="Synthetic article summary"/);
   assert.match(projectHtml, /<meta name="description" content="Fixture"/);
-  const sitemap = await readFile('public/sitemap.xml', 'utf8');
-  assert.ok(sitemap.includes(projects[0].id), 'sitemap lists published projects');
-  assert.ok(!sitemap.includes(draftProject.id), 'sitemap must not list unpublished projects');
+  const publicSitemap = await readFile('public/sitemap.xml', 'utf8');
+  assert.ok(publicSitemap.includes(projects[0].id), 'sitemap lists published projects');
+  assert.ok(!publicSitemap.includes(draftProject.id), 'sitemap must not list unpublished projects');
   assert.equal(sawPublishedProjectQuery, true, 'projects must be fetched with published=true');
+  assert.equal(sawPaginatedPostQuery, true, 'posts must be retrieved across multiple pages');
+  assert.equal(sawPaginatedProjectQuery, true, 'projects must be retrieved across multiple pages');
+  const sitemap = await readFile('dist/sitemap.xml', 'utf8');
+  const urls = [...sitemap.matchAll(/<url>\s*<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  assert.equal(urls.length, new Set(urls).size, 'sitemap URLs must be unique');
+  assert.equal(urls.length, 5 + 1 + projects.length + posts.length, 'complete route inventory');
+  for (const post of posts) {
+    assert.ok(urls.includes('https://imadlab.com/blogs/' + post.slug + '/'),
+      'sitemap must list article: ' + post.slug);
+    const page = await readFile('dist/blogs/' + post.slug + '/index.html', 'utf8');
+    assert.ok(page.includes('<link rel="canonical" href="https://imadlab.com/blogs/' + post.slug + '/"'),
+      'article must have matching canonical: ' + post.slug);
+  }
+  console.log('PASS all ' + posts.length + ' articles, paginated project/post fetching and sitemap parity');
   assert.match(projectHtml, /<link rel="canonical" href="https:\/\/imadlab.com\/projects\/00000000-0000-0000-0000-000000000001\/"\s*\/>/);
   assert.doesNotMatch(visiblePost, /<script|onerror=|href="javascript:/i);
   assert.match(visiblePost, /href="https:\/\/example.org\//);
@@ -224,11 +302,64 @@ try {
   assert.match(empty, /article-body/);
   assert.doesNotMatch(renderMarkdownForStaticHtml('<script>alert(1)</script>'), /<script/);
   assert.match(renderMarkdownForStaticHtml('## Same\n\n## Same'), /id="same-1"/);
+  // A sitemap-only route must fail CI even if it points at a valid-looking URL.
+  const cleanSitemap = await readFile('dist/sitemap.xml', 'utf8');
+  try {
+    await writeFile('dist/sitemap.xml', cleanSitemap.replace('</urlset>',
+      '<url><loc>https://imadlab.com/blogs/not-generated/</loc></url>\n</urlset>'));
+    const mismatch = await runForCode(process.execPath, ['scripts/verify-static-routes.js']);
+    assert.notEqual(mismatch.code, 0, 'sitemap without a matching HTML page must fail');
+    assert.match(mismatch.output, /sitemap URL count mismatch|sitemap URLs differ/);
+  } finally {
+    await writeFile('dist/sitemap.xml', cleanSitemap);
+  }
+
+  // A failing later Supabase page must fail before replacing old sitemap/feed assets.
+  const cachedInventory = await readFile('.cache/public-content.json');
+  const beforeFailedBuildSitemap = await readFile('public/sitemap.xml');
+  try {
+    failPostPage = true;
+    const failure = await runForCode('npm', ['run', 'prebuild']);
+    assert.notEqual(failure.code, 0, 'partial Supabase content query must fail the prebuild');
+    assert.match(failure.output, /Simulated paginated query failure/);
+    await assert.rejects(readFile('.cache/public-content.json'), { code: 'ENOENT' },
+      'failed fetch must invalidate the previous content snapshot');
+    assert.deepEqual(await readFile('public/sitemap.xml'), beforeFailedBuildSitemap,
+      'failed prebuild must not overwrite the previous sitemap');
+  } finally {
+    failPostPage = false;
+    await writeFile('.cache/public-content.json', cachedInventory);
+  }
+  // Invalid XML must be rejected even if its extracted sitemap URLs still match.
+  const originalSitemap = await readFile('dist/sitemap.xml', 'utf8');
+  try {
+    await writeFile('dist/sitemap.xml', originalSitemap.replace('</urlset>', ''));
+    const badXml = await runForCode(process.execPath, ['scripts/verify-static-routes.js']);
+    assert.notEqual(badXml.code, 0, 'unterminated XML must fail');
+    assert.match(badXml.output, /Unclosed XML document/);
+  } finally {
+    await writeFile('dist/sitemap.xml', originalSitemap);
+  }
+  const originalRss = await readFile('dist/feed.xml', 'utf8');
+  try {
+    const duplicateItem = '<item><link>https://imadlab.com/blogs/synthetic-article/</link></item>';
+    await writeFile('dist/feed.xml', originalRss.replace('</channel>', duplicateItem + '</channel>'));
+    const dup = await runForCode(process.execPath, ['scripts/verify-static-routes.js']);
+    assert.notEqual(dup.code, 0, 'duplicate RSS item must fail');
+    assert.match(dup.output, /RSS feed URL count mismatch|duplicate RSS item/);
+  } finally {
+    await writeFile('dist/feed.xml', originalRss);
+  }
+  console.log('PASS fail-closed prebuild and negative sitemap-to-HTML parity checks');
   console.log('PASS full visible Markdown, no-JS styles, media/math parity, fallback content and XSS fixtures');
   console.log(
     'PASS actual build, synthetic prerender/runtime agreement and complete 35-project archive'
   );
 } finally {
   await Promise.all(generated.map((p, i) => writeFile(p, original[i])));
+  if (cachedSnapshot === null) await unlink('.cache/public-content.json').catch((error) => {
+    if (error.code !== 'ENOENT') throw error;
+  });
+  else await writeFile('.cache/public-content.json', cachedSnapshot);
   server.close();
 }

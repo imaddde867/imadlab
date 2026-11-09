@@ -1,14 +1,12 @@
 import { useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchPublicPosts, fetchPublicProjects } from '@/lib/public-collections';
 import SEO from '@/components/SEO';
 import { Page, PageTitle } from '@/components/layout/Page';
 import { tagSlug, tagToUrl } from '@/lib/tags';
 import { Link } from 'react-router-dom';
 import type { PostSummary, ProjectSummary } from '@/types/content';
-
-type TaggablePost = Pick<PostSummary, 'tags'>;
-type TaggableProject = Pick<ProjectSummary, 'tech_tags'>;
+import { POST_SUMMARY_SELECT, PROJECT_LIST_SELECT } from '@/lib/content-selects';
 
 type TagCount = {
   slug: string;
@@ -22,9 +20,7 @@ const TagsIndex = () => {
   const { data: posts = [] } = useQuery({
     queryKey: ['all-post-tags'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('posts').select('tags');
-      if (error) throw error;
-      return (data as TaggablePost[]) ?? [];
+      return fetchPublicPosts<PostSummary>(POST_SUMMARY_SELECT);
     },
     staleTime: 60_000,
   });
@@ -32,9 +28,7 @@ const TagsIndex = () => {
   const { data: projects = [] } = useQuery({
     queryKey: ['all-project-tags'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('projects').select('tech_tags');
-      if (error) throw error;
-      return (data as TaggableProject[]) ?? [];
+      return fetchPublicProjects<ProjectSummary>(PROJECT_LIST_SELECT);
     },
     staleTime: 60_000,
   });

@@ -39,7 +39,7 @@ SEO #17 static rendering contract:
 - `scripts/prerender.js` turns the complete `post.body` and `project.full_description` into readable, semantic HTML during the postbuild step. Project descriptions are a fallback only when full_description is missing.
 - The Node renderer uses ReactMarkdown, GFM, math and raw HTML sanitization shared with the browser Markdown component. Fenced code receives highlighting for supported languages. Mermaid diagrams remain readable fenced source until client-side JavaScript renders their SVG. KaTeX math is rendered server-side.
 - The initial HTML lives in `#root`. The existing browser `createRoot` replaces it; no `hydrateRoot` is used or implied. No second hidden article is inserted.
-- A missing output root, content-query error, or output write error now fails the prerender job. Sitemap/feed inventory and the existing 30-post fetch limit are handled separately by SEO issue #18; do not infer they have been fixed by this change.
+- A missing output root, content-query error, or output write error now fails the prerender job. The shared sitemap/feed inventory and removed 30-post limit are handled by the follow-up work for SEO issue #18.
 - The PR-only `seo-prerender-check.yml` workflow runs synthetic build regression tests without deploying or contacting production Supabase. The deployment workflow still runs only on pushes to `master`/`main`, now on the same Node 22.18.0 version as the PR check.
 
 Verification after `npm ci` (with no production credentials):
@@ -60,3 +60,15 @@ node tests/prerender-browser.mjs
 ```
 
 The browser test serves the synthetic `dist` locally, verifies content and mobile list/link styles without JavaScript, and checks that React replaces the static root while retaining article text with JavaScript. It makes no production Supabase requests. Deployment to production requires explicit owner approval.
+
+
+SEO #18 public-content inventory and sitemap parity:
+
+- `npm run build` now creates a **single** ignored `.cache/public-content.json` snapshot before generating the sitemap and RSS/JSON feeds; prerendering consumes exactly the same snapshot. It is built from public anonymous Supabase queries; published projects are explicitly filtered. Blog posts have no draft/published column.
+- Queries use stable `published_date,id` and `featured,created_at,id` ordering with `range()` pagination (250 rows per request, below the PostgREST row cap). Invalid records, duplicate routes and any query/serialization/write error fail the build instead of leaving a quietly stale output. The old 30-post prerender limit is removed. Static-list/tag sitemap entries intentionally omit artificial build-day `lastmod`; dated items use validated record timestamps.
+- The `postbuild` verifier checks sitemap URLs **1:1** against the generated HTML `index.html` files, unique page titles and canonical links, no-JavaScript visible HTML, and JSON/RSS feed URL parity. `resume/index.html` is an explicitly excluded non-indexed wrapper; `404.html` is not indexed.
+- `node --test tests/public-content.test.mjs` covers >1,000 posts, exact page boundaries, Supabase query/response failures, duplicate/unsafe routes, invalid dates, explicit project publication checks and tag normalization. `node tests/build.mjs` runs a synthetic 35-post, 35-project build using `PUBLIC_CONTENT_PAGE_SIZE=16` only inside that synthetic child process to force multiple pages. The tests must not contact production Supabase.
+- The GitHub Pages production deployment remains **push-only** on `master`/`main`. Opening the PR cannot trigger that deployment. The site's `_redirects` and `_headers` files are Cloudflare Pages syntax and are **not applied by GitHub Pages**. HTTP response codes, slash/legacy-domain redirects, Search Console submission, and whether the live host serves the intended status codes require a separately approved host-level audit; local static-file parity cannot prove these behaviors. No redirect/DNS/CDN changes are included here.
+- Release verification: `npm ci && node --test tests/*.test.mjs && node tests/build.mjs && node tests/prerender-browser.mjs` (Playwright Chromium required). CI executes those synthetic checks on PRs. Do not merge or deploy without owner approval.
+
+Second-round review: both the Node build and browser collection queries use count-verified ID-cursor pagination, even under API row caps below the requested page size. A changing visible-row count fails the build; this is not a database transaction snapshot. Listing pages embed summary records only, while detail pages retain full Markdown. The route verifier checks balanced XML, unique RSS items and exact canonical tags. Synthetic build tests restore or remove their ignored content cache and leave production unchanged.

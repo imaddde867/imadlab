@@ -1,134 +1,29 @@
-import fs from 'fs';
+import { writeFile } from 'node:fs/promises';
 import { SITE_URL } from './utils/site.js';
-import { createSupabaseClient } from './utils/supabase.js';
+import { readPublicContent, toAbsolutePublicImageUrl } from './public-content.js';
 
-const SITEMAP_PATH = './public/sitemap.xml';
-const supabase = createSupabaseClient();
-const ABSOLUTE_PREFIXES = ['http://', 'https://'];
+const escapeXml = (value) =>
+  String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 
-const escapeXml = (value = '') =>
-  value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
+const inventory = await readPublicContent();
+const sitemapItems = inventory.routes.map(({ route, lastmod, image_url }) => {
+  const image = toAbsolutePublicImageUrl(image_url);
+  return [
+    '  <url>',
+    '    <loc>' + escapeXml(SITE_URL + route) + '</loc>',
+    lastmod ? '    <lastmod>' + lastmod + '</lastmod>' : null,
+    image ? '    <image:image><image:loc>' + escapeXml(image) + '</image:loc></image:image>' : null,
+    '  </url>'
+  ].filter(Boolean).join('\n');
+});
+const sitemap = [
+  '<?xml version="1.0" encoding="UTF-8"?>',
+  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
+  ...sitemapItems,
+  '</urlset>',
+  ''
+].join('\n');
 
-const toAbsoluteImageUrl = (value) => {
-  if (!value || typeof value !== 'string') return null;
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-  if (ABSOLUTE_PREFIXES.some((prefix) => trimmed.startsWith(prefix))) return trimmed;
-  if (trimmed.startsWith('/')) return `${SITE_URL}${trimmed}`;
-  return `${SITE_URL}/${trimmed}`;
-};
-
-const renderImageTag = (imageUrl) => {
-  const absoluteImageUrl = toAbsoluteImageUrl(imageUrl);
-  if (!absoluteImageUrl) return '';
-  return `\n    <image:image>\n      <image:loc>${escapeXml(absoluteImageUrl)}</image:loc>\n    </image:image>`;
-};
-
-async function generateSitemap() {
-  console.log('🚀 Generating enhanced sitemap...');
-
-  // Fetch posts with updated_at for better lastmod
-  const { data: posts, error: postsError } = await supabase
-    .from('posts')
-    .select('slug, published_date, updated_at, tags, image_url')
-    .order('published_date', { ascending: false });
-
-  if (postsError) {
-    console.error('Error fetching posts:', postsError);
-    return;
-  }
-
-  // Fetch projects with updated_at for better lastmod
-  const { data: projects, error: projectsError } = await supabase
-    .from('projects')
-    .select('id, created_at, updated_at, tech_tags, image_url')
-    .eq('published', true)
-    .order('featured', { ascending: false })
-    .order('created_at', { ascending: false });
-
-  if (projectsError) {
-    console.error('Error fetching projects:', projectsError);
-    return;
-  }
-
-  const today = new Date().toISOString().split('T')[0];
-
-  // Static pages with their priorities and change frequencies
-  const staticPages = [
-    { url: '/', priority: '1.0', changefreq: 'daily', lastmod: today },
-    { url: '/projects/', priority: '0.8', changefreq: 'weekly', lastmod: today },
-    { url: '/blogs/', priority: '0.8', changefreq: 'weekly', lastmod: today },
-    { url: '/tags/', priority: '0.7', changefreq: 'weekly', lastmod: today },
-    { url: '/extras/', priority: '0.7', changefreq: 'monthly', lastmod: today }
-  ];
-
-  const SAFE_SEGMENT = /^[a-zA-Z0-9_-]+$/;
-  const isSafeSegment = (seg) => typeof seg === 'string' && SAFE_SEGMENT.test(seg) && seg.length > 0;
-  const slugify = (s) => s.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  // Derive unique tags from posts
-  const tagSet = new Set();
-  for (const p of posts ?? []) {
-    if (Array.isArray(p.tags)) for (const t of p.tags) if (t && typeof t === 'string') tagSet.add(slugify(t));
-  }
-  for (const pr of projects ?? []) {
-    if (Array.isArray(pr.tech_tags)) for (const t of pr.tech_tags) if (t && typeof t === 'string') tagSet.add(slugify(t));
-  }
-  const tagUrls = Array.from(tagSet).map((slug) => ({
-    url: `/tags/${encodeURIComponent(slug)}/`,
-    priority: '0.6',
-    changefreq: 'weekly',
-    lastmod: today,
-  }));
-
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-${[...staticPages, ...tagUrls]
-  .map(
-    (page) => `  <url>
-    <loc>${escapeXml(`${SITE_URL}${page.url}`)}</loc>
-    <lastmod>${page.lastmod}</lastmod>
-    <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>
-  </url>`
-  )
-  .join('\n')}
-${posts
-  .filter((post) => isSafeSegment(post.slug))
-  .map(
-    (post) => `  <url>
-    <loc>${escapeXml(`${SITE_URL}/blogs/${encodeURIComponent(post.slug)}/`)}</loc>
-    <lastmod>${new Date(post.updated_at || post.published_date).toISOString().split('T')[0]}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    ${renderImageTag(post.image_url)}
-  </url>`
-  )
-  .join('\n')}
-${projects
-  .filter((project) => isSafeSegment(project.id))
-  .map(
-    (project) => `  <url>
-    <loc>${escapeXml(`${SITE_URL}/projects/${encodeURIComponent(project.id)}/`)}</loc>
-    <lastmod>${new Date(project.updated_at || project.created_at).toISOString().split('T')[0]}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    ${renderImageTag(project.image_url)}
-  </url>`
-  )
-  .join('\n')}
-</urlset>`;
-
-  fs.writeFileSync(SITEMAP_PATH, sitemap);
-  console.log(
-    `✅ Sitemap generated with ${staticPages.length + tagUrls.length + posts.length + projects.length} URLs`
-  );
-  console.log(`📊 Content: ${posts.length} blog posts, ${projects.length} projects`);
-}
-
-generateSitemap().catch(console.error);
+await writeFile('public/sitemap.xml', sitemap, 'utf8');
+console.log('Sitemap generated with ' + inventory.routes.length + ' canonical routes.');

@@ -1,7 +1,7 @@
 import { useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchPublicPosts, fetchPublicProjects } from '@/lib/public-collections';
 import SEO from '@/components/SEO';
 import { EntryList, Page, PageTitle, Section } from '@/components/layout/Page';
 import { formatMonth } from '@/lib/utils';
@@ -40,12 +40,7 @@ const Tag = () => {
     queryKey: ['tag-posts', tagSlugParam],
     enabled: Boolean(tagSlugParam),
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('posts')
-        .select(POST_SUMMARY_SELECT)
-        .order('published_date', { ascending: false });
-      if (error) throw error;
-      return (data as PostSummary[]) ?? [];
+      return fetchPublicPosts<PostSummary>(POST_SUMMARY_SELECT);
     },
     staleTime: 60_000,
   });
@@ -59,12 +54,7 @@ const Tag = () => {
     queryKey: ['tag-projects', tagSlugParam],
     enabled: Boolean(tagSlugParam),
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('projects')
-        .select(PROJECT_LIST_SELECT)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return (data as ProjectSummary[]) ?? [];
+      return fetchPublicProjects<ProjectSummary>(PROJECT_LIST_SELECT);
     },
     staleTime: 60_000,
   });
