@@ -47,6 +47,7 @@ async function generateSitemap() {
   const { data: projects, error: projectsError } = await supabase
     .from('projects')
     .select('id, created_at, updated_at, tech_tags, image_url')
+    .eq('published', true)
     .order('featured', { ascending: false })
     .order('created_at', { ascending: false });
 

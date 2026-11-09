@@ -5,6 +5,11 @@ on:
     branches:
       - master
       - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
 
 permissions:
   contents: write
