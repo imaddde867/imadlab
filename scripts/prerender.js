@@ -517,6 +517,22 @@ async function main() {
   }
   baseHtml = applySiteVerificationToHtml(baseHtml);
   await fs.writeFile(path.join(DIST_DIR, 'index.html'), baseHtml, 'utf8');
+  
+  // GitHub Pages serves 404.html for missing routes. Non-JS crawlers must not
+  // mistake that fallback for the homepage or index missing/admin URLs.
+  const fallbackSeo = /<!-- prerender-seo:start -->[\s\S]*?<!-- prerender-seo:end -->/;
+  if (!fallbackSeo.test(baseHtml) ||
+      !/<title>[^<]*<\/title>/i.test(baseHtml) ||
+      !/<meta name="description" content="[^"]*"\s*\/?>/i.test(baseHtml)) {
+    throw new Error('Missing SEO metadata in GitHub Pages fallback template');
+  }
+  const fallbackHtml = baseHtml
+    .replace(/<title>[^<]*<\/title>/i, '<title>404 | Imadlab</title>')
+    .replace(/<meta name="description" content="[^"]*"\s*\/?>/i,
+      '<meta name="description" content="This page does not exist. Try the projects or the writing instead." />')
+    .replace(fallbackSeo,
+      '<!-- prerender-seo:start -->\n    <meta name="robots" content="noindex, nofollow" />\n    <!-- prerender-seo:end -->');
+  await fs.writeFile(path.join(DIST_DIR, '404.html'), fallbackHtml, 'utf8');
 
   const { projects, posts, tags: tagEntries } = await readPublicContent();
   const summaryProjects = summarizeProjects(projects);
