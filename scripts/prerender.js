@@ -528,17 +528,17 @@ async function main() {
   }
   if (!SEO_BLOCK_PATTERN.test(fallbackHtml) ||
       !/<title>[^<]*<\/title>/i.test(fallbackHtml) ||
-      !/<meta name="description" content="[^"]*"\s*\/?>/i.test(fallbackHtml)) {
+      !/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i.test(fallbackHtml)) {
     throw new Error('Missing SEO metadata in dist/404.html');
   }
   fallbackHtml = fallbackHtml
     .replace(/<title>[^<]*<\/title>/i, '<title>404 | Imadlab</title>')
-    .replace(/<meta name="description" content="[^"]*"\s*\/?>/i,
+    .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i,
       '<meta name="description" content="This page does not exist. Try the projects or the writing instead." />')
     .replace(SEO_BLOCK_PATTERN,
       '<!-- prerender-seo:start -->\n    <meta name="robots" content="noindex, nofollow" />\n    <!-- prerender-seo:end -->')
     .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g,
-      (script) => (script.includes('"WebSite"') ? '' : script));
+      (script) => (/"@type":\s*"WebSite"/.test(script) ? '' : script));
   await fs.writeFile(path.join(DIST_DIR, '404.html'), fallbackHtml, 'utf8');
 
   const { projects, posts, tags: tagEntries } = await readPublicContent();
