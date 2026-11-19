@@ -184,6 +184,10 @@ AS $function$
   where id = p_id and p_duration > 0 and p_duration <= 86400;
 $function$
 ;
+-- Matches the production ACLs: service_role keeps explicit duration access.
+grant execute on function public.track_session(text,text,text,text,text,text,text,text) to anon, authenticated, service_role;
+grant execute on function public.track_page_view(text,text,text,text,text,text,text,text,text,text,text,text) to anon, authenticated, service_role;
+grant execute on function public.set_page_view_duration(uuid,integer) to anon, authenticated, service_role;
 create view public."analytics_summary" with (security_invoker=true) as  SELECT date_trunc('day'::text, viewed_at) AS date,
     count(*) AS total_views,
     count(DISTINCT session_id) AS unique_visitors,

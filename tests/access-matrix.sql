@@ -33,6 +33,9 @@ begin
    perform pg_temp.check_true(pg_temp.denied('select * from newsletter_subscribers'),'anonymous private subscriber read');
    perform pg_temp.check_true(pg_temp.denied('select * from visitor_sessions'),'anonymous session read');
    perform pg_temp.check_true(pg_temp.denied('select * from page_views'),'anonymous page-view read');
+   perform pg_temp.check_true(pg_temp.denied($q$insert into newsletter_subscribers(email,unsubscribe_token) values ('token@example.test',gen_random_uuid())$q$),'anonymous subscriber protected-column insert');
+   perform pg_temp.check_true(pg_temp.denied($q$update newsletter_subscribers set status='inactive'$q$),'anonymous subscriber update');
+   perform pg_temp.check_true(pg_temp.denied($q$delete from newsletter_subscribers$q$),'anonymous subscriber delete');
    perform pg_temp.check_true(pg_temp.denied($q$update projects set title='forbidden'$q$),'anonymous content update');
    perform pg_temp.check_true(pg_temp.denied('delete from projects'),'anonymous content delete');
   else
@@ -49,6 +52,7 @@ begin
   end if;
   perform pg_temp.check_true(pg_temp.denied($q$insert into visitor_sessions(session_id) values ('forbidden')$q$),'direct telemetry insert');
   perform pg_temp.check_true(pg_temp.denied($q$update page_views set duration=42$q$),'direct telemetry update');
+  perform pg_temp.check_true(not has_function_privilege(current_user,'public.set_page_view_duration(uuid,integer)','execute'),'client duration execute');
   perform pg_temp.check_true(pg_temp.denied($q$insert into newsletter_subscribers(email,status) values ('override@example.test','inactive')$q$),'subscriber server fields override');
   execute format('insert into newsletter_subscribers(email) values (%L)',client_role || coalesce(claims->>'sub','visitor') || '@example.test');
   perform public.track_session('synthetic-'||coalesce(claims->>'sub','anon'),'agent','desktop','browser','os','1x1','en','UTC');
@@ -81,5 +85,6 @@ select pg_temp.check_true((select count(*)=2 from projects),'service sees drafts
 insert into newsletter_subscribers(email,status) values ('service@example.test','inactive');
 update visitor_sessions set country='Synthetic' where session_id='synthetic-private';
 select pg_temp.check_true((select count(*)=1 from visitor_sessions where country='Synthetic'),'service enrichment');
+select pg_temp.check_true(has_function_privilege(current_user,'public.set_page_view_duration(uuid,integer)','execute'),'service duration access');
 reset role;
 rollback;
