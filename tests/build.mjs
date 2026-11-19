@@ -158,6 +158,14 @@ try {
     '404 fallback must not canonically identify missing URLs as homepage');
   assert.doesNotMatch(fallback404, /property="og:url"/,
     '404 fallback must not advertise a homepage Open Graph URL');
+  assert.match(fallback404, /This page does not exist\./,
+    '404 fallback must explain that the page is missing');
+  assert.doesNotMatch(fallback404, /property="og:/,
+    '404 fallback must not carry any Open Graph tags');
+  assert.doesNotMatch(fallback404, /name="twitter:/,
+    '404 fallback must not carry any Twitter tags');
+  assert.doesNotMatch(fallback404, /"@type": "WebSite"/,
+    '404 fallback must not claim homepage WebSite structured data');
   assert.match(fallback404, /<script type="module"/,
     '404 fallback must retain the normal React client entrypoint');
 

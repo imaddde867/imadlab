@@ -517,21 +517,28 @@ async function main() {
   }
   baseHtml = applySiteVerificationToHtml(baseHtml);
   await fs.writeFile(path.join(DIST_DIR, 'index.html'), baseHtml, 'utf8');
-  
+
   // GitHub Pages serves 404.html for missing routes. Non-JS crawlers must not
   // mistake that fallback for the homepage or index missing/admin URLs.
-  const fallbackSeo = /<!-- prerender-seo:start -->[\s\S]*?<!-- prerender-seo:end -->/;
-  if (!fallbackSeo.test(baseHtml) ||
-      !/<title>[^<]*<\/title>/i.test(baseHtml) ||
-      !/<meta name="description" content="[^"]*"\s*\/?>/i.test(baseHtml)) {
-    throw new Error('Missing SEO metadata in GitHub Pages fallback template');
+  let fallbackHtml;
+  try {
+    fallbackHtml = await fs.readFile(path.join(DIST_DIR, '404.html'), 'utf8');
+  } catch (error) {
+    throw new Error('Unable to read dist/404.html', { cause: error });
   }
-  const fallbackHtml = baseHtml
+  if (!SEO_BLOCK_PATTERN.test(fallbackHtml) ||
+      !/<title>[^<]*<\/title>/i.test(fallbackHtml) ||
+      !/<meta name="description" content="[^"]*"\s*\/?>/i.test(fallbackHtml)) {
+    throw new Error('Missing SEO metadata in dist/404.html');
+  }
+  fallbackHtml = fallbackHtml
     .replace(/<title>[^<]*<\/title>/i, '<title>404 | Imadlab</title>')
     .replace(/<meta name="description" content="[^"]*"\s*\/?>/i,
       '<meta name="description" content="This page does not exist. Try the projects or the writing instead." />')
-    .replace(fallbackSeo,
-      '<!-- prerender-seo:start -->\n    <meta name="robots" content="noindex, nofollow" />\n    <!-- prerender-seo:end -->');
+    .replace(SEO_BLOCK_PATTERN,
+      '<!-- prerender-seo:start -->\n    <meta name="robots" content="noindex, nofollow" />\n    <!-- prerender-seo:end -->')
+    .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g,
+      (script) => (script.includes('"WebSite"') ? '' : script));
   await fs.writeFile(path.join(DIST_DIR, '404.html'), fallbackHtml, 'utf8');
 
   const { projects, posts, tags: tagEntries } = await readPublicContent();
