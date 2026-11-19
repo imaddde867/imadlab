@@ -149,6 +149,26 @@ try {
   const code = await new Promise((resolve) => child.on('exit', resolve));
   assert.equal(code, 0, 'actual npm build');
   const html = await readFile('dist/index.html', 'utf8');
+
+  const fallback404 = await readFile('dist/404.html', 'utf8');
+  assert.match(fallback404, /<title>404 \| Imadlab<\/title>/, 'fallback has distinct 404 title');
+  assert.match(fallback404, /<meta name="robots" content="noindex, nofollow"/,
+    '404 fallback must be noindex for non-JS crawlers');
+  assert.doesNotMatch(fallback404, /rel="canonical"/,
+    '404 fallback must not canonically identify missing URLs as homepage');
+  assert.doesNotMatch(fallback404, /property="og:url"/,
+    '404 fallback must not advertise a homepage Open Graph URL');
+  assert.match(fallback404, /This page does not exist\./,
+    '404 fallback must explain that the page is missing');
+  assert.doesNotMatch(fallback404, /property="og:/,
+    '404 fallback must not carry any Open Graph tags');
+  assert.doesNotMatch(fallback404, /name="twitter:/,
+    '404 fallback must not carry any Twitter tags');
+  assert.doesNotMatch(fallback404, /"@type": "WebSite"/,
+    '404 fallback must not claim homepage WebSite structured data');
+  assert.match(fallback404, /<script type="module"/,
+    '404 fallback must retain the normal React client entrypoint');
+
   const section = html.match(/<h2>Research and projects<\/h2>([\s\S]*?)<\/section>/)[1];
   const ids = [...section.matchAll(/href="\/projects\/([^"]+)"/g)].map((m) => m[1]);
   assert.deepEqual(
