@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { PageHeader } from '@/components/ui/page-header';
 import { Tag as TagChip } from '@/components/ui/tag';
 import { Skeleton } from '@/components/ui/skeleton';
+import { StaticPublicationNotice } from '@/components/StaticPublicationNotice';
 import { useToast } from '@/hooks/use-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -21,10 +22,13 @@ import {
   ExternalLink,
   FolderOpen,
 } from 'lucide-react';
-import { PROJECT_ADMIN_SELECT, PROJECT_DETAIL_SELECT } from '@/lib/content-selects';
-import type { ProjectDetail as ProjectAdmin } from '@/types/content';
+import { PROJECT_ADMIN_SELECT } from '@/lib/content-selects';
+import type { ProjectDetail } from '@/types/content';
+
+type ProjectAdmin = ProjectDetail & { published: boolean };
 
 type ProjectFormState = {
+  published: boolean;
   featured: boolean;
   title: string;
   description: string;
@@ -36,6 +40,7 @@ type ProjectFormState = {
 };
 
 const createEmptyProjectForm = (): ProjectFormState => ({
+  published: false,
   featured: false,
   title: '',
   description: '',
@@ -195,6 +200,8 @@ const ManageProjects = () => {
       const { data, error } = await supabase
         .from('projects')
         .update({
+          published: updatedProject.published,
+          updated_at: new Date().toISOString(),
           featured: updatedProject.featured ?? false,
           title: updatedProject.title,
           description: updatedProject.description,
@@ -255,13 +262,14 @@ const ManageProjects = () => {
     try {
       const { data, error } = await supabase
         .from('projects')
-        .select(PROJECT_DETAIL_SELECT)
+        .select(PROJECT_ADMIN_SELECT)
         .eq('id', project.id)
         .maybeSingle();
       if (error) throw error;
       const record = data ?? project;
       if (requestId !== editRequestId.current) return;
       setFormData({
+        published: record.published,
         featured: record.featured ?? false,
         title: record.title,
         description: record.description || '',
@@ -275,6 +283,7 @@ const ManageProjects = () => {
       console.warn('Failed to load full project content', error);
       if (requestId !== editRequestId.current) return;
       setFormData({
+        published: project.published,
         featured: project.featured ?? false,
         title: project.title,
         description: project.description || '',
@@ -315,6 +324,7 @@ const ManageProjects = () => {
       .filter((tag) => tag.length > 0);
 
     const projectData = {
+      published: formData.published,
       featured: formData.featured,
       title: formData.title,
       description: formData.description || null,
@@ -367,6 +377,8 @@ const ManageProjects = () => {
           }
         />
 
+        <StaticPublicationNotice>After your last public project edit, publication, or removal, rebuild the website and wait for the workflow to succeed.</StaticPublicationNotice>
+
         {showForm && (
           <Card className="rounded-2xl border border-white/10 bg-white/[0.03] shadow-none">
             <CardHeader>
@@ -381,6 +393,15 @@ const ManageProjects = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <Switch
+                    id="project-published"
+                    checked={formData.published}
+                    disabled={isFormBusy}
+                    onCheckedChange={(published) => setFormData({ ...formData, published })}
+                  />
+                  <label htmlFor="project-published">Public project</label>
+                </div>
                 <div className="flex items-center gap-3">
                   <Switch
                     id="project-featured"
@@ -543,7 +564,12 @@ const ManageProjects = () => {
                     <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                       <div className="flex-1 space-y-3">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                          <h3 className="text-lg font-semibold text-white">{project.title}</h3>
+                          <div>
+                            <h3 className="text-lg font-semibold text-white">{project.title}</h3>
+                            <span className="text-xs text-white/60">
+                              {project.published ? 'Public' : 'Private'}
+                            </span>
+                          </div>
                           {project.tech_tags && project.tech_tags.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                               {project.tech_tags.slice(0, 3).map((tech, index) => (

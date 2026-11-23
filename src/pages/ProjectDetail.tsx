@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
 import { Page, PageTitle } from '@/components/layout/Page';
@@ -13,7 +13,7 @@ import { resolveImageUrl } from '@/lib/image-utils';
 import { PROJECT_DETAIL_SELECT } from '@/lib/content-selects';
 import type { ProjectDetail as ProjectDetailType } from '@/types/content';
 import { parseGithubRepo } from '@/lib/github';
-import { readPrerenderData } from '@/lib/prerender-data';
+import { readPrerenderData, readPrerenderFetchedAt } from '@/lib/prerender-data';
 import { selectProjectMarkdown } from '@/lib/markdown-shared';
 
 const ProjectDetail = () => {
@@ -22,7 +22,6 @@ const ProjectDetail = () => {
     () => (id ? readPrerenderData<ProjectDetailType>(`project:${id}`) : undefined),
     [id]
   );
-  const initialUpdatedAt = useRef<number | undefined>(initialProject ? Date.now() : undefined);
 
   const {
     data: project,
@@ -35,6 +34,7 @@ const ProjectDetail = () => {
       const { data, error } = await supabase
         .from('projects')
         .select(PROJECT_DETAIL_SELECT)
+        .eq('published', true)
         .eq('id', id)
         .maybeSingle();
       if (error) throw error;
@@ -42,7 +42,7 @@ const ProjectDetail = () => {
     },
     enabled: !!id,
     initialData: initialProject,
-    initialDataUpdatedAt: initialUpdatedAt.current,
+    initialDataUpdatedAt: readPrerenderFetchedAt,
   });
 
   if (isLoading) {

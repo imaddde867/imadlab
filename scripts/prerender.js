@@ -422,7 +422,7 @@ const renderTagDetailMarkup = (label, matchedPosts, matchedProjects) => {
 </main>`;
 };
 
-const injectIntoPage = async ({ route, markup, dataKey, data, baseHtml, seo }) => {
+const injectIntoPage = async ({ route, markup, dataKey, data, baseHtml, seo, fetchedAt }) => {
   const routeDir = path.resolve(DIST_DIR, route);
   if (!isInsideDist(routeDir)) {
     throw new Error(`Blocked unsafe route path: ${route}`);
@@ -458,6 +458,10 @@ const injectIntoPage = async ({ route, markup, dataKey, data, baseHtml, seo }) =
     if (dataKey && data !== undefined) {
       const dataScript = `<script>window.__PRERENDERED_DATA__ = window.__PRERENDERED_DATA__ || {}; window.__PRERENDERED_DATA__["${dataKey}"] = ${serialise(data)};</script>`;
       html = html.replace('</body>', `${dataScript}\n</body>`);
+    }
+
+    if (Number.isSafeInteger(fetchedAt) && fetchedAt > 0) {
+      html = html.replace('</head>', `<meta name="content-fetched-at" content="${fetchedAt}" />\n</head>`);
     }
 
     await fs.writeFile(targetPath, html, 'utf8');
@@ -541,7 +545,7 @@ async function main() {
       (script) => (/"@type":\s*"WebSite"/.test(script) ? '' : script));
   await fs.writeFile(path.join(DIST_DIR, '404.html'), fallbackHtml, 'utf8');
 
-  const { projects, posts, tags: tagEntries } = await readPublicContent();
+  const { projects, posts, tags: tagEntries, fetchedAt } = await readPublicContent();
   const summaryProjects = summarizeProjects(projects);
   const summaryPosts = summarizePosts(posts);
 
@@ -668,6 +672,7 @@ async function main() {
       markup: renderProjectDetailMarkup(project),
       dataKey: `project:${project.id}`,
       data: project,
+      fetchedAt,
       baseHtml,
       seo: {
         title: seoTitle,
@@ -707,6 +712,7 @@ async function main() {
       markup: renderPostDetailMarkup(post),
       dataKey: `post:${post.slug}`,
       data: post,
+      fetchedAt,
       baseHtml,
       seo: {
         title: post.title,

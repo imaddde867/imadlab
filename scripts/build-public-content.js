@@ -8,7 +8,8 @@ const temporary = output + '.' + process.pid + '.tmp';
 
 // Never reuse a snapshot from an earlier build after a failed content query.
 await rm(output, { force: true });
-const inventory = await fetchPublicContent();
+const fetchedAt = Date.now();
+const inventory = { ...await fetchPublicContent(), fetchedAt };
 await mkdir(dirname(output), { recursive: true });
 
 try {
