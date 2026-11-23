@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { PageHeader } from '@/components/ui/page-header';
 import { Tag as TagChip } from '@/components/ui/tag';
 import { Skeleton } from '@/components/ui/skeleton';
+import { StaticPublicationNotice } from '@/components/StaticPublicationNotice';
 import { useToast } from '@/hooks/use-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Edit, Trash2, Eye, Calendar, Clock, ExternalLink } from 'lucide-react';
@@ -165,6 +166,7 @@ const ManagePosts = () => {
           excerpt: updatedPost.excerpt,
           tags: updatedPost.tags,
           published_date: updatedPost.published_date,
+          updated_at: new Date().toISOString(),
           read_time: updatedPost.read_time,
           image_url: updatedPost.image_url,
         })
@@ -373,6 +375,8 @@ const ManagePosts = () => {
             </Button>
           }
         />
+
+        <StaticPublicationNotice>Post saves are public immediately in Supabase. After your last edit or deletion, rebuild the website and wait for the workflow to succeed.</StaticPublicationNotice>
 
         {showForm && (
           <Card className="rounded-2xl border border-white/10 bg-white/[0.03] shadow-none">

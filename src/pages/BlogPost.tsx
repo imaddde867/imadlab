@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
 import SubscribeForm from '@/components/SubscribeForm';
@@ -11,7 +11,7 @@ import { resolveImageUrl } from '@/lib/image-utils';
 import { PageLoader } from '@/components/ui/LoadingStates';
 import { GfmMarkdown } from '@/components/markdown/GfmMarkdown';
 import { POST_DETAIL_SELECT } from '@/lib/content-selects';
-import { readPrerenderData } from '@/lib/prerender-data';
+import { readPrerenderData, readPrerenderFetchedAt } from '@/lib/prerender-data';
 import type { PostDetail } from '@/types/content';
 
 const buildMetaDescription = (excerpt?: string | null, body?: string | null) => {
@@ -31,7 +31,6 @@ const BlogPost = () => {
     () => (slug ? readPrerenderData<PostDetail>(`post:${slug}`) : undefined),
     [slug]
   );
-  const initialUpdatedAt = useRef<number | undefined>(initialPost ? Date.now() : undefined);
 
   const {
     data: post,
@@ -51,7 +50,7 @@ const BlogPost = () => {
     },
     enabled: !!slug,
     initialData: initialPost,
-    initialDataUpdatedAt: initialUpdatedAt.current,
+    initialDataUpdatedAt: readPrerenderFetchedAt,
   });
 
   // Calculate reading time if not provided

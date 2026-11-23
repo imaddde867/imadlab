@@ -370,6 +370,46 @@ try {
   } finally {
     await writeFile('dist/feed.xml', originalRss);
   }
+  const editedPost = posts[1];
+  const removedPost = posts.pop();
+  const unpublishedProject = projects[0];
+  const modifiedAt = '2026-11-22T13:00:00.000Z';
+  editedPost.title = 'Superseded edit';
+  editedPost.title = 'Final published edit';
+  editedPost.excerpt = 'Final publication summary';
+  editedPost.updated_at = modifiedAt;
+  unpublishedProject.published = false;
+  draftProject.published = true;
+  draftProject.title = 'New public project';
+  draftProject.updated_at = modifiedAt;
+
+  const rebuilt = await runForCode('npm', ['run', 'build']);
+  assert.equal(rebuilt.code, 0, rebuilt.output);
+  const changedHtml = await readFile('dist/blogs/' + editedPost.slug + '/index.html', 'utf8');
+  assert.match(changedHtml, /<title>Final published edit \| Imadlab<\/title>/);
+  assert.match(changedHtml, /<meta name="description" content="Final publication summary"/);
+  assert.match(changedHtml, /"dateModified":"2026-11-22T13:00:00.000Z"/);
+  assert.ok(changedHtml.includes('https://imadlab.com/blogs/' + editedPost.slug + '/'));
+  assert.doesNotMatch(changedHtml, /Superseded edit/);
+  const changedSitemap = await readFile('dist/sitemap.xml', 'utf8');
+  const changedRss = await readFile('dist/feed.xml', 'utf8');
+  const changedFeed = JSON.parse(await readFile('dist/feed.json', 'utf8'));
+  assert.match(changedRss, /Final published edit/);
+  assert.ok(!changedRss.includes(removedPost.slug));
+  assert.ok(!changedFeed.items.some((item) => item.url.includes(removedPost.slug)));
+  const changedItem = changedFeed.items.find((item) => item.url.includes(editedPost.slug));
+  assert.equal(changedItem.title, editedPost.title);
+  assert.equal(changedItem.date_modified, modifiedAt);
+  assert.ok(changedSitemap.includes(draftProject.id));
+  const editedSitemapEntry = changedSitemap.split('<url>').find((entry) =>
+    entry.includes('/blogs/' + editedPost.slug + '/</loc>'));
+  assert.ok(editedSitemapEntry?.includes('<lastmod>' + modifiedAt.slice(0, 10) + '</lastmod>'));
+  assert.ok(!changedSitemap.includes(unpublishedProject.id));
+  assert.ok(!changedSitemap.includes(removedPost.slug));
+  await assert.rejects(readFile('dist/blogs/' + removedPost.slug + '/index.html'), { code: 'ENOENT' });
+  await assert.rejects(readFile('dist/projects/' + unpublishedProject.id + '/index.html'), { code: 'ENOENT' });
+  assert.match(await readFile('dist/projects/' + draftProject.id + '/index.html', 'utf8'), /New public project/);
+  console.log('PASS publication rebuild after repeated edits, deletion and project visibility changes');
   console.log('PASS fail-closed prebuild and negative sitemap-to-HTML parity checks');
   console.log('PASS full visible Markdown, no-JS styles, media/math parity, fallback content and XSS fixtures');
   console.log(

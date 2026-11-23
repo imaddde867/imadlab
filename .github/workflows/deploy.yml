@@ -8,29 +8,62 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && 'imadlab-pages' || github.run_id }}
+  cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  build:
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
+      SUPABASE_DEPLOY: '0'
       VITE_GOOGLE_SITE_VERIFICATION: ${{ secrets.VITE_GOOGLE_SITE_VERIFICATION }}
       VITE_BING_SITE_VERIFICATION: ${{ secrets.VITE_BING_SITE_VERIFICATION }}
     steps:
-      - name: Checkout code
+      - name: Checkout current branch tip
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.18.0'
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
+      - run: npm run build
 
-      - name: Build
-        run: npm run build
+      - name: Mark verified build
+        run: printf '%s\n' "${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" > dist/publication-build.txt
+
+      - name: Upload verified build
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-${{ github.run_attempt }}
+          path: dist/
+          include-hidden-files: true
+          retention-days: 7
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+      - uses: actions/download-artifact@v4
+        with:
+          name: website-${{ github.run_attempt }}
+          path: dist/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -41,6 +74,9 @@ jobs:
           force_orphan: true
           cname: imadlab.com
 
+      - name: Verify this build is public
+        run: node scripts/verify-publication.js
+
       - name: Notify IndexNow
-        run: node scripts/submit-indexnow.js
+        run: node scripts/submit-indexnow.js dist/sitemap.xml
         continue-on-error: true

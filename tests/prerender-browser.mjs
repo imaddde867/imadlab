@@ -56,7 +56,7 @@ const markers = {
   fallback: ['FALLBACK_PROJECT_DESCRIPTION_MARKER'],
 };
 try {
-  browser = await chromium.launch({ headless: true });
+  browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_EXECUTABLE });
   for (const enabled of [false, true]) {
     const context = await browser.newContext({
       javaScriptEnabled: enabled,
@@ -64,6 +64,7 @@ try {
     });
     // Synthetic data is embedded in dist; never contact external services.
     let sawLaterContentPage = false;
+    let detailRequests = 0;
     let sawExactCount = false;
     await context.route('**/*', async (route) => {
       const request = route.request();
@@ -82,6 +83,15 @@ try {
       };
       if (request.method() === 'OPTIONS') {
         return route.fulfill({ status: 204, headers: cors });
+      }
+      if (url.searchParams.has('slug') || url.searchParams.get('id')?.startsWith('eq.')) {
+        detailRequests += 1;
+        if (table === 'projects') {
+          assert.equal(url.searchParams.get('published'), 'eq.true');
+          return route.fulfill({ headers: cors, json: [] });
+        }
+        const post = await readPageData('blogs/synthetic-article', 'post:synthetic-article');
+        return route.fulfill({ headers: cors, json: [{ ...post, body: 'REVALIDATED_POST' }] });
       }
       const source = table === 'posts' ? syntheticPosts : syntheticProjects;
       const cursorFilter = url.searchParams.get('id');
@@ -112,6 +122,10 @@ try {
       const page = await context.newPage();
       const errors = [];
       page.on('pageerror', (error) => errors.push(error.message));
+      const html = await readFile(path.join(dist, route, 'index.html'), 'utf8');
+      const timestamp = Number(html.match(/name="content-fetched-at" content="(\d+)"/)?.[1]);
+      assert.ok(timestamp > 0, 'detail page carries the inventory fetch timestamp');
+      await page.clock.setFixedTime(new Date(timestamp + 1000));
       await page.goto(origin + route, { waitUntil: 'domcontentloaded' });
       const article = enabled
         ? page.locator('main#main article').last()
@@ -179,6 +193,20 @@ try {
       await page.close();
     }
     if (enabled) {
+      assert.equal(detailRequests, 0, 'fresh prerendered detail pages need no database requests');
+      for (const [route, expected] of [
+        ['/blogs/synthetic-article/', 'REVALIDATED_POST'],
+        ['/projects/00000000-0000-0000-0000-000000000001/', 'Project not found'],
+      ]) {
+        const page = await context.newPage();
+        const html = await readFile(path.join(dist, route, 'index.html'), 'utf8');
+        const timestamp = Number(html.match(/name="content-fetched-at" content="(\d+)"/)[1]);
+        await page.clock.setFixedTime(new Date(timestamp + 6 * 60 * 1000));
+        await page.goto(origin + route);
+        await page.getByText(expected, { exact: true }).waitFor();
+        await page.close();
+      }
+      assert.equal(detailRequests, 2, 'aged prerender data revalidates once per detail page');
       const tagPage = await context.newPage();
       await tagPage.goto(origin + '/tags/research/', { waitUntil: 'domcontentloaded' });
       const taggedLinks = tagPage.locator('main#main a[href^="/blogs/"]');

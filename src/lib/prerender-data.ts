@@ -14,3 +14,10 @@ export const readPrerenderData = <T = unknown>(key: string): T | undefined => {
 
   return store[key] as T;
 };
+
+export const readPrerenderFetchedAt = (): number => {
+  if (typeof document === 'undefined') return 0;
+  const meta = document.querySelector<HTMLMetaElement>('meta[name="content-fetched-at"]');
+  const value = Number(meta?.content);
+  return Number.isSafeInteger(value) && value > 0 && value <= Date.now() ? value : 0;
+};
