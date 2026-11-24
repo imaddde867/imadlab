@@ -1,0 +1,1 @@
+const n="__PRERENDERED_DATA__",r=t=>{if(typeof window>"u")return;const e=window[n];if(!(!e||!(t in e)))return e[t]},o=()=>{if(typeof document>"u")return 0;const t=document.querySelector('meta[name="content-fetched-at"]'),e=Number(t?.content);return Number.isSafeInteger(e)&&e>0&&e<=Date.now()?e:0};export{o as a,r};
