@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { readFile, writeFile, unlink } from 'node:fs/promises';
+import { cp, mkdtemp, readFile, rm, writeFile, unlink } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { spawn } from 'node:child_process';
+import { verifyPublication } from '../scripts/verify-publication.js';
 import { selectHomeProjects } from '../src/lib/home-projects.js';
 import { renderMarkdownForStaticHtml } from '../scripts/render-markdown.js';
 import { selectProjectMarkdown, normalizeMathBlocks, resolveMediaType } from '../src/lib/markdown-shared.js';
@@ -86,8 +89,26 @@ let sawPublishedProjectQuery = false;
 let sawPaginatedPostQuery = false;
 let sawPaginatedProjectQuery = false;
 let failPostPage = false;
-const server = http.createServer((req, res) => {
+let publishedDir;
+const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://127.0.0.1');
+  if (url.pathname.startsWith('/preview/')) {
+    const route = url.pathname.slice('/preview'.length);
+    const safe = /^\/(?:[a-zA-Z0-9-]+\/)*[a-zA-Z0-9.-]*$/.test(route) &&
+      !route.split('/').some((part) => part === '.' || part === '..');
+    try {
+      if (!publishedDir || !safe) throw new Error('Invalid preview path');
+      res.end(await readFile(join(publishedDir, route, route.endsWith('/') ? 'index.html' : '')));
+    } catch (error) {
+      if (publishedDir && safe && error.code === 'ENOENT') {
+        try {
+          return res.writeHead(404).end(await readFile(join(publishedDir, '404.html')));
+        } catch {}
+      }
+      res.writeHead(500).end('Preview fixture error');
+    }
+    return;
+  }
   const isProjectQuery = url.pathname === '/rest/v1/projects';
   const isPostQuery = url.pathname === '/rest/v1/posts';
   if (isProjectQuery && url.searchParams.get('published') === 'eq.true') {
@@ -141,6 +162,12 @@ async function runForCode(command, args, env = buildEnv) {
   child.stderr.on('data', (chunk) => { output += chunk; });
   return await new Promise((resolve) => child.on('close', (code) => resolve({ code, output })));
 }
+const preview = 'http://127.0.0.1:55440/preview';
+const checkMarker = (marker) => verifyPublication(marker, {
+  attempts: 1,
+  fetchMarker: () => fetch(preview + '/publication-build.txt', { redirect: 'error' }),
+});
+let previousRelease;
 try {
   const child = spawn('npm', ['run', 'build'], {
     stdio: 'inherit',
@@ -375,6 +402,13 @@ try {
   } finally {
     await writeFile('dist/feed.xml', originalRss);
   }
+  // Keep serving the old release during the rebuild, as Pages does.
+  previousRelease = await mkdtemp(join(tmpdir(), 'imadlab-release-'));
+  await cp('dist', previousRelease, { recursive: true });
+  await writeFile(join(previousRelease, 'publication-build.txt'), '1-1\n');
+  publishedDir = previousRelease;
+  await checkMarker('1-1');
+
   const editedPost = posts[1];
   const removedPost = posts.pop();
   const unpublishedProject = projects[0];
@@ -387,6 +421,14 @@ try {
   draftProject.published = true;
   draftProject.title = 'New public project';
   draftProject.updated_at = modifiedAt;
+  const newPost = {
+    ...editedPost,
+    id: '00000000-0000-0000-0002-000000000001',
+    slug: 'new-synthetic-post',
+    title: 'New public article',
+  };
+  posts.push(newPost);
+  const saveCompleted = performance.now();
 
   const rebuilt = await runForCode('npm', ['run', 'build']);
   assert.equal(rebuilt.code, 0, rebuilt.output);
@@ -414,6 +456,44 @@ try {
   await assert.rejects(readFile('dist/blogs/' + removedPost.slug + '/index.html'), { code: 'ENOENT' });
   await assert.rejects(readFile('dist/projects/' + unpublishedProject.id + '/index.html'), { code: 'ENOENT' });
   assert.match(await readFile('dist/projects/' + draftProject.id + '/index.html', 'utf8'), /New public project/);
+  const newPostRoute = '/blogs/' + newPost.slug + '/';
+  const deletedPostRoute = '/blogs/' + removedPost.slug + '/';
+  const oldProjectRoute = '/projects/' + unpublishedProject.id + '/';
+  assert.equal((await fetch(preview + newPostRoute)).status, 404, 'new post is hidden before release');
+  for (const route of [deletedPostRoute, oldProjectRoute]) {
+    const response = await fetch(preview + route);
+    assert.equal(response.status, 200, route + ' remains available on the old release');
+    await response.arrayBuffer();
+  }
+  await checkMarker('1-1');
+  await writeFile('dist/publication-build.txt', '2-1\n');
+  publishedDir = 'dist';
+  await checkMarker('2-1');
+  const [created, removed, unpublished, publicSitemapResponse, publicRss, publicJson] = await Promise.all(
+    [newPostRoute, deletedPostRoute, oldProjectRoute, '/sitemap.xml', '/feed.xml', '/feed.json']
+      .map((route) => fetch(preview + route)),
+  );
+  assert.equal(created.status, 200);
+  const createdHtml = await created.text();
+  assert.match(createdHtml, /<title>New public article \| Imadlab<\/title>/);
+  for (const response of [removed, unpublished]) {
+    assert.equal(response.status, 404);
+    const body = await response.text();
+    assert.match(body, /<meta name="robots" content="noindex, nofollow"/);
+    assert.doesNotMatch(body, /rel="canonical"/);
+  }
+  assert.equal(publicSitemapResponse.status, 200);
+  const publishedSitemap = await publicSitemapResponse.text();
+  assert.ok(publishedSitemap.includes(newPostRoute));
+  assert.ok(!publishedSitemap.includes(deletedPostRoute) && !publishedSitemap.includes(oldProjectRoute));
+  assert.equal(publicRss.status, 200);
+  const publishedRss = await publicRss.text();
+  assert.ok(publishedRss.includes(newPostRoute) && !publishedRss.includes(deletedPostRoute));
+  assert.equal(publicJson.status, 200);
+  const publishedJsonUrls = (await publicJson.json()).items.map(({ url }) => new URL(url).pathname);
+  assert.ok(publishedJsonUrls.includes(newPostRoute) && !publishedJsonUrls.includes(deletedPostRoute));
+  console.log('PASS synthetic save-to-preview lifecycle over HTTP (' +
+    Math.round(performance.now() - saveCompleted) + ' ms; excludes GitHub Pages propagation)');
   console.log('PASS publication rebuild after repeated edits, deletion and project visibility changes');
   console.log('PASS fail-closed prebuild and negative sitemap-to-HTML parity checks');
   console.log('PASS full visible Markdown, no-JS styles, media/math parity, fallback content and XSS fixtures');
@@ -426,5 +506,6 @@ try {
     if (error.code !== 'ENOENT') throw error;
   });
   else await writeFile('.cache/public-content.json', cachedSnapshot);
+  if (previousRelease) await rm(previousRelease, { recursive: true, force: true });
   server.close();
 }
