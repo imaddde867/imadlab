@@ -153,14 +153,25 @@ try {
         assert.equal(await article.locator('a[href="https://example.org/linked-icon"] figure:has(img[alt="Standalone linked icon"])').count(), 1,
           'standalone linked image retains its figure (js=' + enabled + ')');
       }
+      const canonical = 'https://imadlab.com' + route;
       if (enabled) {
+        // Wait for Helmet, not just for the React article (Helmet updates on the next frame).
+        await page.locator('meta[name="robots"][data-rh]').waitFor({ state: 'attached' });
+      }
+      assert.deepEqual(await page.locator('link[rel="canonical"]').evaluateAll(
+        (links) => links.map((link) => link.href)), [canonical], kind + ': one canonical (js=' + enabled + ')');
+      assert.equal(await page.locator('meta[name="description"]').count(), 1);
+      assert.equal(await page.locator('meta[property="og:title"]').count(), 1);
+      assert.equal(await page.locator('link[type="application/rss+xml"]').count(), 1);
+      const primaryType = kind === 'post' ? 'BlogPosting' : 'CreativeWork';
+      const schemas = await page.locator('head script[type="application/ld+json"]').evaluateAll(
+        (scripts) => scripts.map((script) => JSON.parse(script.textContent)));
+      assert.deepEqual(schemas.filter((schema) => schema['@type'] === primaryType).map((schema) => schema.url),
+        [canonical], kind + ': one page-specific schema (js=' + enabled + ')');
+      if (enabled) {
+        assert.ok(schemas.some((schema) => schema['@type'] === 'BreadcrumbList'),
+          'client must actually render its own JSON-LD');
         assert.equal(await page.locator('#root [data-prerender="true"]').count(), 0, 'React must replace the static root');
-        if (kind === 'project') {
-          await page.waitForTimeout(500); // let Helmet apply its rAF update before counting
-          const types = await page.evaluate(() => [...document.querySelectorAll('script[type="application/ld+json"]')]
-            .map((el) => JSON.parse(el.textContent)['@type']));
-          assert.equal(types.filter((t) => t === 'CreativeWork').length, 1, 'exactly one CreativeWork after hydration: ' + types);
-        }
         assert.deepEqual(errors, [], kind + ': browser page errors');
       } else {
         const width = await article.evaluate((el) => el.getBoundingClientRect().width);

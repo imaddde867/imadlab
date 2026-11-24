@@ -340,6 +340,9 @@ const renderHomeMarkup = (posts, projects) => `
       <a class="prerender-link" href="/projects">Projects</a>
       <a class="prerender-link" href="/blogs">Blog</a>
       <a class="prerender-link" href="https://github.com/imaddde867">GitHub</a>
+      <a class="prerender-link" href="/Resume.pdf">Resume</a>
+      <a class="prerender-link" href="https://www.linkedin.com/in/imad-eddine-e-986741262">LinkedIn</a>
+      <a class="prerender-link" href="mailto:ielmouss867@gmail.com">Email</a>
     </nav>
     ${projects.length ? `<section><h2>Research and projects</h2><ul class="prerender-grid">
       ${selectHomeProjects(projects).map((project) => `<li><a href="/projects/${encodeURIComponent(project.id)}">${escapeHtml(project.title)}</a></li>`).join('\n')}

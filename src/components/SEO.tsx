@@ -295,11 +295,9 @@ const Seo = ({
       {imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
 
       {schemas.map((schema, index) => (
-        <script
-          key={index}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }}
-        />
+        <script key={index} type="application/ld+json">
+          {safeJsonLd(schema)}
+        </script>
       ))}
     </Helmet>
   );
