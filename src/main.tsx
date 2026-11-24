@@ -21,4 +21,16 @@ window.excludeFromAnalytics = excludeFromAnalytics;
 window.includeInAnalytics = includeInAnalytics;
 window.isOwnerExcluded = isOwnerExcluded;
 
+// Keep metadata in the HTML for non-JS visitors, then let Helmet reconcile
+// those same nodes on the first render and on client-side navigation.
+const prerenderedHead = [
+  'meta[name="description"]', 'meta[name="robots"]', 'meta[property^="og:"]',
+  'meta[name^="twitter:"]', 'meta[name="google-site-verification"]',
+  'meta[name="msvalidate.01"]', 'link[rel="canonical"]', 'link[rel="alternate"]',
+  'script[type="application/ld+json"]',
+];
+document.head.querySelectorAll(prerenderedHead.join(',')).forEach((element) => {
+  element.setAttribute('data-rh', 'true');
+});
+
 createRoot(document.getElementById('root')!).render(<App />);

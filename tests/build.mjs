@@ -150,6 +150,11 @@ try {
   assert.equal(code, 0, 'actual npm build');
   const html = await readFile('dist/index.html', 'utf8');
 
+  const homeHtml = await readFile('dist/index.html', 'utf8');
+  for (const href of ['/Resume.pdf', 'mailto:ielmouss867@gmail.com']) {
+    assert.ok(homeHtml.includes('href="' + href + '"'), 'static homepage must expose ' + href);
+  }
+
   const fallback404 = await readFile('dist/404.html', 'utf8');
   assert.match(fallback404, /<title>404 \| Imadlab<\/title>/, 'fallback has distinct 404 title');
   assert.match(fallback404, /<meta name="robots" content="noindex, nofollow"/,
