@@ -5,287 +5,55 @@
   <link>https://imadlab.com</link>
   <description>Technical notes on industrial AI systems, procedural extraction, architecture, and evaluation.</description>
   <language>en-us</language>
-  <lastBuildDate>Tue, 24 Nov 2026 17:25:06 GMT</lastBuildDate>
+  <lastBuildDate>Sat, 05 Sep 2026 17:04:48 GMT</lastBuildDate>
   <atom:link href="https://imadlab.com/feed.xml" rel="self" type="application/rss+xml" />
   <item>
-    <title>Synthetic technical article</title>
-    <link>https://imadlab.com/blogs/synthetic-article/</link>
-    <guid>https://imadlab.com/blogs/synthetic-article/</guid>
-    <description><![CDATA[Synthetic article summary]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
+    <title>Evaluation Beyond Accuracy: Constraint Coverage and Safety in Procedure Extraction</title>
+    <link>https://imadlab.com/blogs/evaluation-beyond-accuracy-constraint-coverage-and-safety</link>
+    <guid>https://imadlab.com/blogs/evaluation-beyond-accuracy-constraint-coverage-and-safety</guid>
+    <description><![CDATA[Why standard NLP accuracy numbers are not enough for industrial procedure extraction, and what to measure instead.]]></description>
+    <pubDate>Wed, 04 Feb 2026 09:10:00 GMT</pubDate>
+    <category>evaluation</category>
+    <category>industrial-ai</category>
+    <category>safety</category>
+    <category>procedural-knowledge-extraction</category>
+    <category>reliability</category>
   </item>
   <item>
-    <title>Additional synthetic article 1</title>
-    <link>https://imadlab.com/blogs/additional-article-1/</link>
-    <guid>https://imadlab.com/blogs/additional-article-1/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
+    <title>Designing Local LLM Pipelines for Industrial Documentation</title>
+    <link>https://imadlab.com/blogs/designing-local-llm-pipelines-for-industrial-documentation</link>
+    <guid>https://imadlab.com/blogs/designing-local-llm-pipelines-for-industrial-documentation</guid>
+    <description><![CDATA[How I build local document intelligence pipelines when the data cannot leave the organization and every output has to be traceable.]]></description>
+    <pubDate>Fri, 16 Jan 2026 07:45:00 GMT</pubDate>
+    <category>local-llm</category>
+    <category>industrial-ai</category>
+    <category>privacy-by-design</category>
+    <category>systems-engineering</category>
+    <category>architecture</category>
   </item>
   <item>
-    <title>Additional synthetic article 2</title>
-    <link>https://imadlab.com/blogs/additional-article-2/</link>
-    <guid>https://imadlab.com/blogs/additional-article-2/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
+    <title>Procedural Knowledge Extraction Is Not Summarization</title>
+    <link>https://imadlab.com/blogs/procedural-knowledge-extraction-is-not-summarization</link>
+    <guid>https://imadlab.com/blogs/procedural-knowledge-extraction-is-not-summarization</guid>
+    <description><![CDATA[In industrial documentation, a fluent summary can still be operationally wrong. Procedural extraction needs explicit structure and traceable validation, not better compression.]]></description>
+    <pubDate>Mon, 29 Dec 2025 08:20:00 GMT</pubDate>
+    <category>procedural-knowledge-extraction</category>
+    <category>industrial-ai</category>
+    <category>knowledge-graphs</category>
+    <category>evaluation</category>
+    <category>safety</category>
   </item>
   <item>
-    <title>Additional synthetic article 3</title>
-    <link>https://imadlab.com/blogs/additional-article-3/</link>
-    <guid>https://imadlab.com/blogs/additional-article-3/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 4</title>
-    <link>https://imadlab.com/blogs/additional-article-4/</link>
-    <guid>https://imadlab.com/blogs/additional-article-4/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 5</title>
-    <link>https://imadlab.com/blogs/additional-article-5/</link>
-    <guid>https://imadlab.com/blogs/additional-article-5/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 6</title>
-    <link>https://imadlab.com/blogs/additional-article-6/</link>
-    <guid>https://imadlab.com/blogs/additional-article-6/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 7</title>
-    <link>https://imadlab.com/blogs/additional-article-7/</link>
-    <guid>https://imadlab.com/blogs/additional-article-7/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 8</title>
-    <link>https://imadlab.com/blogs/additional-article-8/</link>
-    <guid>https://imadlab.com/blogs/additional-article-8/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 9</title>
-    <link>https://imadlab.com/blogs/additional-article-9/</link>
-    <guid>https://imadlab.com/blogs/additional-article-9/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 10</title>
-    <link>https://imadlab.com/blogs/additional-article-10/</link>
-    <guid>https://imadlab.com/blogs/additional-article-10/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 11</title>
-    <link>https://imadlab.com/blogs/additional-article-11/</link>
-    <guid>https://imadlab.com/blogs/additional-article-11/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 12</title>
-    <link>https://imadlab.com/blogs/additional-article-12/</link>
-    <guid>https://imadlab.com/blogs/additional-article-12/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 13</title>
-    <link>https://imadlab.com/blogs/additional-article-13/</link>
-    <guid>https://imadlab.com/blogs/additional-article-13/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 14</title>
-    <link>https://imadlab.com/blogs/additional-article-14/</link>
-    <guid>https://imadlab.com/blogs/additional-article-14/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 15</title>
-    <link>https://imadlab.com/blogs/additional-article-15/</link>
-    <guid>https://imadlab.com/blogs/additional-article-15/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 16</title>
-    <link>https://imadlab.com/blogs/additional-article-16/</link>
-    <guid>https://imadlab.com/blogs/additional-article-16/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 17</title>
-    <link>https://imadlab.com/blogs/additional-article-17/</link>
-    <guid>https://imadlab.com/blogs/additional-article-17/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 18</title>
-    <link>https://imadlab.com/blogs/additional-article-18/</link>
-    <guid>https://imadlab.com/blogs/additional-article-18/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 19</title>
-    <link>https://imadlab.com/blogs/additional-article-19/</link>
-    <guid>https://imadlab.com/blogs/additional-article-19/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 20</title>
-    <link>https://imadlab.com/blogs/additional-article-20/</link>
-    <guid>https://imadlab.com/blogs/additional-article-20/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 21</title>
-    <link>https://imadlab.com/blogs/additional-article-21/</link>
-    <guid>https://imadlab.com/blogs/additional-article-21/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 22</title>
-    <link>https://imadlab.com/blogs/additional-article-22/</link>
-    <guid>https://imadlab.com/blogs/additional-article-22/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 23</title>
-    <link>https://imadlab.com/blogs/additional-article-23/</link>
-    <guid>https://imadlab.com/blogs/additional-article-23/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 24</title>
-    <link>https://imadlab.com/blogs/additional-article-24/</link>
-    <guid>https://imadlab.com/blogs/additional-article-24/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 25</title>
-    <link>https://imadlab.com/blogs/additional-article-25/</link>
-    <guid>https://imadlab.com/blogs/additional-article-25/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 26</title>
-    <link>https://imadlab.com/blogs/additional-article-26/</link>
-    <guid>https://imadlab.com/blogs/additional-article-26/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 27</title>
-    <link>https://imadlab.com/blogs/additional-article-27/</link>
-    <guid>https://imadlab.com/blogs/additional-article-27/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 28</title>
-    <link>https://imadlab.com/blogs/additional-article-28/</link>
-    <guid>https://imadlab.com/blogs/additional-article-28/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 29</title>
-    <link>https://imadlab.com/blogs/additional-article-29/</link>
-    <guid>https://imadlab.com/blogs/additional-article-29/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 30</title>
-    <link>https://imadlab.com/blogs/additional-article-30/</link>
-    <guid>https://imadlab.com/blogs/additional-article-30/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 31</title>
-    <link>https://imadlab.com/blogs/additional-article-31/</link>
-    <guid>https://imadlab.com/blogs/additional-article-31/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 32</title>
-    <link>https://imadlab.com/blogs/additional-article-32/</link>
-    <guid>https://imadlab.com/blogs/additional-article-32/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 33</title>
-    <link>https://imadlab.com/blogs/additional-article-33/</link>
-    <guid>https://imadlab.com/blogs/additional-article-33/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
-  </item>
-  <item>
-    <title>Additional synthetic article 34</title>
-    <link>https://imadlab.com/blogs/additional-article-34/</link>
-    <guid>https://imadlab.com/blogs/additional-article-34/</guid>
-    <description><![CDATA[Additional synthetic content]]></description>
-    <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
-    <category>Research</category>
+    <title>Training a 10M-Parameter Transformer Locally: Three Attempts</title>
+    <link>https://imadlab.com/blogs/local-llm-apple-silicon-engineering-notes</link>
+    <guid>https://imadlab.com/blogs/local-llm-apple-silicon-engineering-notes</guid>
+    <description><![CDATA[Three attempts to train a 10M-parameter transformer locally: the first diverged to NaN, the last writes coherent paragraphs but still cannot do math.]]></description>
+    <pubDate>Fri, 11 Jul 2025 21:07:09 GMT</pubDate>
+    <category>local-llm</category>
+    <category>industrial-ai</category>
+    <category>evaluation</category>
+    <category>privacy-by-design</category>
+    <category>systems-engineering</category>
   </item>
 </channel>
 </rss>
